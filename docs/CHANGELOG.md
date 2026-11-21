@@ -7,6 +7,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.3.4.2] - 2026-11-22
+
+### Phase 3.4.2: First Actual Live Inference, Multi-Model Collaboration and Operator-Verified Execution
+
+### Added
+- **Secure In-Memory Windows Credential Launcher (`scripts/run_groq_smoke_secure.ps1`)**:
+  - Developed a specialized PowerShell wrapper providing hidden password-style credential input via `Read-Host -AsSecureString`.
+  - Unmarshals BSTR pointers in memory for the isolated child process, immediately clears BSTR buffers (`ZeroFreeBSTR`), and clears environment variables upon exit with zero disk writes.
+  - Requires explicit `-OptIn` and `-ConfirmFreePlan` parameters.
+- **Operator Account Console Verification Protocol (`docs/OPERATOR_ACCOUNT_VERIFICATION.md`)**:
+  - Established a 6-tier account verification hierarchy (`UNVERIFIED`, `OPERATOR_ATTESTED`, `DASHBOARD_EVIDENCED`, `PROVIDER_CONFIRMED`, `INELIGIBLE_PAID`, `BLOCKED_EXTERNAL`).
+  - Documented that provider HTTP 200 responses do not prove zero-cost entitlement, creating a mandatory 5-step console audit checklist.
+- **Secure Windows Credential Runbook (`docs/SECURE_WINDOWS_CREDENTIAL_RUNBOOK.md`)**:
+  - Authored a comprehensive operator guide detailing PowerShell execution, input masking, rate-limit header interpretation, and process environment boundaries.
+- **Discrete Live Execution Ledgers (`docs/LIVE_GROQ_120B_EXECUTION.md`, `docs/LIVE_GROQ_20B_EXECUTION.md`)**:
+  - Documented independent execution envelopes, payloads, timestamps, token limits, and fail-closed results for `openai/gpt-oss-120b` and `openai/gpt-oss-20b`.
+- **Multi-Model Collaboration Protocol for Food Redistribution Platform (`docs/LIVE_MULTI_MODEL_COLLABORATION.md`)**:
+  - Formulated full 6-stage collaboration protocol (Generation, Adversarial Critique, AST Verification, Revision, Adjudication, Final Deliverable) for synthetic food-donation backend platform with explicit `SAME_FAMILY_SAME_PROVIDER` disclosure.
+- **Groq Terms and Public Deployment Status (`docs/GROQ_TERMS_AND_PUBLIC_DEPLOYMENT_STATUS.md`)**:
+  - Evaluated consumer use restriction against Customer Applications; marked public consumer deployment as `REVIEW_REQUIRED` (HELD) while permitting developer testing; rejected superficial click-wrap workarounds.
+- **Groq Data Retention & Zero Data Retention Status (`docs/GROQ_DATA_RETENTION_STATUS.md`)**:
+  - Classified ZDR governance across 4 tiers; verified platform availability (`ZDR_AVAILABLE`) and instituted synthetic-only data protocols.
+
+### Changed
+- **Smoke Test CLI Utility (`promptiq/gateway/smoke_test.py`)**:
+  - Enhanced to support `--prompt`, `--max-tokens`, comprehensive rate-limit header extraction, timestamps, and cost entitlement classification (`LIVE_RESPONSE_RECEIVED_COST_UNVERIFIED` vs `LIVE_VERIFIED_FREE`).
+- **Account Verification Quotas (`promptiq/gateway/account_verification.py`)**:
+  - Updated free-tier quota mappings to 1,000 RPD, 8,000 TPM, and 200,000 TPD for both models.
+- **Configuration Engine (`promptiq/core/config.py`)**:
+  - Added support for `PROMPTIQ_OPERATOR_FREE_TIER_CONFIRMED` convenience flag.
+
+---
+
 ## [0.3.4.1] - 2026-11-22
 
 ### Phase 3.4.1: First Verified Live Inference, Multi-Model Execution and Zero-Cost Production Gate

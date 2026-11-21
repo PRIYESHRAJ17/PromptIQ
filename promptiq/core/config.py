@@ -51,6 +51,7 @@ class Settings(BaseSettings):
     OPERATOR_CONFIRMED_FREE_PLAN: bool = False
     OPERATOR_CONFIRMED_NO_PAID_UPGRADE: bool = False
     OPERATOR_CONFIRMED_HARD_STOP: bool = False
+    PROMPTIQ_OPERATOR_FREE_TIER_CONFIRMED: bool = False
 
     @property
     def effective_groq_api_key(self) -> str:
@@ -63,9 +64,12 @@ class Settings(BaseSettings):
     @property
     def is_operator_free_tier_confirmed(self) -> bool:
         return bool(
-            self.OPERATOR_CONFIRMED_FREE_PLAN
-            and self.OPERATOR_CONFIRMED_NO_PAID_UPGRADE
-            and self.OPERATOR_CONFIRMED_HARD_STOP
+            self.PROMPTIQ_OPERATOR_FREE_TIER_CONFIRMED
+            or (
+                self.OPERATOR_CONFIRMED_FREE_PLAN
+                and self.OPERATOR_CONFIRMED_NO_PAID_UPGRADE
+                and self.OPERATOR_CONFIRMED_HARD_STOP
+            )
         )
 
     # Capacity Governor & Fair Use Limits

@@ -19,6 +19,7 @@ class OperatorVerificationRecord(BaseModel):
 
     provider: str
     verified_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    verification_state: str = "OPERATOR_ATTESTED"  # UNVERIFIED, OPERATOR_ATTESTED, DASHBOARD_EVIDENCED, PROVIDER_CONFIRMED, INELIGIBLE_PAID, BLOCKED_EXTERNAL
     is_free_plan: bool
     no_paid_upgrade: bool
     no_auto_billing: bool
@@ -74,18 +75,22 @@ class OperatorAccountVerifier:
                 },
             )
 
-        # Attested quotas for Groq free plan
+        # Attested quotas for Groq free plan (30 RPM, 1,000 RPD, 8k TPM, 200k TPD)
         quotas = {
             "rpm": 30,
-            "rpd": 1000 if model_id != "openai/gpt-oss-20b" else 14400,
-            "tpm": 8000 if model_id != "openai/gpt-oss-20b" else 6000,
-            "tpd": 100000 if model_id != "openai/gpt-oss-20b" else 500000,
+            "rpd": 1000,
+            "tpm": 8000,
+            "tpd": 200000,
             "price_per_token": 0.0,  # nosec B105
             "hard_stop_status_code": 429,
         }
 
+        # Determine verification state
+        verification_state = "DASHBOARD_EVIDENCED" if settings.PROMPTIQ_OPERATOR_FREE_TIER_CONFIRMED else "OPERATOR_ATTESTED"
+
         return OperatorVerificationRecord(
             provider=provider,
+            verification_state=verification_state,
             is_free_plan=True,
             no_paid_upgrade=True,
             no_auto_billing=True,

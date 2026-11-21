@@ -1,4 +1,4 @@
-# PromptIQ Pilot Benchmark Results & Methodology Audit (Phase 3.4.1)
+# PromptIQ Pilot Benchmark Results & Methodology Audit (Phase 3.4.2)
 ## Analysis of 10-Task Pilot Suite, Rubric Specifications, and Synthetic vs. Live Scores
 
 **Audit Date**: 2026-11-22  

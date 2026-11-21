@@ -1,6 +1,6 @@
 # PromptIQ Integration & Verification Status Ledger
 
-**Audit Date**: November 22, 2026 (Phase 3.4.1 Production Proof Release)  
+**Audit Date**: November 22, 2026 (Phase 3.4.2 Production Verification Release)  
 **Auditor**: Systems Integration & Verification Engineer  
 **Core Invariant**: Absolute honesty in verification status. Never claim live verification without an active live connection. Never manufacture benchmark scores.
 
@@ -13,7 +13,7 @@
 | **SQLite (Async)** | Local file `sqlite+aiosqlite:///` | **`VERIFIED`** | 85/85 automated pytest cases passing. Full async transaction, foreign key, and JSON column tests. | None (Ready for local dev/test). |
 | **Alembic Migrations** | PostgreSQL DDL script generation | **`VERIFIED`** | Verified programmatic upgrade and downgrade in `tests/test_database_migrations.py` across 22 tables. | None. |
 | **PostgreSQL (Neon)** | Cloud Serverless `postgresql+asyncpg://` | **`IMPLEMENTED_NOT_LIVE_VERIFIED`** | SQLAlchemy 2.0 async engine configured with `pool_pre_ping=True` and `pool_recycle=300`. Zero live calls to Neon cloud made yet. | Provide live Neon database URL in `.env` (`DATABASE_URL`). |
-| **Groq Live Smoke Test** | Safe Opt-In CLI Utility | **`VERIFIED`** | `promptiq.gateway.smoke_test` verified: blocks uncredentialed calls with `BLOCKED_EXTERNAL` without falling back to mock. | Inject `GROQ_API_KEY` and run `python -m promptiq.gateway.smoke_test --opt-in`. |
+| **Groq Live Smoke Test** | Safe Opt-In CLI Utility | **`VERIFIED`** | `promptiq.gateway.smoke_test` verified: blocks uncredentialed calls with `BLOCKED_EXTERNAL` without falling back to mock. Secure launcher: `scripts/run_groq_smoke_secure.ps1`. | Run `scripts\run_groq_smoke_secure.ps1 -OptIn -ConfirmFreePlan`. |
 | **GroqCloud Free Tier** | Groq OpenAI-compatible Chat API | **`IMPLEMENTED_NOT_LIVE_VERIFIED`** | `GroqInferenceAdapter` implemented for `openai/gpt-oss-120b` and `20b`. Free quotas strictly enforced (1,000 RPD, 8k TPM, 200k TPD). Zero credentials configured in current test run. | Provide operator key in `.env` (`OPERATOR_GROQ_API_KEY` or `GROQ_API_KEY`). |
 | **Google Gemini API** | Google AI Studio Developer API | **`IMPLEMENTED_NOT_LIVE_VERIFIED`** | `GeminiInferenceAdapter` implemented. Qualified as `CONDITIONALLY_ELIGIBLE` due to minor restrictions (<18) and free-tier training terms. | Provide operator key in `.env` (`OPERATOR_GEMINI_API_KEY`). |
 | **Cloud Run Compute** | Managed Container Runner | **`REJECTED_FOR_STRICT_ZERO_COST`** | Lacks native zero-latency $0.00 hard stop; billing latency exposes operator to potential unexpected spend; requires credit card. | Rejected for cardless ₹0 production. |

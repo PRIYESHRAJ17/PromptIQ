@@ -1,9 +1,9 @@
-# Cloud Compute Decision & Hosted Runner Feasibility (Phase 3.4.1)
+# Cloud Compute Decision & Hosted Runner Feasibility (Phase 3.4.2)
 ## Exhaustive Evaluation of Cloud Compute Runtimes for Zero-Cost Laptop-Independent Production
 
 **Audit Date**: 2026-11-22  
 **Target Workload**: PromptIQ Python Backend (FastAPI, SQLAlchemy, `asyncpg`, AST Compiler, Telegram Webhook, MCP Server)  
-**Classification**: `UNRESOLVED` / `BLOCKED_EXTERNAL` (No Fully Compliant Cardless Zero-Cost Cloud Compute Service Exists)  
+**Classification**: `COMPUTE_RUNNER = UNRESOLVED` / `BLOCKED_EXTERNAL` (No Fully Compliant Cardless Zero-Cost Cloud Compute Service Exists)  
 
 ---
 
