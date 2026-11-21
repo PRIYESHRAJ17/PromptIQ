@@ -3,6 +3,7 @@
 import asyncio
 import hashlib
 import json
+import threading
 from collections import defaultdict
 from datetime import UTC, datetime
 from pathlib import Path
@@ -28,9 +29,24 @@ MODEL_FREE_QUOTAS: dict[str, dict[str, int]] = {
 
 
 class CapacityGovernor:
-    """Enforces fair-use quotas, request de-duplication, concurrency caps, circuit breakers, and durable quota ledger."""
+    """Enforces fair-use quotas, request de-duplication, concurrency caps, circuit breakers, and durable quota ledger.
+
+    SYNCHRONIZATION BOUNDARIES & TIERS:
+    - Tier 1 (In-Process Multi-Threading): Thread-safe in-memory operations protected by
+      threading.Lock() and asyncio.Semaphore for concurrent task and thread execution within a process.
+    - Tier 2 (Same-Host Multi-Processing): Durable file-based ledger (quota_ledger.json) with
+      atomic write-replace semantics (temporary file + atomic rename) ensuring safe quota
+      synchronization across local CLI, API server, and background worker processes on the same host.
+    - Tier 3 (Distributed Multi-Host Cloud): OUT OF SCOPE / NOT IMPLEMENTED FOR LOCAL WORKSTATION.
+      Distributed multi-host synchronization would require an external distributed lock or consensus
+      service (e.g. Redis Redlock, PostgreSQL row-level advisory locks). PromptIQ's current quota ledger
+      is strictly classified as a Tier 2 workstation/same-host multi-processing mechanism.
+    """
 
     def __init__(self, ledger_path: Path | str | None = None, auto_load: bool = True):
+        # Tier 1 thread lock for thread-safe in-memory mutations
+        self._thread_lock = threading.Lock()
+
         # Sliding window timestamps of user requests: user_id -> list of float timestamps
         self._user_requests: dict[str, list[float]] = defaultdict(list)
 
@@ -79,117 +95,119 @@ class CapacityGovernor:
         if not target_path.exists():
             return False
 
-        try:
-            with open(target_path, encoding="utf-8") as f:
-                data = json.load(f)
+        with self._thread_lock:
+            try:
+                with open(target_path, encoding="utf-8") as f:
+                    data = json.load(f)
 
-            now = datetime.now(UTC).timestamp()
-            minute_cutoff = now - 60.0
-            day_cutoff = now - 86400.0
+                now = datetime.now(UTC).timestamp()
+                minute_cutoff = now - 60.0
+                day_cutoff = now - 86400.0
 
-            # Prune and merge minute requests
-            for model_id, timestamps in data.get("model_requests_minute", {}).items():
-                active = [t for t in timestamps if t > minute_cutoff]
-                merged_req = sorted(set(self._model_requests_minute[model_id] + active))
-                self._model_requests_minute[model_id] = merged_req
+                # Prune and merge minute requests
+                for model_id, timestamps in data.get("model_requests_minute", {}).items():
+                    active = [t for t in timestamps if t > minute_cutoff]
+                    merged_req = sorted(set(self._model_requests_minute[model_id] + active))
+                    self._model_requests_minute[model_id] = merged_req
 
-            # Prune and merge daily requests
-            for model_id, timestamps in data.get("model_requests_day", {}).items():
-                active = [t for t in timestamps if t > day_cutoff]
-                merged_day = sorted(set(self._model_requests_day[model_id] + active))
-                self._model_requests_day[model_id] = merged_day
+                # Prune and merge daily requests
+                for model_id, timestamps in data.get("model_requests_day", {}).items():
+                    active = [t for t in timestamps if t > day_cutoff]
+                    merged_day = sorted(set(self._model_requests_day[model_id] + active))
+                    self._model_requests_day[model_id] = merged_day
 
-            # Prune and merge minute tokens
-            for model_id, token_records in data.get("model_tokens_minute", {}).items():
-                active = [(t, tok) for t, tok in token_records if t > minute_cutoff]
-                merged_tok = sorted(set([tuple(x) for x in self._model_tokens_minute[model_id]] + active), key=lambda x: x[0])
-                self._model_tokens_minute[model_id] = merged_tok
+                # Prune and merge minute tokens
+                for model_id, token_records in data.get("model_tokens_minute", {}).items():
+                    active = [(t, tok) for t, tok in token_records if t > minute_cutoff]
+                    merged_tok = sorted(set([tuple(x) for x in self._model_tokens_minute[model_id]] + active), key=lambda x: x[0])
+                    self._model_tokens_minute[model_id] = merged_tok
 
-            # Prune and merge daily tokens
-            for model_id, token_records in data.get("model_tokens_day", {}).items():
-                active = [(t, tok) for t, tok in token_records if t > day_cutoff]
-                merged_tok_day = sorted(set([tuple(x) for x in self._model_tokens_day[model_id]] + active), key=lambda x: x[0])
-                self._model_tokens_day[model_id] = merged_tok_day
+                # Prune and merge daily tokens
+                for model_id, token_records in data.get("model_tokens_day", {}).items():
+                    active = [(t, tok) for t, tok in token_records if t > day_cutoff]
+                    merged_tok_day = sorted(set([tuple(x) for x in self._model_tokens_day[model_id]] + active), key=lambda x: x[0])
+                    self._model_tokens_day[model_id] = merged_tok_day
 
-            # Restore paused providers
-            for provider, pause_until in data.get("paused_until", {}).items():
-                if pause_until > now:
-                    self._paused_until[provider] = pause_until
+                # Restore paused providers
+                for provider, pause_until in data.get("paused_until", {}).items():
+                    if pause_until > now:
+                        self._paused_until[provider] = pause_until
 
-            for provider, reason in data.get("pause_reasons", {}).items():
-                self._pause_reasons[provider] = reason
+                for provider, reason in data.get("pause_reasons", {}).items():
+                    self._pause_reasons[provider] = reason
 
-            # Restore last provider headers
-            self._last_provider_headers.update(data.get("last_provider_headers", {}))
+                # Restore last provider headers
+                self._last_provider_headers.update(data.get("last_provider_headers", {}))
 
-            # Restore active in-flight reservations
-            self._reservations = {
-                tok: res for tok, res in data.get("reservations", {}).items()
-                if res.get("expires_at", 0) > now
-            }
+                # Restore active in-flight reservations
+                self._reservations = {
+                    tok: res for tok, res in data.get("reservations", {}).items()
+                    if res.get("expires_at", 0) > now
+                }
 
-            return True
-        except Exception as e:
-            logger.warning("Failed to load durable quota ledger from %s: %s", target_path, e)
-            return False
+                return True
+            except Exception as e:
+                logger.warning("Failed to load durable quota ledger from %s: %s", target_path, e)
+                return False
 
     def save_durable_state(self, path: Path | str | None = None) -> bool:
         """Flushes current quota tracking state to the durable ledger file atomically.
 
         Removes expired sliding-window entries (minute > 60s, day > 86400s) before writing.
         Note: This ledger is strictly a workstation-local, single-host synchronization
-        mechanism across CLI and background worker processes; it is not a distributed
-        cloud consensus mechanism.
+        mechanism across CLI and background worker processes (Tier 2); it is not a distributed
+        cloud consensus mechanism (Tier 3).
         """
         target_path = Path(path) if path else self._ledger_path
-        try:
-            target_path.parent.mkdir(parents=True, exist_ok=True)
-            now = datetime.now(UTC).timestamp()
-            minute_cutoff = now - 60.0
-            day_cutoff = now - 86400.0
+        with self._thread_lock:
+            try:
+                target_path.parent.mkdir(parents=True, exist_ok=True)
+                now = datetime.now(UTC).timestamp()
+                minute_cutoff = now - 60.0
+                day_cutoff = now - 86400.0
 
-            clean_req_min = {
-                m: [t for t in ts if t > minute_cutoff]
-                for m, ts in self._model_requests_minute.items()
-            }
-            clean_req_day = {
-                m: [t for t in ts if t > day_cutoff]
-                for m, ts in self._model_requests_day.items()
-            }
-            clean_tok_min = {
-                m: [[t, k] for t, k in tk if t > minute_cutoff]
-                for m, tk in self._model_tokens_minute.items()
-            }
-            clean_tok_day = {
-                m: [[t, k] for t, k in tk if t > day_cutoff]
-                for m, tk in self._model_tokens_day.items()
-            }
-            clean_reservations = {
-                tok: res for tok, res in self._reservations.items()
-                if res.get("expires_at", 0) > now
-            }
+                clean_req_min = {
+                    m: [t for t in ts if t > minute_cutoff]
+                    for m, ts in self._model_requests_minute.items()
+                }
+                clean_req_day = {
+                    m: [t for t in ts if t > day_cutoff]
+                    for m, ts in self._model_requests_day.items()
+                }
+                clean_tok_min = {
+                    m: [[t, k] for t, k in tk if t > minute_cutoff]
+                    for m, tk in self._model_tokens_minute.items()
+                }
+                clean_tok_day = {
+                    m: [[t, k] for t, k in tk if t > day_cutoff]
+                    for m, tk in self._model_tokens_day.items()
+                }
+                clean_reservations = {
+                    tok: res for tok, res in self._reservations.items()
+                    if res.get("expires_at", 0) > now
+                }
 
-            payload = {
-                "version": 1,
-                "updated_at": datetime.now(UTC).isoformat(),
-                "model_requests_minute": clean_req_min,
-                "model_requests_day": clean_req_day,
-                "model_tokens_minute": clean_tok_min,
-                "model_tokens_day": clean_tok_day,
-                "reservations": clean_reservations,
-                "paused_until": self._paused_until,
-                "pause_reasons": self._pause_reasons,
-                "last_provider_headers": self._last_provider_headers,
-            }
+                payload = {
+                    "version": 1,
+                    "updated_at": datetime.now(UTC).isoformat(),
+                    "model_requests_minute": clean_req_min,
+                    "model_requests_day": clean_req_day,
+                    "model_tokens_minute": clean_tok_min,
+                    "model_tokens_day": clean_tok_day,
+                    "reservations": clean_reservations,
+                    "paused_until": self._paused_until,
+                    "pause_reasons": self._pause_reasons,
+                    "last_provider_headers": self._last_provider_headers,
+                }
 
-            tmp_path = target_path.with_suffix(".tmp")
-            with open(tmp_path, "w", encoding="utf-8") as f:
-                json.dump(payload, f, indent=2)
-            tmp_path.replace(target_path)
-            return True
-        except Exception as e:
-            logger.warning("Failed to save durable quota ledger to %s: %s", target_path, e)
-            return False
+                tmp_path = target_path.with_suffix(".tmp")
+                with open(tmp_path, "w", encoding="utf-8") as f:
+                    json.dump(payload, f, indent=2)
+                tmp_path.replace(target_path)
+                return True
+            except Exception as e:
+                logger.warning("Failed to save durable quota ledger to %s: %s", target_path, e)
+                return False
 
     def sync_from_execution_ledger(self, ledger_path: Path | str) -> dict[str, Any]:
         """Reconstructs and persists governor usage state directly from a workflow results JSON ledger."""

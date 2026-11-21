@@ -107,6 +107,83 @@ async def test_safe_fetch_url_catches_redirect_to_restricted_destination():
             await safe_fetch_url("https://example.com/redirect-target")
 
 
+@pytest.mark.asyncio
+async def test_ssrf_transport_pins_connection_to_validated_ip():
+    """Verifies that SSRFSafeNetworkBackend resolves DNS once, validates, and pins TCP connection to IP."""
+    from unittest.mock import MagicMock
+
+    from promptiq.core.security import SSRFSafeNetworkBackend
+
+    backend = SSRFSafeNetworkBackend()
+
+    mock_addr_info = [
+        (2, 1, 6, "", ("93.184.216.34", 443)),
+    ]
+    mock_stream = MagicMock()
+    mock_stream._raw_socket = MagicMock()
+
+    with patch("socket.getaddrinfo", return_value=mock_addr_info):
+        with patch("anyio.connect_tcp", new_callable=AsyncMock, return_value=mock_stream) as mock_connect:
+            stream = await backend.connect_tcp("example.com", 443)
+            # Must connect directly to the pinned IP string, NOT the hostname
+            mock_connect.assert_awaited_once_with(
+                remote_host="93.184.216.34",
+                remote_port=443,
+                local_host=None,
+            )
+            assert stream is not None
+
+
+@pytest.mark.asyncio
+async def test_ssrf_transport_blocks_dns_rebinding_mixed_records():
+    """Verifies that DNS records returning mixed public and private addresses are strictly rejected."""
+    from promptiq.core.security import SSRFSafeNetworkBackend
+
+    backend = SSRFSafeNetworkBackend()
+
+    # Attacker DNS server returns public IP first, but includes private loopback
+    mixed_addr_info = [
+        (2, 1, 6, "", ("93.184.216.34", 443)),
+        (2, 1, 6, "", ("127.0.0.1", 443)),
+    ]
+
+    with patch("socket.getaddrinfo", return_value=mixed_addr_info):
+        with pytest.raises(SecurityError, match="SSRF Protection: IP '127.0.0.1' is in a private, loopback"):
+            await backend.connect_tcp("rebound.attacker.com", 443)
+
+
+@pytest.mark.asyncio
+async def test_ssrf_transport_blocks_dns_resolution_to_cloud_metadata():
+    """Verifies that DNS resolution returning AWS/GCP cloud metadata IP is blocked at transport layer."""
+    from promptiq.core.security import SSRFSafeNetworkBackend
+
+    backend = SSRFSafeNetworkBackend()
+
+    metadata_addr_info = [
+        (2, 1, 6, "", ("169.254.169.254", 80)),
+    ]
+
+    with patch("socket.getaddrinfo", return_value=metadata_addr_info):
+        with pytest.raises(SecurityError, match="cloud-metadata range"):
+            await backend.connect_tcp("metadata-rebinding.attacker.com", 80)
+
+
+@pytest.mark.asyncio
+async def test_ssrf_transport_blocks_dns_resolution_to_private_rfc1918():
+    """Verifies that DNS resolution returning RFC 1918 private IP is blocked at transport layer."""
+    from promptiq.core.security import SSRFSafeNetworkBackend
+
+    backend = SSRFSafeNetworkBackend()
+
+    private_addr_info = [
+        (2, 1, 6, "", ("10.200.1.5", 8080)),
+    ]
+
+    with patch("socket.getaddrinfo", return_value=private_addr_info):
+        with pytest.raises(SecurityError, match="private, loopback, or cloud-metadata"):
+            await backend.connect_tcp("corp-intranet.attacker.com", 8080)
+
+
 # =====================================================================
 # 2. TWO-PHASE QUOTA RESERVATION & CONCURRENCY SAFETY
 # =====================================================================
@@ -196,6 +273,47 @@ def test_cross_process_durable_ledger_state_sharing(tmp_path):
     worker_b.load_durable_state()
     st_b_after = worker_b.get_model_quota_status("openai/gpt-oss-120b")
     assert st_b_after["reserved_tokens"] == 0
+
+
+def test_quota_synchronization_three_tiers_and_atomic_replace(tmp_path):
+    """Verifies synchronization boundaries across Tier 1 (threads), Tier 2 (same-host processes), and Tier 3 (cloud)."""
+    import concurrent.futures
+    import json
+
+    from promptiq.gateway.governor import CapacityGovernor
+
+    ledger_path = tmp_path / "atomic_quota_ledger.json"
+    gov = CapacityGovernor(ledger_path=ledger_path, auto_load=False)
+    model_id = "openai/gpt-oss-20b"
+
+    # Tier 1 Verification: Concurrent multi-threading with thread_lock
+    def _worker_thread(thread_idx: int) -> int:
+        tok = gov.reserve_capacity(model_id, estimated_tokens=100, ttl_seconds=60)
+        gov.reconcile_reservation(tok, actual_tokens=100, http_status=200)
+        return thread_idx
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+        results = list(executor.map(_worker_thread, range(10)))
+        assert len(results) == 10
+
+    status = gov.get_model_quota_status(model_id)
+    assert status["tpm_used"] == 1000
+
+    # Tier 2 Verification: Atomic file write-replace
+    gov.save_durable_state()
+    assert ledger_path.exists()
+    assert not ledger_path.with_suffix(".tmp").exists()
+
+    with open(ledger_path, encoding="utf-8") as f:
+        data = json.load(f)
+    assert data["version"] == 1
+    assert model_id in data["model_tokens_minute"]
+
+    # Tier 3 Verification: Documented boundary
+    # Single-host governor does not perform network RPCs; distributed clusters require external locking
+    assert "Tier 1" in gov.__class__.__doc__
+    assert "Tier 2" in gov.__class__.__doc__
+    assert "Tier 3" in gov.__class__.__doc__
 
 
 # =====================================================================

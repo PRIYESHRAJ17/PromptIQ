@@ -406,6 +406,104 @@ async def test_workflow_resumption_missing_artifact_raises_error(tmp_path):
         )
 
 
+@pytest.mark.asyncio
+async def test_workflow_interruption_at_stage_d_resumes_without_reinvoking_generator(tmp_path):
+    """Verifies that an interrupted workflow resumes cleanly without re-invoking generator or critic."""
+    import json
+    from unittest.mock import patch
+
+    from promptiq.gateway.gateway import inference_gateway
+    from promptiq.schemas.model_pool import WorkflowExecutionStatus
+
+    test_wf_id = "interrupted-wf-5678"
+    dummy_json_path = tmp_path / "interrupted_exec.json"
+
+    dummy_data = {
+        "summary": {
+            "status": "PARTIALLY_COMPLETED_RATE_LIMITED",
+            "workflow_id": test_wf_id,
+            "task_id": "collab-interrupted-food-task",
+            "execution_profile": "STANDARD",
+            "generator_model": "openai/gpt-oss-120b",
+            "critic_model": "openai/gpt-oss-20b",
+            "steps": [
+                {
+                    "step_number": 1,
+                    "role": "ORCHESTRATOR",
+                    "provider": "mock",
+                    "model_id": "openai/gpt-oss-120b",
+                    "stage": "orchestration",
+                    "outcome_status": "VERIFIED",
+                    "verification_passed": True,
+                    "request_id": "req_orch_original",
+                },
+                {
+                    "step_number": 2,
+                    "role": "PROMPT_ENGINEER",
+                    "provider": "mock",
+                    "model_id": "openai/gpt-oss-120b",
+                    "stage": "generation",
+                    "outcome_status": "VERIFIED",
+                    "verification_passed": True,
+                    "request_id": "req_gen_original",
+                },
+                {
+                    "step_number": 3,
+                    "role": "CRITIC",
+                    "provider": "mock",
+                    "model_id": "openai/gpt-oss-20b",
+                    "stage": "criticism",
+                    "outcome_status": "VERIFIED",
+                    "verification_passed": True,
+                    "request_id": "req_crit_original",
+                    "findings": ["Enforce food safety temperature logging."],
+                },
+                {
+                    "step_number": 4,
+                    "role": "VERIFIER",
+                    "provider": "internal",
+                    "model_id": "deterministic-verifier-v1",
+                    "stage": "initial_verification",
+                    "outcome_status": "VERIFIED",
+                    "verification_passed": True,
+                },
+            ],
+        },
+        "initial_artifact": "# Candidate Backend Architecture\nFood distribution platform backend design with zero UI.",
+        "critic_review": "1. Enforce mandatory temperature logging for perishables.\n2. Add RBAC.",
+        "revised_artifact": None,
+        "final_text": "# Candidate Backend Architecture\nFood distribution platform backend design with zero UI.",
+    }
+
+    with open(dummy_json_path, "w", encoding="utf-8") as f:
+        json.dump(dummy_data, f)
+
+    gateway_calls = []
+    original_generate = inference_gateway.generate
+
+    async def spy_generate(*args, **kwargs):
+        gateway_calls.append((args, kwargs))
+        return await original_generate(*args, **kwargs)
+
+    with patch.object(inference_gateway, "generate", side_effect=spy_generate):
+        final_text, audit = await MultiModelCollaborationPipeline.resume_workflow_revision(
+            workflow_id=test_wf_id,
+            persisted_json_path=str(dummy_json_path),
+            preferred_provider="mock",
+        )
+
+    # Crucial assertion: Exactly 1 call to inference gateway (Revision only).
+    # Orchestration, Generation, and Criticism were NOT re-invoked!
+    assert len(gateway_calls) == 1
+    assert audit.final_status == WorkflowExecutionStatus.COMPLETED.value
+    assert audit.parent_workflow_id == test_wf_id
+    assert audit.steps[0].request_id == "req_orch_original"
+    assert audit.steps[1].request_id == "req_gen_original"
+    assert audit.steps[2].request_id == "req_crit_original"
+    assert audit.steps[4].stage == "revision"
+    assert audit.steps[5].stage == "final_verification"
+
+
 def test_groq_token_accounting_reconciliation_math():
     """Verifies the exact token accounting reconciliation for GPT-OSS 120B."""
     # Step 1: Orchestration

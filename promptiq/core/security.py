@@ -2,15 +2,24 @@
 
 import hashlib
 import hmac
+import ipaddress
 import secrets
+import socket
+import urllib.parse
+from collections.abc import Iterable
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
+import anyio
+import httpcore
+import httpx
 import jwt
+from httpcore._backends.anyio import SOCKET_OPTION, AnyIOBackend, AnyIOStream
+from httpcore._exceptions import ConnectError, ConnectTimeout, map_exceptions
 from passlib.context import CryptContext
 
 from promptiq.core.config import settings
-from promptiq.core.exceptions import AuthenticationError
+from promptiq.core.exceptions import AuthenticationError, SecurityError
 
 # Password hashing context using standard pbkdf2_sha256
 pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
@@ -108,6 +117,106 @@ def sanitize_untrusted_input(text: str) -> str:
     return clean.strip()
 
 
+def verify_host_and_resolve_safe_ips(host: str, port: int = 443) -> list[str]:
+    """Validates host against SSRF/internal network rules and resolves to a list of verified safe public IPs.
+
+    Guarantees that:
+    1. Restricted hostnames (localhost, metadata, cloud endpoints) are blocked immediately.
+    2. Internal network domain suffixes (.internal, .local, .corp, etc.) are blocked.
+    3. Alternate integer/hex/octal IP representations are normalized and checked.
+    4. Direct IP addresses in private, loopback, link-local, multicast, or metadata ranges are rejected.
+    5. DNS resolution checks ALL returned records: if ANY returned IP is restricted, the request is blocked.
+    """
+    if not host or not isinstance(host, str):
+        raise SecurityError("Host cannot be empty")
+
+    host_clean = host.strip()
+    if host_clean.startswith("[") and host_clean.endswith("]"):
+        host_clean = host_clean[1:-1]
+
+    host_lower = host_clean.lower()
+
+    # Blocked domains and internal network suffixes
+    blocked_hostnames = {
+        "localhost",
+        "metadata.google.internal",
+        "metadata.internal",
+        "instance-data",
+        "169.254.169.254",
+        "127.0.0.1",
+        "::1",
+        "0.0.0.0",
+        "::",
+    }
+    blocked_suffixes = (
+        ".internal",
+        ".local",
+        ".corp",
+        ".lan",
+        ".home",
+        ".localhost",
+        ".arpa",
+    )
+    if host_lower in blocked_hostnames or any(host_lower.endswith(sfx) for sfx in blocked_suffixes):
+        raise SecurityError(f"SSRF Protection: Access to restricted host '{host}' is blocked.")
+
+    # 1. Normalize alternate IP representations (integer IP, hex, octal, dotted hex/octal)
+    def _parse_c_int(s: str) -> int:
+        s_clean = s.strip()
+        if s_clean.startswith(("0x", "0X")):
+            return int(s_clean, 16)
+        if s_clean.startswith("0") and len(s_clean) > 1 and s_clean.isdigit():
+            return int(s_clean, 8)
+        return int(s_clean, 10)
+
+    target_for_ip_check = host_lower
+    try:
+        if "." in host_lower:
+            parts = [_parse_c_int(p) for p in host_lower.split(".")]
+            if len(parts) == 4 and all(0 <= p <= 255 for p in parts):
+                target_for_ip_check = ".".join(str(p) for p in parts)
+        elif host_lower.isdigit() or host_lower.startswith(("0x", "0X")):
+            val = _parse_c_int(host_lower)
+            if 0 <= val <= 0xFFFFFFFF:
+                target_for_ip_check = str(ipaddress.IPv4Address(val))
+    except (ValueError, OverflowError):
+        pass
+
+    def _check_ip_address(ip_obj: ipaddress.IPv4Address | ipaddress.IPv6Address) -> None:
+        if (
+            ip_obj.is_private
+            or ip_obj.is_loopback
+            or ip_obj.is_link_local
+            or ip_obj.is_multicast
+            or ip_obj.is_reserved
+            or ip_obj.is_unspecified
+            or str(ip_obj) == "169.254.169.254"
+        ):
+            raise SecurityError(f"SSRF Protection: IP '{ip_obj}' is in a private, loopback, or cloud-metadata range.")
+
+    # 2. Check direct IP address literal
+    try:
+        ip_obj = ipaddress.ip_address(target_for_ip_check)
+        _check_ip_address(ip_obj)
+        return [str(ip_obj)]
+    except ValueError:
+        # 3. Not a raw IP literal; resolve DNS and verify EVERY returned IP address
+        try:
+            addr_info = socket.getaddrinfo(host_clean, port, socket.AF_UNSPEC, socket.SOCK_STREAM)
+            safe_ips: list[str] = []
+            for item in addr_info:
+                ip_str = item[4][0]
+                resolved_ip = ipaddress.ip_address(ip_str)
+                _check_ip_address(resolved_ip)
+                if ip_str not in safe_ips:
+                    safe_ips.append(ip_str)
+            if not safe_ips:
+                raise SecurityError(f"SSRF Protection: No safe IP addresses resolved for host '{host}'.")
+            return safe_ips
+        except socket.gaierror as e:
+            raise SecurityError(f"DNS resolution failed for host '{host}': {e}")
+
+
 def validate_and_sanitize_url(url: str) -> str:
     """Validates user-supplied external URLs against SSRF, internal network traversal, and protocol abuse.
 
@@ -118,12 +227,6 @@ def validate_and_sanitize_url(url: str) -> str:
     - Link-local and cloud metadata services (169.254.169.254, metadata.google.internal)
     - Embedded user credentials in URLs
     """
-    import ipaddress
-    import socket
-    import urllib.parse
-
-    from promptiq.core.exceptions import SecurityError
-
     if not url or not isinstance(url, str):
         raise SecurityError("URL cannot be empty")
 
@@ -150,84 +253,69 @@ def validate_and_sanitize_url(url: str) -> str:
     if not hostname:
         raise SecurityError("Unable to extract valid hostname from URL")
 
-    hostname_lower = hostname.lower()
-
-    # Blocked domains and internal network suffixes
-    BLOCKED_HOSTNAMES = {
-        "localhost",
-        "metadata.google.internal",
-        "metadata.internal",
-        "instance-data",
-        "169.254.169.254",
-        "127.0.0.1",
-        "::1",
-    }
-    blocked_suffixes = (
-        ".internal",
-        ".local",
-        ".corp",
-        ".lan",
-        ".home",
-        ".localhost",
-        ".arpa",
-    )
-    if hostname_lower in BLOCKED_HOSTNAMES or any(hostname_lower.endswith(sfx) for sfx in blocked_suffixes):
-        raise SecurityError(f"SSRF Protection: Access to restricted host '{hostname}' is blocked.")
-
-    # 1. Normalize alternate IP representations (integer IP, hex, octal, dotted hex/octal)
-    def _parse_c_int(s: str) -> int:
-        s_clean = s.strip()
-        if s_clean.startswith(("0x", "0X")):
-            return int(s_clean, 16)
-        if s_clean.startswith("0") and len(s_clean) > 1 and s_clean.isdigit():
-            return int(s_clean, 8)
-        return int(s_clean, 10)
-
-    target_for_ip_check = hostname_lower
-    try:
-        if "." in hostname_lower:
-            parts = [_parse_c_int(p) for p in hostname_lower.split(".")]
-            if len(parts) == 4 and all(0 <= p <= 255 for p in parts):
-                target_for_ip_check = ".".join(str(p) for p in parts)
-        elif hostname_lower.isdigit() or hostname_lower.startswith(("0x", "0X")):
-            val = _parse_c_int(hostname_lower)
-            if 0 <= val <= 0xFFFFFFFF:
-                target_for_ip_check = str(ipaddress.IPv4Address(val))
-    except (ValueError, OverflowError):
-        pass
-
-    # 2. Check direct IP address literal
-    try:
-        ip_obj = ipaddress.ip_address(target_for_ip_check)
-        if (
-            ip_obj.is_private
-            or ip_obj.is_loopback
-            or ip_obj.is_link_local
-            or ip_obj.is_multicast
-            or ip_obj.is_reserved
-            or str(ip_obj) == "169.254.169.254"
-        ):
-            raise SecurityError(f"SSRF Protection: IP '{ip_obj}' is in a private, loopback, or cloud-metadata range.")
-    except ValueError:
-        # Not a raw IP literal; resolve DNS to check target IP address
-        try:
-            addr_info = socket.getaddrinfo(hostname, None, socket.AF_UNSPEC, socket.SOCK_STREAM)
-            for item in addr_info:
-                ip_str = item[4][0]
-                resolved_ip = ipaddress.ip_address(ip_str)
-                if (
-                    resolved_ip.is_private
-                    or resolved_ip.is_loopback
-                    or resolved_ip.is_link_local
-                    or resolved_ip.is_multicast
-                    or resolved_ip.is_reserved
-                    or str(resolved_ip) == "169.254.169.254"
-                ):
-                    raise SecurityError(f"SSRF Protection: Host '{hostname}' resolved to private/metadata IP '{resolved_ip}'.")
-        except socket.gaierror as e:
-            raise SecurityError(f"DNS resolution failed for host '{hostname}': {e}")
-
+    port = parsed.port or (443 if scheme == "https" else 80)
+    verify_host_and_resolve_safe_ips(hostname, port)
     return url
+
+
+class SSRFSafeNetworkBackend(AnyIOBackend):
+    """Network backend enforcing transport-level DNS validation and socket pinning.
+
+    Eliminates TOCTOU DNS rebinding windows by resolving DNS once, verifying that ALL
+    resolved records are safe public IPs, and connecting directly to the validated IP.
+    """
+
+    async def connect_tcp(
+        self,
+        host: str,
+        port: int,
+        timeout: float | None = None,
+        local_address: str | None = None,
+        socket_options: Iterable[SOCKET_OPTION] | None = None,
+    ) -> AnyIOStream:
+        safe_ips = verify_host_and_resolve_safe_ips(host, port)
+        if not safe_ips:
+            raise SecurityError(f"SSRF Protection: No verified safe IPs available for host '{host}'.")
+
+        safe_ip = safe_ips[0]
+
+        if socket_options is None:
+            socket_options = []
+        exc_map = {
+            TimeoutError: ConnectTimeout,
+            OSError: ConnectError,
+            anyio.BrokenResourceError: ConnectError,
+        }
+        with map_exceptions(exc_map):
+            with anyio.fail_after(timeout):
+                stream: anyio.abc.ByteStream = await anyio.connect_tcp(
+                    remote_host=safe_ip,
+                    remote_port=port,
+                    local_host=local_address,
+                )
+                for option in socket_options:
+                    stream._raw_socket.setsockopt(*option)  # type: ignore[attr-defined]
+        return AnyIOStream(stream)
+
+
+class SSRFSafeAsyncTransport(httpx.AsyncHTTPTransport):
+    """AsyncHTTPTransport configured with SSRFSafeNetworkBackend for verified socket pinning."""
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self._pool = httpcore.AsyncConnectionPool(
+            ssl_context=self._pool._ssl_context,
+            max_connections=self._pool._max_connections,
+            max_keepalive_connections=self._pool._max_keepalive_connections,
+            keepalive_expiry=self._pool._keepalive_expiry,
+            http1=self._pool._http1,
+            http2=self._pool._http2,
+            retries=self._pool._retries,
+            local_address=self._pool._local_address,
+            uds=self._pool._uds,
+            network_backend=SSRFSafeNetworkBackend(),
+            socket_options=self._pool._socket_options,
+        )
 
 
 async def safe_fetch_url(
@@ -236,17 +324,12 @@ async def safe_fetch_url(
     max_redirects: int = 3,
     headers: dict[str, str] | None = None,
 ) -> Any:
-    """Fetches an external URL securely with strict SSRF validation at every redirect hop."""
-    import urllib.parse
-
-    import httpx
-
-    from promptiq.core.exceptions import SecurityError
-
+    """Fetches an external URL securely with strict SSRF validation at every redirect hop and transport-level DNS pinning."""
     current_url = validate_and_sanitize_url(url)
     redirect_count = 0
+    transport = SSRFSafeAsyncTransport(verify=True)
 
-    async with httpx.AsyncClient(timeout=timeout, follow_redirects=False) as client:
+    async with httpx.AsyncClient(transport=transport, timeout=timeout, follow_redirects=False) as client:
         while True:
             resp = await client.get(current_url, headers=headers)
             if resp.status_code in (301, 302, 303, 307, 308):

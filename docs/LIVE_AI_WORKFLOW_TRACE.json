@@ -1,0 +1,135 @@
+{
+  "workflow_id": "6ccb8af29260a09a1813caf628f7a44a",
+  "execution_mode": "mock",
+  "timestamp": "2026-11-21T22:11:39.277628+00:00",
+  "total_duration_ms": 125.11,
+  "credentials_present": false,
+  "final_status": "COMPLETED_MOCK_VERIFIED",
+  "project_id": "cedc8246-d5dc-41d5-8c28-23f446cbcac9",
+  "checkpoint_id": "1c0b1acb-5002-47c2-bc2d-185e38f32473",
+  "steps": [
+    {
+      "step_number": 1,
+      "name": "User Request Intake",
+      "status": "COMPLETED",
+      "project_id": "cedc8246-d5dc-41d5-8c28-23f446cbcac9",
+      "user_id": "555aee39-b2f6-4971-9425-50271a4ae855",
+      "prompt_length": 891,
+      "latency_ms": 61.95
+    },
+    {
+      "step_number": 2,
+      "name": "Adaptive Discovery",
+      "status": "COMPLETED",
+      "session_id": "07332bbe-1aab-405c-8702-08716c00eea2",
+      "depth": "guided",
+      "current_stage": "task_details",
+      "missing_info_count": 3,
+      "next_questions_count": 3,
+      "latency_ms": 12.61
+    },
+    {
+      "step_number": 3,
+      "name": "Project Constitution",
+      "status": "COMPLETED",
+      "constitution_id": "87777f12-fece-4657-ab26-adaaa357bf9d",
+      "version": 2,
+      "approval_status": "approved",
+      "requirements_count": 3,
+      "latency_ms": 13.73
+    },
+    {
+      "step_number": 4,
+      "name": "Typed PPS Generation",
+      "status": "COMPLETED",
+      "spec_version": "1.0.0",
+      "primary_objective": "Autonomous incident triage engine",
+      "requirements_count": 3,
+      "constraints_count": 3,
+      "latency_ms": 0.06
+    },
+    {
+      "step_number": 5,
+      "name": "Target-Native Compilation",
+      "status": "COMPLETED",
+      "target": "google-antigravity",
+      "package_id": "5da2a67a-c220-4e81-9710-d77b4e20fe73",
+      "files_compiled": [
+        "plugin.json",
+        "AGENTS.md",
+        "skills/implementation/SKILL.md",
+        "rules/AGENTS.md",
+        "rules/project_invariants.md",
+        "mcp_config.json",
+        "README.md"
+      ],
+      "system_instruction_chars": 875,
+      "latency_ms": 12.2
+    },
+    {
+      "step_number": 6,
+      "name": "Hosted Provider Generation (GPT-OSS 120B)",
+      "status": "VERIFIED",
+      "model_id": "openai/gpt-oss-120b",
+      "provider": "mock",
+      "request_id": "mock_req_gen",
+      "http_status": 200,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "total_tokens": 76,
+      "latency_ms": 0.0,
+      "rate_limit_headers": null
+    },
+    {
+      "step_number": 7,
+      "name": "Independent Critic Review (GPT-OSS 20B)",
+      "status": "VERIFIED",
+      "model_id": "openai/gpt-oss-20b",
+      "provider": "mock",
+      "request_id": "mock_req_crit",
+      "http_status": 200,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "total_tokens": 76,
+      "latency_ms": 0.0,
+      "rate_limit_headers": null
+    },
+    {
+      "step_number": 8,
+      "name": "Deterministic Finding Verification",
+      "status": "VERIFIED",
+      "resolved_count": 2,
+      "unresolved_count": 0,
+      "rejected_count": 0,
+      "latency_ms": 0.18
+    },
+    {
+      "step_number": 9,
+      "name": "Specialist Revision (GPT-OSS 120B)",
+      "status": "VERIFIED",
+      "model_id": "openai/gpt-oss-120b",
+      "provider": "mock",
+      "request_id": "mock_req_rev",
+      "http_status": 200,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "total_tokens": 76,
+      "latency_ms": 0.0,
+      "rate_limit_headers": null
+    },
+    {
+      "step_number": 10,
+      "name": "Deterministic Invariant Verification",
+      "status": "VERIFIED",
+      "frontend_violations_found": [],
+      "character_count": 305,
+      "sha256_hash": "b47001b76a98da4adfdf8558e0a10d37562f34f28a2c200ff60a31a5a403fc8a",
+      "latency_ms": 0.01
+    }
+  ],
+  "candidate_artifact": "# TARGET INSTRUCTIONS\n\n## MISSION\nDeliver the requested requirements with verifiable correctness.\n\n## CONTEXT & RULES\n- Strict provenance enforced.\n- Zero-price execution only.\n\nBased on user intent: '# AGENTS WORKSPACE INSTRUCTIONS\n\n## PRIMARY OBJECTIVE\nAutonomous incident triage engine\n\n## CONFIRME...'",
+  "critic_review": "# TARGET INSTRUCTIONS\n\n## MISSION\nDeliver the requested requirements with verifiable correctness.\n\n## CONTEXT & RULES\n- Strict provenance enforced.\n- Zero-price execution only.\n\nBased on user intent: 'You are the PromptIQ Adversarial Critic and Prompt Autopsy Specialist. Conduct rigorous, unsparing r...'",
+  "revised_artifact": "# TARGET INSTRUCTIONS\n\n## MISSION\nDeliver the requested requirements with verifiable correctness.\n\n## CONTEXT & RULES\n- Strict provenance enforced.\n- Zero-price execution only.\n\nBased on user intent: 'You are the PromptIQ Prompt Architecture Specialist. Structure instruction hierarchies, engineer tar...'",
+  "compiled_system_instruction": "# AGENTS WORKSPACE INSTRUCTIONS\n\n## PRIMARY OBJECTIVE\nAutonomous incident triage engine\n\n## CONFIRMED REQUIREMENTS\n- [REQ-INCIDENT-001] (P0 - user_provided): Engine must correlate Prometheus metrics and OpenTelemetry traces in real time.\n- [REQ-INCIDENT-002] (P0 - user_provided): Strict zero-frontend invariant: backend engine only.\n- [REQ-INCIDENT-003] (P0 - user_provided): Immutable cryptographic audit ledger for all incident alerts and triage decisions.\n\n## SCOPE EXCLUSIONS\n- STRICTLY NO WEBSITE FRONTEND: Headless daemon only.\n- React\n- Next.js\n- HTML\n- CSS\n\n## WORKFLOW PHASES\n1. **Context & Requirements Alignment**: Verify understanding of all requirements\n2. **Architecture & Scaffolding**: Establish clean modular boundaries\n3. **Implementation & Testing**: Deliver verified, tested code\n4. **Verification & Review**: Run automated checks and independent review\n",
+  "final_verified_hash": "b47001b76a98da4adfdf8558e0a10d37562f34f28a2c200ff60a31a5a403fc8a"
+}
