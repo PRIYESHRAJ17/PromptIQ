@@ -88,7 +88,13 @@ class GroqInferenceAdapter(BaseInferenceAdapter):
                 }
 
                 # Inspect Groq rate-limit headers (RPM/RPD/TPM/TPD and retry-after)
-                governor.inspect_response_headers(self.provider_name, model_to_use, resp.headers, resp.status_code)
+                governor.inspect_response_headers(
+                    self.provider_name,
+                    model_to_use,
+                    resp.headers,
+                    resp.status_code,
+                    response_timestamp=response_time,
+                )
 
                 if resp.status_code == 429:
                     raw_retry_after = resp.headers.get("retry-after")
@@ -121,7 +127,12 @@ class GroqInferenceAdapter(BaseInferenceAdapter):
                 tokens_used = usage.get("total_tokens", len(content) // 4)
                 prompt_tokens = usage.get("prompt_tokens", 0)
                 completion_tokens = usage.get("completion_tokens", 0)
-                governor.record_model_usage(model_to_use, tokens_used)
+                governor.record_model_usage(
+                    model_to_use,
+                    tokens_used,
+                    prompt_tokens=prompt_tokens,
+                    completion_tokens=completion_tokens,
+                )
 
                 structured_data = None
                 if request.response_schema:

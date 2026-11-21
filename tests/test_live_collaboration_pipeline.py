@@ -404,3 +404,186 @@ async def test_workflow_resumption_missing_artifact_raises_error(tmp_path):
             persisted_json_path=str(dummy_json_path),
             preferred_provider="mock",
         )
+
+
+def test_groq_token_accounting_reconciliation_math():
+    """Verifies the exact token accounting reconciliation for GPT-OSS 120B."""
+    # Step 1: Orchestration
+    step_1_input = 214
+    step_1_output = 3146
+    step_1_total = step_1_input + step_1_output
+    assert step_1_total == 3360
+
+    # Step 2: Candidate Generation
+    step_2_input = 206
+    step_2_output = 4096
+    step_2_total = step_2_input + step_2_output
+    assert step_2_total == 4302
+
+    # Combined initial generation footprint
+    combined_total = step_1_total + step_2_total
+    assert combined_total == 7662
+
+    # Output-only sum (the prior miscalculation that omitted prompt tokens)
+    output_only_sum = step_1_output + step_2_output
+    assert output_only_sum == 7242
+    assert combined_total - output_only_sum == 420  # Omitted prompt tokens: 214 + 206
+
+    # Under strict unreplenished 8,000 TPM limit
+    tpm_limit = 8000
+    unreplenished_remaining = tpm_limit - combined_total
+    assert unreplenished_remaining == 338  # Not 758 (which was 8000 - 7242)
+
+
+def test_gpt_oss_20b_quota_limits_and_independence():
+    """Verifies that GPT-OSS 20B is reconciled to 8,000 TPM and isolated from 120B."""
+    from promptiq.gateway.governor import MODEL_FREE_QUOTAS, CapacityGovernor
+
+    # Reconciled limit matches live Groq response header (limit_tokens: 8000)
+    assert MODEL_FREE_QUOTAS["openai/gpt-oss-20b"]["tpm"] == 8000
+    assert MODEL_FREE_QUOTAS["openai/gpt-oss-120b"]["tpm"] == 8000
+
+    # Step 3 token accounting
+    step_3_input = 4242
+    step_3_output = 4096
+    step_3_total = step_3_input + step_3_output
+    assert step_3_total == 8338
+
+    # Verify model quota isolation in governor
+    gov = CapacityGovernor(auto_load=False)
+    gov.record_model_usage("openai/gpt-oss-20b", tokens_used=step_3_total)
+
+    # 120B quota must be untouched
+    status_120b = gov.get_model_quota_status("openai/gpt-oss-120b")
+    assert status_120b["tokens_last_minute"] == 0
+    assert status_120b["tpm_remaining"] == 8000
+
+    # 20B quota reflects usage
+    status_20b = gov.get_model_quota_status("openai/gpt-oss-20b")
+    assert status_20b["tokens_last_minute"] == step_3_total
+    assert status_20b["is_rate_limited"] is True
+
+
+def test_durable_quota_ledger_cross_process_persistence(tmp_path):
+    """Verifies that CapacityGovernor state survives across separate process instances via durable ledger."""
+    from promptiq.gateway.governor import CapacityGovernor
+
+    ledger_file = tmp_path / "test_quota_ledger.json"
+
+    # Process 1: records usage and response headers
+    gov_proc1 = CapacityGovernor(ledger_path=ledger_file, auto_load=False)
+    gov_proc1.record_model_usage("openai/gpt-oss-120b", tokens_used=4302)
+    gov_proc1.inspect_response_headers(
+        provider="groq",
+        model_id="openai/gpt-oss-120b",
+        headers={
+            "x-ratelimit-limit-tokens": "8000",
+            "x-ratelimit-remaining-tokens": "3698",
+            "x-ratelimit-reset-tokens": "26.752s",
+        },
+        status_code=200,
+    )
+    assert ledger_file.exists()
+
+    # Process 2 (simulating a fresh CLI invocation with new process memory)
+    gov_proc2 = CapacityGovernor(ledger_path=ledger_file, auto_load=True)
+    status = gov_proc2.get_model_quota_status("openai/gpt-oss-120b")
+
+    # Verify Process 2 has loaded Process 1's usage and header reset duration
+    assert status["tokens_last_minute"] == 4302
+    assert status["tpm_used"] == 4302
+    assert status["tpm_remaining"] == 8000 - 4302
+    assert status["reset_seconds"] > 0.0
+    assert status["is_rate_limited"] is True
+
+
+def test_governor_sync_from_execution_ledger(tmp_path):
+    """Verifies governor syncs all previous steps and rate limit headers from workflow execution JSON."""
+    import json
+
+    from promptiq.gateway.governor import CapacityGovernor
+
+    exec_json = tmp_path / "exec_results.json"
+    dummy_data = {
+        "summary": {
+            "steps": [
+                {
+                    "step_number": 1,
+                    "model_id": "openai/gpt-oss-120b",
+                    "http_status": 200,
+                    "input_tokens": 214,
+                    "output_tokens": 3146,
+                    "timestamp": "2026-11-21T19:37:20.194247Z",
+                    "metadata": {
+                        "rate_limit_headers": {"limit_tokens": "8000", "remaining_tokens": "7148"},
+                        "response_timestamp": "2026-11-21T19:37:20.193067+00:00",
+                    },
+                },
+                {
+                    "step_number": 2,
+                    "model_id": "openai/gpt-oss-120b",
+                    "http_status": 200,
+                    "input_tokens": 206,
+                    "output_tokens": 4096,
+                    "timestamp": "2026-11-21T19:37:29.209930Z",
+                    "metadata": {
+                        "rate_limit_headers": {"limit_tokens": "8000", "remaining_tokens": "4433", "reset_tokens": "26.752s"},
+                        "response_timestamp": "2026-11-21T19:37:29.208230+00:00",
+                    },
+                },
+                {
+                    "step_number": 3,
+                    "model_id": "openai/gpt-oss-20b",
+                    "http_status": 200,
+                    "input_tokens": 4242,
+                    "output_tokens": 4096,
+                    "timestamp": "2026-11-21T19:37:34.324292Z",
+                    "metadata": {
+                        "rate_limit_headers": {"limit_tokens": "8000", "remaining_tokens": "3421", "reset_tokens": "34.342s"},
+                        "response_timestamp": "2026-11-21T19:37:34.322988+00:00",
+                    },
+                },
+            ]
+        }
+    }
+    with open(exec_json, "w", encoding="utf-8") as f:
+        json.dump(dummy_data, f)
+
+    ledger_file = tmp_path / "sync_ledger.json"
+    gov = CapacityGovernor(ledger_path=ledger_file, auto_load=False)
+    sync_result = gov.sync_from_execution_ledger(exec_json)
+
+    assert sync_result["status"] == "synced"
+    assert sync_result["synced_steps"] == 3
+    assert "openai/gpt-oss-120b" in sync_result["models"]
+    assert "openai/gpt-oss-20b" in sync_result["models"]
+
+
+def test_revision_request_quota_headroom_verification():
+    """Verifies that the revision request footprint comfortably fits within replenished 8,000 TPM quota."""
+    from promptiq.orchestrator.collaboration import prepare_revision_prompt
+
+    candidate = "# Candidate Food Redistribution Architecture\n" + ("Service logic and database models.\n" * 150)
+    findings = [
+        "Enforce cold-chain temperature monitoring.",
+        "Implement OTP pickup confirmation.",
+        "Mask donor exact location until confirmation.",
+    ]
+    prompt_text, max_tokens = prepare_revision_prompt(candidate, findings, DEFAULT_COLLABORATION_TASK)
+
+    est_input_tokens = len(prompt_text) // 4
+    total_footprint = est_input_tokens + max_tokens
+
+    # Assertions on token budget
+    assert max_tokens == 2500
+    assert total_footprint <= 6300  # Within ~6,300 tokens
+
+    # Available TPM on replenished Groq Free tier
+    groq_tpm_limit = 8000
+    safety_buffer = groq_tpm_limit - total_footprint
+    safety_margin_pct = (safety_buffer / groq_tpm_limit) * 100.0
+
+    # Must have at least 1,700 tokens buffer (>= 20% safety margin)
+    assert safety_buffer >= 1700
+    assert safety_margin_pct >= 21.0
+

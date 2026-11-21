@@ -512,7 +512,7 @@ class MultiModelCollaborationPipeline:
 
             # Preflight token budget check against governor
             quota_status = governor.get_model_quota_status(gen_model.model_id)
-            if quota_status["tpm_remaining"] < est_total_tokens and quota_status["is_rate_limited"]:
+            if quota_status["tpm_remaining"] < est_total_tokens and (quota_status["is_rate_limited"] or quota_status["reset_seconds"] > 0):
                 revision_rate_limited = True
                 reset_wait = max(1, int(quota_status["reset_seconds"] or 60))
                 logger.warning(
@@ -862,9 +862,11 @@ class MultiModelCollaborationPipeline:
 
         # Check model and quota
         gen_model_id = summary.get("generator_model", "openai/gpt-oss-120b")
+        # Ensure governor is synchronized with the persisted workflow execution ledger across separate CLI processes
+        governor.sync_from_execution_ledger(p_path)
         quota_status = governor.get_model_quota_status(gen_model_id)
 
-        if quota_status["tpm_remaining"] < est_total_tokens and quota_status["is_rate_limited"]:
+        if quota_status["tpm_remaining"] < est_total_tokens and (quota_status["is_rate_limited"] or quota_status["reset_seconds"] > 0):
             reset_wait = max(1, int(quota_status["reset_seconds"] or 60))
             raise CapacityExhaustedError(
                 f"Cannot resume: Model '{gen_model_id}' requires {est_total_tokens} tokens, but only {quota_status['tpm_remaining']} remain in window. Reset in {reset_wait}s.",
