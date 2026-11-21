@@ -9,17 +9,19 @@
 
 ## 1. Verified Free-Plan Specifications for Neon Postgres
 
-To replace outdated figures, we verified the current official free-tier parameters for Neon Serverless Postgres:
+To replace outdated figures, we verified the current official free-tier parameters for Neon Serverless Postgres (audited 2026-11-22):
 
 | Metric / Parameter | Official Free Tier Allowance | Operational Impact for PromptIQ | Risk Level |
 | :--- | :--- | :--- | :---: |
-| **Storage Capacity** | **0.5 GiB (512 MB)** per project | Stores ~15,000 Project Constitutions and versioned snapshots | **LOW** (Zero auto-charges; refuses writes at limit) |
-| **Compute Allowance** | **190 Compute Unit-hours (CU-hrs) / mo** | ~6.3 CU-hours per day. At 0.25 CU minimum compute, supports up to 25 hours of active compute per day | **LOW** (Sufficient for high-volume intermittent usage) |
+| **Storage Capacity** | **1 GB** per project (root + child branches) | Stores ~30,000 Project Constitutions and versioned snapshots | **LOW** (Zero auto-charges; refuses writes at limit) |
+| **Compute Allowance** | **100 Compute Unit-hours (CU-hrs) / mo** | At 1 CU baseline, supports 100 active hours per month | **LOW** (Scale-to-zero mandatory for monthly survival) |
 | **Compute Auto-Suspend** | **Suspends after 5 minutes of inactivity** | Conserves daily CU-hours when traffic is idle | **MANAGED** (Handled via client connection pool) |
-| **Cold-Resume Latency** | **400 to 600 milliseconds** | Time to resume compute on new incoming connection | **ACCEPTABLE** (Transparent to end users) |
-| **Active Projects / Branches** | 1 Project, 10 Branches | Main branch for production, branches for testing | **OPTIMAL** |
+| **Cold-Resume Latency** | **500 ms to 2.5 seconds** | Time to resume compute on new incoming connection | **ACCEPTABLE** (Transparent to end users) |
+| **Active Projects / Branches** | Up to 100 projects, 10 branches per project | Main branch for production, branches for testing | **OPTIMAL** |
+| **Egress / Data Transfer** | **5 GB per project per month** | High allowance for JSON/text prompt exchanges | **OPTIMAL** |
 | **Credit Card Requirement**| **NONE** (Cardless registration) | Zero risk of unapproved billing or credit card charges | **ZERO FINANCIAL RISK** |
 | **Overage Hard Stop** | **Hard Stop**: Refuses new connections when CU-hours or storage quota is exhausted | Guaranteed financial safety invariant | **VERIFIED HARD STOP** |
+| **Verification State** | **IMPLEMENTED_NOT_LIVE_VERIFIED** | Code supports asyncpg; current tests use SQLite async in memory | **NO LIVE POSTGRES RUN** |
 
 ---
 

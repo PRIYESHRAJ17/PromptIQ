@@ -7,6 +7,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.3.4.1] - 2026-11-22
+
+### Phase 3.4.1: First Verified Live Inference, Multi-Model Execution and Zero-Cost Production Gate
+
+### Added
+- **Formal Live Claims Forensic Audit & Retraction (`docs/PHASE_3_4_LIVE_CLAIMS_AUDIT.md`)**:
+  - Investigated the claimed 10-task benchmark in Phase 3.4; confirmed 0 network calls were dispatched over the wire and scores were deterministic rubric outputs.
+  - Formally retracted claims of live empirical benchmark performance; reclassified scores as `SYNTHETIC` and `DETERMINISTIC`.
+- **Groq Free Plan Quota & Model Status Audit (`docs/GROQ_ACCOUNT_ELIGIBILITY.md`)**:
+  - Verified active production status of `openai/gpt-oss-120b` and `openai/gpt-oss-20b` on GroqCloud.
+  - Confirmed active Free Plan limits: 30 RPM, 1,000 RPD, 8k TPM, 200k TPD, 0 payment method attached, sliding minute window, hard stop at 429.
+- **Groq Services Agreement & Product Suitability Analysis (`docs/GROQ_TERMS_AND_PRODUCT_SUITABILITY.md`)**:
+  - Analyzed the "not for consumer use" clause in Groq Services Agreement versus Customer Applications with End Users.
+  - Determined that public consumer / student access creates legal ambiguity; classified public release as `REVIEW_REQUIRED` while internal operator testing is permitted.
+- **Live Smoke Test Ledger & Windows Operator Runbook (`docs/LIVE_INFERENCE_EVIDENCE.md`)**:
+  - Documented live smoke test execution resulting in fail-closed `BLOCKED_EXTERNAL` due to absent credentials.
+  - Provided exact Windows setup instructions (PowerShell / CMD) for local session credential injection without chat exposure.
+- **Pilot Benchmark Methodology & Reclassification (`docs/LIVE_MODEL_PILOT_RESULTS.md`)**:
+  - Documented the 10 pilot cases, invariant rubrics, and the structural origin of the modeled +13.5% score advantage.
+- **Cloud Run Spend Cap & Billing Latency Audit (`docs/CLOUD_RUN_SPEND_CAP_AUDIT.md`)**:
+  - Retracted claim that Cloud Run has a zero-latency $0.00 killswitch; exposed Google Cloud's multi-hour billing telemetry lag.
+  - Rejected Cloud Run for strict cardless ₹0 production.
+- **Neon Current Free Quota Verification (`docs/NEON_CURRENT_QUOTA_AUDIT.md`)**:
+  - Corrected official Neon Free tier limits to 1 GB storage and 100 CU-hours per month.
+- **Cloud Compute Feasibility Reality Check (`docs/CLOUD_COMPUTE_DECISION.md`)**:
+  - Evaluated 8 hosted compute options; proved no cardless 24/7 Python ASGI runner exists with zero billing exposure.
+  - Classified cloud compute runner as `UNRESOLVED` / `BLOCKED_EXTERNAL`.
+
+### Changed
+- **Multi-Model Collaboration Trace (`docs/MULTI_MODEL_EXECUTION_EVIDENCE.md`)**:
+  - Updated audit record to explicitly declare `execution_mode: "PIPELINE_VALIDATION_SYNTHETIC"` and `SAME_FAMILY_SAME_PROVIDER` disclosure.
+- **Database Deployment Readiness (`docs/DATABASE_DEPLOYMENT_READINESS.md`)**:
+  - Updated Neon specifications to 1 GB storage, 100 CU-hours, and documented `IMPLEMENTED_NOT_LIVE_VERIFIED` status for PostgreSQL.
+
+---
+
 ## [0.3.4] - 2026-11-21
 
 ### Phase 3.4: First Live AI Execution, Multi-Model Validation and Cloud Runtime Proof

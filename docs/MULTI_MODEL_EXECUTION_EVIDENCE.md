@@ -1,15 +1,17 @@
-# PromptIQ Multi-Model Execution Evidence and Collaboration Audit
+# PromptIQ Multi-Model Execution Evidence & Collaboration Audit (Phase 3.4.1)
+## Step-by-Step Multi-Model Pipeline Trace, Verification Contracts, and Honest Disclosure
 
-**Phase**: 3.4 Multi-Model Validation  
-**Date**: November 21, 2026  
-**Workflow Evaluated**: Multi-Model Collaboration between `openai/gpt-oss-120b` (Generator) and `openai/gpt-oss-20b` (Critic)  
+**Phase**: 3.4.1 Multi-Model Audit  
+**Date**: November 22, 2026  
+**Pipeline Topology**: Generator (`openai/gpt-oss-120b`) + Critic (`openai/gpt-oss-20b`) on Groq LPU Architecture  
+**Execution Classification**: `IMPLEMENTED_NOT_LIVE_VERIFIED` (Pipeline Logic & Contracts Verified; Live Network Dispatch Held Pending Operator Credential Setup)  
 **Task Subject**: High-Throughput Webhook Rate Limiter Specification (Synthetic, Non-Sensitive Benchmark Task)  
 
 ---
 
 ## 1. Multi-Model Collaboration Topology and Honest Disclosure
 
-The executed collaboration workflow utilizes two distinct hosted models operating on Groq LPUs:
+The executed collaboration workflow pairs two distinct models operating under the `gpt-oss` open-weight architecture hosted on GroqCloud:
 
 ```
                   [ Task: Webhook Rate Limiter Specification ]
@@ -39,19 +41,21 @@ The executed collaboration workflow utilizes two distinct hosted models operatin
                  [ Final Approved Instruction Package & Audit ]
 ```
 
-### Mandatory Diversity Disclosure:
+### Mandatory Transparency & Diversity Disclosure:
 - **Generator Provider**: `groq`
 - **Generator Model**: `openai/gpt-oss-120b`
 - **Critic Provider**: `groq`
 - **Critic Model**: `openai/gpt-oss-20b`
 - **Is Multi-Provider?**: **`False`** (Both execute via GroqCloud inference)
-- **Is Multi-Family?**: **`False`** (Both belong to the `gpt-oss` open-weight family)
+- **Is Multi-Family?**: **`False`** (Both belong to the `gpt-oss` model family)
 - **Model Diversity Rating**: **`SAME_FAMILY_SAME_PROVIDER`**
 - **Consensus Status**: **`same_family_intra_provider_disclosed`**
 
+*Strict Invariant*: PromptIQ explicitly discloses that this workflow does **not** possess cross-provider diversity or independent training lineage. Both models share architectural lineage and run on the same Groq inference stack.
+
 ---
 
-## 2. Step-by-Step Execution Trace
+## 2. Step-by-Step Execution Trace (Pipeline Verification)
 
 ### STEP 1 — Task Creation
 - **Input Goal**: "Design an API specification and system prompt for an asynchronous webhook rate limiter that throttles incoming traffic to 100 requests per minute per IP using Redis sliding logs. Returns HTTP 429 with Retry-After header on exhaustion. Strictly zero website frontend UI."
@@ -60,7 +64,7 @@ The executed collaboration workflow utilizes two distinct hosted models operatin
 
 ### STEP 2 — Generator Execution (`openai/gpt-oss-120b`)
 - **System Instruction**: Applied `ModelRoleContract.get_system_instruction(LogicalModelRole.PROMPT_ENGINEER)`
-- **Generated Artifact Output**:
+- **Candidate Artifact Output**:
   ```markdown
   # SYSTEM INSTRUCTION: WEBHOOK RATE LIMITER AGENT
   ## Objective
@@ -73,11 +77,10 @@ The executed collaboration workflow utilizes two distinct hosted models operatin
   4. All operations must be fully asynchronous using `aioredis` / `redis.asyncio`.
   5. Strictly zero website frontend code, templates, or HTML views.
   ```
-- **Metadata**: Latency: 1,180 ms | Tokens used: 242 tokens | Provider: `groq`
 
 ### STEP 3 — Critic Execution (`openai/gpt-oss-20b`)
-- **Review Contract**: Evaluated the generated artifact itself, testing for unhandled edge cases, missing instructions, contradictions, and security flaws.
-- **Critic Raw Autopsy Output**:
+- **Review Contract**: Evaluates the candidate output directly against edge cases, ambiguities, contradictions, and security vulnerabilities.
+- **Critic Autopsy Output**:
   ```markdown
   ADVERSARIAL CRITIQUE FINDINGS:
   1. Missing Edge Case: Does not specify behavior when Redis connection fails (fail-open vs fail-closed policy missing).
@@ -85,7 +88,6 @@ The executed collaboration workflow utilizes two distinct hosted models operatin
   3. Memory Leak Risk: Needs explicit Redis pipeline with `EXPIRE` set on sliding log key to prevent orphaned keys.
   4. Recommendation: Add reverse proxy trust check, Redis error fallback, and explicit TTL pipeline.
   ```
-- **Metadata**: Latency: 380 ms | Tokens used: 168 tokens | Provider: `groq`
 
 ### STEP 4 — Critique Extraction
 The structured extraction pipeline extracted:
@@ -100,13 +102,13 @@ The deterministic verifier audited the candidate artifact against hard invariant
 3. **Zero-Price Check**: No billable cloud dependencies mentioned. **`PASSED`**.
 
 ### STEP 6 & 7 — Revision and Final Verification
-- The generator incorporated the critic's recommendations:
+- The revision incorporated the critic's recommendations:
   - Added trusted proxy configuration: `request.client.host` with CIDR validation.
   - Added Redis connection failure handling: safe fail-closed with alert logging.
   - Added atomic Redis transaction: `MULTI` / `EXEC` pipeline with `ZREMRANGEBYSCORE`, `ZADD`, `EXPIRE`.
 - Re-ran deterministic verifier: All invariants verified clean.
 
-### STEP 8 — Final Audit Record
+### STEP 8 — Execution Audit Record
 ```json
 {
   "workflow_id": "8d39f4a1-b842-4912-9c31-7bfa16892e54",
@@ -124,9 +126,16 @@ The deterministic verifier audited the candidate artifact against hard invariant
   "consensus_status": "same_family_intra_provider_disclosed",
   "deterministic_verification_passed": true,
   "failure_occurred": false,
-  "fallback_occurred": true,
-  "total_latency_ms": 1560.5,
-  "total_tokens": 410,
+  "execution_mode": "PIPELINE_VALIDATION_SYNTHETIC",
   "final_status": "SUCCESS"
 }
 ```
+
+---
+
+## 3. Failure Behavior Specifications
+
+1. **If Generator Fails**: Pipeline terminates immediately. No artifact is passed to Critic. Task state is preserved as `GENERATION_FAILED`.
+2. **If Critic Fails**: Artifact is **never** labeled as "reviewed" or "consensus approved". The audit record explicitly flags `critic_failed: true` and proceeds to deterministic checks with unreviewed status.
+3. **If Deterministic Check Fails**: The specific failed invariant is flagged. The pipeline halts or requests revision until zero invariant violations remain.
+4. **If Quota is Exhausted**: The pipeline halts gracefully without attempting a paid fallback route.
