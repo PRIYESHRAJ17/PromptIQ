@@ -51,7 +51,11 @@ class CapacityGovernor:
         self._dedup_cache: dict[str, tuple[float, Any]] = {}
         self._dedup_window_seconds = 5.0
 
+        # In-flight capacity reservations: token -> {model_id, tokens, created_at, expires_at}
+        self._reservations: dict[str, dict[str, Any]] = {}
+
         # Durable quota ledger path and last provider headers
+
         self._ledger_path: Path = Path(ledger_path) if ledger_path else DEFAULT_QUOTA_LEDGER_PATH
         self._auto_load: bool = auto_load
         self._last_provider_headers: dict[str, dict[str, Any]] = {}
@@ -367,6 +371,11 @@ class CapacityGovernor:
         if self._auto_load and (not settings.is_test or str(self._ledger_path) != str(DEFAULT_QUOTA_LEDGER_PATH)):
             self.load_durable_state()
 
+        self.purge_expired_reservations()
+        reserved_tokens = sum(
+            r["tokens"] for r in self._reservations.values() if r["model_id"] == model_id
+        )
+
         quota = MODEL_FREE_QUOTAS.get(model_id, {"rpm": 30, "rpd": 1000, "tpm": 8000, "tpd": 100000})
         now = datetime.now(UTC).timestamp()
         minute_cutoff = now - 60.0
@@ -387,7 +396,7 @@ class CapacityGovernor:
         tpd_limit = quota.get("tpd", 100000)
         rpd_limit = quota.get("rpd", 1000)
 
-        tpm_remaining = max(0, tpm_limit - tok_sum_min)
+        tpm_remaining = max(0, tpm_limit - tok_sum_min - reserved_tokens)
         rpm_remaining = max(0, rpm_limit - req_count_min)
 
         reset_seconds = 0.0
@@ -422,7 +431,7 @@ class CapacityGovernor:
                     reset_seconds = max(reset_seconds, time_left)
 
         is_rate_limited = (
-            tok_sum_min >= tpm_limit
+            (tok_sum_min + reserved_tokens) >= tpm_limit
             or req_count_min >= rpm_limit
             or (reset_seconds > 0.0 and tok_sum_min > 0)
         )
@@ -437,6 +446,7 @@ class CapacityGovernor:
             "rpd_limit": rpd_limit,
             "tokens_last_minute": tok_sum_min,
             "tpm_used": tok_sum_min,
+            "reserved_tokens": reserved_tokens,
             "tpm_limit": tpm_limit,
             "tpm_remaining": tpm_remaining,
             "tokens_last_24h": tok_sum_day,
@@ -444,6 +454,75 @@ class CapacityGovernor:
             "reset_seconds": reset_seconds,
             "is_rate_limited": is_rate_limited,
         }
+
+    def purge_expired_reservations(self) -> int:
+        """Purges capacity reservations that have exceeded their TTL."""
+        now = datetime.now(UTC).timestamp()
+        expired = [token for token, res in self._reservations.items() if res["expires_at"] <= now]
+        for token in expired:
+            self._reservations.pop(token, None)
+        return len(expired)
+
+    def reserve_capacity(
+        self,
+        model_id: str,
+        estimated_tokens: int = 1000,
+        ttl_seconds: float = 60.0,
+    ) -> str:
+        """Atomically pre-checks quota including active in-flight reservations and locks capacity.
+
+        Returns a reservation token that MUST be released or reconciled once the provider call finishes.
+        """
+        import uuid
+
+        self.purge_expired_reservations()
+
+        active_reserved = sum(
+            r["tokens"] for r in self._reservations.values() if r["model_id"] == model_id
+        )
+
+        self.check_model_quota(model_id, estimated_tokens=estimated_tokens + active_reserved)
+
+        now = datetime.now(UTC).timestamp()
+        token = f"res_{uuid.uuid4().hex[:12]}"
+        self._reservations[token] = {
+            "token": token,
+            "model_id": model_id,
+            "tokens": estimated_tokens,
+            "created_at": now,
+            "expires_at": now + ttl_seconds,
+        }
+        return token
+
+    def release_reservation(self, token: str) -> bool:
+        """Releases a reserved capacity token without recording usage."""
+        res = self._reservations.pop(token, None)
+        return res is not None
+
+    def reconcile_reservation(
+        self,
+        token: str,
+        actual_tokens: int,
+        http_status: int = 200,
+        provider: str | None = None,
+        response_headers: dict[str, Any] | None = None,
+    ) -> None:
+        """Clears the capacity reservation and records actual consumed tokens if the call succeeded."""
+        res = self._reservations.pop(token, None)
+        model_id = res["model_id"] if res else None
+        if model_id and response_headers and provider:
+            self.inspect_response_headers(
+                provider=provider,
+                model_id=model_id,
+                headers=response_headers,
+                status_code=http_status,
+            )
+        if model_id and http_status == 200 and actual_tokens > 0:
+            self.record_model_usage(
+                model_id=model_id,
+                tokens_used=actual_tokens,
+            )
+
 
     @staticmethod
     def parse_rate_limit_reset_seconds(reset_str: str | None) -> float:

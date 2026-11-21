@@ -97,8 +97,9 @@ CURATED_MODELS: list[dict[str, Any]] = [
         "eligibility_status": "eligible_zero_price",
         "retirement_date": None,
         "eligibility_notes": "Eligible high-volume fast route under GroqCloud free tier. 14,400 RPD, 500,000 TPD.",
-        "rate_limits": {"rpm": 30, "rpd": 14400, "tpm": 6000, "tpd": 500000},
+        "rate_limits": {"rpm": 30, "rpd": 14400, "tpm": 8000, "tpd": 500000},
         "confidence": "provider_documented",
+
         "source_url": "https://console.groq.com/docs/rate-limits",
     },
     {

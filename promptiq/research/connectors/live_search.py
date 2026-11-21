@@ -6,6 +6,7 @@ from typing import Any
 import httpx
 
 from promptiq.core.logging import logger
+from promptiq.core.security import validate_and_sanitize_url
 from promptiq.research.connectors.base import BaseSearchConnector, MockSearchConnector
 
 
@@ -28,6 +29,8 @@ class LiveWebSearchConnector(BaseSearchConnector):
                 f"https://en.wikipedia.org/w/api.php?action=query&list=search"
                 f"&srsearch={encoded_query}&utf8=&format=json&srlimit={max_results}"
             )
+            # Validate target URL against SSRF
+            validate_and_sanitize_url(wiki_api_url)
 
             async with httpx.AsyncClient(timeout=5.0) as client:
                 resp = await client.get(
@@ -45,15 +48,25 @@ class LiveWebSearchConnector(BaseSearchConnector):
                             .replace("</span>", "")
                         )
                         page_slug = urllib.parse.quote(title.replace(" ", "_"))
+                        source_url = f"https://en.wikipedia.org/wiki/{page_slug}"
+                        try:
+                            validate_and_sanitize_url(source_url)
+                        except Exception as url_err:
+                            logger.debug("Skipping unvalidated search result URL '%s': %s", source_url, url_err)
+                            continue
+
+
                         results.append(
                             {
-                                "url": f"https://en.wikipedia.org/wiki/{page_slug}",
+                                "url": source_url,
                                 "title": title,
                                 "publisher": "Wikimedia / Wikipedia Foundation",
                                 "source_type": "independent_encyclopedia",
                                 "publication_date": item.get("timestamp", "")[:10] or "2024-01-01",
                                 "content": clean_snippet or f"Summary of {title}",
                                 "locator": f"Page: {title}",
+                                "provenance": "live_web",
+                                "is_mock": False,
                             }
                         )
 
@@ -66,6 +79,11 @@ class LiveWebSearchConnector(BaseSearchConnector):
 
         # Fallback to mock connector if live query yielded no results or network is offline
         if self.fallback:
-            return await self.fallback.search(query, max_results=max_results)
+            fallback_results = await self.fallback.search(query, max_results=max_results)
+            for res in fallback_results:
+                res["provenance"] = "simulated_mock"
+                res["is_mock"] = True
+            return fallback_results
 
         return []
+

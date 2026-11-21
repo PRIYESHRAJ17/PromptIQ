@@ -8,12 +8,36 @@ from promptiq.core.exceptions import NotFoundError, TenantIsolationError
 from promptiq.eval.test_lab import PromptTestLab
 from promptiq.models.user import User
 from promptiq.schemas.eval import (
+    ComparativeRunResponse,
     EvaluationRunRequest,
     EvaluationRunResponse,
     EvaluationSuiteCreate,
 )
 
 router = APIRouter(prefix="/projects/{project_id}/eval", tags=["Evaluation Lab"])
+
+
+@router.get("/compare", response_model=ComparativeRunResponse)
+async def compare_evaluation_runs(
+    project_id: str,
+    baseline_id: str,
+    candidate_id: str,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Compare two evaluation runs to detect regressions, newly failed cases, and improvements."""
+    try:
+        comparison = await PromptTestLab.compare_runs(
+            db,
+            project_id=project_id,
+            user_id=user.id,
+            baseline_run_id=baseline_id,
+            candidate_run_id=candidate_id,
+        )
+        return comparison
+    except (NotFoundError, TenantIsolationError) as e:
+        raise HTTPException(status_code=e.status_code, detail=e.message)
+
 
 
 @router.post("/suites", status_code=status.HTTP_201_CREATED)

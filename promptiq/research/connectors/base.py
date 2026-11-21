@@ -26,6 +26,8 @@ class MockSearchConnector(BaseSearchConnector):
                 "publication_date": "2024-11-05",
                 "content": "The Model Context Protocol (MCP) standardizes how clients provide context to LLMs, exposing tools, resources, and prompt templates over JSON-RPC.",
                 "locator": "Section 2.1 Protocol Lifecycle",
+                "provenance": "simulated_mock",
+                "is_mock": True,
             },
             {
                 "url": "https://ai.google.dev/gemini-api/docs/models/gemini-v2",
@@ -35,5 +37,8 @@ class MockSearchConnector(BaseSearchConnector):
                 "publication_date": "2024-12-11",
                 "content": "Gemini 2.0 Flash is multimodal with a 1,048,576 token context window and structured JSON output mode. Free tier access is provided with 15 RPM.",
                 "locator": "Pricing & Quotas",
+                "provenance": "simulated_mock",
+                "is_mock": True,
             },
         ][:max_results]
+

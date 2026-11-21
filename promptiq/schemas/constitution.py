@@ -113,3 +113,11 @@ class ConstitutionResponse(BaseModel):
     updated_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class ConstitutionComparisonResponse(BaseModel):
+    project_id: str
+    v1: int
+    v2: int
+    diff: dict[str, Any]
+

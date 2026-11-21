@@ -209,3 +209,117 @@ class ConstitutionService:
         db.add(audit)
         await db.flush()
         return current
+
+    @classmethod
+    async def compare_versions(
+        cls,
+        db: AsyncSession,
+        project_id: str,
+        v1: int,
+        v2: int,
+        user_id: str,
+    ) -> dict[str, Any]:
+        """Calculates granular additions, modifications, and deletions between two historical versions."""
+        rec1 = await cls.get_constitution_by_version(db, project_id, v1, user_id)
+        rec2 = await cls.get_constitution_by_version(db, project_id, v2, user_id)
+        diff = cls.calculate_diff(rec1.snapshot or {}, rec2.snapshot or {})
+        return {
+            "project_id": project_id,
+            "v1": v1,
+            "v2": v2,
+            "diff": diff,
+        }
+
+    @classmethod
+    async def rollback_to_version(
+        cls,
+        db: AsyncSession,
+        project_id: str,
+        target_version: int,
+        user_id: str,
+        surface: str = "api",
+    ) -> ProjectConstitution:
+        """Rolls back the constitution to the state of target_version, producing a new immutable version N+1."""
+        project = await ProjectService.get_project(db, project_id, user_id)
+        current = await cls.get_current_constitution(db, project_id, user_id)
+        target_record = await cls.get_constitution_by_version(db, project_id, target_version, user_id)
+
+        old_state = {
+            "goals": current.goals or [],
+            "requirements": current.requirements or [],
+            "scope": current.scope or {},
+            "ux_specs": current.ux_specs or {},
+            "technical_direction": current.technical_direction or {},
+            "decisions": current.decisions or [],
+            "assumptions": current.assumptions or [],
+            "open_questions": current.open_questions or [],
+        }
+
+        target_state = target_record.snapshot or {}
+        new_goals = target_state.get("goals", [])
+        new_reqs = target_state.get("requirements", [])
+        new_scope = target_state.get("scope", {})
+        new_ux = target_state.get("ux_specs", {})
+        new_tech = target_state.get("technical_direction", {})
+        new_decisions = target_state.get("decisions", [])
+        new_assumptions = target_state.get("assumptions", [])
+        new_questions = target_state.get("open_questions", [])
+
+        new_state = {
+            "goals": new_goals,
+            "requirements": new_reqs,
+            "scope": new_scope,
+            "ux_specs": new_ux,
+            "technical_direction": new_tech,
+            "decisions": new_decisions,
+            "assumptions": new_assumptions,
+            "open_questions": new_questions,
+        }
+
+        diff = cls.calculate_diff(old_state, new_state)
+        new_version_num = current.version + 1
+
+        new_constitution = ProjectConstitution(
+            project_id=project.id,
+            version=new_version_num,
+            status="draft",
+            is_approved=False,
+            goals=new_goals,
+            requirements=new_reqs,
+            scope=new_scope,
+            ux_specs=new_ux,
+            technical_direction=new_tech,
+            decisions=new_decisions,
+            assumptions=new_assumptions,
+            open_questions=new_questions,
+            diff_from_previous=diff,
+        )
+        db.add(new_constitution)
+
+        snapshot_record = ConstitutionVersion(
+            project_id=project.id,
+            version=new_version_num,
+            snapshot=new_state,
+            diff=diff,
+            created_by_user_id=user_id,
+        )
+        db.add(snapshot_record)
+
+        project.current_constitution_version = new_version_num
+
+        audit = AuditEvent(
+            workspace_id=project.workspace_id,
+            project_id=project.id,
+            user_id=user_id,
+            action="constitution.reverted",
+            surface=surface,
+            payload={
+                "target_version": target_version,
+                "new_version": new_version_num,
+                "modified_fields": list(diff.get("modified", {}).keys()),
+            },
+        )
+        db.add(audit)
+        await db.flush()
+        return new_constitution
+

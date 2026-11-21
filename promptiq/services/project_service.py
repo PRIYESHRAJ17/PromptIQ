@@ -1,6 +1,9 @@
 """Project management and tenant isolation service."""
 
-from sqlalchemy import select
+from datetime import UTC, datetime
+from typing import Any
+
+from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from promptiq.core.exceptions import NotFoundError, TenantIsolationError
@@ -153,9 +156,31 @@ class ProjectService:
 
     @classmethod
     async def delete_project(cls, db: AsyncSession, project_id: str, user_id: str, surface: str = "api") -> bool:
-        """Deletes a project after validating tenant boundaries."""
+        """Deletes a project and cleanly cascades through all dependent records after validating tenant boundaries."""
         project = await cls.get_project(db, project_id, user_id)
         workspace_id = project.workspace_id
+
+        # 1. Cleanly delete dependent research jobs & evidence claims
+        from promptiq.models.research import EvidenceClaim, ResearchJob, SourceRecord
+        stmt_res = select(ResearchJob.id).where(ResearchJob.project_id == project.id)
+        res_res = await db.execute(stmt_res)
+        job_ids = list(res_res.scalars().all())
+        if job_ids:
+            await db.execute(delete(EvidenceClaim).where(EvidenceClaim.research_job_id.in_(job_ids)))
+            await db.execute(delete(SourceRecord).where(SourceRecord.research_job_id.in_(job_ids)))
+            await db.execute(delete(ResearchJob).where(ResearchJob.project_id == project.id))
+
+        # 2. Cleanly delete dependent evaluation suites, runs, and failure records
+        from promptiq.models.eval import EvaluationRun, EvaluationSuite, FailureRecord
+        stmt_suite = select(EvaluationSuite.id).where(EvaluationSuite.project_id == project.id)
+        res_suite = await db.execute(stmt_suite)
+        suite_ids = list(res_suite.scalars().all())
+        if suite_ids:
+            await db.execute(delete(EvaluationRun).where(EvaluationRun.suite_id.in_(suite_ids)))
+            await db.execute(delete(EvaluationSuite).where(EvaluationSuite.project_id == project.id))
+
+        await db.execute(delete(FailureRecord).where(FailureRecord.project_id == project.id))
+        await db.execute(delete(ConstitutionVersion).where(ConstitutionVersion.project_id == project.id))
 
         await db.delete(project)
 
@@ -171,3 +196,141 @@ class ProjectService:
         db.add(audit)
         await db.flush()
         return True
+
+    @classmethod
+    async def export_project_data(cls, db: AsyncSession, project_id: str, user_id: str) -> dict[str, Any]:
+        """Gathers all project artifacts, memory, discovery sessions, constitutions, and packages into a single export."""
+        project = await cls.get_project(db, project_id, user_id)
+
+        # 1. Constitutions
+        stmt_const = select(ProjectConstitution).where(ProjectConstitution.project_id == project.id).order_by(ProjectConstitution.version.asc())
+        res_const = await db.execute(stmt_const)
+        constitutions = [
+            {
+                "version": c.version,
+                "status": c.status,
+                "is_approved": c.is_approved,
+                "goals": c.goals,
+                "requirements": c.requirements,
+                "scope": c.scope,
+                "ux_specs": c.ux_specs,
+                "technical_direction": c.technical_direction,
+                "decisions": c.decisions,
+                "assumptions": c.assumptions,
+                "open_questions": c.open_questions,
+                "created_at": c.created_at.isoformat() if c.created_at else None,
+            }
+            for c in res_const.scalars().all()
+        ]
+
+        # 2. Packages
+        from promptiq.models.package import PromptPackage
+        stmt_pkg = select(PromptPackage).where(PromptPackage.project_id == project.id).order_by(PromptPackage.created_at.asc())
+        res_pkg = await db.execute(stmt_pkg)
+        packages = [
+            {
+                "id": p.id,
+                "target_environment": p.target_environment,
+                "output_type": p.output_type,
+                "manifest": p.manifest,
+                "files": p.files,
+                "warnings": p.warnings,
+                "is_validated": p.is_validated,
+                "created_at": p.created_at.isoformat() if p.created_at else None,
+            }
+            for p in res_pkg.scalars().all()
+        ]
+
+        # 3. Discovery Sessions
+        from promptiq.models.discovery import DiscoverySession
+        stmt_disc = select(DiscoverySession).where(DiscoverySession.project_id == project.id).order_by(DiscoverySession.created_at.asc())
+        res_disc = await db.execute(stmt_disc)
+        discovery_sessions = [
+            {
+                "id": d.id,
+                "mode": d.mode,
+                "status": d.status,
+                "completed_turns": d.completed_turns,
+                "identified_contradictions": d.identified_contradictions,
+                "missing_high_impact_info": d.missing_high_impact_info,
+                "created_at": d.created_at.isoformat() if d.created_at else None,
+            }
+            for d in res_disc.scalars().all()
+        ]
+
+        # 4. Research Jobs & Evidence Ledger
+        from promptiq.models.research import EvidenceClaim, ResearchJob, SourceRecord
+        stmt_res = select(ResearchJob).where(ResearchJob.project_id == project.id).order_by(ResearchJob.created_at.asc())
+        res_res = await db.execute(stmt_res)
+        research_jobs = []
+        for rj in res_res.scalars().all():
+            stmt_sources = select(SourceRecord).where(SourceRecord.research_job_id == rj.id)
+            res_s = await db.execute(stmt_sources)
+            sources = [
+                {
+                    "id": s.id,
+                    "url": s.url,
+                    "title": s.title,
+                    "publisher": s.publisher,
+                    "retrieved_at": s.retrieved_at.isoformat() if s.retrieved_at else None,
+                }
+                for s in res_s.scalars().all()
+            ]
+
+            stmt_claims = select(EvidenceClaim).where(EvidenceClaim.research_job_id == rj.id)
+            res_c = await db.execute(stmt_claims)
+            claims = [
+                {
+                    "id": c.id,
+                    "claim_text": c.claim_text,
+                    "support_status": c.support_status,
+                    "confidence_score": c.confidence_score,
+                    "excerpt": c.excerpt,
+                }
+                for c in res_c.scalars().all()
+            ]
+
+            research_jobs.append({
+                "id": rj.id,
+                "query": rj.query,
+                "mode": rj.mode,
+                "status": rj.status,
+                "summary": rj.summary,
+                "sources": sources,
+                "claims": claims,
+                "created_at": rj.created_at.isoformat() if rj.created_at else None,
+            })
+
+        # 5. Checkpoints
+        from promptiq.models.memory import Checkpoint
+        stmt_chk = select(Checkpoint).where(Checkpoint.project_id == project.id).order_by(Checkpoint.created_at.asc())
+        res_chk = await db.execute(stmt_chk)
+        checkpoints = [
+            {
+                "id": chk.id,
+                "name": chk.name,
+                "description": chk.description,
+                "state_snapshot": chk.state_snapshot,
+                "created_at": chk.created_at.isoformat() if chk.created_at else None,
+            }
+            for chk in res_chk.scalars().all()
+        ]
+
+        return {
+            "project": {
+                "id": project.id,
+                "workspace_id": project.workspace_id,
+                "name": project.name,
+                "description": project.description,
+                "current_constitution_version": project.current_constitution_version,
+                "visibility": project.visibility,
+                "created_at": project.created_at.isoformat() if project.created_at else None,
+            },
+            "constitutions": constitutions,
+            "packages": packages,
+            "discovery_sessions": discovery_sessions,
+            "research_jobs": research_jobs,
+            "checkpoints": checkpoints,
+            "exported_at": datetime.now(UTC).isoformat(),
+        }
+

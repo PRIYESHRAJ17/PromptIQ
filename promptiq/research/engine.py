@@ -59,8 +59,10 @@ class ResearchEngine:
         # 3. Search and Retrieve Source Records
         raw_sources = await self.search_connector.search(request.query, max_results=request.max_sources)
 
-        source_records: list[SourceRecord] = []
+        source_records: list[tuple[SourceRecord, str, bool]] = []
         for s in raw_sources:
+            prov = s.get("provenance", "live_web")
+            is_m = s.get("is_mock", False)
             rec = SourceRecord(
                 research_job_id=job.id,
                 url=s["url"],
@@ -73,30 +75,35 @@ class ResearchEngine:
                 is_accessible=True,
             )
             db.add(rec)
-            source_records.append(rec)
+            source_records.append((rec, prov, is_m))
 
         await db.flush()
 
         # 4. Extract Claims via Intelligence Gateway
-        claims: list[EvidenceClaim] = []
-        for s_rec in source_records:
+        claims: list[tuple[EvidenceClaim, str, bool]] = []
+        for s_rec, prov, is_m in source_records:
             matching_raw = next((r for r in raw_sources if r["url"] == s_rec.url), None)
             content_snippet = matching_raw.get("content", "") if matching_raw else ""
 
             # Extract claim
-            claim_text = f"Verified: {s_rec.title} defines operational parameters: {content_snippet[:150]}"
+            prefix = "Verified" if not is_m else "Synthesized/Mock"
+            claim_text = f"{prefix}: {s_rec.title} defines operational parameters: {content_snippet[:150]}"
             claim = EvidenceClaim(
                 research_job_id=job.id,
                 source_id=s_rec.id,
                 claim_text=claim_text,
                 support_status="verified",
-                confidence_score=0.95,
-                confidence_rationale="Extracted directly from verified official publisher source.",
+                confidence_score=0.95 if not is_m else 0.85,
+                confidence_rationale=(
+                    "Extracted directly from verified official publisher source."
+                    if not is_m
+                    else "Extracted from deterministic mock knowledge base (simulated)."
+                ),
                 excerpt=content_snippet,
                 contrary_evidence=[],
             )
             db.add(claim)
-            claims.append(claim)
+            claims.append((claim, prov, is_m))
 
         await db.flush()
 
@@ -133,8 +140,10 @@ class ResearchEngine:
                     retrieved_at=s.retrieved_at,
                     locator=s.locator,
                     is_accessible=s.is_accessible,
+                    provenance=prov,
+                    is_mock=is_m,
                 )
-                for s in source_records
+                for s, prov, is_m in source_records
             ],
             claims=[
                 EvidenceClaimSchema(
@@ -145,12 +154,15 @@ class ResearchEngine:
                     confidence_rationale=c.confidence_rationale,
                     excerpt=c.excerpt,
                     source_id=c.source_id,
-                    source_url=next((s.url for s in source_records if s.id == c.source_id), None),
+                    source_url=next((s.url for s, _, _ in source_records if s.id == c.source_id), None),
                     contrary_evidence=c.contrary_evidence,
+                    provenance=prov,
+                    is_mock=is_m,
                 )
-                for c in claims
+                for c, prov, is_m in claims
             ],
         )
+
 
 
 research_engine = ResearchEngine()

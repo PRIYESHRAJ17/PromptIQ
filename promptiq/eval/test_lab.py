@@ -13,6 +13,7 @@ from promptiq.gateway.models import GatewayMessage, InferenceRequest
 from promptiq.models.eval import EvaluationRun, EvaluationSuite, FailureRecord
 from promptiq.models.package import PromptPackage
 from promptiq.schemas.eval import (
+    ComparativeRunResponse,
     EvaluationRunRequest,
     EvaluationRunResponse,
     EvaluationSuiteCreate,
@@ -169,4 +170,70 @@ class PromptTestLab:
             results=run.results,
             latency_ms=run.latency_ms,
             cost_estimate=0.0,
+            execution_mode="mock" if settings.is_test else "live",
         )
+
+    @classmethod
+    async def compare_runs(
+        cls,
+        db: AsyncSession,
+        project_id: str,
+        user_id: str,
+        baseline_run_id: str,
+        candidate_run_id: str,
+    ) -> ComparativeRunResponse:
+        """Compares two evaluation runs to detect regressions and measure performance improvements."""
+        await ProjectService.get_project(db, project_id, user_id)
+
+        stmt_base = select(EvaluationRun).where(EvaluationRun.id == baseline_run_id)
+        res_base = await db.execute(stmt_base)
+        baseline = res_base.scalar_one_or_none()
+        if not baseline:
+            raise NotFoundError("EvaluationRun", baseline_run_id)
+
+        stmt_cand = select(EvaluationRun).where(EvaluationRun.id == candidate_run_id)
+        res_cand = await db.execute(stmt_cand)
+        candidate = res_cand.scalar_one_or_none()
+        if not candidate:
+            raise NotFoundError("EvaluationRun", candidate_run_id)
+
+        base_cases = {r.get("case_id"): r.get("passed", False) for r in (baseline.results or [])}
+        cand_cases = {r.get("case_id"): r.get("passed", False) for r in (candidate.results or [])}
+
+        newly_failed = []
+        newly_passed = []
+
+        all_cases = set(base_cases.keys()).union(set(cand_cases.keys()))
+        for c_id in sorted(all_cases):
+            was_passing = base_cases.get(c_id, False)
+            now_passing = cand_cases.get(c_id, False)
+            if was_passing and not now_passing:
+                newly_failed.append(c_id)
+            elif not was_passing and now_passing:
+                newly_passed.append(c_id)
+
+        pass_rate_delta = round(candidate.pass_rate - baseline.pass_rate, 2)
+        latency_delta_ms = round((candidate.latency_ms or 0.0) - (baseline.latency_ms or 0.0), 2)
+        has_regressions = len(newly_failed) > 0
+
+        summary = (
+            f"Comparison between baseline {baseline_run_id[:8]} ({baseline.pass_rate}%) "
+            f"and candidate {candidate_run_id[:8]} ({candidate.pass_rate}%): "
+            f"Pass rate delta: {pass_rate_delta:+.2f}%. "
+            f"{len(newly_failed)} regressions, {len(newly_passed)} improvements. "
+            f"Latency delta: {latency_delta_ms:+.2f}ms."
+        )
+
+        return ComparativeRunResponse(
+            baseline_run_id=baseline_run_id,
+            candidate_run_id=candidate_run_id,
+            baseline_pass_rate=baseline.pass_rate,
+            candidate_pass_rate=candidate.pass_rate,
+            pass_rate_delta=pass_rate_delta,
+            has_regressions=has_regressions,
+            newly_failed_cases=newly_failed,
+            newly_passed_cases=newly_passed,
+            latency_delta_ms=latency_delta_ms,
+            summary=summary,
+        )
+

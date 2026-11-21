@@ -128,3 +128,15 @@ class PrivacyPolicyViolationError(PromptIQException):
             status_code=403,
         )
 
+
+class SecurityError(PromptIQException):
+    """Raised when an operation violates security policy, SSRF boundaries, or input safety."""
+
+    def __init__(self, message: str = "Security policy violation detected", details: dict[str, Any] | None = None):
+        super().__init__(
+            message=message,
+            error_code="SECURITY_VIOLATION",
+            details=details,
+            status_code=403,
+        )
+

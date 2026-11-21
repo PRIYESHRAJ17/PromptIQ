@@ -106,3 +106,94 @@ def sanitize_untrusted_input(text: str) -> str:
     # Strip null bytes and non-printable control characters except newline and tab
     clean = "".join(ch for ch in text if ch in "\n\r\t" or (ord(ch) >= 32 and ord(ch) != 127))
     return clean.strip()
+
+
+def validate_and_sanitize_url(url: str) -> str:
+    """Validates user-supplied external URLs against SSRF, internal network traversal, and protocol abuse.
+
+    Strictly prohibits:
+    - Non-HTTP/HTTPS protocols (e.g. file://, gopher://, ftp://)
+    - Loopback addresses (127.0.0.0/8, ::1, localhost)
+    - Private IPv4/IPv6 networks (RFC 1918, RFC 4193)
+    - Link-local and cloud metadata services (169.254.169.254, metadata.google.internal)
+    - Embedded user credentials in URLs
+    """
+    import ipaddress
+    import socket
+    import urllib.parse
+
+    from promptiq.core.exceptions import SecurityError
+
+    if not url or not isinstance(url, str):
+        raise SecurityError("URL cannot be empty")
+
+    url = url.strip()
+    if len(url) > 2048:
+        raise SecurityError("URL exceeds maximum allowed length (2048 characters)")
+
+    try:
+        parsed = urllib.parse.urlparse(url)
+    except Exception as e:
+        raise SecurityError(f"Malformed URL: {e}")
+
+    scheme = parsed.scheme.lower()
+    if scheme not in ("http", "https"):
+        raise SecurityError(f"Unsupported URL protocol '{scheme}'. Only HTTP and HTTPS are permitted.")
+
+    if not parsed.netloc:
+        raise SecurityError("URL is missing a valid hostname")
+
+    if parsed.username or parsed.password:
+        raise SecurityError("User credentials embedded in URLs are strictly prohibited.")
+
+    hostname = parsed.hostname
+    if not hostname:
+        raise SecurityError("Unable to extract valid hostname from URL")
+
+    hostname_lower = hostname.lower()
+
+    # Explicit blacklist for well-known cloud metadata endpoints and local names
+    BLOCKED_HOSTNAMES = {
+        "localhost",
+        "metadata.google.internal",
+        "metadata.internal",
+        "instance-data",
+        "169.254.169.254",
+        "127.0.0.1",
+        "::1",
+    }
+    if hostname_lower in BLOCKED_HOSTNAMES or hostname_lower.endswith(".internal") or hostname_lower.endswith(".local"):
+        raise SecurityError(f"SSRF Protection: Access to restricted host '{hostname}' is blocked.")
+
+    # Check direct IP address literal
+    try:
+        ip_obj = ipaddress.ip_address(hostname_lower)
+        if (
+            ip_obj.is_private
+            or ip_obj.is_loopback
+            or ip_obj.is_link_local
+            or ip_obj.is_multicast
+            or ip_obj.is_reserved
+            or str(ip_obj) == "169.254.169.254"
+        ):
+            raise SecurityError(f"SSRF Protection: IP '{ip_obj}' is in a private, loopback, or cloud-metadata range.")
+    except ValueError:
+        # Not a raw IP literal; resolve DNS to check target IP address
+        try:
+            addr_info = socket.getaddrinfo(hostname, None, socket.AF_UNSPEC, socket.SOCK_STREAM)
+            for item in addr_info:
+                ip_str = item[4][0]
+                resolved_ip = ipaddress.ip_address(ip_str)
+                if (
+                    resolved_ip.is_private
+                    or resolved_ip.is_loopback
+                    or resolved_ip.is_link_local
+                    or resolved_ip.is_multicast
+                    or resolved_ip.is_reserved
+                    or str(resolved_ip) == "169.254.169.254"
+                ):
+                    raise SecurityError(f"SSRF Protection: Host '{hostname}' resolved to private/metadata IP '{resolved_ip}'.")
+        except socket.gaierror as e:
+            raise SecurityError(f"DNS resolution failed for host '{hostname}': {e}")
+
+    return url

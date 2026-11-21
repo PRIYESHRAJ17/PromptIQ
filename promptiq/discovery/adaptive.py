@@ -6,6 +6,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from promptiq.core.exceptions import NotFoundError
+from promptiq.core.security import validate_and_sanitize_url
 from promptiq.discovery.extractor import ContextExtractor
 from promptiq.discovery.software_stages import SOFTWARE_STAGES, get_software_stage_questions
 from promptiq.discovery.task_paths import get_task_questions
@@ -25,6 +26,68 @@ class AdaptiveDiscoveryEngine:
     """Orchestrates conversational intake, depth-adaptive questioning, and requirement extraction."""
 
     @classmethod
+    def detect_contradictions(cls, session: DiscoverySession) -> list[str]:
+        """Detects contradictions between intake constraints and submitted answers."""
+        contradictions: list[str] = []
+        intake = session.initial_intake or {}
+        answers = session.answers or {}
+        constraints = [c.lower() for c in intake.get("constraints", [])]
+        goal = intake.get("goal", "").lower()
+        context_text = (intake.get("context_text") or "").lower()
+
+        combined_context = f"{goal} {' '.join(constraints)} {context_text}"
+
+        # 1. Frontend exclusion vs UI surface request
+        no_frontend = any("no frontend" in c or "backend only" in c or "no ui" in c for c in [combined_context])
+        surfaces = str(answers.get("surfaces_required", "")).lower()
+        visual_dir = str(answers.get("visual_direction", "")).lower()
+        if no_frontend and ("react" in visual_dir or "web workspace" in surfaces or "mobile companion" in surfaces):
+            contradictions.append(
+                "Contradiction: Project specifies strict backend-only/no-frontend constraint, but answers request UI surfaces."
+            )
+
+        # 2. Free tier / Zero-price constraint vs paid cloud infrastructure
+        zero_cost = any("zero-price" in c or "free" in c or "zero cost" in c or "₹0" in c for c in [combined_context])
+        tech_pref = str(answers.get("tech_stack_preference", "")).lower()
+        if zero_cost and ("aws fargate" in tech_pref or "dynamodb global" in tech_pref or "paid tier" in tech_pref):
+            contradictions.append(
+                "Contradiction: Strict zero-cost invariant specified, but technical stack preference requests billable commercial infrastructure."
+            )
+
+        # 3. Conflicting database paradigms
+        if "sqlite" in tech_pref and "distributed multi-region postgresql" in tech_pref:
+            contradictions.append(
+                "Contradiction: Embedded local SQLite requested concurrently with distributed multi-region PostgreSQL."
+            )
+
+        return contradictions
+
+    @classmethod
+    def detect_missing_high_impact_info(cls, session: DiscoverySession) -> list[str]:
+        """Identifies high-impact unknowns or missing requirements based on task depth and type."""
+        missing: list[str] = []
+        answers = session.answers or {}
+        task_type = getattr(session, "task_type", None) or "software_project"
+        depth = getattr(session, "depth", None) or "guided"
+
+        if task_type == "software_project":
+            if "acceptance_criteria" not in answers:
+                missing.append("Measurable acceptance criteria / test validation conditions (Stage K)")
+            if "auth_requirements" not in answers:
+                missing.append("Authentication and multi-tenant authorization boundaries (Stage I)")
+            if "validation_rules" not in answers and depth in ("guided", "deep"):
+                missing.append("Domain business rules and input validation constraints (Stage D)")
+        elif task_type == "prompt_creation":
+            if "format" not in answers:
+                missing.append("Output format and structured response contract")
+        elif task_type == "research":
+            if "source_hierarchy" not in answers:
+                missing.append("Authoritative source hierarchy requirements")
+
+        return missing
+
+
+    @classmethod
     async def start_session(
         cls,
         db: AsyncSession,
@@ -36,10 +99,23 @@ class AdaptiveDiscoveryEngine:
         # Verify tenant access before creating discovery session
         await ProjectService.get_project(db, project_id, user_id)
 
-        # Extract initial facts from supplied context text
+        # 1. SSRF check on reference URLs
+        for url in intake.context_urls:
+            validate_and_sanitize_url(url)
+
+        # 2. Extract initial facts from supplied context text and files
         extracted_facts = []
         if intake.context_text:
-            extracted_facts = ContextExtractor.extract_facts_from_text(intake.context_text)
+            extracted_facts.extend(ContextExtractor.extract_facts_from_text(intake.context_text))
+
+        if intake.existing_files:
+            for file_info in intake.existing_files:
+                f_name = file_info.get("filename", "unknown_file")
+                f_content = file_info.get("content", "")
+                if f_content:
+                    extracted_facts.extend(
+                        ContextExtractor.extract_facts_from_text(f_content, source_label=f"file:{f_name}")
+                    )
 
         session = DiscoverySession(
             project_id=project_id,
@@ -60,6 +136,16 @@ class AdaptiveDiscoveryEngine:
         if intake.goal not in current_goals:
             current_goals.append(intake.goal)
             constitution.goals = current_goals
+
+        # Seed explicit constraints into Constitution
+        if intake.constraints:
+            scope = dict(constitution.scope or {})
+            out_of_scope = list(scope.get("out_of_scope", []))
+            for c in intake.constraints:
+                if c not in out_of_scope:
+                    out_of_scope.append(c)
+            scope["out_of_scope"] = out_of_scope
+            constitution.scope = scope
 
         # Generate initial candidate requirements from goal
         initial_reqs = list(constitution.requirements)
@@ -88,6 +174,8 @@ class AdaptiveDiscoveryEngine:
             initial_intake=session.initial_intake,
             answers=session.answers,
             extracted_facts=session.extracted_facts,
+            identified_contradictions=cls.detect_contradictions(session),
+            missing_high_impact_info=cls.detect_missing_high_impact_info(session),
             next_questions=next_questions,
         )
 
@@ -168,7 +256,17 @@ class AdaptiveDiscoveryEngine:
             if not ans:
                 continue
             ans_str = str(ans)
-            if q_id in ("problem_statement", "must_have_features", "validation_rules", "acceptance_criteria"):
+            if q_id.startswith("confirm_inferred_"):
+                # Handle user confirmation or rejection of inferred requirements
+                inf_req_id = q_id.replace("confirm_inferred_", "")
+                for r in reqs:
+                    if r.get("id") == inf_req_id:
+                        if ans in (True, "yes", "confirm", "confirmed"):
+                            r["status"] = "confirmed"
+                            r["provenance"] = "user_provided"
+                        else:
+                            r["status"] = "rejected"
+            elif q_id in ("problem_statement", "must_have_features", "validation_rules", "acceptance_criteria"):
                 req_id = f"REQ-DISC-{len(reqs) + 1:03d}"
                 reqs.append({
                     "id": req_id,
@@ -181,17 +279,17 @@ class AdaptiveDiscoveryEngine:
                     "acceptance_criteria": ans_str if q_id == "acceptance_criteria" else None,
                 })
             elif q_id == "explicit_exclusions":
-                scope = dict(constitution.scope)
+                scope = dict(constitution.scope or {})
                 out_of_scope = list(scope.get("out_of_scope", []))
                 out_of_scope.append(ans_str)
                 scope["out_of_scope"] = out_of_scope
                 constitution.scope = scope
             elif q_id == "visual_direction":
-                ux_spec = dict(constitution.ux_specs)
+                ux_spec = dict(constitution.ux_specs or {})
                 ux_spec["visual_direction"] = ans_str
                 constitution.ux_specs = ux_spec
             elif q_id == "tech_stack_preference":
-                tech_dir = dict(constitution.technical_direction)
+                tech_dir = dict(constitution.technical_direction or {})
                 tech_dir["preferred_stack"] = [s.strip() for s in ans_str.split(",") if s.strip()]
                 constitution.technical_direction = tech_dir
 
@@ -238,5 +336,7 @@ class AdaptiveDiscoveryEngine:
             initial_intake=session.initial_intake,
             answers=session.answers,
             extracted_facts=session.extracted_facts,
+            identified_contradictions=cls.detect_contradictions(session),
+            missing_high_impact_info=cls.detect_missing_high_impact_info(session),
             next_questions=next_questions,
         )

@@ -45,3 +45,34 @@ class PackageExportResponse(BaseModel):
     manifest: dict[str, Any]
     download_url: str | None = None
     files: dict[str, str]
+
+
+class MultiTargetCompileRequest(BaseModel):
+    """Request to compile a Project Constitution into multiple target packages simultaneously."""
+
+    targets: list[str] = Field(
+        default_factory=lambda: ["google-antigravity", "claude-code", "cursor"],
+        min_length=1,
+        description="List of target environments to compile for",
+    )
+    output_type: OutputType = Field(
+        default="complete_package",
+        description="Delivery granularity: prompt_only, prompt_suite, complete_package",
+    )
+    custom_instructions: str | None = None
+
+
+class MultiTargetCompileResponse(BaseModel):
+    project_id: str
+    packages: dict[str, PromptPackageResponse]
+    failures: dict[str, str] = Field(default_factory=dict)
+
+
+class TargetRecommendationResponse(BaseModel):
+    recommended_target: str
+    rationale: str
+    pros: list[str] = Field(default_factory=list)
+    cons: list[str] = Field(default_factory=list)
+    compatibility_scores: dict[str, float] = Field(default_factory=dict)
+    feature_support: dict[str, dict[str, bool]] = Field(default_factory=dict)
+

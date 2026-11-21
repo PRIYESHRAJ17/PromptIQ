@@ -8,12 +8,45 @@ from promptiq.core.exceptions import NotFoundError, TenantIsolationError
 from promptiq.models.user import User
 from promptiq.schemas.constitution import (
     ConstitutionApprovalRequest,
+    ConstitutionComparisonResponse,
     ConstitutionResponse,
     ConstitutionUpdate,
 )
 from promptiq.services.constitution_service import ConstitutionService
 
 router = APIRouter(prefix="/projects/{project_id}/constitution", tags=["Project Constitution"])
+
+
+@router.get("/compare", response_model=ConstitutionComparisonResponse)
+async def compare_constitution_versions(
+    project_id: str,
+    v1: int,
+    v2: int,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Compare two constitution versions and return their granular additions, modifications, and deletions."""
+    try:
+        res = await ConstitutionService.compare_versions(db, project_id, v1, v2, user.id)
+        return ConstitutionComparisonResponse(**res)
+    except (NotFoundError, TenantIsolationError) as e:
+        raise HTTPException(status_code=e.status_code, detail=e.message)
+
+
+@router.post("/versions/{version}/rollback", response_model=ConstitutionResponse)
+async def rollback_constitution_version(
+    project_id: str,
+    version: int,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Roll back to a previous constitution version, creating a new immutable version N+1."""
+    try:
+        reverted_const = await ConstitutionService.rollback_to_version(db, project_id, version, user.id, surface="api")
+        return ConstitutionResponse.model_validate(reverted_const)
+    except (NotFoundError, TenantIsolationError) as e:
+        raise HTTPException(status_code=e.status_code, detail=e.message)
+
 
 
 @router.get("", response_model=ConstitutionResponse)

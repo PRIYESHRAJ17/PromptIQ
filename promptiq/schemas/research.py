@@ -25,6 +25,8 @@ class SourceRecordSchema(BaseModel):
     retrieved_at: datetime
     locator: str | None = None
     is_accessible: bool = True
+    provenance: str = Field(default="live_web", description="live_web, stored_evidence, user_reference, simulated_mock")
+    is_mock: bool = False
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -39,8 +41,11 @@ class EvidenceClaimSchema(BaseModel):
     source_id: str
     source_url: str | None = None
     contrary_evidence: list[dict[str, Any]] = Field(default_factory=list)
+    provenance: str = Field(default="live_web", description="live_web, stored_evidence, user_reference, simulated_mock")
+    is_mock: bool = False
 
     model_config = ConfigDict(from_attributes=True)
+
 
 
 class ResearchResponse(BaseModel):

@@ -8,8 +8,10 @@ from promptiq.gateway.models import GatewayMessage, InferenceRequest
 from promptiq.schemas.critic import (
     AutopsyRequest,
     AutopsyResponse,
+    AutopsyRevisionVerifyResponse,
     AutopsyVerdict,
     CriticFindingSchema,
+    FindingResolution,
 )
 
 
@@ -65,6 +67,7 @@ class PromptAutopsyEngine:
                     evidence_passage=vague_matches[0],
                     consequence="Model will hallucinate or adopt arbitrary assumptions.",
                     recommendation="Replace vague references with concrete, exhaustive specifications.",
+                    blocks_release=False,
                 )
             )
 
@@ -79,6 +82,7 @@ class PromptAutopsyEngine:
                     evidence_passage=agency_matches[0],
                     consequence="Target agent may perform destructive, unapproved system operations.",
                     recommendation="Add explicit boundary constraints requiring human sign-off for file/command mutations.",
+                    blocks_release=True,
                 )
             )
 
@@ -93,6 +97,7 @@ class PromptAutopsyEngine:
                     evidence_passage=injection_matches[0],
                     consequence="System instructions can be bypassed or hijacked.",
                     recommendation="Remove instructions attempting to override foundational boundaries.",
+                    blocks_release=True,
                 )
             )
 
@@ -106,6 +111,7 @@ class PromptAutopsyEngine:
                     evidence_passage="JSON",
                     consequence="Model may return markdown-wrapped or malformed JSON keys.",
                     recommendation="Provide an explicit JSON schema or key-value template.",
+                    blocks_release=False,
                 )
             )
 
@@ -119,6 +125,7 @@ class PromptAutopsyEngine:
                     evidence_passage=None,
                     consequence="Model may enter recursive loops or guess answers when blocked.",
                     recommendation="Specify clear stop conditions and error reporting contracts.",
+                    blocks_release=False,
                 )
             )
 
@@ -140,14 +147,16 @@ class PromptAutopsyEngine:
         if infer_resp.structured_data and isinstance(infer_resp.structured_data, dict):
             extra_findings = infer_resp.structured_data.get("findings", [])
             for f in extra_findings:
+                sev = f.get("severity", "medium")
                 findings.append(
                     CriticFindingSchema(
                         category=f.get("category", "feasibility"),
-                        severity=f.get("severity", "medium"),
+                        severity=sev,
                         finding=f.get("finding", "Potential weakness identified"),
                         evidence_passage=f.get("evidence_passage"),
                         consequence=f.get("consequence", "Execution failure risk"),
                         recommendation=f.get("recommendation", "Refine instructions"),
+                        blocks_release=sev in ("critical", "high"),
                     )
                 )
 
@@ -199,3 +208,130 @@ class PromptAutopsyEngine:
             quality_scores=scores,
             suggested_revision=suggested_revision,
         )
+
+    @classmethod
+    def verify_findings_against_artifact(
+        cls,
+        original_findings: list[CriticFindingSchema],
+        revised_text: str,
+    ) -> AutopsyRevisionVerifyResponse:
+        """Deterministically evaluates whether the revised artifact addresses prior autopsy findings."""
+        resolutions: list[FindingResolution] = []
+        revised_lower = (revised_text or "").lower()
+
+        for finding in original_findings:
+            f_id = finding.id
+            evidence = finding.evidence_passage or ""
+            evidence_lower = evidence.lower()
+
+            status = "unresolved"
+            reason = "No evidence found that this finding has been addressed in the revised text."
+            proof_snippet = None
+
+            if finding.category == "ambiguity":
+                vague_matches = cls.VAGUE_TERMS.findall(revised_text)
+                if evidence_lower and evidence_lower not in revised_lower:
+                    status = "resolved"
+                    reason = f"Identified vague passage '{evidence}' was eliminated from the revised text."
+                    proof_snippet = "Passage removed"
+                elif not vague_matches:
+                    status = "resolved"
+                    reason = "All vague terminology patterns were eliminated."
+                    proof_snippet = "Zero vague matches"
+                else:
+                    status = "unresolved"
+                    reason = f"Vague terms still present in revised prompt: {', '.join(set(vague_matches))}"
+                    proof_snippet = vague_matches[0]
+
+            elif finding.category == "security":
+                injection_matches = cls.INJECTION_RISK.findall(revised_text)
+                agency_matches = cls.EXCESSIVE_AGENCY.findall(revised_text)
+                has_safety_guard = any(kw in revised_lower for kw in ["approval", "permission", "halt", "do not execute", "boundaries"])
+
+                if evidence_lower and evidence_lower in revised_lower:
+                    status = "unresolved"
+                    reason = f"Security vulnerability passage '{evidence}' is still present in revised text."
+                    proof_snippet = evidence
+                elif not injection_matches and (has_safety_guard or not agency_matches):
+                    status = "resolved"
+                    reason = "Security risk resolved: hazardous passages removed and/or safety boundaries established."
+                    proof_snippet = "Safety boundaries established"
+                else:
+                    status = "unresolved"
+                    reason = "Security risk remains unresolved."
+
+            elif finding.category == "output_contract":
+                has_json = "json" in revised_lower
+                has_contract = "schema" in revised_lower or "{" in revised_text or "contract" in revised_lower or "format" in revised_lower
+                if has_json and has_contract:
+                    status = "resolved"
+                    reason = "Output contract clearly specified with schema or structured template."
+                    proof_snippet = "Schema/structure defined"
+                elif not has_json:
+                    status = "resolved"
+                    reason = "JSON output requirement removed; no longer missing contract."
+                else:
+                    status = "unresolved"
+                    reason = "Requests JSON output but lacks explicit schema or structure."
+
+            elif finding.category == "missing_requirements":
+                has_error_handling = any(kw in revised_lower for kw in ["error", "fail", "halt", "exception", "abort", "blocker"])
+                if has_error_handling:
+                    status = "resolved"
+                    reason = "Explicit error handling, failure modes, or stop conditions added."
+                    proof_snippet = "Error handling present"
+                else:
+                    status = "unresolved"
+                    reason = "Still missing explicit error handling or stop conditions."
+
+            else:
+                if evidence_lower and evidence_lower not in revised_lower:
+                    status = "resolved"
+                    reason = f"Flagged passage '{evidence}' was removed or refactored."
+                    proof_snippet = "Flagged passage removed"
+                else:
+                    rec_words = [
+                        w for w in re.findall(r"\w{4,}", finding.recommendation.lower())
+                        if w not in ("with", "that", "this", "from", "should", "must", "replace", "provide")
+                    ]
+                    matched_words = [w for w in rec_words if w in revised_lower]
+                    if len(matched_words) >= 2:
+                        status = "resolved"
+                        reason = f"Recommendation addressed in revised text (matched: {', '.join(matched_words[:3])})."
+                        proof_snippet = f"Matched: {', '.join(matched_words[:3])}"
+                    else:
+                        status = "unresolved"
+                        reason = "Revised text does not reflect the recommendation."
+
+            resolutions.append(
+                FindingResolution(
+                    finding_id=f_id,
+                    status=status,
+                    reason=reason,
+                    evidence=proof_snippet,
+                )
+            )
+
+        resolved_count = sum(1 for r in resolutions if r.status == "resolved")
+        unresolved_count = len(resolutions) - resolved_count
+        all_resolved = unresolved_count == 0
+
+        blocking_unresolved = any(
+            f.blocks_release and r.status != "resolved"
+            for f, r in zip(original_findings, resolutions, strict=False)
+        )
+
+        summary = (
+            f"Verified {len(original_findings)} findings: {resolved_count} resolved, {unresolved_count} unresolved. "
+            f"Release {'BLOCKED by unresolved critical/high findings' if blocking_unresolved else 'ALLOWED'}."
+        )
+
+        return AutopsyRevisionVerifyResponse(
+            all_resolved=all_resolved,
+            blocks_release=blocking_unresolved,
+            resolutions=resolutions,
+            resolved_count=resolved_count,
+            unresolved_count=unresolved_count,
+            summary=summary,
+        )
+

@@ -36,5 +36,20 @@ class EvaluationRunResponse(BaseModel):
     results: list[dict[str, Any]]
     latency_ms: float | None = None
     cost_estimate: float = 0.0
+    execution_mode: str = "mock"
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class ComparativeRunResponse(BaseModel):
+    baseline_run_id: str
+    candidate_run_id: str
+    baseline_pass_rate: float
+    candidate_pass_rate: float
+    pass_rate_delta: float
+    has_regressions: bool
+    newly_failed_cases: list[str] = Field(default_factory=list)
+    newly_passed_cases: list[str] = Field(default_factory=list)
+    latency_delta_ms: float = 0.0
+    summary: str
+

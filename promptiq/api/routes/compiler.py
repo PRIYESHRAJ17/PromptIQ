@@ -12,10 +12,14 @@ from promptiq.core.exceptions import (
 )
 from promptiq.models.user import User
 from promptiq.schemas.package import (
+    MultiTargetCompileRequest,
+    MultiTargetCompileResponse,
     PackageCompileRequest,
     PackageExportResponse,
     PromptPackageResponse,
+    TargetRecommendationResponse,
 )
+from promptiq.services.constitution_service import ConstitutionService
 from promptiq.services.project_service import ProjectService
 
 router = APIRouter(prefix="/projects/{project_id}", tags=["Compiler"])
@@ -43,6 +47,46 @@ async def compile_target_package(
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, detail=e.message)
     except (NotFoundError, TenantIsolationError) as e:
         raise HTTPException(status_code=e.status_code, detail=e.message)
+
+
+@router.post("/compile/multi", response_model=MultiTargetCompileResponse, status_code=status.HTTP_201_CREATED)
+async def compile_multi_target_packages(
+    project_id: str,
+    multi_req: MultiTargetCompileRequest,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Compile Project Constitution into multiple target packages in a single call."""
+    try:
+        res = await target_compiler.compile_multi_target(
+            db,
+            project_id=project_id,
+            user_id=user.id,
+            targets=multi_req.targets,
+            output_type=multi_req.output_type,
+            surface="api",
+        )
+        return MultiTargetCompileResponse(**res)
+    except ConstitutionApprovalRequiredError as e:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, detail=e.message)
+    except (NotFoundError, TenantIsolationError) as e:
+        raise HTTPException(status_code=e.status_code, detail=e.message)
+
+
+@router.post("/compile/recommend", response_model=TargetRecommendationResponse)
+async def recommend_target_environment(
+    project_id: str,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Recommend the optimal compilation target environment based on project requirements."""
+    try:
+        constitution = await ConstitutionService.get_current_constitution(db, project_id, user.id)
+        recommendation = target_compiler.recommend_target(constitution)
+        return TargetRecommendationResponse(**recommendation)
+    except (NotFoundError, TenantIsolationError) as e:
+        raise HTTPException(status_code=e.status_code, detail=e.message)
+
 
 
 @router.get("/packages/{package_id}/export", response_model=PackageExportResponse)

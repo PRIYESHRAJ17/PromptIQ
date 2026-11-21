@@ -56,8 +56,25 @@ async def get_project(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=e.message)
 
 
+@router.get("/{project_id}/export", response_model=dict)
+async def export_project(
+    project_id: str,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Export complete project bundle (constitutions, packages, discovery, research, checkpoints)."""
+    try:
+        data = await ProjectService.export_project_data(db, project_id, user.id)
+        return data
+    except NotFoundError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=e.message)
+    except TenantIsolationError as e:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=e.message)
+
+
 @router.delete("/{project_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_project(
+
     project_id: str,
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),

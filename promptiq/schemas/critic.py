@@ -1,5 +1,6 @@
 """Prompt Autopsy and Adversarial Critique schemas."""
 
+import uuid
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -18,6 +19,7 @@ AutopsyVerdict = Literal["ready", "ready_with_caveats", "needs_revision", "block
 
 
 class CriticFindingSchema(BaseModel):
+    id: str = Field(default_factory=lambda: f"FINDING-{uuid.uuid4().hex[:8]}")
     category: CriticCategory
     severity: CriticSeverity
     finding: str
@@ -26,6 +28,29 @@ class CriticFindingSchema(BaseModel):
     recommendation: str
     disposition: str = "pending"
     is_resolved: bool = False
+    blocks_release: bool = False
+    verification_method: str = "deterministic_check"
+
+
+class FindingResolution(BaseModel):
+    finding_id: str
+    status: Literal["resolved", "partially_resolved", "rejected_with_reason", "unresolved"]
+    reason: str
+    evidence: str | None = None
+
+
+class AutopsyRevisionVerifyRequest(BaseModel):
+    original_findings: list[CriticFindingSchema]
+    revised_text: str
+
+
+class AutopsyRevisionVerifyResponse(BaseModel):
+    all_resolved: bool
+    blocks_release: bool
+    resolutions: list[FindingResolution]
+    resolved_count: int
+    unresolved_count: int
+    summary: str
 
 
 class AutopsyRequest(BaseModel):
