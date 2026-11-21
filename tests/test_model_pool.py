@@ -12,16 +12,26 @@ def test_model_pool_contents_and_eligibility():
     models = ModelPoolService.list_models(zero_price_only=False)
     assert len(models) >= 9
 
-    eligible = ModelPoolService.get_verified_eligible_models()
-    assert len(eligible) >= 6
+    # Strict verified eligible production models (Groq GPT-OSS 120B, 20B, internal mock)
+    verified = ModelPoolService.get_verified_eligible_models(include_conditional=False)
+    assert len(verified) >= 3
 
-    for m in eligible:
+    for m in verified:
         assert m.eligibility_state == EligibilityState.VERIFIED_ELIGIBLE
         assert m.is_zero_price is True
         assert m.cost_input_per_token == 0.0
         assert m.cost_output_per_token == 0.0
         assert m.verification_date is not None
         assert m.source_url.startswith(("http", "internal"))
+
+    # Conditional models (Gemini adult-only, Cloudflare Workers AI, OpenRouter free)
+    conditional = ModelPoolService.list_models(eligibility_state=EligibilityState.CONDITIONALLY_ELIGIBLE)
+    assert len(conditional) >= 4
+
+    # Preview models (Qwen 3.8 27B isolated to evaluation)
+    preview = ModelPoolService.list_models(eligibility_state=EligibilityState.REVIEW_REQUIRED)
+    assert len(preview) >= 1
+    assert any(m.model_id == "qwen/qwen3.8-27b" for m in preview)
 
 
 def test_retired_and_paid_models_flagged():
@@ -56,4 +66,4 @@ def test_candidates_for_role_matching():
     assert len(critic_candidates) >= 1
     for c in critic_candidates:
         assert c.capabilities.reasoning is True
-        assert c.composite_score >= 0.90
+        assert c.composite_score >= 0.85

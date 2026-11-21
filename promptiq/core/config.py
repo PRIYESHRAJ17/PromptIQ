@@ -44,6 +44,29 @@ class Settings(BaseSettings):
     OPERATOR_GEMINI_API_KEY: str = ""
     OPERATOR_GROQ_API_KEY: str = ""
     OPERATOR_OPENROUTER_API_KEY: str = ""
+    GROQ_API_KEY: str = ""
+    GEMINI_API_KEY: str = ""
+
+    # Operator Free-Plan Attestation (Mandatory confirmation before executing live routes)
+    OPERATOR_CONFIRMED_FREE_PLAN: bool = False
+    OPERATOR_CONFIRMED_NO_PAID_UPGRADE: bool = False
+    OPERATOR_CONFIRMED_HARD_STOP: bool = False
+
+    @property
+    def effective_groq_api_key(self) -> str:
+        return self.OPERATOR_GROQ_API_KEY or self.GROQ_API_KEY
+
+    @property
+    def effective_gemini_api_key(self) -> str:
+        return self.OPERATOR_GEMINI_API_KEY or self.GEMINI_API_KEY
+
+    @property
+    def is_operator_free_tier_confirmed(self) -> bool:
+        return bool(
+            self.OPERATOR_CONFIRMED_FREE_PLAN
+            and self.OPERATOR_CONFIRMED_NO_PAID_UPGRADE
+            and self.OPERATOR_CONFIRMED_HARD_STOP
+        )
 
     # Capacity Governor & Fair Use Limits
     RATE_LIMIT_USER_REQUESTS_PER_HOUR: int = 60

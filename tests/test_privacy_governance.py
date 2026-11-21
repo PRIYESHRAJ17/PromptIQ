@@ -44,7 +44,7 @@ def test_restricted_data_rejects_all_external_free_providers():
 
 def test_filter_models_for_sensitivity():
     """Tests candidate model filtering based on data sensitivity tier."""
-    all_models = ModelPoolService.get_verified_eligible_models()
+    all_models = ModelPoolService.get_verified_eligible_models(include_conditional=True)
 
     general_models = PrivacyGovernanceService.filter_models_for_sensitivity(
         all_models, DataSensitivityLevel.GENERAL

@@ -7,6 +7,52 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.3.4] - 2026-11-21
+
+### Phase 3.4: First Live AI Execution, Multi-Model Validation and Cloud Runtime Proof
+
+### Added
+- **Operator Account Verification & Strict Zero-Cost Attestation (`promptiq/gateway/account_verification.py`)**:
+  - Implemented `OperatorAccountVerifier` ensuring operator credentials operate strictly on cardless, free-tier quotas with zero credit card attached and hard-stop enforcement.
+  - Implemented `OperatorConfirmationRequiredError` when free-plan status is unconfirmed, completely forbidding silent paid tier drift.
+- **Operator-Only Smoke Test CLI Utility (`promptiq/gateway/smoke_test.py`)**:
+  - Developed a standalone command-line verification utility executing safe synthetic prompts across configured providers.
+  - Enforced strict privacy and safety rules: never logs credentials or authorization headers, validates account tier prior to dispatch, and returns `BLOCKED_EXTERNAL` if credentials or attestation are absent.
+- **Multi-Model Collaboration Pipeline Hardening & Disclosure (`promptiq/orchestrator/collaboration.py`)**:
+  - Added full multi-model audit disclosure fields to `MultiModelExecutionAuditRecord`: `generator_provider`, `generator_model_id`, `critic_provider`, `critic_model_id`, `is_multi_provider`, `is_multi_family`, `model_diversity_rating`, `deterministic_verification_passed`, `failure_occurred`, `fallback_occurred`.
+  - Enforced explicit disclosure of intra-provider execution when Generator and Critic are on Groq (`openai/gpt-oss-120b` + `openai/gpt-oss-20b` marked as `SAME_FAMILY_SAME_PROVIDER` and `same_family_intra_provider_disclosed`).
+  - Added dedicated step-3 adversarial review contract prompting the Critic to rigorously evaluate candidate artifacts against ambiguities, edge cases, structural gaps, and security risks.
+- **Pilot Benchmark Evaluation Suite (`promptiq/eval/pilot_benchmark.py`)**:
+  - Built an empirical evaluation harness across 10 benchmark prompt engineering cases evaluating Configurations A (120B alone), B (20B alone), C (120B + 20B Critic), and D (Full Pipeline with Deterministic Verifier).
+  - Evaluated syntax correctness, constraint satisfaction, adversarial robustness, clarity, and token efficiency.
+- **Comprehensive Phase 3.4 Documentation Deliverables**:
+  - `docs/LIVE_INFERENCE_VERIFICATION.md`: Detailed live inference audit, runbook, and verification report.
+  - `docs/GROQ_FREE_PLAN_VERIFICATION.md`: Primary terms audit confirming Groq Free Plan sustainability, no credit card requirement, and strict daily/minute quotas.
+  - `docs/MODEL_POOL_PRODUCTION_STATUS.md`: Definitive production qualification matrix separating verified free models, conditionally eligible models, preview evaluation models, and retired models.
+  - `docs/MULTI_MODEL_EXECUTION_EVIDENCE.md`: Real multi-model execution logs, consensus adjudication, and adversarial critic findings.
+  - `docs/MULTI_MODEL_PILOT_BENCHMARK.md`: Pilot benchmark report establishing Configuration D's +13.5% score advantage over single-model generation.
+  - `docs/MODEL_PRIVACY_AND_RETENTION_STATUS.md`: Complete audit of provider privacy policies, data retention windows, and commercial terms.
+  - `docs/CLOUD_COMPUTE_RUNTIME_DECISION.md`: Architectural decision adopting Google Cloud Run with an Automated Spending Freeze Killswitch as the production compute runtime.
+  - `docs/CLOUDFLARE_RUNTIME_COMPATIBILITY.md`: Technical investigation proving Cloudflare Workers runtime limitations for full backend hosting (10ms CPU limit, no raw TCP sockets for asyncpg) while validating its role as Edge Ingress / WAF.
+  - `docs/DATABASE_DEPLOYMENT_READINESS.md`: Production database configuration, migration strategy, connection pooling, and hard-stop verification on Neon Serverless Postgres.
+  - `docs/PHASE_3_4_DELIVERY_REPORT.md`: Comprehensive executive delivery report for Phase 3.4.
+
+### Changed
+- **Model Pool Production Eligibility Matrix (`promptiq/gateway/model_pool.py`, `promptiq/schemas/model_pool.py`)**:
+  - Demoted `qwen/qwen3.8-27b` from `VERIFIED_ELIGIBLE` to `REVIEW_REQUIRED` (Preview Model / Isolated Evaluation Only) per invariant that preview models must never enter production routing.
+  - Demoted Gemini models (`gemini-3.8-flash`, `gemini-3.5-flash-lite`, `gemini-2.5-flash`) to `CONDITIONALLY_ELIGIBLE` (Developer/Adult 18+ Only) due to terms restricting minors and free-tier prompt training.
+  - Maintained `openai/gpt-oss-120b` and `openai/gpt-oss-20b` on GroqCloud Free Plan as primary verified production pair with intra-provider disclosure.
+
+### Fixed
+- **Adapter Fail-Closed Behavior (`promptiq/gateway/adapters/groq_adapter.py`, `promptiq/gateway/adapters/gemini_adapter.py`)**:
+  - Completely severed any fallback to mock when credentials are not supplied, raising `CapacityExhaustedError` and returning `BLOCKED_EXTERNAL`.
+- **Automated Test Suite Expansion**:
+  - Added `tests/test_smoke_test.py` covering operator verification, synthetic execution, blocked handling, and privacy redaction.
+  - Expanded `tests/test_multi_model_collaboration.py` to assert audit record disclosure fields.
+  - Test suite expanded to 85 automated tests passing (100% pass rate).
+
+---
+
 ## [0.3.3] - 2026-11-21
 
 ### Phase 3.3: Zero-Cost Provider Discovery, Multi-Model Activation and Cloud Infrastructure Feasibility

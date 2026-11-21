@@ -27,14 +27,14 @@ class GroqInferenceAdapter(BaseInferenceAdapter):
         verify_zero_price_route(self.provider_name, self.model_id, price_per_token=0.0)
 
     async def generate(self, request: InferenceRequest) -> InferenceResponse:
-        api_key = settings.OPERATOR_GROQ_API_KEY
+        api_key = settings.effective_groq_api_key
         if not api_key:
             if settings.MANAGED_INFERENCE_ALLOW_MOCK_FALLBACK:
                 logger.info("No operator Groq API key set; falling back to deterministic mock adapter")
                 mock = MockInferenceAdapter()
                 mock.model_id = f"{self.model_id}-mock"
                 return await mock.generate(request)
-            raise CapacityExhaustedError("Groq operator route is unconfigured.")
+            raise CapacityExhaustedError("Groq operator route is unconfigured (BLOCKED_EXTERNAL).")
 
         model_to_use = request.target_model_id or self.model_id
         verify_zero_price_route(self.provider_name, model_to_use, price_per_token=0.0)

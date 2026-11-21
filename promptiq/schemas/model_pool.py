@@ -151,10 +151,20 @@ class MultiModelExecutionAuditRecord(BaseModel):
     execution_profile: ExecutionProfile
     data_sensitivity: DataSensitivityLevel
     steps: list[ExecutionStepRecord] = Field(default_factory=list)
-    consensus_status: str = Field(default="agreed", description="agreed, adjudicated, uncertainty_retained, deterministic_override")
+    consensus_status: str = Field(default="agreed", description="agreed, adjudicated, uncertainty_retained, deterministic_override, same_family_intra_provider_disclosed")
     disagreement_details: dict[str, Any] | None = None
     total_latency_ms: float = 0.0
     total_tokens: int = 0
     final_status: str = Field(default="SUCCESS", description="SUCCESS, FAILED, QUOTA_EXHAUSTED, POLICY_REJECTED")
+    generator_provider: str | None = None
+    generator_model_id: str | None = None
+    critic_provider: str | None = None
+    critic_model_id: str | None = None
+    is_multi_provider: bool = False
+    is_multi_family: bool = False
+    model_diversity_rating: str = "MULTI_MODEL_SAME_FAMILY_SAME_PROVIDER"
+    deterministic_verification_passed: bool = True
+    failure_occurred: bool = False
+    fallback_occurred: bool = False
 
     model_config = ConfigDict(from_attributes=True)

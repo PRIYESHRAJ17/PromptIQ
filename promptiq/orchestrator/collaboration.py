@@ -178,9 +178,9 @@ class MultiModelCollaborationPipeline:
         # STEP 3: Independent Evaluation and Critique (Critic)
         # -------------------------------------------------------------
         critique_findings: list[str] = []
+        critic_model = None
         if profile != ExecutionProfile.QUICK:
             # Enforce critic independence: attempt cross-family separation
-            critic_model = None
             single_provider_disclosed = False
             try:
                 critic_model = DynamicModelRouter.select_model_for_role(
@@ -219,13 +219,16 @@ class MultiModelCollaborationPipeline:
             if critic_model:
                 crit_step_start = time.perf_counter()
                 crit_prompt = (
-                    f"CONDUCT ADVERSARIAL AUTOPSY ON CANDIDATE PROMPT:\n\n"
+                    f"CONDUCT ADVERSARIAL AUTOPSY ON CANDIDATE ARTIFACT:\n\n"
                     f"Candidate Output:\n{candidate_text}\n\n"
-                    f"Check for:\n"
-                    f"1. Invariant violations (Frontend UI code, paid billing assumptions).\n"
-                    f"2. Ambiguities or missing instructions.\n"
-                    f"3. Security/injection loopholes.\n"
-                    f"Return findings as bullet points. If clean, state 'APPROVED: NO DEFECTS'."
+                    f"Evaluate against:\n"
+                    f"1. Missing requirements or unhandled edge cases.\n"
+                    f"2. Incorrect assumptions or ambiguities.\n"
+                    f"3. Contradictions or logical conflicts.\n"
+                    f"4. Structural weaknesses or formatting flaws.\n"
+                    f"5. Security vulnerabilities, injection vectors, or credential leakage.\n"
+                    f"6. Invariant violations (strictly no frontend UI code, zero billing assumptions).\n"
+                    f"Provide structured findings and specific recommended corrections. If clean, state 'APPROVED: NO DEFECTS'."
                 )
                 try:
                     crit_resp = await inference_gateway.generate(
@@ -365,6 +368,23 @@ class MultiModelCollaborationPipeline:
         total_latency = (time.perf_counter() - start_wall_time) * 1000.0
 
         is_successful = det_passed and consensus_status != "critic_failed"
+        critic_prov = critic_model.provider if critic_model else None
+        critic_m_id = critic_model.model_id if critic_model else None
+        is_multi_prov = (gen_model.provider != critic_prov) if critic_model else False
+        is_multi_fam = (gen_model.model_family != critic_model.model_family) if critic_model else False
+
+        if critic_model:
+            if is_multi_prov:
+                diversity_rating = "MULTI_PROVIDER_INDEPENDENT"
+            elif is_multi_fam:
+                diversity_rating = "MULTI_FAMILY_SAME_PROVIDER"
+            else:
+                diversity_rating = "SAME_FAMILY_SAME_PROVIDER"
+                if consensus_status in ("agreed", "single_provider_disclosed"):
+                    consensus_status = "same_family_intra_provider_disclosed"
+        else:
+            diversity_rating = "SINGLE_MODEL_EXECUTION"
+
         audit_record = MultiModelExecutionAuditRecord(
             workflow_id=workflow_id,
             project_id=project_id,
@@ -377,6 +397,16 @@ class MultiModelCollaborationPipeline:
             total_latency_ms=round(total_latency, 2),
             total_tokens=total_tokens,
             final_status="SUCCESS" if is_successful else "FAILED",
+            generator_provider=gen_model.provider,
+            generator_model_id=gen_model.model_id,
+            critic_provider=critic_prov,
+            critic_model_id=critic_m_id,
+            is_multi_provider=is_multi_prov,
+            is_multi_family=is_multi_fam,
+            model_diversity_rating=diversity_rating,
+            deterministic_verification_passed=det_passed,
+            failure_occurred=not is_successful,
+            fallback_occurred=(not is_multi_prov and critic_model is not None),
         )
 
         return final_text, audit_record

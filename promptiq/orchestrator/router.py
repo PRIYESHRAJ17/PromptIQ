@@ -35,11 +35,11 @@ class DynamicModelRouter:
             )
 
         # 2. Strict eligibility state check
-        if candidate.eligibility_state != EligibilityState.VERIFIED_ELIGIBLE:
+        if candidate.eligibility_state not in (EligibilityState.VERIFIED_ELIGIBLE, EligibilityState.CONDITIONALLY_ELIGIBLE):
             raise ZeroPriceViolationError(
                 provider=candidate.provider,
                 model_id=candidate.model_id,
-                reason=f"Candidate model '{candidate.model_id}' has state '{candidate.eligibility_state.value}'. Only VERIFIED_ELIGIBLE models can be routed.",
+                reason=f"Candidate model '{candidate.model_id}' has state '{candidate.eligibility_state.value}'. Only VERIFIED_ELIGIBLE or CONDITIONALLY_ELIGIBLE models can be routed.",
             )
 
         # 3. Hard zero-price enforcement

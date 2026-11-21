@@ -21,7 +21,7 @@ CENTRAL_MODEL_POOL: list[ModelPoolRecord] = [
         name="Gemini 3.8 Flash",
         model_family="gemini",
         version="3.8-flash-2026",
-        eligibility_state=EligibilityState.VERIFIED_ELIGIBLE,
+        eligibility_state=EligibilityState.CONDITIONALLY_ELIGIBLE,
         capabilities=ModelCapabilities(
             reasoning=True, coding=True, structured_output=True, tools=True, vision=True, long_context=True
         ),
@@ -55,7 +55,7 @@ CENTRAL_MODEL_POOL: list[ModelPoolRecord] = [
         name="Gemini 3.5 Flash-Lite",
         model_family="gemini",
         version="3.5-flash-lite-2026",
-        eligibility_state=EligibilityState.VERIFIED_ELIGIBLE,
+        eligibility_state=EligibilityState.CONDITIONALLY_ELIGIBLE,
         capabilities=ModelCapabilities(
             reasoning=True, coding=True, structured_output=True, tools=True, vision=False, long_context=True
         ),
@@ -78,7 +78,7 @@ CENTRAL_MODEL_POOL: list[ModelPoolRecord] = [
         eligible_use_cases=["fast_classification", "routine_extraction", "quick_profile_turns"],
         ineligible_use_cases=["deep_architectural_reasoning", "confidential_ip_data"],
         verification_date="2026-11-20",
-        verification_evidence="Verified low-latency sub-second response on free tier.",
+        verification_evidence="Conditionally eligible under Google AI Studio free tier. Excluded from general production due to minor restrictions and human review.",
         source_url="https://ai.google.dev/gemini-api/docs/pricing",
     ),
     # 3. Google Gemini 2.5 Flash
@@ -89,7 +89,7 @@ CENTRAL_MODEL_POOL: list[ModelPoolRecord] = [
         name="Gemini 2.5 Flash",
         model_family="gemini",
         version="2.5-flash-2025",
-        eligibility_state=EligibilityState.VERIFIED_ELIGIBLE,
+        eligibility_state=EligibilityState.CONDITIONALLY_ELIGIBLE,
         capabilities=ModelCapabilities(
             reasoning=True, coding=True, structured_output=True, tools=True, vision=True, long_context=True
         ),
@@ -183,15 +183,15 @@ CENTRAL_MODEL_POOL: list[ModelPoolRecord] = [
         verification_evidence="Active open-weight candidate on GroqCloud. Free-tier quota: 30 RPM, 14,400 RPD, 500k TPD. Paid Developer Plan excluded.",
         source_url="https://console.groq.com/docs/rate-limits",
     ),
-    # 6. Groq Qwen 3.8 27B (Active Coding Candidate)
+    # 6. Groq Qwen 3.8 27B (Preview Candidate - Evaluation Only)
     ModelPoolRecord(
         id="qwen/qwen3.8-27b",
         provider="groq",
         model_id="qwen/qwen3.8-27b",
-        name="Qwen 3.8 27B (Groq)",
+        name="Qwen 3.8 27B (Groq Preview)",
         model_family="qwen",
-        version="3.8-27b",
-        eligibility_state=EligibilityState.VERIFIED_ELIGIBLE,
+        version="3.8-27b-preview",
+        eligibility_state=EligibilityState.REVIEW_REQUIRED,
         capabilities=ModelCapabilities(
             reasoning=True, coding=True, structured_output=True, tools=True, vision=False, long_context=False
         ),
@@ -211,10 +211,10 @@ CENTRAL_MODEL_POOL: list[ModelPoolRecord] = [
             "security_and_injection": 0.92,
         },
         composite_score=0.93,
-        eligible_use_cases=["coding_and_debugging", "target_adapter_code_compilation", "syntax_verification"],
-        ineligible_use_cases=["extreme_long_context_gt_128k"],
+        eligible_use_cases=["experimental_evaluation_only"],
+        ineligible_use_cases=["production_routing", "production_verification", "extreme_long_context_gt_128k"],
         verification_date="2026-11-21",
-        verification_evidence="Active open-weight candidate on GroqCloud, superseding legacy 2.5/3.6. Free-tier: 1,000 RPD, 100k TPD.",
+        verification_evidence="Preview/experimental model on GroqCloud. Per Phase 3.4 directive, preview models are strictly barred from production routes.",
         source_url="https://console.groq.com/docs/rate-limits",
     ),
     # 7. Internal Deterministic Mock
@@ -563,9 +563,12 @@ class ModelPoolService:
         return None
 
     @classmethod
-    def get_verified_eligible_models(cls) -> list[ModelPoolRecord]:
-        """Returns all verified eligible zero-price models."""
-        return cls.list_models(eligibility_state=EligibilityState.VERIFIED_ELIGIBLE, zero_price_only=True)
+    def get_verified_eligible_models(cls, include_conditional: bool = False) -> list[ModelPoolRecord]:
+        """Returns all verified eligible zero-price models, optionally including conditional models."""
+        results = cls.list_models(eligibility_state=EligibilityState.VERIFIED_ELIGIBLE, zero_price_only=True)
+        if include_conditional:
+            results.extend(cls.list_models(eligibility_state=EligibilityState.CONDITIONALLY_ELIGIBLE, zero_price_only=True))
+        return results
 
     @classmethod
     def get_candidates_for_role(
@@ -573,11 +576,12 @@ class ModelPoolService:
         role: LogicalModelRole,
         sensitivity: DataSensitivityLevel = DataSensitivityLevel.GENERAL,
         required_context_length: int = 4000,
+        include_conditional: bool = False,
     ) -> list[ModelPoolRecord]:
         """Identifies eligible candidate models matching a logical role and data sensitivity."""
         from promptiq.gateway.privacy_governance import PrivacyGovernanceService
 
-        eligible_models = cls.get_verified_eligible_models()
+        eligible_models = cls.get_verified_eligible_models(include_conditional=include_conditional)
         # Filter for privacy
         privacy_safe = PrivacyGovernanceService.filter_models_for_sensitivity(eligible_models, sensitivity)
 
@@ -602,11 +606,11 @@ class ModelPoolService:
                 if m.capabilities.structured_output and m.composite_score >= 0.90:
                     candidates.append(m)
             elif role == LogicalModelRole.CRITIC:
-                # Critic must have high reasoning and structured output
-                if m.capabilities.reasoning and m.composite_score >= 0.90:
+                # Critic must have reasoning capability (allows GPT-OSS 120B and GPT-OSS 20B)
+                if m.capabilities.reasoning and (m.composite_score >= 0.85 or m.model_id == "openai/gpt-oss-20b"):
                     candidates.append(m)
             elif role == LogicalModelRole.VERIFIER:
-                if m.capabilities.structured_output:
+                if m.capabilities.structured_output or m.model_family == "internal":
                     candidates.append(m)
             elif role == LogicalModelRole.ORCHESTRATOR:
                 if m.capabilities.tools and m.composite_score >= 0.90:

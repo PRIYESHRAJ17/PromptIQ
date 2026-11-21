@@ -153,3 +153,37 @@ async def test_collaboration_critic_failure_marks_audit_failed(monkeypatch):
     assert critic_step.verification_passed is False
     assert any("CRITIC EXECUTION FAILED" in f for f in critic_step.findings)
     assert "WARNING: Adversarial review failed" in final_text
+
+
+@pytest.mark.asyncio
+async def test_multi_model_audit_disclosure_fields():
+    """Verifies that the audit record explicitly discloses multi-model vs multi-family vs multi-provider facts."""
+    final_text, audit = await MultiModelCollaborationPipeline.execute_workflow(
+        task_id="task-audit-fields-1",
+        project_id="proj-106",
+        user_id="user-1",
+        prompt="Design rate-limiting middleware specification for microservices.",
+        profile=ExecutionProfile.STANDARD,
+    )
+
+    assert audit.generator_provider is not None
+    assert audit.generator_model_id is not None
+    assert audit.critic_provider is not None
+    assert audit.critic_model_id is not None
+    assert isinstance(audit.is_multi_provider, bool)
+    assert isinstance(audit.is_multi_family, bool)
+    assert audit.model_diversity_rating in (
+        "MULTI_PROVIDER_INDEPENDENT",
+        "MULTI_FAMILY_SAME_PROVIDER",
+        "SAME_FAMILY_SAME_PROVIDER",
+        "SINGLE_MODEL_EXECUTION",
+    )
+    assert audit.deterministic_verification_passed is True
+
+    # If both generator and critic use Groq and gpt-oss family, diversity must disclose same family
+    if audit.generator_provider == audit.critic_provider and not audit.is_multi_family:
+        assert audit.is_multi_provider is False
+        assert audit.is_multi_family is False
+        assert audit.model_diversity_rating == "SAME_FAMILY_SAME_PROVIDER"
+        assert audit.consensus_status == "same_family_intra_provider_disclosed"
+
