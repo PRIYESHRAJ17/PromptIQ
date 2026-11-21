@@ -26,6 +26,8 @@ class ProjectConstitution(Base, UUIDMixin, TimestampMixin):
     decisions: Mapped[list] = mapped_column(JSON, default=list, nullable=False)
     assumptions: Mapped[list] = mapped_column(JSON, default=list, nullable=False)
     open_questions: Mapped[list] = mapped_column(JSON, default=list, nullable=False)
+    risks: Mapped[list] = mapped_column(JSON, default=list, nullable=False)
+    conflicts: Mapped[list] = mapped_column(JSON, default=list, nullable=False)
 
     # Change tracking
     diff_from_previous: Mapped[dict] = mapped_column(JSON, default=dict, nullable=False)

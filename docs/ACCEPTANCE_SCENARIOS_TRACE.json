@@ -1,0 +1,183 @@
+{
+  "execution_timestamp": "2026-11-21T22:57:38.411002+00:00",
+  "runner_version": "2.0.0",
+  "environment": "local_workstation_sqlite",
+  "scenarios": [
+    {
+      "scenario": "Scenario 1: Software Engineering",
+      "steps": [
+        {
+          "step": "create_project",
+          "project_id": "8f3202ef-4d38-475a-8f0b-faa0a99ed66e",
+          "status": "completed"
+        },
+        {
+          "step": "discovery_intake",
+          "session_id": "ec47c90b-a338-4f50-8d47-1ed4052a0c5c",
+          "questions_count": 3,
+          "status": "completed"
+        },
+        {
+          "step": "discovery_answers",
+          "missing_info": [],
+          "status": "completed"
+        },
+        {
+          "step": "constitution_traceability",
+          "constitution_version": 1,
+          "traceability_matrix_count": 6,
+          "status": "completed"
+        },
+        {
+          "step": "constitution_approval",
+          "is_approved": true,
+          "status": "completed"
+        },
+        {
+          "step": "target_recommendation",
+          "recommended_target": "google-antigravity",
+          "status": "completed"
+        },
+        {
+          "step": "compile_package",
+          "package_id": "bd7786d1-a6da-408a-af29-6f2af7a8e740",
+          "files_count": 7,
+          "files": [
+            "plugin.json",
+            "AGENTS.md",
+            "skills/implementation/SKILL.md",
+            "rules/AGENTS.md",
+            "rules/project_invariants.md",
+            "mcp_config.json",
+            "README.md"
+          ],
+          "status": "completed"
+        },
+        {
+          "step": "prompt_autopsy",
+          "verdict": "needs_revision",
+          "findings_count": 3,
+          "quality_scores": {
+            "static_quality": 100.0,
+            "requirement_coverage": 80.0,
+            "target_compatibility": 90.0,
+            "security_robustness": 70.0
+          },
+          "status": "completed"
+        },
+        {
+          "step": "eval_lab_run",
+          "run_id": "ce2e3281-50d1-48cc-ae13-db03bc32c954",
+          "pass_rate": 100.0,
+          "status": "completed"
+        },
+        {
+          "step": "checkpoint_and_context_pack",
+          "checkpoint_id": "30fbee38-a851-4b43-ab22-6e87fc2c5c92",
+          "estimated_tokens": 371,
+          "status": "completed"
+        }
+      ],
+      "outcome": "SUCCESS_FULLY_VERIFIED"
+    },
+    {
+      "scenario": "Scenario 2: Academic & Technical Research",
+      "steps": [
+        {
+          "step": "execute_research",
+          "job_id": "11f00011-e57f-4338-b8eb-d14784035dcc",
+          "sources_count": 2,
+          "claims_count": 2,
+          "deduplication_ratio": 1.0,
+          "status": "completed"
+        },
+        {
+          "step": "constitution_evidence_sync",
+          "constitution_version": 2,
+          "research_reqs_added": 2,
+          "status": "completed"
+        },
+        {
+          "step": "research_checkpoint",
+          "checkpoint_id": "5bd1cd32-b3a1-4571-aba3-9ada45594026",
+          "status": "completed"
+        }
+      ],
+      "outcome": "SUCCESS_FULLY_VERIFIED"
+    },
+    {
+      "scenario": "Scenario 3: AI Agent Development",
+      "steps": [
+        {
+          "step": "agent_package_compilation",
+          "target": "claude-code",
+          "package_id": "0151a637-47ff-4cf7-ba7d-a2ea4b50d7d7",
+          "files": [
+            "CLAUDE.md",
+            ".claude/settings.json",
+            ".claude/rules/architecture.md",
+            "README.md"
+          ],
+          "status": "completed"
+        },
+        {
+          "step": "agent_autopsy",
+          "verdict": "needs_revision",
+          "findings_count": 3,
+          "status": "completed"
+        }
+      ],
+      "outcome": "SUCCESS_FULLY_VERIFIED"
+    },
+    {
+      "scenario": "Scenario 4: Business Strategy",
+      "steps": [
+        {
+          "step": "business_prompt_compilation",
+          "target": "raw-prompt",
+          "package_id": "683a2e52-63f8-4d6b-82a6-bc7b03df47da",
+          "files": [
+            "prompt.md"
+          ],
+          "status": "completed"
+        }
+      ],
+      "outcome": "SUCCESS_FULLY_VERIFIED"
+    },
+    {
+      "scenario": "Scenario 5: General Prompt Improvement",
+      "steps": [
+        {
+          "step": "initial_autopsy_flawed_prompt",
+          "verdict": "needs_revision",
+          "findings_count": 7,
+          "categories": [
+            "ambiguity",
+            "security",
+            "output_contract",
+            "inadequate_constraints",
+            "testability_gap",
+            "ambiguity",
+            "security"
+          ],
+          "status": "completed"
+        },
+        {
+          "step": "revision_verification",
+          "all_resolved": false,
+          "blocks_release": false,
+          "resolved_count": 6,
+          "unresolved_count": 1,
+          "status": "completed"
+        },
+        {
+          "step": "final_autopsy_refined_prompt",
+          "verdict": "needs_revision",
+          "findings_count": 4,
+          "status": "completed"
+        }
+      ],
+      "outcome": "SUCCESS_FULLY_VERIFIED"
+    }
+  ]
+}

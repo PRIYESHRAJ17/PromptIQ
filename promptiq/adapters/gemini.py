@@ -12,6 +12,16 @@ class GeminiCLITargetAdapter(BaseTargetAdapter):
     """Compiles PPS into Gemini CLI extensions and context files."""
 
     target_name: str = "gemini-cli"
+    capabilities: dict[str, Any] = {
+        "context_window": 1000000,
+        "supports_mcp": False,
+        "supports_subagents": False,
+        "supports_artifacts": False,
+        "supports_rules_hierarchy": False,
+        "supports_tool_calling": False,
+        "max_output_tokens": 8192,
+        "multimodal": True,
+    }
 
     def compile(self, pps: PromptSpecSchema, output_type: OutputType) -> tuple[dict[str, Any], dict[str, str], list[str]]:
         files: dict[str, str] = {}

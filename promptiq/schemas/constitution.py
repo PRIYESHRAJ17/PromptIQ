@@ -17,10 +17,18 @@ ProvenanceType = Literal[
 
 RequirementPriority = Literal["P0", "P1", "P2", "P3"]
 RequirementStatus = Literal["proposed", "confirmed", "rejected", "deferred"]
+VerificationMethod = Literal[
+    "deterministic_test",
+    "schema_validation",
+    "model_eval",
+    "manual_audit",
+    "static_analysis",
+]
+VerificationStatus = Literal["unverified", "verified", "failed", "waived"]
 
 
 class RequirementItem(BaseModel):
-    """An individual project requirement with provenance."""
+    """An individual project requirement with provenance and traceability."""
 
     id: str = Field(..., description="Stable requirement identifier, e.g. REQ-AUTH-001")
     text: str = Field(..., description="Exact requirement statement")
@@ -30,6 +38,30 @@ class RequirementItem(BaseModel):
     provenance: ProvenanceType = Field(default="user_provided")
     source_reference: str | None = Field(default=None, description="Originating document, turn, or citation")
     acceptance_criteria: str | None = Field(default=None, description="Observable pass/fail test condition")
+    depends_on: list[str] = Field(default_factory=list, description="IDs of requirements this requirement depends on")
+    relationships: list[dict[str, str]] = Field(default_factory=list, description="Target and relationship type mapping")
+    deliverable_target: str | None = Field(default=None, description="Target artifact or file fulfilling this requirement")
+    verification_method: VerificationMethod = Field(default="deterministic_test", description="Validation mechanism")
+    verification_status: VerificationStatus = Field(default="unverified", description="Current validation state")
+    outstanding_gaps: list[str] = Field(default_factory=list, description="Remaining verification gaps")
+
+
+class RiskRecord(BaseModel):
+    id: str
+    title: str
+    description: str
+    severity: Literal["low", "medium", "high", "critical"] = "medium"
+    mitigation: str
+    status: Literal["open", "mitigated", "accepted"] = "open"
+
+
+class ConflictRecord(BaseModel):
+    id: str
+    source_a: str
+    source_b: str
+    description: str
+    resolution: str | None = None
+    status: Literal["unresolved", "resolved"] = "unresolved"
 
 
 class DecisionRecord(BaseModel):
@@ -86,6 +118,8 @@ class ConstitutionUpdate(BaseModel):
     decisions: list[DecisionRecord] | None = None
     assumptions: list[AssumptionRecord] | None = None
     open_questions: list[OpenQuestionRecord] | None = None
+    risks: list[RiskRecord] | None = None
+    conflicts: list[ConflictRecord] | None = None
 
 
 class ConstitutionApprovalRequest(BaseModel):
@@ -107,6 +141,8 @@ class ConstitutionResponse(BaseModel):
     decisions: list[DecisionRecord]
     assumptions: list[AssumptionRecord]
     open_questions: list[OpenQuestionRecord]
+    risks: list[RiskRecord] = Field(default_factory=list)
+    conflicts: list[ConflictRecord] = Field(default_factory=list)
     diff_from_previous: dict[str, Any]
     approved_by_user_id: str | None
     created_at: datetime

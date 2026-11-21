@@ -1,6 +1,8 @@
 """Capacity Governor and Usage tracking database models."""
 
-from sqlalchemy import Boolean, ForeignKey, Integer, String
+from datetime import datetime
+
+from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from promptiq.core.database import Base
@@ -32,3 +34,16 @@ class UsageRecord(Base, UUIDMixin, TimestampMixin):
     task_type: Mapped[str] = mapped_column(String(64), nullable=False)
     requests_count: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
     tokens_estimated: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+
+
+class QuotaReservationRecord(Base, UUIDMixin, TimestampMixin):
+    """Database-backed transactional quota reservation record."""
+
+    __tablename__ = "quota_reservations"
+
+    token: Mapped[str] = mapped_column(String(64), unique=True, index=True, nullable=False)
+    model_id: Mapped[str] = mapped_column(String(64), nullable=False, index=True)
+    tokens: Mapped[int] = mapped_column(Integer, nullable=False)
+    status: Mapped[str] = mapped_column(String(32), default="active", nullable=False)  # active, reconciled, released, expired
+    user_id: Mapped[str | None] = mapped_column(String(36), nullable=True, index=True)
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)

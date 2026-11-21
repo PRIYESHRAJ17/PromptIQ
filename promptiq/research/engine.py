@@ -1,5 +1,6 @@
-"""Research Intelligence Engine and Evidence Ledger Coordinator."""
+"""Research Intelligence Engine and Evidence Ledger Coordinator with multi-source synthesis."""
 
+import hashlib
 from datetime import UTC, datetime
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -56,13 +57,32 @@ class ResearchEngine:
         db.add(job)
         await db.flush()
 
-        # 3. Search and Retrieve Source Records
+        # 3. Search and Retrieve Source Records with Deduplication
         raw_sources = await self.search_connector.search(request.query, max_results=request.max_sources)
 
-        source_records: list[tuple[SourceRecord, str, bool]] = []
+        seen_urls: set[str] = set()
+        seen_hashes: set[str] = set()
+        deduped_raw_sources = []
+
         for s in raw_sources:
+            url = s.get("url", "")
+            content = s.get("content", "")
+            c_hash = s.get("content_hash") or hashlib.sha256(content.encode("utf-8")).hexdigest()
+            s["content_hash"] = c_hash
+
+            if url in seen_urls or c_hash in seen_hashes:
+                continue
+            seen_urls.add(url)
+            seen_hashes.add(c_hash)
+            deduped_raw_sources.append(s)
+
+        source_records: list[tuple[SourceRecord, str, bool, str, str]] = []
+        for s in deduped_raw_sources:
             prov = s.get("provenance", "live_web")
             is_m = s.get("is_mock", False)
+            c_hash = s.get("content_hash", "")
+            rel_tier = s.get("reliability_tier", "tier_1_official" if not is_m else "tier_3_simulated")
+
             rec = SourceRecord(
                 research_job_id=job.id,
                 url=s["url"],
@@ -75,35 +95,46 @@ class ResearchEngine:
                 is_accessible=True,
             )
             db.add(rec)
-            source_records.append((rec, prov, is_m))
+            source_records.append((rec, prov, is_m, c_hash, rel_tier))
 
         await db.flush()
 
-        # 4. Extract Claims via Intelligence Gateway
-        claims: list[tuple[EvidenceClaim, str, bool]] = []
-        for s_rec, prov, is_m in source_records:
-            matching_raw = next((r for r in raw_sources if r["url"] == s_rec.url), None)
+        # 4. Extract Claims and Check for Contradictions
+        claims: list[tuple[EvidenceClaim, str, bool, str, str]] = []
+        for s_rec, prov, is_m, c_hash, rel_tier in source_records:
+            matching_raw = next((r for r in deduped_raw_sources if r["url"] == s_rec.url), None)
             content_snippet = matching_raw.get("content", "") if matching_raw else ""
 
-            # Extract claim
+            # Check if snippet contains contradictory signals
+            is_contradicted = "contradicts" in content_snippet.lower() or "deprecated" in content_snippet.lower()
+            support_status = "contradicted" if is_contradicted else "verified"
+
             prefix = "Verified" if not is_m else "Synthesized/Mock"
             claim_text = f"{prefix}: {s_rec.title} defines operational parameters: {content_snippet[:150]}"
+
+            contrary_evidence = []
+            if is_contradicted:
+                contrary_evidence.append({
+                    "note": "Document flags deprecation or contradiction with earlier releases.",
+                    "excerpt": content_snippet[:100],
+                })
+
             claim = EvidenceClaim(
                 research_job_id=job.id,
                 source_id=s_rec.id,
                 claim_text=claim_text,
-                support_status="verified",
+                support_status=support_status,
                 confidence_score=0.95 if not is_m else 0.85,
                 confidence_rationale=(
-                    "Extracted directly from verified official publisher source."
+                    "Extracted directly from verified official publisher source with SHA-256 fingerprint."
                     if not is_m
                     else "Extracted from deterministic mock knowledge base (simulated)."
                 ),
                 excerpt=content_snippet,
-                contrary_evidence=[],
+                contrary_evidence=contrary_evidence,
             )
             db.add(claim)
-            claims.append((claim, prov, is_m))
+            claims.append((claim, prov, is_m, c_hash, rel_tier))
 
         await db.flush()
 
@@ -112,10 +143,11 @@ class ResearchEngine:
             "synthesis": f"Research completed for '{request.query}'. Analyzed {len(source_records)} authoritative sources.",
             "key_takeaways": [
                 f"Documented specifications verified across {len(source_records)} independent sources.",
-                "Zero conflicting primary claims identified in official documentation.",
+                f"Recorded {len(claims)} evidence claims in the persistent Evidence Ledger.",
             ],
             "remaining_uncertainties": ["Upstream rate limits may be revised dynamically by provider."],
             "evidence_ledger_count": len(claims),
+            "deduplication_ratio": round(len(source_records) / max(1, len(raw_sources)), 2),
         }
 
         job.summary = summary
@@ -142,8 +174,10 @@ class ResearchEngine:
                     is_accessible=s.is_accessible,
                     provenance=prov,
                     is_mock=is_m,
+                    content_hash=c_hash,
+                    reliability_tier=rel_tier,
                 )
-                for s, prov, is_m in source_records
+                for s, prov, is_m, c_hash, rel_tier in source_records
             ],
             claims=[
                 EvidenceClaimSchema(
@@ -154,15 +188,16 @@ class ResearchEngine:
                     confidence_rationale=c.confidence_rationale,
                     excerpt=c.excerpt,
                     source_id=c.source_id,
-                    source_url=next((s.url for s, _, _ in source_records if s.id == c.source_id), None),
+                    source_url=next((s.url for s, _, _, _, _ in source_records if s.id == c.source_id), None),
                     contrary_evidence=c.contrary_evidence,
                     provenance=prov,
                     is_mock=is_m,
+                    content_hash=c_hash,
+                    reliability_tier=rel_tier,
                 )
-                for c, prov, is_m in claims
+                for c, prov, is_m, c_hash, rel_tier in claims
             ],
         )
-
 
 
 research_engine = ResearchEngine()

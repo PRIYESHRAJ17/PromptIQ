@@ -12,6 +12,16 @@ class CursorTargetAdapter(BaseTargetAdapter):
     """Compiles PPS into .cursorrules and .cursor/rules/*.mdc files."""
 
     target_name: str = "cursor"
+    capabilities: dict[str, Any] = {
+        "context_window": 128000,
+        "supports_mcp": False,
+        "supports_subagents": False,
+        "supports_artifacts": False,
+        "supports_rules_hierarchy": True,
+        "supports_tool_calling": True,
+        "max_output_tokens": 4096,
+        "multimodal": False,
+    }
 
     def compile(self, pps: PromptSpecSchema, output_type: OutputType) -> tuple[dict[str, Any], dict[str, str], list[str]]:
         files: dict[str, str] = {}

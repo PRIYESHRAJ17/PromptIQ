@@ -90,6 +90,10 @@ class TargetCompiler:
         adapter = self.get_adapter(target_environment)
         manifest, files, warnings = adapter.compile(pps, output_type)
 
+        # Capability validation against target environment
+        cap_warnings = adapter.validate_pps_capabilities(pps)
+        warnings.extend(cap_warnings)
+
         # 3. Validation Gate
         is_validated = True
         validation_errors = []

@@ -119,12 +119,84 @@ class PromptAutopsyEngine:
         if "error" not in text.lower() and "fail" not in text.lower():
             findings.append(
                 CriticFindingSchema(
-                    category="missing_requirements",
-                    severity="low",
+                    category="missing_error_handling",
+                    severity="medium",
                     finding="No explicit error handling or stop condition specified.",
                     evidence_passage=None,
                     consequence="Model may enter recursive loops or guess answers when blocked.",
                     recommendation="Specify clear stop conditions and error reporting contracts.",
+                    blocks_release=False,
+                )
+            )
+
+        # Check negative constraints
+        negative_words = ["do not", "never", "must not", "prohibit", "exclude", "strictly no"]
+        if not any(w in text.lower() for w in negative_words):
+            findings.append(
+                CriticFindingSchema(
+                    category="inadequate_constraints",
+                    severity="medium",
+                    finding="Prompt lacks negative boundary constraints or explicit prohibitions.",
+                    evidence_passage=None,
+                    consequence="Model may take unconstrained actions or hallucinate out-of-scope behaviors.",
+                    recommendation="Add explicit negative boundaries defining what the model must NOT do.",
+                    blocks_release=False,
+                )
+            )
+
+        # Check for instruction conflicts (e.g. concise vs exhaustive)
+        text_lower = text.lower()
+        if ("concise" in text_lower or "brief" in text_lower) and ("exhaustive" in text_lower or "cover all" in text_lower):
+            findings.append(
+                CriticFindingSchema(
+                    category="instruction_conflict",
+                    severity="high",
+                    finding="Conflicting density instructions: prompt demands brevity while requesting exhaustive detail.",
+                    evidence_passage="concise vs exhaustive",
+                    consequence="Model will produce erratic length responses or truncate important details.",
+                    recommendation="Reconcile brevity vs exhaustiveness by specifying section-by-section length targets.",
+                    blocks_release=True,
+                )
+            )
+
+        # Check for unbounded generation
+        if "generate everything" in text_lower or "infinite" in text_lower or "without limit" in text_lower:
+            findings.append(
+                CriticFindingSchema(
+                    category="unbounded_generation",
+                    severity="high",
+                    finding="Unbounded generation directive detected.",
+                    evidence_passage="unbounded generation",
+                    consequence="Model may exceed output token limits and terminate mid-generation.",
+                    recommendation="Define bounded generation limits (e.g. top 5 recommendations, max 2 pages).",
+                    blocks_release=True,
+                )
+            )
+
+        # Check for data privacy risks
+        if "print password" in text_lower or "reveal secret" in text_lower or "output api key" in text_lower:
+            findings.append(
+                CriticFindingSchema(
+                    category="data_privacy_leak",
+                    severity="critical",
+                    finding="Data privacy hazard: prompt requests disclosure of sensitive credentials or keys.",
+                    evidence_passage="print password / secret",
+                    consequence="Risk of secret leakage and security breach.",
+                    recommendation="Strictly redact and prohibit disclosure of credentials, keys, or passwords.",
+                    blocks_release=True,
+                )
+            )
+
+        # Check for testability gaps
+        if not any(kw in text_lower for kw in ["test", "verify", "assert", "validate", "acceptance"]):
+            findings.append(
+                CriticFindingSchema(
+                    category="testability_gap",
+                    severity="low",
+                    finding="Prompt contains no test validation criteria or verification method.",
+                    evidence_passage=None,
+                    consequence="Output correctness cannot be objectively or deterministically verified.",
+                    recommendation="Add observable acceptance criteria or automated test conditions.",
                     blocks_release=False,
                 )
             )
@@ -274,7 +346,7 @@ class PromptAutopsyEngine:
                     status = "unresolved"
                     reason = "Requests JSON output but lacks explicit schema or structure."
 
-            elif finding.category == "missing_requirements":
+            elif finding.category in ("missing_requirements", "missing_error_handling"):
                 has_error_handling = any(kw in revised_lower for kw in ["error", "fail", "halt", "exception", "abort", "blocker"])
                 if has_error_handling:
                     status = "resolved"
@@ -283,6 +355,59 @@ class PromptAutopsyEngine:
                 else:
                     status = "unresolved"
                     reason = "Still missing explicit error handling or stop conditions."
+
+            elif finding.category == "inadequate_constraints":
+                has_neg = any(kw in revised_lower for kw in ["do not", "never", "must not", "prohibit", "exclude", "strictly no"])
+                if has_neg:
+                    status = "resolved"
+                    reason = "Explicit negative boundary constraints added."
+                    proof_snippet = "Negative constraints present"
+                else:
+                    status = "unresolved"
+                    reason = "Still missing negative boundary constraints."
+
+            elif finding.category == "data_privacy_leak":
+                has_redaction = any(kw in revised_lower for kw in ["redact", "never disclose", "zero secret", "do not log", "never log", "never print"])
+                raw_leak = any(kw in revised_lower for kw in ["print password", "reveal secret", "output api key", "dump password"])
+                is_prohibited_context = any(p in revised_lower for p in ["never", "do not", "must not", "prohibit", "redact"])
+
+                if (has_redaction and is_prohibited_context) or not raw_leak:
+                    status = "resolved"
+                    reason = "Data privacy hazard eliminated and redaction boundaries enforced."
+                    proof_snippet = "Redaction rules present"
+                else:
+                    status = "unresolved"
+                    reason = "Credential disclosure instructions still present."
+
+            elif finding.category == "unbounded_generation":
+                has_bounds = any(kw in revised_lower for kw in ["maximum", "limit to", "at most", "bounded", "top "])
+                if has_bounds:
+                    status = "resolved"
+                    reason = "Bounded generation limits specified."
+                    proof_snippet = "Bounds defined"
+                else:
+                    status = "unresolved"
+                    reason = "Still lacks explicit generation limits."
+
+            elif finding.category == "instruction_conflict":
+                has_conflict = ("concise" in revised_lower or "brief" in revised_lower) and ("exhaustive" in revised_lower or "cover all" in revised_lower)
+                if not has_conflict:
+                    status = "resolved"
+                    reason = "Conflicting density directives reconciled."
+                    proof_snippet = "Density reconciled"
+                else:
+                    status = "unresolved"
+                    reason = "Conflicting density directives remain unresolved."
+
+            elif finding.category == "testability_gap":
+                has_tests = any(kw in revised_lower for kw in ["test", "verify", "assert", "validate", "acceptance"])
+                if has_tests:
+                    status = "resolved"
+                    reason = "Test validation or acceptance criteria added."
+                    proof_snippet = "Verification criteria present"
+                else:
+                    status = "unresolved"
+                    reason = "Still missing test validation criteria."
 
             else:
                 if evidence_lower and evidence_lower not in revised_lower:

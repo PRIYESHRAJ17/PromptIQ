@@ -6,7 +6,7 @@ from promptiq.models.constitution import ConstitutionVersion, ProjectConstitutio
 from promptiq.models.critic import CriticFinding
 from promptiq.models.discovery import DiscoverySession
 from promptiq.models.eval import EvaluationRun, EvaluationSuite, FailureRecord
-from promptiq.models.governor import ProviderQuotaRecord, UsageRecord
+from promptiq.models.governor import ProviderQuotaRecord, QuotaReservationRecord, UsageRecord
 from promptiq.models.memory import Artifact, Checkpoint
 from promptiq.models.package import PromptPackage
 from promptiq.models.project import Project, ProjectMembership
@@ -43,5 +43,6 @@ __all__ = [
     "AuditEvent",
     "IntegrationInstallation",
     "ProviderQuotaRecord",
+    "QuotaReservationRecord",
     "UsageRecord",
 ]

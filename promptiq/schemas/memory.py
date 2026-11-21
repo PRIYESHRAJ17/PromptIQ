@@ -35,6 +35,9 @@ class ContextPackRequest(BaseModel):
     max_token_budget: int = 16000
     include_research: bool = True
     include_code_references: bool = True
+    task_focus: str | None = Field(default=None, description="Optional topic or task focus for relevance weighting")
+    priority_cutoff: str = Field(default="P2", description="Lowest priority requirement to include (P0, P1, P2, P3)")
+    provenance_filter: list[str] | None = Field(default=None, description="Optional whitelist of provenances to include")
 
 
 class ContextPackResponse(BaseModel):

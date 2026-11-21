@@ -145,7 +145,7 @@ def verify_host_and_resolve_safe_ips(host: str, port: int = 443) -> list[str]:
         "169.254.169.254",
         "127.0.0.1",
         "::1",
-        "0.0.0.0",
+        "0.0.0.0",  # nosec B104
         "::",
     }
     blocked_suffixes = (

@@ -6,7 +6,18 @@ from typing import Any, Literal
 from pydantic import BaseModel, ConfigDict, Field
 
 ResearchMode = Literal["quick", "decision", "deep", "benchmark"]
-SupportStatus = Literal["verified", "contradicted", "inferred", "stale"]
+SupportStatus = Literal[
+    "SUPPORTED",
+    "PARTIALLY_SUPPORTED",
+    "CONTRADICTED",
+    "UNVERIFIED",
+    "INSUFFICIENT_EVIDENCE",
+    # Legacy aliases
+    "verified",
+    "contradicted",
+    "inferred",
+    "stale",
+]
 
 
 class ResearchRequest(BaseModel):
@@ -27,6 +38,8 @@ class SourceRecordSchema(BaseModel):
     is_accessible: bool = True
     provenance: str = Field(default="live_web", description="live_web, stored_evidence, user_reference, simulated_mock")
     is_mock: bool = False
+    content_hash: str | None = None
+    reliability_tier: str | None = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -43,9 +56,10 @@ class EvidenceClaimSchema(BaseModel):
     contrary_evidence: list[dict[str, Any]] = Field(default_factory=list)
     provenance: str = Field(default="live_web", description="live_web, stored_evidence, user_reference, simulated_mock")
     is_mock: bool = False
+    content_hash: str | None = None
+    reliability_tier: str | None = None
 
     model_config = ConfigDict(from_attributes=True)
-
 
 
 class ResearchResponse(BaseModel):

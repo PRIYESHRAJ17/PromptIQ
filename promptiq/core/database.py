@@ -61,6 +61,16 @@ async def init_db() -> None:
     async with engine.begin() as conn:
         logger.info("Initializing database schema...")
         await conn.run_sync(Base.metadata.create_all)
+
+        # Ensure newly added columns exist in SQLite without needing manual migration
+        if settings.DATABASE_URL.startswith("sqlite"):
+            from sqlalchemy import text
+
+            for col in ["risks", "conflicts"]:
+                try:
+                    await conn.execute(text(f"ALTER TABLE project_constitutions ADD COLUMN {col} JSON DEFAULT '[]'"))
+                except Exception as ex:
+                    logger.debug("Column %s already present or migration skipped: %s", col, ex)
         logger.info("Database schema initialized successfully.")
 
 

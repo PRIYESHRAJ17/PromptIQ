@@ -12,6 +12,16 @@ class AntigravityTargetAdapter(BaseTargetAdapter):
     """Compiles PPS into Google Antigravity native plugin bundles conforming to the Antigravity Customization System."""
 
     target_name: str = "google-antigravity"
+    capabilities: dict[str, Any] = {
+        "context_window": 1000000,
+        "supports_mcp": True,
+        "supports_subagents": True,
+        "supports_artifacts": True,
+        "supports_rules_hierarchy": True,
+        "supports_tool_calling": True,
+        "max_output_tokens": 8192,
+        "multimodal": True,
+    }
 
     def compile(self, pps: PromptSpecSchema, output_type: OutputType) -> tuple[dict[str, Any], dict[str, str], list[str]]:
         files: dict[str, str] = {}

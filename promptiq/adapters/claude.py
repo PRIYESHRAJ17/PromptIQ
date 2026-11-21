@@ -12,6 +12,16 @@ class ClaudeCodeTargetAdapter(BaseTargetAdapter):
     """Compiles PPS into Claude Code native CLAUDE.md and .claude configuration files."""
 
     target_name: str = "claude-code"
+    capabilities: dict[str, Any] = {
+        "context_window": 200000,
+        "supports_mcp": True,
+        "supports_subagents": True,
+        "supports_artifacts": False,
+        "supports_rules_hierarchy": True,
+        "supports_tool_calling": True,
+        "max_output_tokens": 4096,
+        "multimodal": True,
+    }
 
     def compile(self, pps: PromptSpecSchema, output_type: OutputType) -> tuple[dict[str, Any], dict[str, str], list[str]]:
         files: dict[str, str] = {}

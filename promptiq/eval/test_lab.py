@@ -118,6 +118,28 @@ class PromptTestLab:
                         passed = False
                         failure_reason = f"Regex match failed for pattern: '{pattern}'"
                         break
+                elif assertion_type in ("schema_valid", "json_schema"):
+                    import json
+                    try:
+                        clean_json = output_text
+                        if "```json" in clean_json:
+                            clean_json = clean_json.split("```json")[1].split("```")[0].strip()
+                        elif "```" in clean_json:
+                            clean_json = clean_json.split("```")[1].split("```")[0].strip()
+                        parsed = json.loads(clean_json)
+                        if pattern and pattern not in parsed:
+                            passed = False
+                            failure_reason = f"JSON output missing expected key: '{pattern}'"
+                            break
+                    except Exception as err:
+                        passed = False
+                        failure_reason = f"Output failed schema parsing: {err}"
+                        break
+                elif assertion_type == "evidence_grounded":
+                    if pattern.lower() not in output_text.lower():
+                        passed = False
+                        failure_reason = f"Output lacks grounded evidence citation: '{pattern}'"
+                        break
 
             if passed:
                 passed_count += 1
@@ -171,6 +193,16 @@ class PromptTestLab:
             latency_ms=run.latency_ms,
             cost_estimate=0.0,
             execution_mode="mock" if settings.is_test else "live",
+            num_runs=run_req.num_runs,
+            mean_latency_ms=total_latency_ms,
+            latency_variance=0.0,
+            provenance={
+                "suite_id": suite.id,
+                "package_id": pkg.id,
+                "model_id": run.model_id,
+                "mode": "mock" if settings.is_test else "live",
+                "route": run.provider_route,
+            },
         )
 
     @classmethod

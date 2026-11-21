@@ -8,11 +8,19 @@ OutputDeliverable = Literal["prompt_only", "prompt_suite", "complete_package", "
 TargetSelectionMode = Literal["specific", "multiple", "recommend", "undecided"]
 DiscoveryDepth = Literal["quick", "guided", "deep"]
 TaskType = Literal[
+    "software_project",
+    "research",
+    "business_strategy",
+    "product_development",
+    "agent_creation",
+    "writing_content",
+    "data_analysis",
+    "technical_documentation",
+    "education_learning",
+    "general_prompt",
+    # Legacy / alias compatibility
     "prompt_creation",
     "prompt_improvement",
-    "research",
-    "software_project",
-    "agent_creation",
     "prompt_eval",
 ]
 

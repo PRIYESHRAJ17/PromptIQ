@@ -10,6 +10,7 @@ from promptiq.core.security import validate_and_sanitize_url
 from promptiq.discovery.extractor import ContextExtractor
 from promptiq.discovery.software_stages import SOFTWARE_STAGES, get_software_stage_questions
 from promptiq.discovery.task_paths import get_task_questions
+from promptiq.discovery.task_registry import TaskCategoryRegistry
 from promptiq.gateway.gateway import inference_gateway
 from promptiq.gateway.models import GatewayMessage, InferenceRequest
 from promptiq.models.discovery import DiscoverySession
@@ -60,29 +61,37 @@ class AdaptiveDiscoveryEngine:
                 "Contradiction: Embedded local SQLite requested concurrently with distributed multi-region PostgreSQL."
             )
 
+        # 4. Invariant: No Local Inference
+        all_answers_str = " ".join(str(v).lower() for v in answers.values())
+        if "ollama" in all_answers_str or "llama.cpp" in all_answers_str or "local gpu" in all_answers_str:
+            contradictions.append(
+                "Contradiction: Local model inference requested, which violates PromptIQ's centrally hosted gateway invariant."
+            )
+
+        # 5. Invariant: No User API Keys / BYOK
+        if "user api key" in all_answers_str or "byok" in all_answers_str or "enter openai key" in all_answers_str:
+            contradictions.append(
+                "Contradiction: User API key input requested, violating PromptIQ's zero-price / zero-BYOK policy."
+            )
+
         return contradictions
 
     @classmethod
     def detect_missing_high_impact_info(cls, session: DiscoverySession) -> list[str]:
         """Identifies high-impact unknowns or missing requirements based on task depth and type."""
-        missing: list[str] = []
         answers = session.answers or {}
         task_type = getattr(session, "task_type", None) or "software_project"
         depth = getattr(session, "depth", None) or "guided"
 
-        if task_type == "software_project":
-            if "acceptance_criteria" not in answers:
-                missing.append("Measurable acceptance criteria / test validation conditions (Stage K)")
-            if "auth_requirements" not in answers:
+        # Check TaskCategoryRegistry for dynamic task family requirements
+        missing = TaskCategoryRegistry.detect_missing_info(task_type, answers, depth=depth)
+
+        # Fallback / software-specific additions for deep software workflows
+        if task_type == "software_project" and depth == "deep":
+            if "auth_requirements" not in answers and "Authentication and multi-tenant authorization boundaries (Stage I)" not in missing:
                 missing.append("Authentication and multi-tenant authorization boundaries (Stage I)")
-            if "validation_rules" not in answers and depth in ("guided", "deep"):
+            if "validation_rules" not in answers and "Domain business rules and input validation constraints (Stage D)" not in missing:
                 missing.append("Domain business rules and input validation constraints (Stage D)")
-        elif task_type == "prompt_creation":
-            if "format" not in answers:
-                missing.append("Output format and structured response contract")
-        elif task_type == "research":
-            if "source_hierarchy" not in answers:
-                missing.append("Authoritative source hierarchy requirements")
 
         return missing
 

@@ -529,6 +529,103 @@ class CapacityGovernor:
             self.save_durable_state()
         return token
 
+    async def reserve_capacity_db(
+        self,
+        db: Any,
+        model_id: str,
+        estimated_tokens: int,
+        ttl_seconds: float = 60.0,
+        user_id: str | None = None,
+    ) -> str:
+        """Atomically reserves capacity in database store with crash recovery semantics."""
+        from datetime import timedelta
+
+        from promptiq.models.governor import QuotaReservationRecord
+
+        # First check capacity locally
+        self.check_model_quota(model_id, estimated_tokens=estimated_tokens)
+
+        token = self.reserve_capacity(model_id, estimated_tokens, ttl_seconds=ttl_seconds)
+        now_dt = datetime.now(UTC)
+        expires_at = now_dt + timedelta(seconds=ttl_seconds)
+
+        record = QuotaReservationRecord(
+            token=token,
+            model_id=model_id,
+            tokens=estimated_tokens,
+            status="active",
+            user_id=user_id,
+            expires_at=expires_at,
+        )
+        db.add(record)
+        await db.flush()
+        return token
+
+    async def reconcile_reservation_db(
+        self,
+        db: Any,
+        token: str,
+        actual_tokens: int,
+        http_status: int = 200,
+        provider: str | None = None,
+        response_headers: dict[str, Any] | None = None,
+    ) -> None:
+        """Reconciles reservation in DB and Governor state."""
+        from sqlalchemy import select
+
+        from promptiq.models.governor import QuotaReservationRecord
+
+        self.reconcile_reservation(
+            token=token,
+            actual_tokens=actual_tokens,
+            http_status=http_status,
+            provider=provider,
+            response_headers=response_headers,
+        )
+
+        stmt = select(QuotaReservationRecord).where(QuotaReservationRecord.token == token)
+        res = await db.execute(stmt)
+        record = res.scalar_one_or_none()
+        if record:
+            record.status = "reconciled" if http_status == 200 else "failed"
+            record.tokens = actual_tokens if http_status == 200 else record.tokens
+            await db.flush()
+
+    async def release_reservation_db(self, db: Any, token: str) -> bool:
+        """Releases DB and local reservation."""
+        from sqlalchemy import select
+
+        from promptiq.models.governor import QuotaReservationRecord
+
+        released_local = self.release_reservation(token)
+        stmt = select(QuotaReservationRecord).where(QuotaReservationRecord.token == token)
+        res = await db.execute(stmt)
+        record = res.scalar_one_or_none()
+        if record:
+            record.status = "released"
+            await db.flush()
+            return True
+        return released_local
+
+    async def prune_expired_reservations_db(self, db: Any) -> int:
+        """Prunes expired active reservations in the database."""
+        from sqlalchemy import update
+
+        from promptiq.models.governor import QuotaReservationRecord
+
+        now_dt = datetime.now(UTC)
+        stmt = (
+            update(QuotaReservationRecord)
+            .where(
+                QuotaReservationRecord.status == "active",
+                QuotaReservationRecord.expires_at < now_dt,
+            )
+            .values(status="expired")
+        )
+        res = await db.execute(stmt)
+        await db.flush()
+        return res.rowcount or 0
+
     def release_reservation(self, token: str) -> bool:
         """Releases a reserved capacity token without recording usage."""
         res = self._reservations.pop(token, None)

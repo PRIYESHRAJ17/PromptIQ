@@ -14,6 +14,17 @@ CriticCategory = Literal[
     "security",
     "output_contract",
     "context_overflow",
+    "hallucination_risk",
+    "instruction_conflict",
+    "tone_misalignment",
+    "unbounded_generation",
+    "missing_error_handling",
+    "inadequate_constraints",
+    "target_incompatibility",
+    "over_specification",
+    "under_specification",
+    "testability_gap",
+    "data_privacy_leak",
 ]
 AutopsyVerdict = Literal["ready", "ready_with_caveats", "needs_revision", "blocked", "unsuitable"]
 
