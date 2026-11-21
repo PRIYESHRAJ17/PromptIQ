@@ -4,27 +4,55 @@ from typing import Any
 
 from promptiq.core.exceptions import BYOKViolationError, ZeroPriceViolationError
 
-# Known verified zero-price provider routes
-VERIFIED_ZERO_PRICE_ROUTES = {
+# Known verified zero-price provider routes and active model versions
+VERIFIED_ZERO_PRICE_ROUTES: dict[str, list[str]] = {
     "mock": ["promptiq-mock-v1", "deterministic-mock-v1"],
-    "gemini": ["gemini-1.5-flash", "gemini-2.0-flash", "gemini-2.0-flash-lite"],
-    "groq": ["llama-3.3-70b-versatile", "llama-3.1-8b-instant"],
+    "gemini": [
+        "gemini-2.0-flash",
+        "gemini-2.0-flash-lite",
+        "gemini-3.8-flash",
+        "gemini-3.5-flash-lite",
+    ],
+    "groq": [
+        "llama-3.3-70b-versatile",
+        "llama-3.1-8b-instant",
+        "openai/gpt-oss-120b",
+        "qwen-2.5-coder-32b",
+    ],
     "openrouter": [
         "meta-llama/llama-3.3-70b-instruct:free",
         "google/gemini-2.0-flash-exp:free",
         "deepseek/deepseek-r1:free",
+        "baidu/ernie-5.5-flash-preview:free",
     ],
 }
 
-PROHIBITED_KEY_FIELDS = {
+# Retired models that are explicitly rejected
+RETIRED_MODELS: set[str] = {
+    "gemini-1.0-pro",
+    "gemini-1.5-flash",
+    "gemini-1.5-pro",
+    "text-davinci-003",
+    "gpt-3.5-turbo",
+}
+
+PROHIBITED_KEY_FIELDS: set[str] = {
     "api_key",
     "openai_api_key",
     "anthropic_api_key",
     "gemini_api_key",
     "groq_api_key",
+    "openrouter_api_key",
     "user_api_key",
     "byok_key",
+    "custom_api_key",
+    "llm_key",
     "search_api_key",
+    "authorization_key",
+    "bearer_token",
+    "api_token",
+    "access_token",
+    "secret_key",
 }
 
 
@@ -37,6 +65,14 @@ def verify_zero_price_route(provider: str, model_id: str, price_per_token: float
             reason=f"Route has non-zero pricing (${price_per_token}/token). Only $0 routes are permitted.",
         )
 
+    # Check for retired models
+    if model_id.lower() in RETIRED_MODELS:
+        raise ZeroPriceViolationError(
+            provider=provider,
+            model_id=model_id,
+            reason=f"Model '{model_id}' is officially retired and cannot be invoked.",
+        )
+
     provider_routes = VERIFIED_ZERO_PRICE_ROUTES.get(provider.lower())
     if not provider_routes or model_id not in provider_routes:
         # Check if model has explicit :free tag
@@ -44,7 +80,7 @@ def verify_zero_price_route(provider: str, model_id: str, price_per_token: float
             raise ZeroPriceViolationError(
                 provider=provider,
                 model_id=model_id,
-                reason="Model is not an officially verified zero-price route.",
+                reason=f"Model '{model_id}' under provider '{provider}' is not an officially verified zero-price route.",
             )
 
 

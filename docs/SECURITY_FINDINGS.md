@@ -3,7 +3,7 @@
 ## 1. Security Review Status
 - **Current Security Status**: HARDENED & AUDITED (Zero Outstanding High/Critical Vulnerabilities)
 - **Audit Policy**: Every external input is treated as untrusted data. Zero secrets in logs or packages. Hard zero-price gate. Complete tenant isolation.
-- **Bandit SAST Results**: 0 Issues across 5,856 lines of scanned code.
+- **Bandit SAST Results**: 0 Issues across 6,176 lines of scanned code.
 - **Dependency Vulnerabilities (pip-audit)**: 0 Known Vulnerabilities.
 
 ---
@@ -25,3 +25,7 @@
 | **SEC-011** | MEDIUM | Webhook Replay / Retries | `promptiq/telegram/bot.py` | Webhook updates without deduplication allowed replayed or retried `update_id` to duplicate operations. | Implemented sliding-window `update_id` deduplication cache in `TelegramBotClient`. | `tests/test_telegram_bot.py::test_telegram_duplicate_webhook_deduplication` | RESOLVED |
 | **SEC-012** | LOW | Credential Management | `promptiq/mcp/server.py` & `promptiq/telegram/bot.py` | Local guest and MCP user auto-provisioning used static placeholder passwords. | Replaced with cryptographically random passwords generated via `secrets.token_urlsafe(32)`. | Bandit SAST B106 verification | RESOLVED |
 | **SEC-013** | LOW | Network Binding | `promptiq/core/config.py` | Default API host was set to `0.0.0.0` (all interfaces). | Changed default to `127.0.0.1` (loopback only), overridable via configuration. | Bandit SAST B104 verification | RESOLVED |
+| **SEC-014** | MEDIUM | URL Scheme Injection | `promptiq/mcp/client_bridge.py` | `urllib.request.urlopen` accepted arbitrary URI schemes (e.g. `file://`, `ftp://`). | Added strict scheme verification requiring `http://` or `https://` before request dispatch. | `tests/test_auxiliary_modules.py::test_client_bridge_scheme_validation` | RESOLVED |
+| **SEC-015** | HIGH | Gateway Fail-Closed Gate | `promptiq/gateway/gateway.py` | Unrecognized providers defaulted without raising zero-price violation. | Enforced fail-closed raise of `ZeroPriceViolationError` for any provider not explicitly registered. | `tests/test_zero_price_gateway.py::test_gateway_unsupported_provider_fail_closed` | RESOLVED |
+| **SEC-016** | MEDIUM | Deprecated Model Invariant | `promptiq/gateway/eligibility.py` | Retired models (e.g. `gemini-1.5-flash`) could be invoked if tagged zero-price. | Added `RETIRED_MODELS` blacklist strictly rejecting deprecated models. | `tests/test_zero_price_gateway.py::test_zero_price_eligibility_gate` | RESOLVED |
+| **SEC-017** | HIGH | Container Privilege Escalation | `deployment/docker/Dockerfile` | Risk of root container execution in cloud environments. | Multi-stage build with dedicated non-root user `promptiq` (UID 10001). | `deployment/docker/Dockerfile` audit | RESOLVED |

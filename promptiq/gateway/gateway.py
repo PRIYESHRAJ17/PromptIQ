@@ -2,7 +2,6 @@
 
 from promptiq.core.config import settings
 from promptiq.core.exceptions import ZeroPriceViolationError
-from promptiq.core.logging import logger
 from promptiq.gateway.adapters import (
     BaseInferenceAdapter,
     GeminiInferenceAdapter,
@@ -28,11 +27,16 @@ class InferenceGateway:
         }
 
     def get_adapter(self, provider: str | None = None) -> BaseInferenceAdapter:
-        """Resolves the configured zero-price provider adapter."""
-        route = (provider or settings.MANAGED_INFERENCE_PRIMARY_ROUTE).lower()
+        """Resolves the configured zero-price provider adapter with fail-closed rejection for unknown routes."""
+        target_provider = provider or settings.MANAGED_INFERENCE_PRIMARY_ROUTE
+        route = target_provider.lower()
+
         if route not in self._adapters:
-            logger.warning(f"Requested route '{route}' not found. Defaulting to 'mock'.")
-            route = "mock"
+            raise ZeroPriceViolationError(
+                provider=target_provider,
+                model_id="unregistered",
+                reason=f"Provider '{target_provider}' is not an approved zero-price route.",
+            )
 
         adapter = self._adapters[route]
         # Invariant check: verify route eligibility
@@ -49,6 +53,8 @@ class InferenceGateway:
             "messages": [m.model_dump() for m in request.messages],
             "system_instruction": request.system_instruction,
             "task_context": request.task_context,
+            "response_schema": request.response_schema,
+            "temperature": request.temperature,
             "provider": provider or settings.MANAGED_INFERENCE_PRIMARY_ROUTE,
         }
         cached = governor.check_deduplication(cache_key_payload)

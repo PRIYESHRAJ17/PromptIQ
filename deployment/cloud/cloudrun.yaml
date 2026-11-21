@@ -1,0 +1,85 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: promptiq-backend
+  labels:
+    cloud.googleapis.com/location: us-central1
+    app: promptiq
+spec:
+  template:
+    metadata:
+      annotations:
+        # Scale to zero when idle to enforce ₹0 consumption
+        autoscaling.knative.dev/minScale: "0"
+        autoscaling.knative.dev/maxScale: "5"
+        # Enable session affinity for persistent SSE stream routing
+        run.googleapis.com/sessionAffinity: "true"
+        # Concurrency limit per container instance
+        autoscaling.knative.dev/target: "80"
+        # CPU is allocated during request processing
+        run.googleapis.com/cpu-throttling: "true"
+    spec:
+      containerConcurrency: 80
+      timeoutSeconds: 300
+      serviceAccountName: promptiq-cloudrun-sa@YOUR_GCP_PROJECT.iam.gserviceaccount.com
+      containers:
+        - image: gcr.io/YOUR_GCP_PROJECT/promptiq-backend:latest
+          resources:
+            limits:
+              cpu: "1000m"
+              memory: "512Mi"
+          ports:
+            - containerPort: 8000
+          env:
+            - name: PROMPTIQ_ENV
+              value: "production"
+            - name: PROMPTIQ_LOG_LEVEL
+              value: "INFO"
+            - name: ENFORCE_ZERO_PRICE_ONLY
+              value: "true"
+            - name: MANAGED_INFERENCE_PRIMARY_ROUTE
+              value: "gemini"
+            # Operator secrets injected securely from Google Cloud Secret Manager
+            - name: PROMPTIQ_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: promptiq-jwt-secret
+                  key: latest
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: promptiq-neon-db-url
+                  key: latest
+            - name: OPERATOR_GEMINI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: promptiq-gemini-key
+                  key: latest
+            - name: OPERATOR_GROQ_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: promptiq-groq-key
+                  key: latest
+            - name: TELEGRAM_BOT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: promptiq-telegram-token
+                  key: latest
+            - name: TELEGRAM_WEBHOOK_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: promptiq-telegram-webhook-secret
+                  key: latest
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 8
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            periodSeconds: 30
+            timeoutSeconds: 5

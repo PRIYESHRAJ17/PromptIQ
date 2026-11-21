@@ -1,0 +1,51 @@
+version: "3.8"
+
+services:
+  promptiq-api:
+    build:
+      context: ../..
+      dockerfile: deployment/docker/Dockerfile
+    container_name: promptiq-api
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - PROMPTIQ_ENV=production
+      - PROMPTIQ_LOG_LEVEL=INFO
+      - DATABASE_URL=postgresql+asyncpg://promptiq:promptiq_secure_pass@promptiq-postgres:5432/promptiq_db
+      - PROMPTIQ_SECRET_KEY=change_this_to_production_32_byte_secret_key_in_vault
+      - MANAGED_INFERENCE_PRIMARY_ROUTE=gemini
+      - ENFORCE_ZERO_PRICE_ONLY=true
+      - OPERATOR_GEMINI_API_KEY=${OPERATOR_GEMINI_API_KEY:-}
+      - OPERATOR_GROQ_API_KEY=${OPERATOR_GROQ_API_KEY:-}
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-}
+      - TELEGRAM_WEBHOOK_SECRET=${TELEGRAM_WEBHOOK_SECRET:-}
+    depends_on:
+      promptiq-postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/ready').read()"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  promptiq-postgres:
+    image: postgres:16-alpine
+    container_name: promptiq-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=promptiq
+      - POSTGRES_PASSWORD=promptiq_secure_pass
+      - POSTGRES_DB=promptiq_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U promptiq -d promptiq_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:

@@ -39,6 +39,9 @@ dev = [
 [project.scripts]
 promptiq = "promptiq.cli.main:cli_entrypoint"
 
+[tool.setuptools.packages.find]
+include = ["promptiq*"]
+
 [tool.ruff]
 line-length = 100
 target-version = "py311"

@@ -1,0 +1,78 @@
+name: PromptIQ Cloud CI/CD Pipeline
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  test-and-audit:
+    name: Test, Lint & Security Audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+          pip install pip-audit bandit
+
+      - name: Static Analysis & Linting (Ruff)
+        run: |
+          python -m ruff check promptiq tests
+
+      - name: Security SAST Scan (Bandit)
+        run: |
+          python -m bandit -r promptiq -ll
+
+      - name: Dependency Vulnerability Audit (pip-audit)
+        run: |
+          python -m pip_audit
+
+      - name: Database Migrations Verification
+        run: |
+          python -m alembic upgrade head
+          python -m alembic downgrade base
+          python -m alembic upgrade head
+
+      - name: Automated Unit & Integration Tests (Pytest)
+        run: |
+          python -m pytest --cov=promptiq --cov-report=term-missing tests/
+
+  deploy-cloud-run:
+    name: Cloud-Native Production Deployment
+    needs: test-and-audit
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Optional Google Cloud Authentication step when operator secrets are configured
+      - name: Authenticate to Google Cloud
+        if: env.GCP_WORKLOAD_IDENTITY_PROVIDER != ''
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: Build Production Container Image
+        run: |
+          docker build -t promptiq-backend:latest -f deployment/docker/Dockerfile .
+          echo "Docker build completed successfully."

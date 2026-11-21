@@ -35,6 +35,14 @@ async def test_zero_price_eligibility_gate():
     with pytest.raises(ZeroPriceViolationError):
         verify_zero_price_route(provider="unverified_vendor", model_id="commercial-model-v1", price_per_token=0.0)
 
+    # Retired model MUST raise ZeroPriceViolationError even if price is 0.0
+    with pytest.raises(ZeroPriceViolationError) as exc_retired:
+        verify_zero_price_route(provider="gemini", model_id="gemini-1.5-flash", price_per_token=0.0)
+    assert "officially retired" in str(exc_retired.value)
+
+    with pytest.raises(ZeroPriceViolationError):
+        verify_zero_price_route(provider="gemini", model_id="gemini-1.0-pro", price_per_token=0.0)
+
 
 @pytest.mark.asyncio
 async def test_prohibited_byok_rejection():
@@ -55,9 +63,26 @@ async def test_prohibited_byok_rejection():
     with pytest.raises(BYOKViolationError):
         check_and_reject_byok({"settings": {"user_api_key": "custom_key_123"}})
 
+    with pytest.raises(BYOKViolationError):
+        check_and_reject_byok({"openrouter_api_key": "sk-or-v1-12345"})
+
+    with pytest.raises(BYOKViolationError):
+        check_and_reject_byok({"env": {"custom_api_key": "secret123"}})
+
+    with pytest.raises(BYOKViolationError):
+        check_and_reject_byok({"bearer_token": "token-xyz"})
+
     # Nested list of dicts with prohibited key MUST raise BYOKViolationError
     with pytest.raises(BYOKViolationError):
         check_and_reject_byok({"pipeline": [{"step": 1}, {"config": [{"api_key": "stolen_key"}]}]})
+
+
+@pytest.mark.asyncio
+async def test_gateway_unsupported_provider_fail_closed():
+    """Verifies that unknown or unverified providers raise ZeroPriceViolationError immediately."""
+    with pytest.raises(ZeroPriceViolationError) as exc_info:
+        inference_gateway.get_adapter("unsupported_paid_provider")
+    assert "not an approved zero-price route" in str(exc_info.value)
 
 
 @pytest.mark.asyncio

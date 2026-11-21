@@ -15,6 +15,7 @@ from promptiq.api.routes import (
     discovery_router,
     eval_router,
     governor_router,
+    mcp_router,
     memory_router,
     projects_router,
     registries_router,
@@ -84,16 +85,31 @@ async def promptiq_exception_handler(request: Request, exc: PromptIQException):
     )
 
 
-# Health check endpoint
+# Health & Readiness endpoints
 @app.get("/health", tags=["Health"])
 async def health_check():
-    """Health check endpoint for container probes and operational monitoring."""
+    """Liveness probe for container lifecycle monitoring."""
     return {
         "status": "healthy",
         "version": __version__,
         "zero_price_policy": "enforced",
         "byok_prohibited": True,
     }
+
+
+@app.get("/ready", tags=["Health"])
+async def readiness_check():
+    """Readiness probe for cloud load balancers and orchestrators."""
+    from sqlalchemy import text
+
+    from promptiq.core.database import engine
+    try:
+        async with engine.connect() as conn:
+            await conn.execute(text("SELECT 1"))
+        return {"status": "ready", "database": "connected"}
+    except Exception as e:
+        logger.error(f"Readiness check failed: {e}")
+        return JSONResponse(status_code=503, content={"status": "not_ready", "error": str(e)})
 
 
 # Mount API v1 Routers
@@ -110,3 +126,4 @@ app.include_router(eval_router, prefix=api_v1_prefix)
 app.include_router(memory_router, prefix=api_v1_prefix)
 app.include_router(governor_router, prefix=api_v1_prefix)
 app.include_router(telegram_router, prefix=api_v1_prefix)
+app.include_router(mcp_router, prefix=api_v1_prefix)

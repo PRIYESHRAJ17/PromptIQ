@@ -12,6 +12,7 @@ from promptiq.api.routes.projects import router as projects_router
 from promptiq.api.routes.registries import router as registries_router
 from promptiq.api.routes.research import router as research_router
 from promptiq.api.routes.telegram import router as telegram_router
+from promptiq.mcp.remote import router as mcp_router
 
 __all__ = [
     "auth_router",
@@ -26,4 +27,5 @@ __all__ = [
     "memory_router",
     "governor_router",
     "telegram_router",
+    "mcp_router",
 ]

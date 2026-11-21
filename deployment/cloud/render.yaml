@@ -1,0 +1,32 @@
+services:
+  - type: web
+    name: promptiq-backend
+    runtime: docker
+    dockerfilePath: ./deployment/docker/Dockerfile
+    dockerContext: .
+    plan: free
+    region: oregon
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: PROMPTIQ_ENV
+        value: production
+      - key: PROMPTIQ_LOG_LEVEL
+        value: INFO
+      - key: ENFORCE_ZERO_PRICE_ONLY
+        value: "true"
+      - key: MANAGED_INFERENCE_PRIMARY_ROUTE
+        value: gemini
+      - key: PROMPTIQ_SECRET_KEY
+        generateValue: true
+      # Connects to persistent external Neon/Supabase PostgreSQL (Not Render free DB which expires in 30 days)
+      - key: DATABASE_URL
+        sync: false
+      - key: OPERATOR_GEMINI_API_KEY
+        sync: false
+      - key: OPERATOR_GROQ_API_KEY
+        sync: false
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: TELEGRAM_WEBHOOK_SECRET
+        sync: false
