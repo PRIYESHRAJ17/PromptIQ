@@ -63,6 +63,8 @@ class DynamicModelRouter:
         sensitivity: DataSensitivityLevel = DataSensitivityLevel.GENERAL,
         required_context: int = 4000,
         exclude_families: list[str] | None = None,
+        exclude_model_ids: list[str] | None = None,
+        preferred_provider: str | None = None,
         estimated_tokens: int = 1000,
     ) -> ModelPoolRecord:
         """Selects the best available verified zero-price model for a given role and constraints."""
@@ -72,19 +74,28 @@ class DynamicModelRouter:
             required_context_length=required_context,
         )
 
-        excluded = set(exclude_families or [])
+        excluded_families = set(exclude_families or [])
+        excluded_ids = set(exclude_model_ids or [])
 
-        # Filter out excluded families (used for independent critic separation)
-        eligible_candidates = [c for c in candidates if c.model_family not in excluded]
+        # Filter out excluded families and model IDs
+        eligible_candidates = [
+            c for c in candidates
+            if c.model_family not in excluded_families and c.model_id not in excluded_ids
+        ]
+
+        if preferred_provider:
+            eligible_candidates = [
+                c for c in eligible_candidates
+                if c.provider.lower() == preferred_provider.lower()
+            ]
 
         if not eligible_candidates:
-            # If all candidates were excluded due to family constraint, check if we have any other candidates
-            # but preserve critic independence principle
-            if excluded:
+            # If all candidates were excluded due to family or model constraints
+            if excluded_families or excluded_ids:
                 raise CapacityExhaustedError(
-                    message=f"No independent model family available for role '{role.value}' distinct from {list(excluded)}.",
+                    message=f"No independent candidate available for role '{role.value}' distinct from families={list(excluded_families)} models={list(excluded_ids)}.",
                     retry_after=30,
-                    details={"role": role.value, "excluded_families": list(excluded)},
+                    details={"role": role.value, "excluded_families": list(excluded_families), "excluded_model_ids": list(excluded_ids)},
                 )
             raise CapacityExhaustedError(
                 message=f"No verified zero-price models available for role '{role.value}' with sensitivity '{sensitivity.value}'.",

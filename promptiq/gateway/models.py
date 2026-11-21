@@ -35,6 +35,13 @@ class InferenceResponse(BaseModel):
     provider: str
     latency_ms: float = 0.0
     tokens_used: int = 0
+    prompt_tokens: int = 0
+    completion_tokens: int = 0
     route_cost: float = 0.0  # MUST ALWAYS BE 0.0 under zero-price invariant
+    request_id: str | None = None
+    http_status: int = 200
+    rate_limit_headers: dict[str, Any] | None = None
+    request_timestamp: str | None = None
+    response_timestamp: str | None = None
 
     model_config = ConfigDict(from_attributes=True)

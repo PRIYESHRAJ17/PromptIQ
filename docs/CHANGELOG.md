@@ -12,6 +12,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Phase 3.4.2: First Actual Live Inference, Multi-Model Collaboration and Operator-Verified Execution
 
 ### Added
+- **Verified Live Hosted Smoke Tests Recorded**:
+  - `openai/gpt-oss-120b` (Primary Generator): HTTP 200, Provider Request ID `req_01m7zr9k96ethbpvc22gc1hddj`, `LIVE_VERIFIED_FREE`, `DASHBOARD_EVIDENCED`.
+  - `openai/gpt-oss-20b` (Critic Specialist): HTTP 200, Provider Request ID `req_01m7zrbddcea793zn4xvrhtskw`, `LIVE_VERIFIED_FREE`, `DASHBOARD_EVIDENCED`.
+- **Live 5-Stage Multi-Model Collaboration Pipeline (`promptiq/orchestrator/collaboration.py`)**:
+  - Implemented Stage A (Generation via GPT-OSS 120B), Stage B (Adversarial Autopsy via GPT-OSS 20B), Stage C (Deterministic Candidate Invariants Gate), Stage D (Specialist Revision via GPT-OSS 120B), and Stage E (Final Deterministic Verification & Resolution Breakdown).
+  - Categorizes critic findings deterministically into `resolved`, `rejected_with_reason`, and `unresolved`.
+  - Captures genuine provider request IDs, HTTP status codes, latencies, token counts, and rate limits across all steps.
+- **Standalone Live Collaboration CLI Runner (`promptiq/orchestrator/collaboration_cli.py`)**:
+  - Implements the complete Food Donation & Surplus Redistribution Platform synthetic task.
+  - Enforces `--opt-in`, free-plan confirmation, fail-closed inference (`MANAGED_INFERENCE_ALLOW_MOCK_FALLBACK = False`), and dumps structured trace artifacts.
+- **Secure In-Memory Multi-Model Collaboration Launcher (`scripts/run_groq_collaboration_secure.ps1`)**:
+  - PowerShell wrapper providing masked API-key input, setting in-memory environment for child process only, and zeroing credentials in a `finally` block with zero disk persistence.
+- **Live Collaboration Runbook (`docs/LIVE_COLLABORATION_EXECUTION_RUNBOOK.md`)**:
+  - Step-by-step operator guide for executing the two-model architecture synthesis and adversarial autopsy.
+- **Automated Tests for Live Collaboration (`tests/test_live_collaboration_pipeline.py`)**:
+  - Added 6 automated tests covering distinct critic assignment via `exclude_model_ids`, full 5-stage pipeline, resolution categorization, fail-closed opt-in/API key gates, and deterministic verifier override on polluted revisions.
 - **Secure In-Memory Windows Credential Launcher (`scripts/run_groq_smoke_secure.ps1`)**:
   - Developed a specialized PowerShell wrapper providing hidden password-style credential input via `Read-Host -AsSecureString`.
   - Unmarshals BSTR pointers in memory for the isolated child process, immediately clears BSTR buffers (`ZeroFreeBSTR`), and clears environment variables upon exit with zero disk writes.
@@ -31,6 +47,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Classified ZDR governance across 4 tiers; verified platform availability (`ZDR_AVAILABLE`) and instituted synthetic-only data protocols.
 
 ### Changed
+- **Router Exclusion Logic (`promptiq/orchestrator/router.py`)**:
+  - Added `exclude_model_ids` and `preferred_provider` parameters to `select_model_for_role`, guaranteeing that the critic model is strictly separated from the generator model.
+- **Groq Inference Adapter (`promptiq/gateway/adapters/groq_adapter.py`)**:
+  - Enhanced to capture `x-request-id`, HTTP status, prompt tokens, completion tokens, rate-limit headers (`limit_requests`, `remaining_requests`, etc.), and UTC timestamps.
+- **Model Pool Schemas (`promptiq/schemas/model_pool.py`, `promptiq/gateway/models.py`)**:
+  - Added `initial_artifact`, `critic_review`, `revised_artifact`, `resolution_breakdown`, and `is_multi_model` to `MultiModelExecutionAuditRecord`.
+  - Added request IDs, HTTP status, and rate limit headers to `ExecutionStepRecord` and `InferenceResponse`.
 - **Smoke Test CLI Utility (`promptiq/gateway/smoke_test.py`)**:
   - Enhanced to support `--prompt`, `--max-tokens`, comprehensive rate-limit header extraction, timestamps, and cost entitlement classification (`LIVE_RESPONSE_RECEIVED_COST_UNVERIFIED` vs `LIVE_VERIFIED_FREE`).
 - **Account Verification Quotas (`promptiq/gateway/account_verification.py`)**:

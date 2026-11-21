@@ -2,6 +2,7 @@
 
 import json
 import time
+from datetime import UTC, datetime
 
 import httpx
 
@@ -42,6 +43,7 @@ class GroqInferenceAdapter(BaseInferenceAdapter):
         governor.check_circuit_breaker(self.provider_name)
         governor.check_model_quota(model_to_use)
 
+        request_time = datetime.now(UTC).isoformat()
         start_time = time.perf_counter()
         url = "https://api.groq.com/openai/v1/chat/completions"
 
@@ -55,15 +57,31 @@ class GroqInferenceAdapter(BaseInferenceAdapter):
             "model": model_to_use,
             "messages": messages,
             "temperature": request.temperature,
-            "max_tokens": request.max_tokens,
+            "max_tokens": request.max_tokens or 4096,
         }
 
-        async with httpx.AsyncClient(timeout=30.0) as client:
-            headers = {"Authorization": f"Bearer {api_key}"}
+        async with httpx.AsyncClient(timeout=45.0) as client:
+            headers = {
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json",
+            }
             try:
                 resp = await client.post(url, json=payload, headers=headers)
+                response_time = datetime.now(UTC).isoformat()
+                latency_ms = (time.perf_counter() - start_time) * 1000.0
+
+                req_id = resp.headers.get("x-request-id")
+                rate_limit_headers = {
+                    "limit_requests": resp.headers.get("x-ratelimit-limit-requests"),
+                    "limit_tokens": resp.headers.get("x-ratelimit-limit-tokens"),
+                    "remaining_requests": resp.headers.get("x-ratelimit-remaining-requests"),
+                    "remaining_tokens": resp.headers.get("x-ratelimit-remaining-tokens"),
+                    "reset_requests": resp.headers.get("x-ratelimit-reset-requests"),
+                    "reset_tokens": resp.headers.get("x-ratelimit-reset-tokens"),
+                }
+
                 # Inspect Groq rate-limit headers (RPM/RPD/TPM/TPD and retry-after)
-                governor.inspect_response_headers(self.provider_name, self.model_id, resp.headers, resp.status_code)
+                governor.inspect_response_headers(self.provider_name, model_to_use, resp.headers, resp.status_code)
 
                 if resp.status_code == 429:
                     retry_after = int(resp.headers.get("retry-after", 60))
@@ -71,8 +89,14 @@ class GroqInferenceAdapter(BaseInferenceAdapter):
 
                 resp.raise_for_status()
                 data = resp.json()
+                req_id = req_id or data.get("id")
                 content = data["choices"][0]["message"]["content"]
-                latency_ms = (time.perf_counter() - start_time) * 1000.0
+
+                usage = data.get("usage", {})
+                tokens_used = usage.get("total_tokens", len(content) // 4)
+                prompt_tokens = usage.get("prompt_tokens", 0)
+                completion_tokens = usage.get("completion_tokens", 0)
+                governor.record_model_usage(model_to_use, tokens_used)
 
                 structured_data = None
                 if request.response_schema:
@@ -81,9 +105,6 @@ class GroqInferenceAdapter(BaseInferenceAdapter):
                     except (json.JSONDecodeError, ValueError):
                         logger.debug("Failed to parse response schema JSON from Groq output.")
 
-                tokens_used = data.get("usage", {}).get("total_tokens", len(content) // 4)
-                governor.record_model_usage(model_to_use, tokens_used)
-
                 return InferenceResponse(
                     text=content,
                     structured_data=structured_data,
@@ -91,7 +112,14 @@ class GroqInferenceAdapter(BaseInferenceAdapter):
                     provider=self.provider_name,
                     latency_ms=round(latency_ms, 2),
                     tokens_used=tokens_used,
+                    prompt_tokens=prompt_tokens,
+                    completion_tokens=completion_tokens,
                     route_cost=0.0,
+                    request_id=req_id,
+                    http_status=resp.status_code,
+                    rate_limit_headers=rate_limit_headers,
+                    request_timestamp=request_time,
+                    response_timestamp=response_time,
                 )
             except httpx.HTTPStatusError as e:
                 governor.trip_circuit_breaker(self.provider_name, f"Groq HTTP {e.response.status_code}")

@@ -1,6 +1,6 @@
 """Model Pool, Privacy, and Multi-Model Collaboration Schemas."""
 
-from datetime import datetime
+from datetime import UTC, datetime
 from enum import StrEnum
 from typing import Any
 
@@ -130,13 +130,15 @@ class ExecutionStepRecord(BaseModel):
     role: LogicalModelRole
     provider: str
     model_id: str
-    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
     latency_ms: float
     input_tokens: int = 0
     output_tokens: int = 0
     quota_remaining: int | None = None
     verification_passed: bool = True
     findings: list[str] = Field(default_factory=list)
+    request_id: str | None = None
+    http_status: int = 200
     metadata: dict[str, Any] = Field(default_factory=dict)
 
     model_config = ConfigDict(from_attributes=True)
@@ -160,11 +162,16 @@ class MultiModelExecutionAuditRecord(BaseModel):
     generator_model_id: str | None = None
     critic_provider: str | None = None
     critic_model_id: str | None = None
+    is_multi_model: bool = True
     is_multi_provider: bool = False
     is_multi_family: bool = False
     model_diversity_rating: str = "MULTI_MODEL_SAME_FAMILY_SAME_PROVIDER"
     deterministic_verification_passed: bool = True
     failure_occurred: bool = False
     fallback_occurred: bool = False
+    initial_artifact: str | None = None
+    critic_review: str | None = None
+    revised_artifact: str | None = None
+    resolution_breakdown: dict[str, list[str]] = Field(default_factory=dict)
 
     model_config = ConfigDict(from_attributes=True)
