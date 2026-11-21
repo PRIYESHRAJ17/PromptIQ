@@ -1,0 +1,83 @@
+"""Authentication and user management API routes."""
+
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from promptiq.api.deps import get_current_user, get_db
+from promptiq.core.exceptions import AuthenticationError, ConflictError
+from promptiq.core.security import create_access_token, generate_telegram_link_token
+from promptiq.models.user import User
+from promptiq.schemas.auth import (
+    TelegramLinkRequest,
+    TelegramLinkResponse,
+    Token,
+    UserCreate,
+    UserLogin,
+    UserResponse,
+)
+from promptiq.services.auth_service import AuthService
+
+router = APIRouter(prefix="/auth", tags=["Authentication"])
+
+
+@router.post("/register", response_model=Token, status_code=status.HTTP_201_CREATED)
+async def register(user_in: UserCreate, db: AsyncSession = Depends(get_db)):
+    """Register a new user account and provision a default workspace."""
+    try:
+        user, _ = await AuthService.register_user(db, user_in)
+        token = create_access_token({"sub": user.id})
+        return Token(
+            access_token=token,
+            expires_in_minutes=1440,
+            user=UserResponse.model_validate(user),
+        )
+    except ConflictError:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="An account with this email already exists",
+        )
+
+
+@router.post("/login", response_model=Token)
+async def login(credentials: UserLogin, db: AsyncSession = Depends(get_db)):
+    """Authenticate with email and password to receive a JWT access token."""
+    try:
+        user = await AuthService.authenticate_user(db, credentials.email, credentials.password)
+        token = create_access_token({"sub": user.id})
+        return Token(
+            access_token=token,
+            expires_in_minutes=1440,
+            user=UserResponse.model_validate(user),
+        )
+    except AuthenticationError as e:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=e.message)
+
+
+@router.get("/me", response_model=UserResponse)
+async def get_current_user_profile(user: User = Depends(get_current_user)):
+    """Get the current authenticated user's profile."""
+    return UserResponse.model_validate(user)
+
+
+@router.post("/telegram-token")
+async def generate_telegram_token(user: User = Depends(get_current_user)):
+    """Generates a secure, short-lived token to link a Telegram account."""
+    link_token = generate_telegram_link_token(user.id)
+    return {
+        "link_token": link_token,
+        "instructions": f"Send `/start {link_token}` to the PromptIQ Telegram bot to link your account.",
+    }
+
+
+@router.post("/telegram-link", response_model=TelegramLinkResponse)
+async def link_telegram(req: TelegramLinkRequest, db: AsyncSession = Depends(get_db)):
+    """Links a Telegram account to a user via signed link token."""
+    try:
+        user = await AuthService.link_telegram_account(db, req.link_token, req.telegram_chat_id)
+        return TelegramLinkResponse(
+            success=True,
+            message="Telegram account successfully linked.",
+            user_id=user.id,
+        )
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))

@@ -1,0 +1,4171 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "PromptIQ API",
+    "description": "Universal Prompt Intelligence, Project Engineering, and Cross-Agent Continuity Platform.\n\n**Strict Invariants**:\n- Zero-price to end-users (\u20b90)\n- Strictly No BYOK / No user API keys\n- No local inference required\n- Canonical versioned Project Constitution\n- Website frontend strictly out of scope\n",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": [
+          "Health"
+        ],
+        "summary": "Health Check",
+        "description": "Health check endpoint for container probes and operational monitoring.",
+        "operationId": "health_check_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/register": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Register",
+        "description": "Register a new user account and provision a default workspace.",
+        "operationId": "register_api_v1_auth_register_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Token"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Login",
+        "description": "Authenticate with email and password to receive a JWT access token.",
+        "operationId": "login_api_v1_auth_login_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserLogin"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Token"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/me": {
+      "get": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Get Current User Profile",
+        "description": "Get the current authenticated user's profile.",
+        "operationId": "get_current_user_profile_api_v1_auth_me_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/telegram-token": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Generate Telegram Token",
+        "description": "Generates a secure, short-lived token to link a Telegram account.",
+        "operationId": "generate_telegram_token_api_v1_auth_telegram_token_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/telegram-link": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Link Telegram",
+        "description": "Links a Telegram account to a user via signed link token.",
+        "operationId": "link_telegram_api_v1_auth_telegram_link_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TelegramLinkRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TelegramLinkResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/projects": {
+      "post": {
+        "tags": [
+          "Projects"
+        ],
+        "summary": "Create Project",
+        "description": "Create a new project and initialize its draft Project Constitution.",
+        "operationId": "create_project_api_v1_projects_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjectCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Projects"
+        ],
+        "summary": "List Projects",
+        "description": "List all projects in the workspace accessible to the authenticated user.",
+        "operationId": "list_projects_api_v1_projects_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "workspace_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Workspace Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProjectResponse"
+                  },
+                  "title": "Response List Projects Api V1 Projects Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{project_id}": {
+      "get": {
+        "tags": [
+          "Projects"
+        ],
+        "summary": "Get Project",
+        "description": "Get project details enforcing workspace tenant isolation.",
+        "operationId": "get_project_api_v1_projects__project_id__get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Projects"
+        ],
+        "summary": "Delete Project",
+        "description": "Delete a project and its associated version history.",
+        "operationId": "delete_project_api_v1_projects__project_id__delete",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{project_id}/discovery/start": {
+      "post": {
+        "tags": [
+          "Discovery"
+        ],
+        "summary": "Start Discovery",
+        "description": "Start an adaptive discovery session from the foundational 4-input intake.",
+        "operationId": "start_discovery_api_v1_projects__project_id__discovery_start_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InitialIntakeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiscoverySessionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{project_id}/discovery/sessions/{session_id}/answers": {
+      "post": {
+        "tags": [
+          "Discovery"
+        ],
+        "summary": "Submit Discovery Answers",
+        "description": "Submit answers to discovery questions, updating requirements and calculating next steps.",
+        "operationId": "submit_discovery_answers_api_v1_projects__project_id__discovery_sessions__session_id__answers_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Session Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DiscoveryAnswerSubmit"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiscoverySessionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{project_id}/constitution": {
+      "get": {
+        "tags": [
+          "Project Constitution"
+        ],
+        "summary": "Get Current Constitution",
+        "description": "Retrieve the active Project Constitution for a project.",
+        "operationId": "get_current_constitution_api_v1_projects__project_id__constitution_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConstitutionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Project Constitution"
+        ],
+        "summary": "Update Constitution",
+        "description": "Update requirements or specifications, generating a new immutable Constitution version.",
+        "operationId": "update_constitution_api_v1_projects__project_id__constitution_put",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConstitutionUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConstitutionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{project_id}/constitution/versions/{version}": {
+      "get": {
+        "tags": [
+          "Project Constitution"
+        ],
+        "summary": "Get Constitution Version",
+        "description": "Retrieve an immutable historical snapshot of a specific constitution version.",
+        "operationId": "get_constitution_version_api_v1_projects__project_id__constitution_versions__version__get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Version"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Constitution Version Api V1 Projects  Project Id  Constitution Versions  Version  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{project_id}/constitution/approve": {
+      "post": {
+        "tags": [
+          "Project Constitution"
+        ],
+        "summary": "Approve Constitution",
+        "description": "User review gate: approve or reject the active Constitution before compilation.",
+        "operationId": "approve_constitution_api_v1_projects__project_id__constitution_approve_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConstitutionApprovalRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConstitutionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{project_id}/compile": {
+      "post": {
+        "tags": [
+          "Compiler"
+        ],
+        "summary": "Compile Target Package",
+        "description": "Compile the approved Project Constitution into a target-native instruction package.",
+        "operationId": "compile_target_package_api_v1_projects__project_id__compile_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PackageCompileRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PromptPackageResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{project_id}/packages/{package_id}/export": {
+      "get": {
+        "tags": [
+          "Compiler"
+        ],
+        "summary": "Export Package",
+        "description": "Export complete target package bundle with manifest and files.",
+        "operationId": "export_package_api_v1_projects__project_id__packages__package_id__export_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "package_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Package Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PackageExportResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/critic/autopsy": {
+      "post": {
+        "tags": [
+          "Prompt Autopsy"
+        ],
+        "summary": "Diagnose Prompt",
+        "description": "Execute adversarial prompt autopsy and diagnostic critique.",
+        "operationId": "diagnose_prompt_api_v1_critic_autopsy_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AutopsyRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutopsyResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{project_id}/research": {
+      "post": {
+        "tags": [
+          "Research"
+        ],
+        "summary": "Execute Research",
+        "description": "Execute deep or quick research and record verified claims in the Evidence Ledger.",
+        "operationId": "execute_research_api_v1_projects__project_id__research_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResearchRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/registries/models": {
+      "get": {
+        "tags": [
+          "Registries"
+        ],
+        "summary": "List Models",
+        "description": "List supported models with documented capabilities and verified pricing tier.",
+        "operationId": "list_models_api_v1_registries_models_get",
+        "parameters": [
+          {
+            "name": "zero_price_only",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Zero Price Only"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ModelRecordSchema"
+                  },
+                  "title": "Response List Models Api V1 Registries Models Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/registries/models/{model_id}": {
+      "get": {
+        "tags": [
+          "Registries"
+        ],
+        "summary": "Get Model",
+        "description": "Get verified capabilities and rate limits for a specific model.",
+        "operationId": "get_model_api_v1_registries_models__model_id__get",
+        "parameters": [
+          {
+            "name": "model_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Model Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelRecordSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/registries/environments": {
+      "get": {
+        "tags": [
+          "Registries"
+        ],
+        "summary": "List Environments",
+        "description": "List supported host environments (Antigravity, Claude Code, Cursor, Codex, Gemini CLI).",
+        "operationId": "list_environments_api_v1_registries_environments_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/EnvironmentRecordSchema"
+                  },
+                  "type": "array",
+                  "title": "Response List Environments Api V1 Registries Environments Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/registries/environments/{host}": {
+      "get": {
+        "tags": [
+          "Registries"
+        ],
+        "summary": "Get Environment",
+        "description": "Get host capabilities and manifest rules for a specific execution surface.",
+        "operationId": "get_environment_api_v1_registries_environments__host__get",
+        "parameters": [
+          {
+            "name": "host",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Host"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EnvironmentRecordSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{project_id}/eval/suites": {
+      "post": {
+        "tags": [
+          "Evaluation Lab"
+        ],
+        "summary": "Create Evaluation Suite",
+        "description": "Create a new evaluation test suite with assertions and edge cases.",
+        "operationId": "create_evaluation_suite_api_v1_projects__project_id__eval_suites_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EvaluationSuiteCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{project_id}/eval/run": {
+      "post": {
+        "tags": [
+          "Evaluation Lab"
+        ],
+        "summary": "Run Evaluation",
+        "description": "Run an authorized evaluation against a compiled package using fixed assertions.",
+        "operationId": "run_evaluation_api_v1_projects__project_id__eval_run_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EvaluationRunRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EvaluationRunResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{project_id}/memory/checkpoints": {
+      "post": {
+        "tags": [
+          "Project Memory"
+        ],
+        "summary": "Create Checkpoint",
+        "description": "Record a verified milestone checkpoint for cross-session and cross-agent continuity.",
+        "operationId": "create_checkpoint_api_v1_projects__project_id__memory_checkpoints_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CheckpointCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CheckpointResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Project Memory"
+        ],
+        "summary": "List Checkpoints",
+        "description": "List recorded checkpoints for a project.",
+        "operationId": "list_checkpoints_api_v1_projects__project_id__memory_checkpoints_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CheckpointResponse"
+                  },
+                  "title": "Response List Checkpoints Api V1 Projects  Project Id  Memory Checkpoints Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{project_id}/memory/context-pack": {
+      "post": {
+        "tags": [
+          "Project Memory"
+        ],
+        "summary": "Compile Context Pack",
+        "description": "Compile and pack project context for an external agent within a specified token budget.",
+        "operationId": "compile_context_pack_api_v1_projects__project_id__memory_context_pack_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContextPackRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContextPackResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/status/capacity": {
+      "get": {
+        "tags": [
+          "Status"
+        ],
+        "summary": "Get Capacity Status",
+        "description": "Inspect current zero-price inference capacity, rate limits, and pause states.",
+        "operationId": "get_capacity_status_api_v1_status_capacity_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuotaStatusResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/telegram/webhook": {
+      "post": {
+        "tags": [
+          "Telegram"
+        ],
+        "summary": "Telegram Webhook",
+        "description": "Receives incoming updates from the official Telegram Bot API.",
+        "operationId": "telegram_webhook_api_v1_telegram_webhook_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": true,
+                "type": "object",
+                "title": "Update"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AssumptionRecord": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "assumption": {
+            "type": "string",
+            "title": "Assumption"
+          },
+          "risk": {
+            "type": "string",
+            "enum": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "title": "Risk",
+            "default": "medium"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "validated",
+              "falsified"
+            ],
+            "title": "Status",
+            "default": "active"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "assumption"
+        ],
+        "title": "AssumptionRecord"
+      },
+      "AutopsyRequest": {
+        "properties": {
+          "prompt_text": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Prompt Text",
+            "description": "Pasted prompt text to diagnose"
+          },
+          "package_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Package Id",
+            "description": "Compiled package ID to critique"
+          },
+          "target_environment": {
+            "type": "string",
+            "title": "Target Environment",
+            "description": "Target host environment",
+            "default": "google-antigravity"
+          }
+        },
+        "type": "object",
+        "title": "AutopsyRequest"
+      },
+      "AutopsyResponse": {
+        "properties": {
+          "verdict": {
+            "type": "string",
+            "enum": [
+              "ready",
+              "ready_with_caveats",
+              "needs_revision",
+              "blocked",
+              "unsuitable"
+            ],
+            "title": "Verdict"
+          },
+          "summary": {
+            "type": "string",
+            "title": "Summary"
+          },
+          "findings": {
+            "items": {
+              "$ref": "#/components/schemas/CriticFindingSchema"
+            },
+            "type": "array",
+            "title": "Findings"
+          },
+          "quality_scores": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Quality Scores"
+          },
+          "suggested_revision": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Suggested Revision"
+          }
+        },
+        "type": "object",
+        "required": [
+          "verdict",
+          "summary",
+          "findings",
+          "quality_scores"
+        ],
+        "title": "AutopsyResponse"
+      },
+      "CheckpointCreate": {
+        "properties": {
+          "phase": {
+            "type": "string",
+            "title": "Phase",
+            "description": "e.g. discovery_completed, initial_package_compiled, test_passed"
+          },
+          "summary": {
+            "type": "string",
+            "title": "Summary"
+          },
+          "verified_state": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Verified State"
+          },
+          "blockers": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Blockers"
+          },
+          "next_actions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Next Actions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "phase",
+          "summary"
+        ],
+        "title": "CheckpointCreate"
+      },
+      "CheckpointResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "project_id": {
+            "type": "string",
+            "title": "Project Id"
+          },
+          "phase": {
+            "type": "string",
+            "title": "Phase"
+          },
+          "summary": {
+            "type": "string",
+            "title": "Summary"
+          },
+          "verified_state": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Verified State"
+          },
+          "blockers": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Blockers"
+          },
+          "next_actions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Next Actions"
+          },
+          "files_snapshot": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Files Snapshot"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "project_id",
+          "phase",
+          "summary",
+          "verified_state",
+          "blockers",
+          "next_actions",
+          "files_snapshot",
+          "created_at"
+        ],
+        "title": "CheckpointResponse"
+      },
+      "ConstitutionApprovalRequest": {
+        "properties": {
+          "approve": {
+            "type": "boolean",
+            "title": "Approve",
+            "description": "True to approve, False to reject"
+          },
+          "feedback": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Feedback"
+          }
+        },
+        "type": "object",
+        "required": [
+          "approve"
+        ],
+        "title": "ConstitutionApprovalRequest"
+      },
+      "ConstitutionResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "project_id": {
+            "type": "string",
+            "title": "Project Id"
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "is_approved": {
+            "type": "boolean",
+            "title": "Is Approved"
+          },
+          "goals": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Goals"
+          },
+          "requirements": {
+            "items": {
+              "$ref": "#/components/schemas/RequirementItem"
+            },
+            "type": "array",
+            "title": "Requirements"
+          },
+          "scope": {
+            "additionalProperties": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "type": "object",
+            "title": "Scope"
+          },
+          "ux_specs": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Ux Specs"
+          },
+          "technical_direction": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Technical Direction"
+          },
+          "decisions": {
+            "items": {
+              "$ref": "#/components/schemas/DecisionRecord"
+            },
+            "type": "array",
+            "title": "Decisions"
+          },
+          "assumptions": {
+            "items": {
+              "$ref": "#/components/schemas/AssumptionRecord"
+            },
+            "type": "array",
+            "title": "Assumptions"
+          },
+          "open_questions": {
+            "items": {
+              "$ref": "#/components/schemas/OpenQuestionRecord"
+            },
+            "type": "array",
+            "title": "Open Questions"
+          },
+          "diff_from_previous": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Diff From Previous"
+          },
+          "approved_by_user_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Approved By User Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "project_id",
+          "version",
+          "status",
+          "is_approved",
+          "goals",
+          "requirements",
+          "scope",
+          "ux_specs",
+          "technical_direction",
+          "decisions",
+          "assumptions",
+          "open_questions",
+          "diff_from_previous",
+          "approved_by_user_id",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "ConstitutionResponse"
+      },
+      "ConstitutionUpdate": {
+        "properties": {
+          "goals": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Goals"
+          },
+          "requirements": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/RequirementItem"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Requirements"
+          },
+          "scope_in": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scope In"
+          },
+          "scope_out": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scope Out"
+          },
+          "ux_specs": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/UXSpecification"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "technical_direction": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TechnicalDirection"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "decisions": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/DecisionRecord"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decisions"
+          },
+          "assumptions": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/AssumptionRecord"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Assumptions"
+          },
+          "open_questions": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/OpenQuestionRecord"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Open Questions"
+          }
+        },
+        "type": "object",
+        "title": "ConstitutionUpdate"
+      },
+      "ContextPackRequest": {
+        "properties": {
+          "target_environment": {
+            "type": "string",
+            "title": "Target Environment",
+            "default": "google-antigravity"
+          },
+          "max_token_budget": {
+            "type": "integer",
+            "title": "Max Token Budget",
+            "default": 16000
+          },
+          "include_research": {
+            "type": "boolean",
+            "title": "Include Research",
+            "default": true
+          },
+          "include_code_references": {
+            "type": "boolean",
+            "title": "Include Code References",
+            "default": true
+          }
+        },
+        "type": "object",
+        "title": "ContextPackRequest",
+        "description": "Request to compile and pack project context for an external agent or session."
+      },
+      "ContextPackResponse": {
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "title": "Project Id"
+          },
+          "constitution_version": {
+            "type": "integer",
+            "title": "Constitution Version"
+          },
+          "packed_context_markdown": {
+            "type": "string",
+            "title": "Packed Context Markdown"
+          },
+          "estimated_tokens": {
+            "type": "integer",
+            "title": "Estimated Tokens"
+          },
+          "items_included": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Items Included"
+          },
+          "items_truncated": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Items Truncated"
+          },
+          "latest_checkpoint": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CheckpointResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "project_id",
+          "constitution_version",
+          "packed_context_markdown",
+          "estimated_tokens",
+          "items_included",
+          "items_truncated"
+        ],
+        "title": "ContextPackResponse"
+      },
+      "CriticFindingSchema": {
+        "properties": {
+          "category": {
+            "type": "string",
+            "enum": [
+              "ambiguity",
+              "missing_requirements",
+              "contradiction",
+              "feasibility",
+              "security",
+              "output_contract",
+              "context_overflow"
+            ],
+            "title": "Category"
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "critical",
+              "high",
+              "medium",
+              "low",
+              "info"
+            ],
+            "title": "Severity"
+          },
+          "finding": {
+            "type": "string",
+            "title": "Finding"
+          },
+          "evidence_passage": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evidence Passage"
+          },
+          "consequence": {
+            "type": "string",
+            "title": "Consequence"
+          },
+          "recommendation": {
+            "type": "string",
+            "title": "Recommendation"
+          },
+          "disposition": {
+            "type": "string",
+            "title": "Disposition",
+            "default": "pending"
+          },
+          "is_resolved": {
+            "type": "boolean",
+            "title": "Is Resolved",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "category",
+          "severity",
+          "finding",
+          "consequence",
+          "recommendation"
+        ],
+        "title": "CriticFindingSchema"
+      },
+      "DecisionRecord": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "decision": {
+            "type": "string",
+            "title": "Decision"
+          },
+          "alternatives_considered": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Alternatives Considered"
+          },
+          "rationale": {
+            "type": "string",
+            "title": "Rationale"
+          },
+          "owner": {
+            "type": "string",
+            "title": "Owner",
+            "default": "user"
+          },
+          "date": {
+            "type": "string",
+            "title": "Date"
+          },
+          "supersedes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Supersedes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "decision",
+          "rationale",
+          "date"
+        ],
+        "title": "DecisionRecord"
+      },
+      "DiscoveryAnswerSubmit": {
+        "properties": {
+          "answers": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Answers",
+            "description": "Map of question_id to answer value"
+          }
+        },
+        "type": "object",
+        "required": [
+          "answers"
+        ],
+        "title": "DiscoveryAnswerSubmit",
+        "description": "Submission of answers to active discovery questions."
+      },
+      "DiscoveryQuestion": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "stage": {
+            "type": "string",
+            "title": "Stage"
+          },
+          "question": {
+            "type": "string",
+            "title": "Question"
+          },
+          "help_text": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Help Text"
+          },
+          "question_type": {
+            "type": "string",
+            "enum": [
+              "text",
+              "single_select",
+              "multi_select",
+              "confirm_inferred"
+            ],
+            "title": "Question Type",
+            "default": "text"
+          },
+          "options": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Options"
+          },
+          "default_value": {
+            "title": "Default Value"
+          },
+          "is_required": {
+            "type": "boolean",
+            "title": "Is Required",
+            "default": false
+          },
+          "inferred_suggestion": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Inferred Suggestion"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "stage",
+          "question"
+        ],
+        "title": "DiscoveryQuestion",
+        "description": "A dynamic question presented to the user during discovery."
+      },
+      "DiscoverySessionResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "project_id": {
+            "type": "string",
+            "title": "Project Id"
+          },
+          "task_type": {
+            "type": "string",
+            "enum": [
+              "prompt_creation",
+              "prompt_improvement",
+              "research",
+              "software_project",
+              "agent_creation",
+              "prompt_eval"
+            ],
+            "title": "Task Type"
+          },
+          "depth": {
+            "type": "string",
+            "enum": [
+              "quick",
+              "guided",
+              "deep"
+            ],
+            "title": "Depth"
+          },
+          "current_stage": {
+            "type": "string",
+            "title": "Current Stage"
+          },
+          "is_completed": {
+            "type": "boolean",
+            "title": "Is Completed"
+          },
+          "initial_intake": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Initial Intake"
+          },
+          "answers": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Answers"
+          },
+          "extracted_facts": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Extracted Facts"
+          },
+          "next_questions": {
+            "items": {
+              "$ref": "#/components/schemas/DiscoveryQuestion"
+            },
+            "type": "array",
+            "title": "Next Questions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "project_id",
+          "task_type",
+          "depth",
+          "current_stage",
+          "is_completed",
+          "initial_intake",
+          "answers",
+          "extracted_facts"
+        ],
+        "title": "DiscoverySessionResponse"
+      },
+      "EnvironmentRecordSchema": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "host": {
+            "type": "string",
+            "title": "Host"
+          },
+          "surface": {
+            "type": "string",
+            "title": "Surface"
+          },
+          "supported_formats": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Supported Formats"
+          },
+          "manifest_schema": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Manifest Schema"
+          },
+          "supported_tools": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Supported Tools"
+          },
+          "precedence_rules": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Precedence Rules"
+          },
+          "verification_status": {
+            "type": "string",
+            "title": "Verification Status"
+          },
+          "last_verified_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Verified At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "host",
+          "surface",
+          "supported_formats",
+          "manifest_schema",
+          "supported_tools",
+          "precedence_rules",
+          "verification_status"
+        ],
+        "title": "EnvironmentRecordSchema"
+      },
+      "EvaluationCaseSchema": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "input_vars": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Input Vars"
+          },
+          "expected_output_patterns": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Expected Output Patterns"
+          },
+          "assertion_type": {
+            "type": "string",
+            "title": "Assertion Type",
+            "default": "contains"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "description"
+        ],
+        "title": "EvaluationCaseSchema"
+      },
+      "EvaluationRunRequest": {
+        "properties": {
+          "suite_id": {
+            "type": "string",
+            "title": "Suite Id"
+          },
+          "package_id": {
+            "type": "string",
+            "title": "Package Id"
+          },
+          "model_id": {
+            "type": "string",
+            "title": "Model Id",
+            "default": "promptiq-mock-v1"
+          }
+        },
+        "type": "object",
+        "required": [
+          "suite_id",
+          "package_id"
+        ],
+        "title": "EvaluationRunRequest"
+      },
+      "EvaluationRunResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "suite_id": {
+            "type": "string",
+            "title": "Suite Id"
+          },
+          "package_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Package Id"
+          },
+          "model_id": {
+            "type": "string",
+            "title": "Model Id"
+          },
+          "pass_rate": {
+            "type": "number",
+            "title": "Pass Rate"
+          },
+          "total_cases": {
+            "type": "integer",
+            "title": "Total Cases"
+          },
+          "passed_cases": {
+            "type": "integer",
+            "title": "Passed Cases"
+          },
+          "results": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Results"
+          },
+          "latency_ms": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latency Ms"
+          },
+          "cost_estimate": {
+            "type": "number",
+            "title": "Cost Estimate",
+            "default": 0.0
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "suite_id",
+          "package_id",
+          "model_id",
+          "pass_rate",
+          "total_cases",
+          "passed_cases",
+          "results"
+        ],
+        "title": "EvaluationRunResponse"
+      },
+      "EvaluationSuiteCreate": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "test_cases": {
+            "items": {
+              "$ref": "#/components/schemas/EvaluationCaseSchema"
+            },
+            "type": "array",
+            "title": "Test Cases"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "test_cases"
+        ],
+        "title": "EvaluationSuiteCreate"
+      },
+      "EvidenceClaimSchema": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "claim_text": {
+            "type": "string",
+            "title": "Claim Text"
+          },
+          "support_status": {
+            "type": "string",
+            "enum": [
+              "verified",
+              "contradicted",
+              "inferred",
+              "stale"
+            ],
+            "title": "Support Status"
+          },
+          "confidence_score": {
+            "type": "number",
+            "title": "Confidence Score"
+          },
+          "confidence_rationale": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence Rationale"
+          },
+          "excerpt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Excerpt"
+          },
+          "source_id": {
+            "type": "string",
+            "title": "Source Id"
+          },
+          "source_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Url"
+          },
+          "contrary_evidence": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Contrary Evidence"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "claim_text",
+          "support_status",
+          "confidence_score",
+          "source_id"
+        ],
+        "title": "EvidenceClaimSchema"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "InitialIntakeRequest": {
+        "properties": {
+          "goal": {
+            "type": "string",
+            "minLength": 5,
+            "title": "Goal",
+            "description": "What are you trying to accomplish?"
+          },
+          "deliverable": {
+            "type": "string",
+            "enum": [
+              "prompt_only",
+              "prompt_suite",
+              "complete_package",
+              "recommend"
+            ],
+            "title": "Deliverable",
+            "description": "What should PromptIQ produce?",
+            "default": "complete_package"
+          },
+          "target": {
+            "type": "string",
+            "title": "Target",
+            "description": "Where will you use it? (Target model/environment)",
+            "default": "google-antigravity"
+          },
+          "target_mode": {
+            "type": "string",
+            "enum": [
+              "specific",
+              "multiple",
+              "recommend",
+              "undecided"
+            ],
+            "title": "Target Mode",
+            "description": "Target selection approach",
+            "default": "specific"
+          },
+          "context_text": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Context Text",
+            "description": "Pasted text, prompt, or notes"
+          },
+          "context_urls": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Context Urls",
+            "description": "Reference public URLs"
+          },
+          "depth": {
+            "type": "string",
+            "enum": [
+              "quick",
+              "guided",
+              "deep"
+            ],
+            "title": "Depth",
+            "description": "Discovery depth",
+            "default": "guided"
+          },
+          "task_type": {
+            "type": "string",
+            "enum": [
+              "prompt_creation",
+              "prompt_improvement",
+              "research",
+              "software_project",
+              "agent_creation",
+              "prompt_eval"
+            ],
+            "title": "Task Type",
+            "description": "Category of task",
+            "default": "software_project"
+          }
+        },
+        "type": "object",
+        "required": [
+          "goal"
+        ],
+        "title": "InitialIntakeRequest",
+        "description": "The foundational 4-input intake starting point."
+      },
+      "ModelRecordSchema": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "provider": {
+            "type": "string",
+            "title": "Provider"
+          },
+          "model_id": {
+            "type": "string",
+            "title": "Model Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "context_window": {
+            "type": "integer",
+            "title": "Context Window"
+          },
+          "output_limit": {
+            "type": "integer",
+            "title": "Output Limit"
+          },
+          "supports_tools": {
+            "type": "boolean",
+            "title": "Supports Tools"
+          },
+          "supports_structured_output": {
+            "type": "boolean",
+            "title": "Supports Structured Output"
+          },
+          "cutoff_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cutoff Date"
+          },
+          "release_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Release Date"
+          },
+          "is_zero_price": {
+            "type": "boolean",
+            "title": "Is Zero Price"
+          },
+          "rate_limits": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Rate Limits"
+          },
+          "confidence": {
+            "type": "string",
+            "title": "Confidence"
+          },
+          "verified_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Verified At"
+          },
+          "source_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Url"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "provider",
+          "model_id",
+          "name",
+          "context_window",
+          "output_limit",
+          "supports_tools",
+          "supports_structured_output",
+          "is_zero_price",
+          "rate_limits",
+          "confidence"
+        ],
+        "title": "ModelRecordSchema"
+      },
+      "OpenQuestionRecord": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "question": {
+            "type": "string",
+            "title": "Question"
+          },
+          "owner": {
+            "type": "string",
+            "title": "Owner",
+            "default": "unassigned"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "open",
+              "answered",
+              "deferred"
+            ],
+            "title": "Status",
+            "default": "open"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "question"
+        ],
+        "title": "OpenQuestionRecord"
+      },
+      "PackageCompileRequest": {
+        "properties": {
+          "target_environment": {
+            "type": "string",
+            "title": "Target Environment",
+            "description": "Target host (google-antigravity, claude-code, cursor, openai-codex, gemini-cli, raw-prompt)",
+            "default": "google-antigravity"
+          },
+          "output_type": {
+            "type": "string",
+            "enum": [
+              "prompt_only",
+              "prompt_suite",
+              "complete_package"
+            ],
+            "title": "Output Type",
+            "description": "Delivery granularity: prompt_only, prompt_suite, complete_package",
+            "default": "complete_package"
+          },
+          "custom_instructions": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Custom Instructions"
+          }
+        },
+        "type": "object",
+        "title": "PackageCompileRequest",
+        "description": "Request to compile a Project Constitution into a target-native package."
+      },
+      "PackageExportResponse": {
+        "properties": {
+          "package_id": {
+            "type": "string",
+            "title": "Package Id"
+          },
+          "target_environment": {
+            "type": "string",
+            "title": "Target Environment"
+          },
+          "file_count": {
+            "type": "integer",
+            "title": "File Count"
+          },
+          "manifest": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Manifest"
+          },
+          "download_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Download Url"
+          },
+          "files": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Files"
+          }
+        },
+        "type": "object",
+        "required": [
+          "package_id",
+          "target_environment",
+          "file_count",
+          "manifest",
+          "files"
+        ],
+        "title": "PackageExportResponse"
+      },
+      "ProjectCreate": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 2,
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "visibility": {
+            "type": "string",
+            "pattern": "^(private|workspace|shared)$",
+            "title": "Visibility",
+            "default": "private"
+          },
+          "workspace_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Workspace Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "ProjectCreate"
+      },
+      "ProjectResponse": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 2,
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "visibility": {
+            "type": "string",
+            "pattern": "^(private|workspace|shared)$",
+            "title": "Visibility",
+            "default": "private"
+          },
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "workspace_id": {
+            "type": "string",
+            "title": "Workspace Id"
+          },
+          "created_by_user_id": {
+            "type": "string",
+            "title": "Created By User Id"
+          },
+          "current_constitution_version": {
+            "type": "integer",
+            "title": "Current Constitution Version"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "id",
+          "workspace_id",
+          "created_by_user_id",
+          "current_constitution_version",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "ProjectResponse"
+      },
+      "PromptPackageResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "project_id": {
+            "type": "string",
+            "title": "Project Id"
+          },
+          "spec_id": {
+            "type": "string",
+            "title": "Spec Id"
+          },
+          "target_environment": {
+            "type": "string",
+            "title": "Target Environment"
+          },
+          "output_type": {
+            "type": "string",
+            "title": "Output Type"
+          },
+          "manifest": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Manifest"
+          },
+          "files": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Files"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          },
+          "is_validated": {
+            "type": "boolean",
+            "title": "Is Validated"
+          },
+          "validation_result": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Validation Result"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "project_id",
+          "spec_id",
+          "target_environment",
+          "output_type",
+          "manifest",
+          "files",
+          "warnings",
+          "is_validated",
+          "validation_result",
+          "created_at"
+        ],
+        "title": "PromptPackageResponse"
+      },
+      "QuotaStatusResponse": {
+        "properties": {
+          "provider": {
+            "type": "string",
+            "title": "Provider"
+          },
+          "is_paused": {
+            "type": "boolean",
+            "title": "Is Paused"
+          },
+          "pause_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pause Reason"
+          },
+          "minute_requests_used": {
+            "type": "integer",
+            "title": "Minute Requests Used"
+          },
+          "daily_requests_used": {
+            "type": "integer",
+            "title": "Daily Requests Used"
+          },
+          "user_requests_remaining_this_hour": {
+            "type": "integer",
+            "title": "User Requests Remaining This Hour"
+          },
+          "zero_price_policy_active": {
+            "type": "boolean",
+            "title": "Zero Price Policy Active",
+            "default": true
+          },
+          "notice": {
+            "type": "string",
+            "title": "Notice",
+            "default": "PromptIQ is 100% free. No user billing or API keys required."
+          }
+        },
+        "type": "object",
+        "required": [
+          "provider",
+          "is_paused",
+          "minute_requests_used",
+          "daily_requests_used",
+          "user_requests_remaining_this_hour"
+        ],
+        "title": "QuotaStatusResponse"
+      },
+      "RequirementItem": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Stable requirement identifier, e.g. REQ-AUTH-001"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text",
+            "description": "Exact requirement statement"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category",
+            "description": "functional, non_functional, security, data, ux",
+            "default": "functional"
+          },
+          "priority": {
+            "type": "string",
+            "enum": [
+              "P0",
+              "P1",
+              "P2",
+              "P3"
+            ],
+            "title": "Priority",
+            "default": "P1"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "proposed",
+              "confirmed",
+              "rejected",
+              "deferred"
+            ],
+            "title": "Status",
+            "default": "confirmed"
+          },
+          "provenance": {
+            "type": "string",
+            "enum": [
+              "user_provided",
+              "file_extracted",
+              "connected_source",
+              "inferred",
+              "research_backed",
+              "unknown",
+              "conflicting"
+            ],
+            "title": "Provenance",
+            "default": "user_provided"
+          },
+          "source_reference": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Reference",
+            "description": "Originating document, turn, or citation"
+          },
+          "acceptance_criteria": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Acceptance Criteria",
+            "description": "Observable pass/fail test condition"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "text"
+        ],
+        "title": "RequirementItem",
+        "description": "An individual project requirement with provenance."
+      },
+      "ResearchRequest": {
+        "properties": {
+          "query": {
+            "type": "string",
+            "minLength": 3,
+            "title": "Query",
+            "description": "Research question or topic to investigate"
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "quick",
+              "decision",
+              "deep",
+              "benchmark"
+            ],
+            "title": "Mode",
+            "description": "Research depth mode",
+            "default": "deep"
+          },
+          "max_sources": {
+            "type": "integer",
+            "maximum": 20.0,
+            "minimum": 1.0,
+            "title": "Max Sources",
+            "default": 5
+          }
+        },
+        "type": "object",
+        "required": [
+          "query"
+        ],
+        "title": "ResearchRequest"
+      },
+      "ResearchResponse": {
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "title": "Job Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "query": {
+            "type": "string",
+            "title": "Query"
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "quick",
+              "decision",
+              "deep",
+              "benchmark"
+            ],
+            "title": "Mode"
+          },
+          "plan": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Plan"
+          },
+          "summary": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Summary"
+          },
+          "sources": {
+            "items": {
+              "$ref": "#/components/schemas/SourceRecordSchema"
+            },
+            "type": "array",
+            "title": "Sources"
+          },
+          "claims": {
+            "items": {
+              "$ref": "#/components/schemas/EvidenceClaimSchema"
+            },
+            "type": "array",
+            "title": "Claims"
+          }
+        },
+        "type": "object",
+        "required": [
+          "job_id",
+          "status",
+          "query",
+          "mode",
+          "plan",
+          "summary",
+          "sources",
+          "claims"
+        ],
+        "title": "ResearchResponse"
+      },
+      "SourceRecordSchema": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "url": {
+            "type": "string",
+            "title": "Url"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "publisher": {
+            "type": "string",
+            "title": "Publisher"
+          },
+          "source_type": {
+            "type": "string",
+            "title": "Source Type"
+          },
+          "publication_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publication Date"
+          },
+          "retrieved_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Retrieved At"
+          },
+          "locator": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Locator"
+          },
+          "is_accessible": {
+            "type": "boolean",
+            "title": "Is Accessible",
+            "default": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "url",
+          "title",
+          "publisher",
+          "source_type",
+          "retrieved_at"
+        ],
+        "title": "SourceRecordSchema"
+      },
+      "TechnicalDirection": {
+        "properties": {
+          "preferred_stack": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Preferred Stack"
+          },
+          "prohibited_stack": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Prohibited Stack"
+          },
+          "architecture_pattern": {
+            "type": "string",
+            "title": "Architecture Pattern",
+            "default": "modular_monolith"
+          },
+          "database_preference": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Database Preference"
+          },
+          "hosting_environment": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hosting Environment"
+          }
+        },
+        "type": "object",
+        "title": "TechnicalDirection"
+      },
+      "TelegramLinkRequest": {
+        "properties": {
+          "telegram_chat_id": {
+            "type": "string",
+            "title": "Telegram Chat Id"
+          },
+          "link_token": {
+            "type": "string",
+            "title": "Link Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "telegram_chat_id",
+          "link_token"
+        ],
+        "title": "TelegramLinkRequest"
+      },
+      "TelegramLinkResponse": {
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "title": "Success"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "success",
+          "message",
+          "user_id"
+        ],
+        "title": "TelegramLinkResponse"
+      },
+      "Token": {
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "title": "Access Token"
+          },
+          "token_type": {
+            "type": "string",
+            "title": "Token Type",
+            "default": "bearer"
+          },
+          "expires_in_minutes": {
+            "type": "integer",
+            "title": "Expires In Minutes"
+          },
+          "user": {
+            "$ref": "#/components/schemas/UserResponse"
+          }
+        },
+        "type": "object",
+        "required": [
+          "access_token",
+          "expires_in_minutes",
+          "user"
+        ],
+        "title": "Token"
+      },
+      "UXSpecification": {
+        "properties": {
+          "visual_direction": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Visual Direction"
+          },
+          "brand_tokens": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Brand Tokens"
+          },
+          "page_map": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Page Map"
+          },
+          "screen_flows": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Screen Flows"
+          },
+          "accessibility_standards": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Accessibility Standards"
+          },
+          "responsive_breakpoints": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Responsive Breakpoints"
+          },
+          "theme_support": {
+            "type": "string",
+            "enum": [
+              "light_only",
+              "dark_only",
+              "both_system"
+            ],
+            "title": "Theme Support",
+            "default": "both_system"
+          }
+        },
+        "type": "object",
+        "title": "UXSpecification",
+        "description": "Structured UX specification (Note: strictly requirements only; no frontend code)."
+      },
+      "UserCreate": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "title": "Email"
+          },
+          "full_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Full Name"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 8,
+            "title": "Password",
+            "description": "User password (min 8 chars)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ],
+        "title": "UserCreate"
+      },
+      "UserLogin": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "title": "Email"
+          },
+          "password": {
+            "type": "string",
+            "title": "Password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ],
+        "title": "UserLogin"
+      },
+      "UserResponse": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "title": "Email"
+          },
+          "full_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Full Name"
+          },
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "is_active": {
+            "type": "boolean",
+            "title": "Is Active"
+          },
+          "telegram_chat_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Telegram Chat Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "email",
+          "id",
+          "is_active",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "UserResponse"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    },
+    "securitySchemes": {
+      "OAuth2PasswordBearer": {
+        "type": "oauth2",
+        "flows": {
+          "password": {
+            "scopes": {},
+            "tokenUrl": "/api/v1/auth/login"
+          }
+        }
+      }
+    }
+  }
+}

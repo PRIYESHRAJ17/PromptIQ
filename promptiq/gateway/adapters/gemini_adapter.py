@@ -1,0 +1,87 @@
+"""Google Gemini Developer API zero-price free-tier adapter."""
+
+import json
+import time
+
+import httpx
+
+from promptiq.core.config import settings
+from promptiq.core.exceptions import CapacityExhaustedError
+from promptiq.core.logging import logger
+from promptiq.gateway.adapters.base import BaseInferenceAdapter
+from promptiq.gateway.adapters.mock_adapter import MockInferenceAdapter
+from promptiq.gateway.eligibility import verify_zero_price_route
+from promptiq.gateway.governor import governor
+from promptiq.gateway.models import InferenceRequest, InferenceResponse
+
+
+class GeminiInferenceAdapter(BaseInferenceAdapter):
+    """Adapter for Google Gemini Developer API free tier."""
+
+    provider_name: str = "gemini"
+    model_id: str = "gemini-2.0-flash"
+
+    def __init__(self, model_id: str | None = None):
+        if model_id:
+            self.model_id = model_id
+        verify_zero_price_route(self.provider_name, self.model_id, price_per_token=0.0)
+
+    async def generate(self, request: InferenceRequest) -> InferenceResponse:
+        api_key = settings.OPERATOR_GEMINI_API_KEY
+        if not api_key:
+            if settings.MANAGED_INFERENCE_ALLOW_MOCK_FALLBACK:
+                logger.info("No operator Gemini API key set; falling back to deterministic mock adapter")
+                mock = MockInferenceAdapter()
+                mock.model_id = f"{self.model_id}-mock"
+                return await mock.generate(request)
+            raise CapacityExhaustedError("Gemini operator route is unconfigured.")
+
+        governor.check_circuit_breaker(self.provider_name)
+
+        start_time = time.perf_counter()
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model_id}:generateContent?key={api_key}"
+
+        # Construct Gemini contents payload
+        contents = []
+        for msg in request.messages:
+            contents.append({"role": "user" if msg.role == "user" else "model", "parts": [{"text": msg.content}]})
+
+        payload = {"contents": contents}
+        if request.system_instruction:
+            payload["systemInstruction"] = {"parts": [{"text": request.system_instruction}]}
+
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            try:
+                resp = await client.post(url, json=payload)
+                if resp.status_code == 429:
+                    governor.trip_circuit_breaker(self.provider_name, "Gemini rate limit exceeded", pause_duration_seconds=60)
+                    raise CapacityExhaustedError("Gemini free tier rate limit reached. Pausing route.", retry_after=60)
+
+                resp.raise_for_status()
+                data = resp.json()
+
+                candidate = data["candidates"][0]["content"]["parts"][0]["text"]
+                latency_ms = (time.perf_counter() - start_time) * 1000.0
+
+                structured_data = None
+                if request.response_schema:
+                    try:
+                        structured_data = json.loads(candidate)
+                    except Exception:
+                        pass
+
+                return InferenceResponse(
+                    text=candidate,
+                    structured_data=structured_data,
+                    model_id=self.model_id,
+                    provider=self.provider_name,
+                    latency_ms=round(latency_ms, 2),
+                    tokens_used=len(candidate) // 4,
+                    route_cost=0.0,
+                )
+            except httpx.HTTPStatusError as e:
+                governor.trip_circuit_breaker(self.provider_name, f"Gemini HTTP {e.response.status_code}")
+                raise CapacityExhaustedError(f"Gemini API error: {e.response.status_code}", retry_after=30)
+            except httpx.RequestError as e:
+                governor.trip_circuit_breaker(self.provider_name, f"Gemini connection failure: {e}")
+                raise CapacityExhaustedError(f"Gemini connection error: {e}", retry_after=30)
