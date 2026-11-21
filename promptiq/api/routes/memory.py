@@ -27,7 +27,9 @@ async def create_checkpoint(
 ):
     """Record a verified milestone checkpoint for cross-session and cross-agent continuity."""
     try:
-        cp = await CheckpointManager.create_checkpoint(db, project_id, user.id, checkpoint_in, surface="api")
+        cp = await CheckpointManager.create_checkpoint(
+            db, project_id, user.id, checkpoint_in, surface="api"
+        )
         return cp
     except (NotFoundError, TenantIsolationError) as e:
         raise HTTPException(status_code=e.status_code, detail=e.message)

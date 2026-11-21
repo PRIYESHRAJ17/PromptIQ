@@ -64,7 +64,9 @@ async def test_remote_mcp_stateless_rpc(client: AsyncClient, user_auth_headers: 
         "id": 104,
         "method": "non_existent_tool_action",
     }
-    unknown_resp = await client.post("/api/v1/mcp/rpc", json=unknown_payload, headers=user_auth_headers)
+    unknown_resp = await client.post(
+        "/api/v1/mcp/rpc", json=unknown_payload, headers=user_auth_headers
+    )
     assert unknown_resp.status_code == 200
     unknown_data = unknown_resp.json()
     assert unknown_data["error"]["code"] == -32601
@@ -113,7 +115,9 @@ async def test_remote_mcp_sse_cross_tenant_isolation(
 
 
 @pytest.mark.asyncio
-async def test_streamable_http_primary_transport(client: AsyncClient, user_auth_headers: dict[str, str]):
+async def test_streamable_http_primary_transport(
+    client: AsyncClient, user_auth_headers: dict[str, str]
+):
     """Verifies official MCP Streamable HTTP primary transport on /api/v1/mcp."""
     # 1. Standard application/json response
     init_payload = {
@@ -150,7 +154,9 @@ async def test_streamable_http_primary_transport(client: AsyncClient, user_auth_
 
 
 @pytest.mark.asyncio
-async def test_streamable_http_origin_security(client: AsyncClient, user_auth_headers: dict[str, str]):
+async def test_streamable_http_origin_security(
+    client: AsyncClient, user_auth_headers: dict[str, str]
+):
     """Verifies Origin header validation prevents DNS rebinding attacks."""
     ping_payload = {"jsonrpc": "2.0", "id": 203, "method": "ping"}
 

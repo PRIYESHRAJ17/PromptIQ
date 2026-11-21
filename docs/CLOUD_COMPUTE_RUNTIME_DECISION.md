@@ -76,7 +76,7 @@ Because Google Cloud Run requires a billing account that auto-charges overages, 
      # Disables ingress and scales instances to 0
      run_client.services.update_service(
          name="projects/PROMPTIQ_PROJECT/locations/us-central1/services/promptiq-backend",
-         body={"spec": {"traffic": [], "template": {"spec": {"containerConcurrency": 0}}}}
+         body={"spec": {"traffic": [], "template": {"spec": {"containerConcurrency": 0}}}},
      )
      ```
    - This converts Cloud Run's billable model into a **guaranteed hard spending freeze**.

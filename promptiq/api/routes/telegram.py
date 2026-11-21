@@ -16,7 +16,9 @@ router = APIRouter(prefix="/telegram", tags=["Telegram"])
 @router.post("/webhook")
 async def telegram_webhook(
     update: dict[str, Any],
-    x_telegram_bot_api_secret_token: str | None = Header(default=None, alias="X-Telegram-Bot-Api-Secret-Token"),
+    x_telegram_bot_api_secret_token: str | None = Header(
+        default=None, alias="X-Telegram-Bot-Api-Secret-Token"
+    ),
     db: AsyncSession = Depends(get_db),
 ):
     """Receives incoming updates from the official Telegram Bot API with timing-attack resistant secret validation."""
@@ -24,7 +26,9 @@ async def telegram_webhook(
         if not x_telegram_bot_api_secret_token or not secrets.compare_digest(
             x_telegram_bot_api_secret_token, settings.TELEGRAM_WEBHOOK_SECRET
         ):
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid webhook secret token")
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN, detail="Invalid webhook secret token"
+            )
 
     result = await telegram_bot.handle_update(db, update)
     return result

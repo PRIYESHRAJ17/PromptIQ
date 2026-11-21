@@ -24,7 +24,12 @@ PILOT_CASES: list[dict[str, Any]] = [
         "id": "CASE-02",
         "category": "Missing-Information Detection",
         "prompt": "Identify missing specifications: 'Build a secure authentication service for mobile app.'",
-        "expected_invariants": ["token expiration", "password hashing", "refresh tokens", "rate limiting"],
+        "expected_invariants": [
+            "token expiration",
+            "password hashing",
+            "refresh tokens",
+            "rate limiting",
+        ],
         "forbidden_invariants": [],
     },
     {
@@ -108,16 +113,18 @@ class PilotBenchmarkRunner:
             # Config D: Gen + Critic + Deterministic Verification (100% invariant enforcement)
             score_d = 0.99
 
-            results.append({
-                "case_id": case_id,
-                "category": cat,
-                "score_config_a_120b_alone": score_a,
-                "score_config_b_20b_alone": score_b,
-                "score_config_c_multi_model": score_c,
-                "score_config_d_verified": score_d,
-                "expected_invariants": case["expected_invariants"],
-                "passed_deterministic_verification": True,
-            })
+            results.append(
+                {
+                    "case_id": case_id,
+                    "category": cat,
+                    "score_config_a_120b_alone": score_a,
+                    "score_config_b_20b_alone": score_b,
+                    "score_config_c_multi_model": score_c,
+                    "score_config_d_verified": score_d,
+                    "expected_invariants": case["expected_invariants"],
+                    "passed_deterministic_verification": True,
+                }
+            )
 
         avg_a = sum(r["score_config_a_120b_alone"] for r in results) / len(results)
         avg_b = sum(r["score_config_b_20b_alone"] for r in results) / len(results)
@@ -130,7 +137,10 @@ class PilotBenchmarkRunner:
             "configurations": {
                 "config_a_120b_alone": {"mean_score": round(avg_a, 3), "latency_est_ms": 1250},
                 "config_b_20b_alone": {"mean_score": round(avg_b, 3), "latency_est_ms": 420},
-                "config_c_120b_gen_20b_critic": {"mean_score": round(avg_c, 3), "latency_est_ms": 1670},
+                "config_c_120b_gen_20b_critic": {
+                    "mean_score": round(avg_c, 3),
+                    "latency_est_ms": 1670,
+                },
                 "config_d_full_pipeline": {"mean_score": round(avg_d, 3), "latency_est_ms": 1672},
             },
             "cases": results,

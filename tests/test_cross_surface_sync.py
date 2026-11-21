@@ -53,7 +53,11 @@ async def test_project_started_in_telegram_accessible_in_api(
     # 4. Compile package via MCP tool
     compile_res = await handle_tool_call(
         "forge.compile_prompt",
-        {"project_id": project_id, "target_environment": "google-antigravity", "output_type": "complete_package"},
+        {
+            "project_id": project_id,
+            "target_environment": "google-antigravity",
+            "output_type": "complete_package",
+        },
         user.id,
         db=db_session,
     )

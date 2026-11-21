@@ -41,4 +41,3 @@ class MockSearchConnector(BaseSearchConnector):
                 "is_mock": True,
             },
         ][:max_results]
-

@@ -28,7 +28,9 @@ class ModelRegistryEntry(Base, UUIDMixin, TimestampMixin):
     is_zero_price: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     rate_limits: Mapped[dict] = mapped_column(JSON, default=dict, nullable=False)
 
-    confidence: Mapped[str] = mapped_column(String(32), default="provider_documented", nullable=False)
+    confidence: Mapped[str] = mapped_column(
+        String(32), default="provider_documented", nullable=False
+    )
     verified_at: Mapped[DateTime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     source_url: Mapped[str | None] = mapped_column(String(512), nullable=True)
 
@@ -47,4 +49,6 @@ class EnvironmentRecord(Base, UUIDMixin, TimestampMixin):
     precedence_rules: Mapped[list] = mapped_column(JSON, default=list, nullable=False)
 
     verification_status: Mapped[str] = mapped_column(String(32), default="tested", nullable=False)
-    last_verified_at: Mapped[DateTime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    last_verified_at: Mapped[DateTime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )

@@ -69,7 +69,9 @@ class LiveWebSearchConnector(BaseSearchConnector):
                     try:
                         validate_and_sanitize_url(source_url)
                     except Exception as url_err:
-                        logger.debug("Skipping unvalidated search result URL '%s': %s", source_url, url_err)
+                        logger.debug(
+                            "Skipping unvalidated search result URL '%s': %s", source_url, url_err
+                        )
                         continue
 
                     content = clean_snippet or f"Summary of {title}"
@@ -92,11 +94,15 @@ class LiveWebSearchConnector(BaseSearchConnector):
                     )
 
             if results:
-                logger.info(f"Live search retrieved {len(results)} authoritative sources for query '{query}'")
+                logger.info(
+                    f"Live search retrieved {len(results)} authoritative sources for query '{query}'"
+                )
                 return results
 
         except Exception as e:
-            logger.warning(f"Live search query failed or timed out: {e}. Falling back to deterministic knowledge base.")
+            logger.warning(
+                f"Live search query failed or timed out: {e}. Falling back to deterministic knowledge base."
+            )
 
         # Fallback to mock connector if live query yielded no results or network is offline
         if self.fallback:

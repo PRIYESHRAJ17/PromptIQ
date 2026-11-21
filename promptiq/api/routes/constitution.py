@@ -42,11 +42,12 @@ async def rollback_constitution_version(
 ):
     """Roll back to a previous constitution version, creating a new immutable version N+1."""
     try:
-        reverted_const = await ConstitutionService.rollback_to_version(db, project_id, version, user.id, surface="api")
+        reverted_const = await ConstitutionService.rollback_to_version(
+            db, project_id, version, user.id, surface="api"
+        )
         return ConstitutionResponse.model_validate(reverted_const)
     except (NotFoundError, TenantIsolationError) as e:
         raise HTTPException(status_code=e.status_code, detail=e.message)
-
 
 
 @router.get("", response_model=ConstitutionResponse)
@@ -72,7 +73,9 @@ async def get_constitution_version(
 ):
     """Retrieve an immutable historical snapshot of a specific constitution version."""
     try:
-        ver_record = await ConstitutionService.get_constitution_by_version(db, project_id, version, user.id)
+        ver_record = await ConstitutionService.get_constitution_by_version(
+            db, project_id, version, user.id
+        )
         return {
             "version": ver_record.version,
             "snapshot": ver_record.snapshot,
@@ -92,7 +95,9 @@ async def update_constitution(
 ):
     """Update requirements or specifications, generating a new immutable Constitution version."""
     try:
-        new_const = await ConstitutionService.update_constitution(db, project_id, user.id, update_in, surface="api")
+        new_const = await ConstitutionService.update_constitution(
+            db, project_id, user.id, update_in, surface="api"
+        )
         return ConstitutionResponse.model_validate(new_const)
     except (NotFoundError, TenantIsolationError) as e:
         raise HTTPException(status_code=e.status_code, detail=e.message)
@@ -107,7 +112,9 @@ async def approve_constitution(
 ):
     """User review gate: approve or reject the active Constitution before compilation."""
     try:
-        approved_const = await ConstitutionService.approve_constitution(db, project_id, user.id, approval_in, surface="api")
+        approved_const = await ConstitutionService.approve_constitution(
+            db, project_id, user.id, approval_in, surface="api"
+        )
         return ConstitutionResponse.model_validate(approved_const)
     except (NotFoundError, TenantIsolationError) as e:
         raise HTTPException(status_code=e.status_code, detail=e.message)

@@ -15,7 +15,9 @@ class IntentSchema(BaseModel):
 
 
 class TargetProfileSchema(BaseModel):
-    host: str = Field(..., description="e.g. google-antigravity, claude-code, cursor, openai-codex, gemini-cli")
+    host: str = Field(
+        ..., description="e.g. google-antigravity, claude-code, cursor, openai-codex, gemini-cli"
+    )
     provider: str = Field(..., description="e.g. google, anthropic, openai")
     model_id: str = Field(..., description="e.g. gemini-3.8-flash, claude-3-7-sonnet, gpt-4o")
     route: str = Field(default="hosted_adapter", description="Access route")
@@ -138,5 +140,7 @@ class PromptSpecSchema(BaseModel):
 
     def to_deterministic_hash(self) -> str:
         """Computes a SHA-256 fingerprint of the normalized specification."""
-        normalized_str = json.dumps(self.to_normalized_dict(), sort_keys=True, separators=(",", ":"))
+        normalized_str = json.dumps(
+            self.to_normalized_dict(), sort_keys=True, separators=(",", ":")
+        )
         return hashlib.sha256(normalized_str.encode("utf-8")).hexdigest()

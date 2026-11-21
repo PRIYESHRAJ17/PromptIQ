@@ -39,7 +39,6 @@ async def compare_evaluation_runs(
         raise HTTPException(status_code=e.status_code, detail=e.message)
 
 
-
 @router.post("/suites", status_code=status.HTTP_201_CREATED)
 async def create_evaluation_suite(
     project_id: str,

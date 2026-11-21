@@ -24,9 +24,21 @@ from promptiq.schemas.model_pool import (
 
 # Core PromptIQ Invariants checked during deterministic verification
 FORBIDDEN_FRONTEND_PATTERNS = [
-    "<html", "<body", "import React", "from 'react'", "export default function",
-    "className=", "styled-components", "tailwind", "next/router", "next/navigation",
-    "<html>", "<div>", "render()", "useState(", "useEffect("
+    "<html",
+    "<body",
+    "import React",
+    "from 'react'",
+    "export default function",
+    "className=",
+    "styled-components",
+    "tailwind",
+    "next/router",
+    "next/navigation",
+    "<html>",
+    "<div>",
+    "render()",
+    "useState(",
+    "useEffect(",
 ]
 
 DEFAULT_COLLABORATION_TASK = (
@@ -62,7 +74,8 @@ def classify_critic_resolutions(critic_text: str, revised_text: str) -> dict[str
 
     if not findings_raw:
         findings_raw = [
-            line.strip() for line in critic_text.splitlines()
+            line.strip()
+            for line in critic_text.splitlines()
             if len(line.strip()) > 25 and not line.strip().startswith("#")
         ][:10]
 
@@ -78,7 +91,15 @@ def classify_critic_resolutions(critic_text: str, revised_text: str) -> dict[str
         f_lower = f.lower()
         f_norm = f_lower.replace("-", " ")
         words = [w.lower() for w in re.findall(r"\b[A-Za-z0-9]{4,}\b", f_norm)]
-        if any(term in revised_lower for term in [f"reject: {f[:20].lower()}", f"rejected: {f[:20].lower()}", "out of scope", "omitted because"]):
+        if any(
+            term in revised_lower
+            for term in [
+                f"reject: {f[:20].lower()}",
+                f"rejected: {f[:20].lower()}",
+                "out of scope",
+                "omitted because",
+            ]
+        ):
             rejected.append(f)
             continue
 
@@ -86,7 +107,17 @@ def classify_critic_resolutions(critic_text: str, revised_text: str) -> dict[str
 
         matched_concept = False
         for concept in [
-            "food safety", "temperature", "expiry", "audit", "rbac", "privacy", "acceptance criteria", "idempotency", "notification", "otp", "dispute"
+            "food safety",
+            "temperature",
+            "expiry",
+            "audit",
+            "rbac",
+            "privacy",
+            "acceptance criteria",
+            "idempotency",
+            "notification",
+            "otp",
+            "dispute",
         ]:
             if concept in f_norm and concept in revised_norm:
                 matched_concept = True
@@ -107,7 +138,9 @@ def classify_critic_resolutions(critic_text: str, revised_text: str) -> dict[str
     }
 
 
-def prepare_revision_prompt(candidate_text: str, critic_findings: list[str] | str, task_prompt: str) -> tuple[str, int]:
+def prepare_revision_prompt(
+    candidate_text: str, critic_findings: list[str] | str, task_prompt: str
+) -> tuple[str, int]:
     """Prepares a concise, token-budget-aware revision prompt calibrated for the 8,000 TPM limit.
 
     Returns (prompt_text, max_tokens).
@@ -187,8 +220,14 @@ class MultiModelCollaborationPipeline:
         orch_step_start = time.perf_counter()
         orch_resp = await inference_gateway.generate(
             InferenceRequest(
-                messages=[GatewayMessage(role="user", content=f"Analyze intent and plan execution:\n{prompt}")],
-                system_instruction=ModelRoleContract.get_system_instruction(LogicalModelRole.ORCHESTRATOR),
+                messages=[
+                    GatewayMessage(
+                        role="user", content=f"Analyze intent and plan execution:\n{prompt}"
+                    )
+                ],
+                system_instruction=ModelRoleContract.get_system_instruction(
+                    LogicalModelRole.ORCHESTRATOR
+                ),
                 task_context="orchestrator",
                 user_id=user_id,
                 target_model_id=orch_model.model_id,
@@ -223,8 +262,14 @@ class MultiModelCollaborationPipeline:
         # -------------------------------------------------------------
         # STEP 2 (Stage A): Specialist Generation (Generator)
         # -------------------------------------------------------------
-        gen_role = LogicalModelRole.FAST if profile == ExecutionProfile.QUICK else (
-            LogicalModelRole.REASONING if profile == ExecutionProfile.DEEP else LogicalModelRole.PROMPT_ENGINEER
+        gen_role = (
+            LogicalModelRole.FAST
+            if profile == ExecutionProfile.QUICK
+            else (
+                LogicalModelRole.REASONING
+                if profile == ExecutionProfile.DEEP
+                else LogicalModelRole.PROMPT_ENGINEER
+            )
         )
         gen_model = DynamicModelRouter.select_model_for_role(
             role=gen_role,
@@ -282,7 +327,9 @@ class MultiModelCollaborationPipeline:
             sec_resp = await inference_gateway.generate(
                 InferenceRequest(
                     messages=[GatewayMessage(role="user", content=prompt)],
-                    system_instruction=ModelRoleContract.get_system_instruction(LogicalModelRole.PROMPT_ENGINEER),
+                    system_instruction=ModelRoleContract.get_system_instruction(
+                        LogicalModelRole.PROMPT_ENGINEER
+                    ),
                     task_context="generation",
                     user_id=user_id,
                     target_model_id=sec_model.model_id,
@@ -385,7 +432,9 @@ class MultiModelCollaborationPipeline:
                     crit_resp = await inference_gateway.generate(
                         InferenceRequest(
                             messages=[GatewayMessage(role="user", content=crit_prompt)],
-                            system_instruction=ModelRoleContract.get_system_instruction(LogicalModelRole.CRITIC),
+                            system_instruction=ModelRoleContract.get_system_instruction(
+                                LogicalModelRole.CRITIC
+                            ),
                             task_context="critic",
                             user_id=user_id,
                             target_model_id=critic_model.model_id,
@@ -402,7 +451,9 @@ class MultiModelCollaborationPipeline:
                         consensus_status = "single_provider_disclosed"
 
                     if "NO DEFECTS" in crit_resp.text.upper():
-                        critique_findings.append("Independent critic approved candidate without defects.")
+                        critique_findings.append(
+                            "Independent critic approved candidate without defects."
+                        )
                     else:
                         critique_findings.append(f"Critic autopsy notes: {crit_resp.text[:300]}")
 
@@ -457,7 +508,9 @@ class MultiModelCollaborationPipeline:
         for pattern in FORBIDDEN_FRONTEND_PATTERNS:
             if pattern in candidate_text:
                 det_passed = False
-                det_findings.append(f"INVARIANT VIOLATION: Forbidden frontend pattern '{pattern}' detected.")
+                det_findings.append(
+                    f"INVARIANT VIOLATION: Forbidden frontend pattern '{pattern}' detected."
+                )
                 break
 
         # Invariant 2: Non-empty output check
@@ -475,7 +528,8 @@ class MultiModelCollaborationPipeline:
                 input_tokens=0,
                 output_tokens=0,
                 verification_passed=det_passed,
-                findings=det_findings or ["Deterministic invariants fully satisfied on candidate artifact."],
+                findings=det_findings
+                or ["Deterministic invariants fully satisfied on candidate artifact."],
             )
         )
         step_number += 1
@@ -493,10 +547,16 @@ class MultiModelCollaborationPipeline:
         stage_statuses = {
             "orchestration": StageExecutionStatus.VERIFIED.value,
             "generation": StageExecutionStatus.VERIFIED.value,
-            "criticism": StageExecutionStatus.VERIFIED.value if crit_resp else (
-                StageExecutionStatus.SKIPPED.value if profile == ExecutionProfile.QUICK else StageExecutionStatus.FAILED.value
+            "criticism": StageExecutionStatus.VERIFIED.value
+            if crit_resp
+            else (
+                StageExecutionStatus.SKIPPED.value
+                if profile == ExecutionProfile.QUICK
+                else StageExecutionStatus.FAILED.value
             ),
-            "initial_verification": StageExecutionStatus.VERIFIED.value if det_passed else StageExecutionStatus.FAILED.value,
+            "initial_verification": StageExecutionStatus.VERIFIED.value
+            if det_passed
+            else StageExecutionStatus.FAILED.value,
             "revision": StageExecutionStatus.PENDING.value,
             "final_verification": StageExecutionStatus.PENDING.value,
         }
@@ -505,19 +565,27 @@ class MultiModelCollaborationPipeline:
 
         if det_passed and has_critic_critique and profile != ExecutionProfile.QUICK:
             rev_step_start = time.perf_counter()
-            findings_for_prompt = crit_resp.text if crit_resp and crit_resp.text else critique_findings
-            rev_prompt, rev_max_tokens = prepare_revision_prompt(candidate_text, findings_for_prompt, prompt)
+            findings_for_prompt = (
+                crit_resp.text if crit_resp and crit_resp.text else critique_findings
+            )
+            rev_prompt, rev_max_tokens = prepare_revision_prompt(
+                candidate_text, findings_for_prompt, prompt
+            )
             est_input_tokens = len(rev_prompt) // 4
             est_total_tokens = est_input_tokens + rev_max_tokens
 
             # Preflight token budget check against governor
             quota_status = governor.get_model_quota_status(gen_model.model_id)
-            if quota_status["tpm_remaining"] < est_total_tokens and (quota_status["is_rate_limited"] or quota_status["reset_seconds"] > 0):
+            if quota_status["tpm_remaining"] < est_total_tokens and (
+                quota_status["is_rate_limited"] or quota_status["reset_seconds"] > 0
+            ):
                 revision_rate_limited = True
                 reset_wait = max(1, int(quota_status["reset_seconds"] or 60))
                 logger.warning(
                     "Revision preflight held: required %d tokens but only %d remaining in window. Reset in %ds.",
-                    est_total_tokens, quota_status["tpm_remaining"], reset_wait
+                    est_total_tokens,
+                    quota_status["tpm_remaining"],
+                    reset_wait,
                 )
                 steps.append(
                     ExecutionStepRecord(
@@ -648,14 +716,18 @@ class MultiModelCollaborationPipeline:
             for pattern in FORBIDDEN_FRONTEND_PATTERNS:
                 if pattern in revised_text:
                     final_det_passed = False
-                    final_det_findings.append(f"INVARIANT VIOLATION: Forbidden frontend pattern '{pattern}' detected in revised output.")
+                    final_det_findings.append(
+                        f"INVARIANT VIOLATION: Forbidden frontend pattern '{pattern}' detected in revised output."
+                    )
                     break
 
             if not revised_text.strip():
                 final_det_passed = False
                 final_det_findings.append("QUALITY DEFECT: Revised output is empty.")
 
-            findings_source = crit_resp.text if (crit_resp and crit_resp.text) else "\n".join(critique_findings)
+            findings_source = (
+                crit_resp.text if (crit_resp and crit_resp.text) else "\n".join(critique_findings)
+            )
             if findings_source:
                 resolution_breakdown = classify_critic_resolutions(findings_source, revised_text)
                 final_det_findings.append(
@@ -666,7 +738,9 @@ class MultiModelCollaborationPipeline:
                 )
 
             stage_statuses["final_verification"] = (
-                StageExecutionStatus.VERIFIED.value if final_det_passed else StageExecutionStatus.FAILED.value
+                StageExecutionStatus.VERIFIED.value
+                if final_det_passed
+                else StageExecutionStatus.FAILED.value
             )
 
             steps.append(
@@ -680,9 +754,12 @@ class MultiModelCollaborationPipeline:
                     output_tokens=0,
                     http_status=None,
                     stage="final_verification",
-                    outcome_status=StageExecutionStatus.VERIFIED.value if final_det_passed else StageExecutionStatus.FAILED.value,
+                    outcome_status=StageExecutionStatus.VERIFIED.value
+                    if final_det_passed
+                    else StageExecutionStatus.FAILED.value,
                     verification_passed=final_det_passed,
-                    findings=final_det_findings or ["Deterministic invariants fully satisfied on revised artifact."],
+                    findings=final_det_findings
+                    or ["Deterministic invariants fully satisfied on revised artifact."],
                 )
             )
             step_number += 1
@@ -706,8 +783,15 @@ class MultiModelCollaborationPipeline:
                 f"<!-- WARNING: Adversarial review failed or timed out. Output unverified by independent critic. -->"
             )
         elif rev_resp:
-            consensus_status = "same_family_intra_provider_disclosed" if single_provider_disclosed else "adjudicated"
-            disagreement_details = {"critique": critique_findings, "resolution_breakdown": resolution_breakdown}
+            consensus_status = (
+                "same_family_intra_provider_disclosed"
+                if single_provider_disclosed
+                else "adjudicated"
+            )
+            disagreement_details = {
+                "critique": critique_findings,
+                "resolution_breakdown": resolution_breakdown,
+            }
             final_text = revised_text
         elif critique_findings and any("autopsy notes:" in f for f in critique_findings):
             if profile in (ExecutionProfile.DEEP, ExecutionProfile.HIGH_RISK):
@@ -750,7 +834,9 @@ class MultiModelCollaborationPipeline:
         critic_prov = critic_model.provider if critic_model else None
         critic_m_id = critic_model.model_id if critic_model else None
         is_multi_prov = (gen_model.provider != critic_prov) if critic_model else False
-        is_multi_fam = (gen_model.model_family != critic_model.model_family) if critic_model else False
+        is_multi_fam = (
+            (gen_model.model_family != critic_model.model_family) if critic_model else False
+        )
 
         if critic_model:
             if is_multi_prov:
@@ -814,7 +900,9 @@ class MultiModelCollaborationPipeline:
 
         p_path = Path(persisted_json_path)
         if not p_path.exists():
-            raise FileNotFoundError(f"Persisted execution results not found at: {persisted_json_path}")
+            raise FileNotFoundError(
+                f"Persisted execution results not found at: {persisted_json_path}"
+            )
 
         with open(p_path, encoding="utf-8") as f:
             persisted_data = json.load(f)
@@ -828,7 +916,9 @@ class MultiModelCollaborationPipeline:
 
         candidate_text = persisted_data.get("initial_artifact")
         if not candidate_text or len(candidate_text.strip()) < 50:
-            raise ValueError(f"Cannot resume workflow {workflow_id}: 'initial_artifact' is missing or invalid.")
+            raise ValueError(
+                f"Cannot resume workflow {workflow_id}: 'initial_artifact' is missing or invalid."
+            )
 
         # Reconstruct preserved steps 1-4 from persisted record
         preserved_steps: list[ExecutionStepRecord] = []
@@ -847,16 +937,20 @@ class MultiModelCollaborationPipeline:
                 if s.role == LogicalModelRole.CRITIC:
                     critic_findings.extend(s.findings)
             if not any("Critic autopsy notes:" in f and len(f) > 30 for f in critic_findings):
-                critic_findings.extend([
-                    "Enforce mandatory food-safety cold-chain temperature logging (<4C perishable) and allergen declarations.",
-                    "Implement dual-party OTP pickup verification between donor and authorized NGO driver.",
-                    "Mask donor exact physical address until pickup request is confirmed by donor organization.",
-                    "Define strict dispute resolution SLAs and automated timeout escalation for unconfirmed requests.",
-                    "Prevent inventory race conditions via pessimistic/optimistic database concurrency locking."
-                ])
+                critic_findings.extend(
+                    [
+                        "Enforce mandatory food-safety cold-chain temperature logging (<4C perishable) and allergen declarations.",
+                        "Implement dual-party OTP pickup verification between donor and authorized NGO driver.",
+                        "Mask donor exact physical address until pickup request is confirmed by donor organization.",
+                        "Define strict dispute resolution SLAs and automated timeout escalation for unconfirmed requests.",
+                        "Prevent inventory race conditions via pessimistic/optimistic database concurrency locking.",
+                    ]
+                )
 
         # Prepare token-budget-aware revision prompt
-        rev_prompt, rev_max_tokens = prepare_revision_prompt(candidate_text, critic_findings, DEFAULT_COLLABORATION_TASK)
+        rev_prompt, rev_max_tokens = prepare_revision_prompt(
+            candidate_text, critic_findings, DEFAULT_COLLABORATION_TASK
+        )
         est_input_tokens = len(rev_prompt) // 4
         est_total_tokens = est_input_tokens + rev_max_tokens
 
@@ -866,7 +960,9 @@ class MultiModelCollaborationPipeline:
         governor.sync_from_execution_ledger(p_path)
         quota_status = governor.get_model_quota_status(gen_model_id)
 
-        if quota_status["tpm_remaining"] < est_total_tokens and (quota_status["is_rate_limited"] or quota_status["reset_seconds"] > 0):
+        if quota_status["tpm_remaining"] < est_total_tokens and (
+            quota_status["is_rate_limited"] or quota_status["reset_seconds"] > 0
+        ):
             reset_wait = max(1, int(quota_status["reset_seconds"] or 60))
             raise CapacityExhaustedError(
                 f"Cannot resume: Model '{gen_model_id}' requires {est_total_tokens} tokens, but only {quota_status['tpm_remaining']} remain in window. Reset in {reset_wait}s.",
@@ -875,8 +971,7 @@ class MultiModelCollaborationPipeline:
             )
 
         logger.info(
-            "Resuming workflow %s at Stage D (Revision) with model %s",
-            workflow_id, gen_model_id
+            "Resuming workflow %s at Stage D (Revision) with model %s", workflow_id, gen_model_id
         )
 
         # Stage D: Specialist Revision
@@ -884,7 +979,9 @@ class MultiModelCollaborationPipeline:
         rev_resp = await inference_gateway.generate(
             InferenceRequest(
                 messages=[GatewayMessage(role="user", content=rev_prompt)],
-                system_instruction=ModelRoleContract.get_system_instruction(LogicalModelRole.PROMPT_ENGINEER),
+                system_instruction=ModelRoleContract.get_system_instruction(
+                    LogicalModelRole.PROMPT_ENGINEER
+                ),
                 task_context="revision",
                 user_id=user_id,
                 target_model_id=gen_model_id,
@@ -913,7 +1010,9 @@ class MultiModelCollaborationPipeline:
                 "response_timestamp": rev_resp.response_timestamp,
             },
             verification_passed=True,
-            findings=["Specialist revision successfully resumed and generated addressing critic autopsy."],
+            findings=[
+                "Specialist revision successfully resumed and generated addressing critic autopsy."
+            ],
         )
         preserved_steps.append(step_5)
 
@@ -923,7 +1022,9 @@ class MultiModelCollaborationPipeline:
         for pattern in FORBIDDEN_FRONTEND_PATTERNS:
             if pattern in revised_text:
                 final_det_passed = False
-                final_det_findings.append(f"INVARIANT VIOLATION: Forbidden frontend pattern '{pattern}' detected in revised output.")
+                final_det_findings.append(
+                    f"INVARIANT VIOLATION: Forbidden frontend pattern '{pattern}' detected in revised output."
+                )
                 break
 
         if not revised_text.strip():
@@ -949,7 +1050,9 @@ class MultiModelCollaborationPipeline:
             output_tokens=0,
             http_status=None,
             stage="final_verification",
-            outcome_status=StageExecutionStatus.VERIFIED.value if final_det_passed else StageExecutionStatus.FAILED.value,
+            outcome_status=StageExecutionStatus.VERIFIED.value
+            if final_det_passed
+            else StageExecutionStatus.FAILED.value,
             verification_passed=final_det_passed,
             findings=final_det_findings,
         )
@@ -986,7 +1089,9 @@ class MultiModelCollaborationPipeline:
             is_multi_model=True,
             is_multi_provider=False,
             is_multi_family=False,
-            model_diversity_rating=summary.get("model_diversity_rating", "SAME_FAMILY_SAME_PROVIDER"),
+            model_diversity_rating=summary.get(
+                "model_diversity_rating", "SAME_FAMILY_SAME_PROVIDER"
+            ),
             deterministic_verification_passed=final_det_passed,
             failure_occurred=not final_det_passed,
             fallback_occurred=True,
@@ -1013,7 +1118,9 @@ class MultiModelCollaborationPipeline:
             "total_latency_ms": audit_record.total_latency_ms,
             "total_tokens": audit_record.total_tokens,
             "deterministic_verification_passed": audit_record.deterministic_verification_passed,
-            "account_verification_state": summary.get("account_verification_state", "DASHBOARD_EVIDENCED"),
+            "account_verification_state": summary.get(
+                "account_verification_state", "DASHBOARD_EVIDENCED"
+            ),
             "steps_count": len(audit_record.steps),
             "stage_statuses": audit_record.stage_statuses,
             "resolution_breakdown": audit_record.resolution_breakdown,

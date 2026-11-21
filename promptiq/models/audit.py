@@ -12,7 +12,9 @@ class AuditEvent(Base, UUIDMixin, TimestampMixin):
 
     __tablename__ = "audit_events"
 
-    workspace_id: Mapped[str] = mapped_column(String(36), ForeignKey("workspaces.id"), nullable=False, index=True)
+    workspace_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("workspaces.id"), nullable=False, index=True
+    )
     project_id: Mapped[str | None] = mapped_column(String(36), nullable=True, index=True)
     user_id: Mapped[str | None] = mapped_column(String(36), nullable=True, index=True)
 
@@ -26,8 +28,12 @@ class IntegrationInstallation(Base, UUIDMixin, TimestampMixin):
 
     __tablename__ = "integration_installations"
 
-    workspace_id: Mapped[str] = mapped_column(String(36), ForeignKey("workspaces.id"), nullable=False, index=True)
-    target_host: Mapped[str] = mapped_column(String(64), nullable=False)  # antigravity, cursor, claude, codex
+    workspace_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("workspaces.id"), nullable=False, index=True
+    )
+    target_host: Mapped[str] = mapped_column(
+        String(64), nullable=False
+    )  # antigravity, cursor, claude, codex
     api_key_hash: Mapped[str] = mapped_column(String(64), unique=True, index=True, nullable=False)
 
     permissions: Mapped[list] = mapped_column(JSON, default=list, nullable=False)

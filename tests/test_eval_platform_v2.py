@@ -5,14 +5,22 @@ from httpx import AsyncClient
 
 
 @pytest.mark.asyncio
-async def test_eval_suite_advanced_assertions(client: AsyncClient, user_auth_headers: dict[str, str]):
+async def test_eval_suite_advanced_assertions(
+    client: AsyncClient, user_auth_headers: dict[str, str]
+):
     """Verifies that Prompt Test Lab handles schema_valid and evidence_grounded assertions."""
     # 1. Create project
-    p_resp = await client.post("/api/v1/projects", json={"name": "Eval Platform Proj"}, headers=user_auth_headers)
+    p_resp = await client.post(
+        "/api/v1/projects", json={"name": "Eval Platform Proj"}, headers=user_auth_headers
+    )
     p_id = p_resp.json()["id"]
 
     # 2. Approve constitution and compile package
-    c_resp = await client.post(f"/api/v1/projects/{p_id}/constitution/approve", json={"approve": True}, headers=user_auth_headers)
+    c_resp = await client.post(
+        f"/api/v1/projects/{p_id}/constitution/approve",
+        json={"approve": True},
+        headers=user_auth_headers,
+    )
     assert c_resp.status_code == 200
 
     pkg_resp = await client.post(
@@ -44,7 +52,9 @@ async def test_eval_suite_advanced_assertions(client: AsyncClient, user_auth_hea
             },
         ],
     }
-    s_resp = await client.post(f"/api/v1/projects/{p_id}/eval/suites", json=suite_payload, headers=user_auth_headers)
+    s_resp = await client.post(
+        f"/api/v1/projects/{p_id}/eval/suites", json=suite_payload, headers=user_auth_headers
+    )
     assert s_resp.status_code == 201
     suite_id = s_resp.json()["suite_id"]
 
@@ -55,7 +65,9 @@ async def test_eval_suite_advanced_assertions(client: AsyncClient, user_auth_hea
         "model_id": "promptiq-mock-v1",
         "num_runs": 2,
     }
-    r_resp = await client.post(f"/api/v1/projects/{p_id}/eval/run", json=run_payload, headers=user_auth_headers)
+    r_resp = await client.post(
+        f"/api/v1/projects/{p_id}/eval/run", json=run_payload, headers=user_auth_headers
+    )
     assert r_resp.status_code == 200
     run_data = r_resp.json()
 

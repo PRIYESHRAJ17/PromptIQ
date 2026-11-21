@@ -30,15 +30,25 @@ def test_confidential_data_rejects_google_free_tier():
 
 def test_restricted_data_rejects_all_external_free_providers():
     """Verifies that RESTRICTED compliance data is blocked from all external cloud APIs."""
-    for provider, model in [("google", "gemini-3.8-flash"), ("groq", "openai/gpt-oss-120b"), ("openrouter", "meta-llama/llama-3.3-70b-instruct:free")]:
+    for provider, model in [
+        ("google", "gemini-3.8-flash"),
+        ("groq", "openai/gpt-oss-120b"),
+        ("openrouter", "meta-llama/llama-3.3-70b-instruct:free"),
+    ]:
         with pytest.raises(PrivacyPolicyViolationError) as exc_info:
             PrivacyGovernanceService.validate_task_privacy(
                 DataSensitivityLevel.RESTRICTED, provider, model
             )
         assert "RESTRICTED data requires zero-egress internal execution" in str(exc_info.value)
 
-    assert PrivacyGovernanceService.is_generative_ai_permitted(DataSensitivityLevel.RESTRICTED) is False
-    assert PrivacyGovernanceService.is_generative_ai_permitted(DataSensitivityLevel.CONFIDENTIAL) is True
+    assert (
+        PrivacyGovernanceService.is_generative_ai_permitted(DataSensitivityLevel.RESTRICTED)
+        is False
+    )
+    assert (
+        PrivacyGovernanceService.is_generative_ai_permitted(DataSensitivityLevel.CONFIDENTIAL)
+        is True
+    )
     assert PrivacyGovernanceService.is_generative_ai_permitted(DataSensitivityLevel.GENERAL) is True
 
 
@@ -82,4 +92,3 @@ def test_audience_terms_rejection_for_minors():
     PrivacyGovernanceService.validate_audience_terms(
         "mock", "promptiq-mock-v1", target_audience_includes_minors=True
     )
-

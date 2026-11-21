@@ -12,7 +12,9 @@ class Checkpoint(Base, UUIDMixin, TimestampMixin):
 
     __tablename__ = "checkpoints"
 
-    project_id: Mapped[str] = mapped_column(String(36), ForeignKey("projects.id"), nullable=False, index=True)
+    project_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("projects.id"), nullable=False, index=True
+    )
     phase: Mapped[str] = mapped_column(String(64), nullable=False)
     summary: Mapped[str] = mapped_column(Text, nullable=False)
 
@@ -30,9 +32,13 @@ class Artifact(Base, UUIDMixin, TimestampMixin):
 
     __tablename__ = "artifacts"
 
-    project_id: Mapped[str] = mapped_column(String(36), ForeignKey("projects.id"), nullable=False, index=True)
+    project_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("projects.id"), nullable=False, index=True
+    )
     name: Mapped[str] = mapped_column(String(255), nullable=False)
-    artifact_type: Mapped[str] = mapped_column(String(64), nullable=False)  # doc, code, image, archive
+    artifact_type: Mapped[str] = mapped_column(
+        String(64), nullable=False
+    )  # doc, code, image, archive
     media_type: Mapped[str] = mapped_column(String(128), nullable=False)
     size_bytes: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     storage_path: Mapped[str] = mapped_column(String(512), nullable=False)

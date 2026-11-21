@@ -48,7 +48,10 @@ class ContextCompiler:
         # 2. Out of Scope Exclusions (Crucial for preventing stray generation)
         out_of_scope = constitution.scope.get("out_of_scope", [])
         if out_of_scope:
-            sections.append("## OUT OF SCOPE (NON-NEGOTIABLE EXCLUSIONS)\n" + "\n".join([f"- {e}" for e in out_of_scope]))
+            sections.append(
+                "## OUT OF SCOPE (NON-NEGOTIABLE EXCLUSIONS)\n"
+                + "\n".join([f"- {e}" for e in out_of_scope])
+            )
             items_included.append("scope_exclusions")
 
         # 3. Technical Direction & Architecture Pattern
@@ -91,7 +94,9 @@ class ContextCompiler:
                 focus_words = request.task_focus.lower().split()
                 relevance_score = sum(1 for w in focus_words if w in text.lower())
 
-            filtered_reqs.append((relevance_score, cls.PRIORITY_LEVELS.get(prio, 1), r_id, prio, prov, text))
+            filtered_reqs.append(
+                (relevance_score, cls.PRIORITY_LEVELS.get(prio, 1), r_id, prio, prov, text)
+            )
 
         # Sort: highest relevance score first, then lowest priority value (P0 before P1)
         filtered_reqs.sort(key=lambda x: (-x[0], x[1]))
@@ -142,7 +147,9 @@ class ContextCompiler:
 
         if estimated_tokens > request.max_token_budget:
             char_budget = request.max_token_budget * 4
-            full_text = full_text[:char_budget] + "\n\n... [Context truncated to fit target token window]"
+            full_text = (
+                full_text[:char_budget] + "\n\n... [Context truncated to fit target token window]"
+            )
             items_truncated.append("lower_priority_context")
             estimated_tokens = request.max_token_budget
 

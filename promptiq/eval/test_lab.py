@@ -120,6 +120,7 @@ class PromptTestLab:
                         break
                 elif assertion_type in ("schema_valid", "json_schema"):
                     import json
+
                     try:
                         clean_json = output_text
                         if "```json" in clean_json:
@@ -155,12 +156,14 @@ class PromptTestLab:
                 )
                 db.add(fail_rec)
 
-            case_results.append({
-                "case_id": case_id,
-                "passed": passed,
-                "failure_reason": failure_reason,
-                "latency_ms": infer_resp.latency_ms,
-            })
+            case_results.append(
+                {
+                    "case_id": case_id,
+                    "passed": passed,
+                    "failure_reason": failure_reason,
+                    "latency_ms": infer_resp.latency_ms,
+                }
+            )
 
         total_cases = len(suite.test_cases)
         pass_rate = round((passed_count / total_cases * 100.0) if total_cases > 0 else 0.0, 2)
@@ -268,4 +271,3 @@ class PromptTestLab:
             latency_delta_ms=latency_delta_ms,
             summary=summary,
         )
-

@@ -41,7 +41,9 @@ def create_access_token(data: dict[str, Any], expires_delta: timedelta | None = 
     """Generates a signed JWT access token."""
     to_encode = data.copy()
     expire = datetime.now(UTC) + (
-        expires_delta if expires_delta else timedelta(minutes=settings.PROMPTIQ_ACCESS_TOKEN_EXPIRE_MINUTES)
+        expires_delta
+        if expires_delta
+        else timedelta(minutes=settings.PROMPTIQ_ACCESS_TOKEN_EXPIRE_MINUTES)
     )
     to_encode.update({"exp": expire, "iat": datetime.now(UTC)})
     return jwt.encode(to_encode, settings.PROMPTIQ_SECRET_KEY, algorithm=ALGORITHM)
@@ -192,7 +194,9 @@ def verify_host_and_resolve_safe_ips(host: str, port: int = 443) -> list[str]:
             or ip_obj.is_unspecified
             or str(ip_obj) == "169.254.169.254"
         ):
-            raise SecurityError(f"SSRF Protection: IP '{ip_obj}' is in a private, loopback, or cloud-metadata range.")
+            raise SecurityError(
+                f"SSRF Protection: IP '{ip_obj}' is in a private, loopback, or cloud-metadata range."
+            )
 
     # 2. Check direct IP address literal
     try:
@@ -211,7 +215,9 @@ def verify_host_and_resolve_safe_ips(host: str, port: int = 443) -> list[str]:
                 if ip_str not in safe_ips:
                     safe_ips.append(ip_str)
             if not safe_ips:
-                raise SecurityError(f"SSRF Protection: No safe IP addresses resolved for host '{host}'.")
+                raise SecurityError(
+                    f"SSRF Protection: No safe IP addresses resolved for host '{host}'."
+                )
             return safe_ips
         except socket.gaierror as e:
             raise SecurityError(f"DNS resolution failed for host '{host}': {e}")
@@ -241,7 +247,9 @@ def validate_and_sanitize_url(url: str) -> str:
 
     scheme = parsed.scheme.lower()
     if scheme not in ("http", "https"):
-        raise SecurityError(f"Unsupported URL protocol '{scheme}'. Only HTTP and HTTPS are permitted.")
+        raise SecurityError(
+            f"Unsupported URL protocol '{scheme}'. Only HTTP and HTTPS are permitted."
+        )
 
     if not parsed.netloc:
         raise SecurityError("URL is missing a valid hostname")
@@ -275,7 +283,9 @@ class SSRFSafeNetworkBackend(AnyIOBackend):
     ) -> AnyIOStream:
         safe_ips = verify_host_and_resolve_safe_ips(host, port)
         if not safe_ips:
-            raise SecurityError(f"SSRF Protection: No verified safe IPs available for host '{host}'.")
+            raise SecurityError(
+                f"SSRF Protection: No verified safe IPs available for host '{host}'."
+            )
 
         safe_ip = safe_ips[0]
 
@@ -329,7 +339,9 @@ async def safe_fetch_url(
     redirect_count = 0
     transport = SSRFSafeAsyncTransport(verify=True)
 
-    async with httpx.AsyncClient(transport=transport, timeout=timeout, follow_redirects=False) as client:
+    async with httpx.AsyncClient(
+        transport=transport, timeout=timeout, follow_redirects=False
+    ) as client:
         while True:
             resp = await client.get(current_url, headers=headers)
             if resp.status_code in (301, 302, 303, 307, 308):
@@ -343,4 +355,3 @@ async def safe_fetch_url(
                 current_url = validate_and_sanitize_url(next_url)
             else:
                 return resp
-

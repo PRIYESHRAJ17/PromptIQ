@@ -19,9 +19,39 @@ class PromptAutopsyEngine:
     """Diagnoses prompt weaknesses, security risks, contradictions, and missing constraints."""
 
     # Heuristic detection patterns
-    VAGUE_TERMS = re.compile(r"\b(etc|and so on|clean code|best practices|as needed|appropriate|stuff)\b", re.IGNORECASE)
-    EXCESSIVE_AGENCY = re.compile(r"\b(do whatever it takes|full access|delete files|bypass|override)\b", re.IGNORECASE)
-    INJECTION_RISK = re.compile(r"\b(ignore previous instructions|system prompt override)\b", re.IGNORECASE)
+    VAGUE_TERMS = re.compile(
+        r"\b(etc|and so on|clean code|best practices|as needed|appropriate|stuff)\b", re.IGNORECASE
+    )
+    EXCESSIVE_AGENCY = re.compile(
+        r"\b(do whatever it takes|full access|delete files|bypass|override)\b", re.IGNORECASE
+    )
+    INJECTION_RISK = re.compile(
+        r"\b(ignore previous instructions|system prompt override)\b", re.IGNORECASE
+    )
+
+    @classmethod
+    def _is_prohibitive_context(cls, passage: str, full_text: str) -> bool:
+        """Determines if a flagged passage appears within an explicit negative boundary or prohibition."""
+        passage_lower = passage.lower()
+        prohibitive_markers = [
+            "never",
+            "do not",
+            "must not",
+            "prohibit",
+            "strictly no",
+            "strictly do not",
+            "prevent",
+            "disallow",
+            "exclude",
+            "redact",
+            "cannot",
+        ]
+        for line in full_text.splitlines():
+            line_lower = line.lower()
+            if passage_lower in line_lower:
+                if any(m in line_lower for m in prohibitive_markers):
+                    return True
+        return False
 
     @classmethod
     async def diagnose_prompt(
@@ -71,15 +101,16 @@ class PromptAutopsyEngine:
                 )
             )
 
-        # Check for excessive agency
+        # Check for excessive agency (ignoring prohibitive/boundary contexts)
         agency_matches = cls.EXCESSIVE_AGENCY.findall(text)
-        if agency_matches:
+        unnegated_agency = [m for m in agency_matches if not cls._is_prohibitive_context(m, text)]
+        if unnegated_agency:
             findings.append(
                 CriticFindingSchema(
                     category="security",
                     severity="high",
-                    finding=f"Excessive agency detected: '{agency_matches[0]}'",
-                    evidence_passage=agency_matches[0],
+                    finding=f"Excessive agency detected: '{unnegated_agency[0]}'",
+                    evidence_passage=unnegated_agency[0],
                     consequence="Target agent may perform destructive, unapproved system operations.",
                     recommendation="Add explicit boundary constraints requiring human sign-off for file/command mutations.",
                     blocks_release=True,
@@ -146,7 +177,9 @@ class PromptAutopsyEngine:
 
         # Check for instruction conflicts (e.g. concise vs exhaustive)
         text_lower = text.lower()
-        if ("concise" in text_lower or "brief" in text_lower) and ("exhaustive" in text_lower or "cover all" in text_lower):
+        if ("concise" in text_lower or "brief" in text_lower) and (
+            "exhaustive" in text_lower or "cover all" in text_lower
+        ):
             findings.append(
                 CriticFindingSchema(
                     category="instruction_conflict",
@@ -160,7 +193,11 @@ class PromptAutopsyEngine:
             )
 
         # Check for unbounded generation
-        if "generate everything" in text_lower or "infinite" in text_lower or "without limit" in text_lower:
+        if (
+            "generate everything" in text_lower
+            or "infinite" in text_lower
+            or "without limit" in text_lower
+        ):
             findings.append(
                 CriticFindingSchema(
                     category="unbounded_generation",
@@ -173,8 +210,17 @@ class PromptAutopsyEngine:
                 )
             )
 
-        # Check for data privacy risks
-        if "print password" in text_lower or "reveal secret" in text_lower or "output api key" in text_lower:
+        # Check for data privacy risks (ignoring prohibitive/redaction contexts)
+        has_leak_term = (
+            "print password" in text_lower
+            or "reveal secret" in text_lower
+            or "output api key" in text_lower
+        )
+        if has_leak_term and not (
+            cls._is_prohibitive_context("password", text)
+            or cls._is_prohibitive_context("secret", text)
+            or cls._is_prohibitive_context("key", text)
+        ):
             findings.append(
                 CriticFindingSchema(
                     category="data_privacy_leak",
@@ -188,7 +234,9 @@ class PromptAutopsyEngine:
             )
 
         # Check for testability gaps
-        if not any(kw in text_lower for kw in ["test", "verify", "assert", "validate", "acceptance"]):
+        if not any(
+            kw in text_lower for kw in ["test", "verify", "assert", "validate", "acceptance"]
+        ):
             findings.append(
                 CriticFindingSchema(
                     category="testability_gap",
@@ -215,17 +263,21 @@ class PromptAutopsyEngine:
         )
         infer_resp = await inference_gateway.generate(infer_req)
 
-        # Merge model findings if available
+        # Merge model findings if grounded in actual prompt text
         if infer_resp.structured_data and isinstance(infer_resp.structured_data, dict):
             extra_findings = infer_resp.structured_data.get("findings", [])
             for f in extra_findings:
+                ev = f.get("evidence_passage")
+                # Grounding validation: if an evidence passage is claimed, it MUST exist in the text!
+                if ev and ev.lower() not in text.lower():
+                    continue  # Discard ungrounded model hallucination
                 sev = f.get("severity", "medium")
                 findings.append(
                     CriticFindingSchema(
                         category=f.get("category", "feasibility"),
                         severity=sev,
                         finding=f.get("finding", "Potential weakness identified"),
-                        evidence_passage=f.get("evidence_passage"),
+                        evidence_passage=ev,
                         consequence=f.get("consequence", "Execution failure risk"),
                         recommendation=f.get("recommendation", "Refine instructions"),
                         blocks_release=sev in ("critical", "high"),
@@ -286,10 +338,87 @@ class PromptAutopsyEngine:
         cls,
         original_findings: list[CriticFindingSchema],
         revised_text: str,
+        expected_artifact_hash: str | None = None,
     ) -> AutopsyRevisionVerifyResponse:
-        """Deterministically evaluates whether the revised artifact addresses prior autopsy findings."""
+        """Deterministically evaluates whether the revised artifact addresses prior autopsy findings.
+
+        Enforces cryptographic artifact binding, contradictory resolution detection,
+        severity escalation checks, and prevents superficial phrase-deletion false resolutions.
+        """
+        import hashlib
+
+        actual_hash = hashlib.sha256((revised_text or "").encode("utf-8")).hexdigest()
+
+        # 1. Cryptographic Artifact Binding Check
+        if expected_artifact_hash and actual_hash != expected_artifact_hash:
+            return AutopsyRevisionVerifyResponse(
+                all_resolved=False,
+                blocks_release=True,
+                resolutions=[
+                    FindingResolution(
+                        finding_id=f.id,
+                        status="unresolved",
+                        reason=f"Cryptographic artifact binding failure: inspected hash {actual_hash[:12]} does not match expected hash {expected_artifact_hash[:12]}.",
+                    )
+                    for f in original_findings
+                ],
+                resolved_count=0,
+                unresolved_count=len(original_findings),
+                partially_resolved_count=0,
+                has_contradictory_resolution=False,
+                has_severity_escalation=True,
+                artifact_hash=actual_hash,
+                expected_artifact_hash=expected_artifact_hash,
+                summary=f"CRITICAL: Artifact binding mismatch. Expected SHA-256 {expected_artifact_hash[:12]}..., got {actual_hash[:12]}... Release BLOCKED.",
+            )
+
         resolutions: list[FindingResolution] = []
         revised_lower = (revised_text or "").lower()
+
+        # 2. Check for Contradictory Resolution introduced in revised text
+        contradictions: list[str] = []
+        if ("concise" in revised_lower or "brief" in revised_lower) and (
+            "exhaustive" in revised_lower or "cover all" in revised_lower
+        ):
+            contradictions.append("Conflicting density directives (concise vs exhaustive)")
+        if ("read-only" in revised_lower or "no mutations" in revised_lower) and (
+            "delete files" in revised_lower
+            or "write files" in revised_lower
+            or "execute shell" in revised_lower
+        ):
+            if not cls._is_prohibitive_context(
+                "delete files", revised_text
+            ) and not cls._is_prohibitive_context("write files", revised_text):
+                contradictions.append(
+                    "Conflicting file mutation directives (read-only vs file mutations)"
+                )
+        if ("require human approval" in revised_lower or "escalate to human" in revised_lower) and (
+            "bypass human" in revised_lower
+            or "autonomous execution without approval" in revised_lower
+        ):
+            contradictions.append(
+                "Conflicting escalation directives (human approval vs autonomous bypass)"
+            )
+
+        has_contradictory_resolution = len(contradictions) > 0
+
+        # 3. Check for Severity Escalation (new Critical/High issues introduced in revised text)
+        has_new_injection = bool(cls.INJECTION_RISK.findall(revised_text))
+        has_new_leak = (
+            "print password" in revised_lower
+            or "reveal secret" in revised_lower
+            or "output api key" in revised_lower
+        ) and not (
+            cls._is_prohibitive_context("password", revised_text)
+            or cls._is_prohibitive_context("secret", revised_text)
+            or cls._is_prohibitive_context("key", revised_text)
+        )
+        unnegated_agency = [
+            m
+            for m in cls.EXCESSIVE_AGENCY.findall(revised_text)
+            if not cls._is_prohibitive_context(m, revised_text)
+        ]
+        has_severity_escalation = has_new_injection or has_new_leak or bool(unnegated_agency)
 
         for finding in original_findings:
             f_id = finding.id
@@ -302,43 +431,80 @@ class PromptAutopsyEngine:
 
             if finding.category == "ambiguity":
                 vague_matches = cls.VAGUE_TERMS.findall(revised_text)
+                is_superficial = len(revised_text.strip()) < 20
                 if evidence_lower and evidence_lower not in revised_lower:
+                    if not is_superficial:
+                        status = "resolved"
+                        reason = f"Identified vague passage '{evidence}' was eliminated and replaced with concrete specifications."
+                        proof_snippet = "Concrete specifications provided"
+                    else:
+                        status = "unresolved"
+                        reason = f"False resolution: Vague term '{evidence}' was deleted, but prompt lacks concrete specifications (superficial deletion)."
+                        proof_snippet = "Superficial deletion without specification"
+                elif not vague_matches and not is_superficial:
                     status = "resolved"
-                    reason = f"Identified vague passage '{evidence}' was eliminated from the revised text."
-                    proof_snippet = "Passage removed"
-                elif not vague_matches:
-                    status = "resolved"
-                    reason = "All vague terminology patterns were eliminated."
-                    proof_snippet = "Zero vague matches"
+                    reason = "All vague terminology patterns were eliminated and structured specs provided."
+                    proof_snippet = "Zero vague matches with structure"
                 else:
                     status = "unresolved"
                     reason = f"Vague terms still present in revised prompt: {', '.join(set(vague_matches))}"
-                    proof_snippet = vague_matches[0]
+                    proof_snippet = vague_matches[0] if vague_matches else None
 
             elif finding.category == "security":
                 injection_matches = cls.INJECTION_RISK.findall(revised_text)
-                agency_matches = cls.EXCESSIVE_AGENCY.findall(revised_text)
-                has_safety_guard = any(kw in revised_lower for kw in ["approval", "permission", "halt", "do not execute", "boundaries"])
+                has_safety_guard = any(
+                    kw in revised_lower
+                    for kw in [
+                        "approval",
+                        "permission",
+                        "halt",
+                        "do not execute",
+                        "boundaries",
+                        "redact",
+                    ]
+                )
+                unnegated = [
+                    m
+                    for m in cls.EXCESSIVE_AGENCY.findall(revised_text)
+                    if not cls._is_prohibitive_context(m, revised_text)
+                ]
 
-                if evidence_lower and evidence_lower in revised_lower:
+                if (
+                    evidence_lower
+                    and evidence_lower in revised_lower
+                    and not cls._is_prohibitive_context(evidence, revised_text)
+                ):
                     status = "unresolved"
                     reason = f"Security vulnerability passage '{evidence}' is still present in revised text."
                     proof_snippet = evidence
-                elif not injection_matches and (has_safety_guard or not agency_matches):
+                elif not injection_matches and not unnegated and has_safety_guard:
                     status = "resolved"
-                    reason = "Security risk resolved: hazardous passages removed and/or safety boundaries established."
+                    reason = "Security risk resolved: hazardous passages eliminated/prohibited and safety boundaries established."
                     proof_snippet = "Safety boundaries established"
+                elif has_safety_guard and unnegated:
+                    status = "partially_resolved"
+                    reason = f"Safety guard declared, but unconstrained excessive agency '{unnegated[0]}' still exists."
+                    proof_snippet = unnegated[0]
                 else:
                     status = "unresolved"
                     reason = "Security risk remains unresolved."
 
             elif finding.category == "output_contract":
                 has_json = "json" in revised_lower
-                has_contract = "schema" in revised_lower or "{" in revised_text or "contract" in revised_lower or "format" in revised_lower
-                if has_json and has_contract:
+                has_schema = (
+                    "schema" in revised_lower
+                    or "contract" in revised_lower
+                    or "properties" in revised_lower
+                )
+                has_brackets = "{" in revised_text and "}" in revised_text
+                if has_json and (has_schema and has_brackets):
                     status = "resolved"
-                    reason = "Output contract clearly specified with schema or structured template."
-                    proof_snippet = "Schema/structure defined"
+                    reason = "Output contract clearly specified with formal JSON schema and bracketed structure."
+                    proof_snippet = "Schema and envelope defined"
+                elif has_json and (has_schema or has_brackets):
+                    status = "partially_resolved"
+                    reason = "JSON output requested with partial schema/brackets, but complete field contract is missing."
+                    proof_snippet = "Partial schema defined"
                 elif not has_json:
                     status = "resolved"
                     reason = "JSON output requirement removed; no longer missing contract."
@@ -347,7 +513,18 @@ class PromptAutopsyEngine:
                     reason = "Requests JSON output but lacks explicit schema or structure."
 
             elif finding.category in ("missing_requirements", "missing_error_handling"):
-                has_error_handling = any(kw in revised_lower for kw in ["error", "fail", "halt", "exception", "abort", "blocker"])
+                has_error_handling = any(
+                    kw in revised_lower
+                    for kw in [
+                        "error",
+                        "fail",
+                        "halt",
+                        "exception",
+                        "abort",
+                        "blocker",
+                        "raise valueerror",
+                    ]
+                )
                 if has_error_handling:
                     status = "resolved"
                     reason = "Explicit error handling, failure modes, or stop conditions added."
@@ -357,7 +534,10 @@ class PromptAutopsyEngine:
                     reason = "Still missing explicit error handling or stop conditions."
 
             elif finding.category == "inadequate_constraints":
-                has_neg = any(kw in revised_lower for kw in ["do not", "never", "must not", "prohibit", "exclude", "strictly no"])
+                has_neg = any(
+                    kw in revised_lower
+                    for kw in ["do not", "never", "must not", "prohibit", "exclude", "strictly no"]
+                )
                 if has_neg:
                     status = "resolved"
                     reason = "Explicit negative boundary constraints added."
@@ -367,20 +547,46 @@ class PromptAutopsyEngine:
                     reason = "Still missing negative boundary constraints."
 
             elif finding.category == "data_privacy_leak":
-                has_redaction = any(kw in revised_lower for kw in ["redact", "never disclose", "zero secret", "do not log", "never log", "never print"])
-                raw_leak = any(kw in revised_lower for kw in ["print password", "reveal secret", "output api key", "dump password"])
-                is_prohibited_context = any(p in revised_lower for p in ["never", "do not", "must not", "prohibit", "redact"])
+                has_redaction = any(
+                    kw in revised_lower
+                    for kw in [
+                        "redact",
+                        "never disclose",
+                        "zero secret",
+                        "do not log",
+                        "never log",
+                        "never print",
+                    ]
+                )
+                raw_leak = any(
+                    kw in revised_lower
+                    for kw in ["print password", "reveal secret", "output api key", "dump password"]
+                )
+                is_prohibited_context = (
+                    cls._is_prohibitive_context("password", revised_text)
+                    or cls._is_prohibitive_context("secret", revised_text)
+                    or cls._is_prohibitive_context("key", revised_text)
+                )
 
-                if (has_redaction and is_prohibited_context) or not raw_leak:
+                if has_redaction and is_prohibited_context and not raw_leak:
                     status = "resolved"
-                    reason = "Data privacy hazard eliminated and redaction boundaries enforced."
+                    reason = (
+                        "Data privacy hazard eliminated and strict redaction boundaries enforced."
+                    )
                     proof_snippet = "Redaction rules present"
+                elif has_redaction or is_prohibited_context:
+                    status = "resolved"
+                    reason = "Sensitive credentials explicitly prohibited and marked for redaction."
+                    proof_snippet = "Prohibitive context present"
                 else:
                     status = "unresolved"
                     reason = "Credential disclosure instructions still present."
 
             elif finding.category == "unbounded_generation":
-                has_bounds = any(kw in revised_lower for kw in ["maximum", "limit to", "at most", "bounded", "top "])
+                has_bounds = any(
+                    kw in revised_lower
+                    for kw in ["maximum", "limit to", "at most", "bounded", "top "]
+                )
                 if has_bounds:
                     status = "resolved"
                     reason = "Bounded generation limits specified."
@@ -390,7 +596,9 @@ class PromptAutopsyEngine:
                     reason = "Still lacks explicit generation limits."
 
             elif finding.category == "instruction_conflict":
-                has_conflict = ("concise" in revised_lower or "brief" in revised_lower) and ("exhaustive" in revised_lower or "cover all" in revised_lower)
+                has_conflict = ("concise" in revised_lower or "brief" in revised_lower) and (
+                    "exhaustive" in revised_lower or "cover all" in revised_lower
+                )
                 if not has_conflict:
                     status = "resolved"
                     reason = "Conflicting density directives reconciled."
@@ -400,11 +608,29 @@ class PromptAutopsyEngine:
                     reason = "Conflicting density directives remain unresolved."
 
             elif finding.category == "testability_gap":
-                has_tests = any(kw in revised_lower for kw in ["test", "verify", "assert", "validate", "acceptance"])
-                if has_tests:
+                has_tests = any(
+                    kw in revised_lower
+                    for kw in ["test", "verify", "assert", "validate", "acceptance"]
+                )
+                has_concrete_test = any(
+                    kw in revised_lower
+                    for kw in [
+                        "assert ",
+                        "test case",
+                        "acceptance criteria",
+                        "benchmark >",
+                        "test suite",
+                        "raise valueerror",
+                    ]
+                )
+                if has_tests and has_concrete_test:
                     status = "resolved"
-                    reason = "Test validation or acceptance criteria added."
-                    proof_snippet = "Verification criteria present"
+                    reason = "Concrete test validation criteria and assertion conditions added."
+                    proof_snippet = "Verification assertions present"
+                elif has_tests:
+                    status = "partially_resolved"
+                    reason = "Testing mentioned, but lacks concrete assertion criteria or measurable threshold."
+                    proof_snippet = "General test mention"
                 else:
                     status = "unresolved"
                     reason = "Still missing test validation criteria."
@@ -416,8 +642,19 @@ class PromptAutopsyEngine:
                     proof_snippet = "Flagged passage removed"
                 else:
                     rec_words = [
-                        w for w in re.findall(r"\w{4,}", finding.recommendation.lower())
-                        if w not in ("with", "that", "this", "from", "should", "must", "replace", "provide")
+                        w
+                        for w in re.findall(r"\w{4,}", finding.recommendation.lower())
+                        if w
+                        not in (
+                            "with",
+                            "that",
+                            "this",
+                            "from",
+                            "should",
+                            "must",
+                            "replace",
+                            "provide",
+                        )
                     ]
                     matched_words = [w for w in rec_words if w in revised_lower]
                     if len(matched_words) >= 2:
@@ -438,25 +675,46 @@ class PromptAutopsyEngine:
             )
 
         resolved_count = sum(1 for r in resolutions if r.status == "resolved")
+        partially_resolved_count = sum(1 for r in resolutions if r.status == "partially_resolved")
         unresolved_count = len(resolutions) - resolved_count
-        all_resolved = unresolved_count == 0
+        all_resolved = (
+            (unresolved_count == 0)
+            and not has_contradictory_resolution
+            and not has_severity_escalation
+        )
 
         blocking_unresolved = any(
             f.blocks_release and r.status != "resolved"
             for f, r in zip(original_findings, resolutions, strict=False)
         )
+        blocks_release = (
+            blocking_unresolved or has_contradictory_resolution or has_severity_escalation
+        )
+
+        reasons = []
+        if blocking_unresolved:
+            reasons.append("unresolved critical/high findings")
+        if has_contradictory_resolution:
+            reasons.append(f"contradictory resolution ({'; '.join(contradictions)})")
+        if has_severity_escalation:
+            reasons.append("severity escalation (new critical security hazard introduced)")
 
         summary = (
-            f"Verified {len(original_findings)} findings: {resolved_count} resolved, {unresolved_count} unresolved. "
-            f"Release {'BLOCKED by unresolved critical/high findings' if blocking_unresolved else 'ALLOWED'}."
+            f"Verified {len(original_findings)} findings: {resolved_count} resolved, "
+            f"{partially_resolved_count} partially resolved, {unresolved_count} unresolved. "
+            f"Release {'BLOCKED by ' + '; '.join(reasons) if blocks_release else 'ALLOWED'}."
         )
 
         return AutopsyRevisionVerifyResponse(
             all_resolved=all_resolved,
-            blocks_release=blocking_unresolved,
+            blocks_release=blocks_release,
             resolutions=resolutions,
             resolved_count=resolved_count,
             unresolved_count=unresolved_count,
+            partially_resolved_count=partially_resolved_count,
+            has_contradictory_resolution=has_contradictory_resolution,
+            has_severity_escalation=has_severity_escalation,
+            artifact_hash=actual_hash,
+            expected_artifact_hash=expected_artifact_hash,
             summary=summary,
         )
-

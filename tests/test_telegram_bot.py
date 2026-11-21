@@ -133,4 +133,3 @@ async def test_telegram_discovery_continuation(db_session: AsyncSession, test_us
     resp_answer = await telegram_bot.handle_update(db_session, update_answer)
     assert resp_answer["status"] == "processed"
     assert resp_answer["command"] == "discovery_continuation"
-

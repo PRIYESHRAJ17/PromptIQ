@@ -20,7 +20,9 @@ class EvaluationCaseSchema(BaseModel):
     method: EvaluationMethod = "deterministic"
     input_vars: dict[str, Any] = Field(default_factory=dict)
     expected_output_patterns: list[str] = Field(default_factory=list)
-    assertion_type: str = "contains"  # contains, regex, schema_valid, not_contains, evidence_grounded
+    assertion_type: str = (
+        "contains"  # contains, regex, schema_valid, not_contains, evidence_grounded
+    )
     expected_schema: dict[str, Any] | None = None
 
 
@@ -34,7 +36,9 @@ class EvaluationRunRequest(BaseModel):
     suite_id: str
     package_id: str
     model_id: str = "promptiq-mock-v1"
-    num_runs: int = Field(default=1, ge=1, le=10, description="Multi-run trial count for variance measurement")
+    num_runs: int = Field(
+        default=1, ge=1, le=10, description="Multi-run trial count for variance measurement"
+    )
 
 
 class EvaluationRunResponse(BaseModel):

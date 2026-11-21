@@ -29,13 +29,24 @@ class InitialIntakeRequest(BaseModel):
     """The foundational intake starting point supporting goals, targets, contexts, and constraints."""
 
     goal: str = Field(..., min_length=5, description="What are you trying to accomplish?")
-    deliverable: OutputDeliverable = Field(default="complete_package", description="What should PromptIQ produce?")
-    target: str = Field(default="google-antigravity", description="Where will you use it? (Target model/environment)")
-    target_mode: TargetSelectionMode = Field(default="specific", description="Target selection approach")
+    deliverable: OutputDeliverable = Field(
+        default="complete_package", description="What should PromptIQ produce?"
+    )
+    target: str = Field(
+        default="google-antigravity",
+        description="Where will you use it? (Target model/environment)",
+    )
+    target_mode: TargetSelectionMode = Field(
+        default="specific", description="Target selection approach"
+    )
     context_text: str | None = Field(default=None, description="Pasted text, prompt, or notes")
     context_urls: list[str] = Field(default_factory=list, description="Reference public URLs")
-    constraints: list[str] = Field(default_factory=list, description="Explicit constraints or non-negotiable boundaries")
-    existing_files: list[dict[str, Any]] = Field(default_factory=list, description="Uploaded or reference files/snippets")
+    constraints: list[str] = Field(
+        default_factory=list, description="Explicit constraints or non-negotiable boundaries"
+    )
+    existing_files: list[dict[str, Any]] = Field(
+        default_factory=list, description="Uploaded or reference files/snippets"
+    )
     depth: DiscoveryDepth = Field(default="guided", description="Discovery depth")
     task_type: TaskType = Field(default="software_project", description="Category of task")
 
@@ -47,7 +58,10 @@ class DiscoveryQuestion(BaseModel):
     stage: str
     question: str
     help_text: str | None = None
-    why_asked: str | None = Field(default=None, description="Explanation of why this follow-up is critical for the target deliverable")
+    why_asked: str | None = Field(
+        default=None,
+        description="Explanation of why this follow-up is critical for the target deliverable",
+    )
     question_type: Literal["text", "single_select", "multi_select", "confirm_inferred"] = "text"
     options: list[str] = Field(default_factory=list)
     default_value: Any = None

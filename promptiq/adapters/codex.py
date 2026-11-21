@@ -28,13 +28,28 @@ class CodexTargetAdapter(BaseTargetAdapter):
         "multimodal": False,
     }
 
-    def compile(self, pps: PromptSpecSchema, output_type: OutputType) -> tuple[dict[str, Any], dict[str, str], list[str]]:
+    def compile(
+        self, pps: PromptSpecSchema, output_type: OutputType
+    ) -> tuple[dict[str, Any], dict[str, str], list[str]]:
         files: dict[str, str] = {}
         warnings: list[str] = []
 
-        reqs_text = "\n".join([f"- [{r.get('id', 'REQ')}] ({r.get('priority', 'P1')}): {r.get('text')}" for r in pps.requirements])
-        exclusions_text = "\n".join([f"- {e}" for e in pps.constraints.get("out_of_scope", [])]) or "None specified."
-        phases_text = "\n".join([f"{p.get('phase')}. **{p.get('name')}**: {p.get('objective')}" for p in pps.workflow_phases])
+        reqs_text = "\n".join(
+            [
+                f"- [{r.get('id', 'REQ')}] ({r.get('priority', 'P1')}): {r.get('text')}"
+                for r in pps.requirements
+            ]
+        )
+        exclusions_text = (
+            "\n".join([f"- {e}" for e in pps.constraints.get("out_of_scope", [])])
+            or "None specified."
+        )
+        phases_text = "\n".join(
+            [
+                f"{p.get('phase')}. **{p.get('name')}**: {p.get('objective')}"
+                for p in pps.workflow_phases
+            ]
+        )
 
         codex_md = (
             f"# CODEX.md — Project Instructions for OpenAI Codex\n\n"
@@ -73,7 +88,11 @@ class CodexTargetAdapter(BaseTargetAdapter):
                 + "\n".join([f"- {sc}" for sc in pps.intent.success_criteria])
                 + "\n"
             )
-            manifest = {"target": self.target_name, "type": "prompt_suite", "files": list(files.keys())}
+            manifest = {
+                "target": self.target_name,
+                "type": "prompt_suite",
+                "files": list(files.keys()),
+            }
             return manifest, files, warnings
 
         else:  # complete_package
@@ -101,5 +120,9 @@ class CodexTargetAdapter(BaseTargetAdapter):
                 f"**Goal**: {pps.intent.primary_objective}\n\n"
                 f"Includes `CODEX.md`, `AGENTS.md`, `.codex/instructions.md`, and MCP configuration.\n"
             )
-            manifest = {"target": self.target_name, "type": "complete_package", "files": list(files.keys())}
+            manifest = {
+                "target": self.target_name,
+                "type": "complete_package",
+                "files": list(files.keys()),
+            }
             return manifest, files, warnings

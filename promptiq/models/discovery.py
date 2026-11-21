@@ -12,9 +12,13 @@ class DiscoverySession(Base, UUIDMixin, TimestampMixin):
 
     __tablename__ = "discovery_sessions"
 
-    project_id: Mapped[str] = mapped_column(String(36), ForeignKey("projects.id"), nullable=False, index=True)
+    project_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("projects.id"), nullable=False, index=True
+    )
     task_type: Mapped[str] = mapped_column(String(64), default="software_project", nullable=False)
-    depth: Mapped[str] = mapped_column(String(32), default="guided", nullable=False)  # quick, guided, deep
+    depth: Mapped[str] = mapped_column(
+        String(32), default="guided", nullable=False
+    )  # quick, guided, deep
 
     # Structured responses and extracted context
     initial_intake: Mapped[dict] = mapped_column(JSON, default=dict, nullable=False)

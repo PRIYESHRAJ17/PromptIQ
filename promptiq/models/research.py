@@ -12,9 +12,13 @@ class ResearchJob(Base, UUIDMixin, TimestampMixin):
 
     __tablename__ = "research_jobs"
 
-    project_id: Mapped[str] = mapped_column(String(36), ForeignKey("projects.id"), nullable=False, index=True)
+    project_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("projects.id"), nullable=False, index=True
+    )
     query: Mapped[str] = mapped_column(Text, nullable=False)
-    mode: Mapped[str] = mapped_column(String(32), default="deep", nullable=False)  # quick, decision, deep, benchmark
+    mode: Mapped[str] = mapped_column(
+        String(32), default="deep", nullable=False
+    )  # quick, decision, deep, benchmark
     status: Mapped[str] = mapped_column(String(32), default="pending", nullable=False)
 
     plan: Mapped[dict] = mapped_column(JSON, default=dict, nullable=False)
@@ -31,11 +35,15 @@ class SourceRecord(Base, UUIDMixin, TimestampMixin):
 
     __tablename__ = "source_records"
 
-    research_job_id: Mapped[str] = mapped_column(String(36), ForeignKey("research_jobs.id"), nullable=False, index=True)
+    research_job_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("research_jobs.id"), nullable=False, index=True
+    )
     url: Mapped[str] = mapped_column(String(1024), nullable=False)
     title: Mapped[str] = mapped_column(String(512), nullable=False)
     publisher: Mapped[str] = mapped_column(String(255), nullable=False)
-    source_type: Mapped[str] = mapped_column(String(64), nullable=False)  # official_docs, paper, repo, analysis
+    source_type: Mapped[str] = mapped_column(
+        String(64), nullable=False
+    )  # official_docs, paper, repo, analysis
 
     publication_date: Mapped[str | None] = mapped_column(String(32), nullable=True)
     retrieved_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), nullable=False)
@@ -52,11 +60,17 @@ class EvidenceClaim(Base, UUIDMixin, TimestampMixin):
 
     __tablename__ = "evidence_claims"
 
-    research_job_id: Mapped[str] = mapped_column(String(36), ForeignKey("research_jobs.id"), nullable=False, index=True)
-    source_id: Mapped[str] = mapped_column(String(36), ForeignKey("source_records.id"), nullable=False, index=True)
+    research_job_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("research_jobs.id"), nullable=False, index=True
+    )
+    source_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("source_records.id"), nullable=False, index=True
+    )
 
     claim_text: Mapped[str] = mapped_column(Text, nullable=False)
-    support_status: Mapped[str] = mapped_column(String(32), default="verified", nullable=False)  # verified, contradicted, inferred, stale
+    support_status: Mapped[str] = mapped_column(
+        String(32), default="verified", nullable=False
+    )  # verified, contradicted, inferred, stale
     confidence_score: Mapped[float] = mapped_column(Float, default=1.0, nullable=False)
     confidence_rationale: Mapped[str | None] = mapped_column(Text, nullable=True)
     excerpt: Mapped[str | None] = mapped_column(Text, nullable=True)

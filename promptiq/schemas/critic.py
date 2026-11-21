@@ -53,6 +53,7 @@ class FindingResolution(BaseModel):
 class AutopsyRevisionVerifyRequest(BaseModel):
     original_findings: list[CriticFindingSchema]
     revised_text: str
+    expected_artifact_hash: str | None = None
 
 
 class AutopsyRevisionVerifyResponse(BaseModel):
@@ -61,13 +62,20 @@ class AutopsyRevisionVerifyResponse(BaseModel):
     resolutions: list[FindingResolution]
     resolved_count: int
     unresolved_count: int
+    partially_resolved_count: int = 0
+    has_contradictory_resolution: bool = False
+    has_severity_escalation: bool = False
+    artifact_hash: str | None = None
+    expected_artifact_hash: str | None = None
     summary: str
 
 
 class AutopsyRequest(BaseModel):
     prompt_text: str | None = Field(default=None, description="Pasted prompt text to diagnose")
     package_id: str | None = Field(default=None, description="Compiled package ID to critique")
-    target_environment: str = Field(default="google-antigravity", description="Target host environment")
+    target_environment: str = Field(
+        default="google-antigravity", description="Target host environment"
+    )
 
 
 class AutopsyResponse(BaseModel):

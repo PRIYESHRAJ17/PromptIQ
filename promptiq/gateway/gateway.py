@@ -46,7 +46,9 @@ class InferenceGateway:
         verify_zero_price_route(adapter.provider_name, adapter.model_id, price_per_token=0.0)
         return adapter
 
-    async def generate(self, request: InferenceRequest, provider: str | None = None) -> InferenceResponse:
+    async def generate(
+        self, request: InferenceRequest, provider: str | None = None
+    ) -> InferenceResponse:
         """Executes inference through the centrally managed zero-price gateway."""
         # 1. Enforce user fair-use limits
         governor.check_user_fair_use(request.user_id)

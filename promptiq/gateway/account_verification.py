@@ -33,7 +33,12 @@ class OperatorConfirmationRequiredError(PromptIQException):
     """Raised when live inference is attempted without explicit operator free-account confirmation."""
 
     def __init__(self, message: str, details: dict[str, Any] | None = None):
-        super().__init__(message, error_code="OPERATOR_CONFIRMATION_REQUIRED", status_code=412, details=details or {})
+        super().__init__(
+            message,
+            error_code="OPERATOR_CONFIRMATION_REQUIRED",
+            status_code=412,
+            details=details or {},
+        )
 
 
 class OperatorAccountVerifier:
@@ -53,7 +58,11 @@ class OperatorAccountVerifier:
                 details={"provider": provider, "status": "BLOCKED_EXTERNAL"},
             )
 
-        key = settings.effective_groq_api_key if provider.lower() == "groq" else settings.effective_gemini_api_key
+        key = (
+            settings.effective_groq_api_key
+            if provider.lower() == "groq"
+            else settings.effective_gemini_api_key
+        )
         if not key:
             raise OperatorConfirmationRequiredError(
                 f"No operator credential configured for provider '{provider}'. "
@@ -86,7 +95,11 @@ class OperatorAccountVerifier:
         }
 
         # Determine verification state
-        verification_state = "DASHBOARD_EVIDENCED" if settings.PROMPTIQ_OPERATOR_FREE_TIER_CONFIRMED else "OPERATOR_ATTESTED"
+        verification_state = (
+            "DASHBOARD_EVIDENCED"
+            if settings.PROMPTIQ_OPERATOR_FREE_TIER_CONFIRMED
+            else "OPERATOR_ATTESTED"
+        )
 
         return OperatorVerificationRecord(
             provider=provider,

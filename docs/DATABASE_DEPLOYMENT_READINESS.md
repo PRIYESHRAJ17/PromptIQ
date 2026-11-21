@@ -34,11 +34,11 @@ PromptIQ's database engine in `promptiq/core/database.py` is configured with thr
 ```python
 engine = create_async_engine(
     settings.DATABASE_URL,
-    pool_pre_ping=True,      # Tests connection liveness before checking out from pool
-    pool_recycle=300,        # Recycles sockets every 5 minutes (matching Neon's suspend window)
-    pool_size=5,             # Restricts concurrent connections to avoid exhausting Neon slot limits
+    pool_pre_ping=True,  # Tests connection liveness before checking out from pool
+    pool_recycle=300,  # Recycles sockets every 5 minutes (matching Neon's suspend window)
+    pool_size=5,  # Restricts concurrent connections to avoid exhausting Neon slot limits
     max_overflow=10,
-    connect_args={"ssl": "require"}, # Enforces TLS in transit to cloud cluster
+    connect_args={"ssl": "require"},  # Enforces TLS in transit to cloud cluster
 )
 ```
 

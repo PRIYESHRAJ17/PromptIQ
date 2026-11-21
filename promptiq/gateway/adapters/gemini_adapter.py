@@ -30,11 +30,15 @@ class GeminiInferenceAdapter(BaseInferenceAdapter):
         api_key = settings.effective_gemini_api_key
         if not api_key:
             if settings.MANAGED_INFERENCE_ALLOW_MOCK_FALLBACK:
-                logger.info("No operator Gemini API key set; falling back to deterministic mock adapter")
+                logger.info(
+                    "No operator Gemini API key set; falling back to deterministic mock adapter"
+                )
                 mock = MockInferenceAdapter()
                 mock.model_id = f"{self.model_id}-mock"
                 return await mock.generate(request)
-            raise CapacityExhaustedError("Gemini operator route is unconfigured (BLOCKED_EXTERNAL).")
+            raise CapacityExhaustedError(
+                "Gemini operator route is unconfigured (BLOCKED_EXTERNAL)."
+            )
 
         model_to_use = request.target_model_id or self.model_id
         verify_zero_price_route(self.provider_name, model_to_use, price_per_token=0.0)
@@ -48,7 +52,12 @@ class GeminiInferenceAdapter(BaseInferenceAdapter):
         # Construct Gemini contents payload
         contents = []
         for msg in request.messages:
-            contents.append({"role": "user" if msg.role == "user" else "model", "parts": [{"text": msg.content}]})
+            contents.append(
+                {
+                    "role": "user" if msg.role == "user" else "model",
+                    "parts": [{"text": msg.content}],
+                }
+            )
 
         payload = {"contents": contents}
         if request.system_instruction:
@@ -57,11 +66,16 @@ class GeminiInferenceAdapter(BaseInferenceAdapter):
         async with httpx.AsyncClient(timeout=30.0) as client:
             try:
                 resp = await client.post(url, json=payload)
-                governor.inspect_response_headers(self.provider_name, self.model_id, resp.headers, resp.status_code)
+                governor.inspect_response_headers(
+                    self.provider_name, self.model_id, resp.headers, resp.status_code
+                )
 
                 if resp.status_code == 429:
                     retry_after = int(resp.headers.get("retry-after", 60))
-                    raise CapacityExhaustedError("Gemini free tier rate limit reached. Pausing route.", retry_after=retry_after)
+                    raise CapacityExhaustedError(
+                        "Gemini free tier rate limit reached. Pausing route.",
+                        retry_after=retry_after,
+                    )
 
                 resp.raise_for_status()
                 data = resp.json()
@@ -89,8 +103,12 @@ class GeminiInferenceAdapter(BaseInferenceAdapter):
                     route_cost=0.0,
                 )
             except httpx.HTTPStatusError as e:
-                governor.trip_circuit_breaker(self.provider_name, f"Gemini HTTP {e.response.status_code}")
-                raise CapacityExhaustedError(f"Gemini API error: {e.response.status_code}", retry_after=30)
+                governor.trip_circuit_breaker(
+                    self.provider_name, f"Gemini HTTP {e.response.status_code}"
+                )
+                raise CapacityExhaustedError(
+                    f"Gemini API error: {e.response.status_code}", retry_after=30
+                )
             except httpx.RequestError as e:
                 governor.trip_circuit_breaker(self.provider_name, f"Gemini connection failure: {e}")
                 raise CapacityExhaustedError(f"Gemini connection error: {e}", retry_after=30)

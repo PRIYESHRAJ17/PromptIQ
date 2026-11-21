@@ -31,7 +31,9 @@ class GroqInferenceAdapter(BaseInferenceAdapter):
         api_key = settings.effective_groq_api_key
         if not api_key:
             if settings.MANAGED_INFERENCE_ALLOW_MOCK_FALLBACK:
-                logger.info("No operator Groq API key set; falling back to deterministic mock adapter")
+                logger.info(
+                    "No operator Groq API key set; falling back to deterministic mock adapter"
+                )
                 mock = MockInferenceAdapter()
                 mock.model_id = f"{self.model_id}-mock"
                 return await mock.generate(request)
@@ -121,7 +123,12 @@ class GroqInferenceAdapter(BaseInferenceAdapter):
                 data = resp.json()
                 req_id = req_id or data.get("id")
                 choice_msg = data.get("choices", [{}])[0].get("message", {})
-                content = choice_msg.get("content") or choice_msg.get("reasoning") or choice_msg.get("reasoning_content") or ""
+                content = (
+                    choice_msg.get("content")
+                    or choice_msg.get("reasoning")
+                    or choice_msg.get("reasoning_content")
+                    or ""
+                )
 
                 usage = data.get("usage", {})
                 tokens_used = usage.get("total_tokens", len(content) // 4)
@@ -158,8 +165,12 @@ class GroqInferenceAdapter(BaseInferenceAdapter):
                     response_timestamp=response_time,
                 )
             except httpx.HTTPStatusError as e:
-                governor.trip_circuit_breaker(self.provider_name, f"Groq HTTP {e.response.status_code}")
-                raise CapacityExhaustedError(f"Groq API error: {e.response.status_code}", retry_after=30)
+                governor.trip_circuit_breaker(
+                    self.provider_name, f"Groq HTTP {e.response.status_code}"
+                )
+                raise CapacityExhaustedError(
+                    f"Groq API error: {e.response.status_code}", retry_after=30
+                )
             except httpx.RequestError as e:
                 governor.trip_circuit_breaker(self.provider_name, f"Groq connection failure: {e}")
                 raise CapacityExhaustedError(f"Groq connection error: {e}", retry_after=30)

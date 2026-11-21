@@ -49,7 +49,9 @@ async def compile_target_package(
         raise HTTPException(status_code=e.status_code, detail=e.message)
 
 
-@router.post("/compile/multi", response_model=MultiTargetCompileResponse, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/compile/multi", response_model=MultiTargetCompileResponse, status_code=status.HTTP_201_CREATED
+)
 async def compile_multi_target_packages(
     project_id: str,
     multi_req: MultiTargetCompileRequest,
@@ -88,7 +90,6 @@ async def recommend_target_environment(
         raise HTTPException(status_code=e.status_code, detail=e.message)
 
 
-
 @router.get("/packages/{package_id}/export", response_model=PackageExportResponse)
 async def export_package(
     project_id: str,
@@ -107,7 +108,9 @@ async def export_package(
     except (NotFoundError, TenantIsolationError) as e:
         raise HTTPException(status_code=e.status_code, detail=e.message)
 
-    stmt = select(PromptPackage).where(PromptPackage.id == package_id, PromptPackage.project_id == project_id)
+    stmt = select(PromptPackage).where(
+        PromptPackage.id == package_id, PromptPackage.project_id == project_id
+    )
     res = await db.execute(stmt)
     pkg = res.scalar_one_or_none()
     if not pkg:

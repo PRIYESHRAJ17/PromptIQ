@@ -102,4 +102,3 @@ def test_mcp_protocol_handshake():
     parsed = json.loads(serialized)
     assert parsed["method"] == "initialize"
     assert parsed["params"]["protocolVersion"] == "2024-11-05"
-

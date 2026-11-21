@@ -4,7 +4,9 @@ from promptiq.discovery.task_registry import TaskCategoryRegistry
 from promptiq.schemas.discovery import DiscoveryQuestion
 
 
-def get_task_questions(task_type: str, answered_keys: set[str], depth: str = "guided") -> list[DiscoveryQuestion]:
+def get_task_questions(
+    task_type: str, answered_keys: set[str], depth: str = "guided"
+) -> list[DiscoveryQuestion]:
     """Generates specialized follow-up questions tailored to the specific task type via TaskCategoryRegistry.
 
     Maintains full backwards compatibility with existing signatures.

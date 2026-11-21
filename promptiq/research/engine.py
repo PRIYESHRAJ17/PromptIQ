@@ -58,7 +58,9 @@ class ResearchEngine:
         await db.flush()
 
         # 3. Search and Retrieve Source Records with Deduplication
-        raw_sources = await self.search_connector.search(request.query, max_results=request.max_sources)
+        raw_sources = await self.search_connector.search(
+            request.query, max_results=request.max_sources
+        )
 
         seen_urls: set[str] = set()
         seen_hashes: set[str] = set()
@@ -81,7 +83,9 @@ class ResearchEngine:
             prov = s.get("provenance", "live_web")
             is_m = s.get("is_mock", False)
             c_hash = s.get("content_hash", "")
-            rel_tier = s.get("reliability_tier", "tier_1_official" if not is_m else "tier_3_simulated")
+            rel_tier = s.get(
+                "reliability_tier", "tier_1_official" if not is_m else "tier_3_simulated"
+            )
 
             rec = SourceRecord(
                 research_job_id=job.id,
@@ -106,18 +110,24 @@ class ResearchEngine:
             content_snippet = matching_raw.get("content", "") if matching_raw else ""
 
             # Check if snippet contains contradictory signals
-            is_contradicted = "contradicts" in content_snippet.lower() or "deprecated" in content_snippet.lower()
+            is_contradicted = (
+                "contradicts" in content_snippet.lower() or "deprecated" in content_snippet.lower()
+            )
             support_status = "contradicted" if is_contradicted else "verified"
 
             prefix = "Verified" if not is_m else "Synthesized/Mock"
-            claim_text = f"{prefix}: {s_rec.title} defines operational parameters: {content_snippet[:150]}"
+            claim_text = (
+                f"{prefix}: {s_rec.title} defines operational parameters: {content_snippet[:150]}"
+            )
 
             contrary_evidence = []
             if is_contradicted:
-                contrary_evidence.append({
-                    "note": "Document flags deprecation or contradiction with earlier releases.",
-                    "excerpt": content_snippet[:100],
-                })
+                contrary_evidence.append(
+                    {
+                        "note": "Document flags deprecation or contradiction with earlier releases.",
+                        "excerpt": content_snippet[:100],
+                    }
+                )
 
             claim = EvidenceClaim(
                 research_job_id=job.id,
@@ -145,7 +155,9 @@ class ResearchEngine:
                 f"Documented specifications verified across {len(source_records)} independent sources.",
                 f"Recorded {len(claims)} evidence claims in the persistent Evidence Ledger.",
             ],
-            "remaining_uncertainties": ["Upstream rate limits may be revised dynamically by provider."],
+            "remaining_uncertainties": [
+                "Upstream rate limits may be revised dynamically by provider."
+            ],
             "evidence_ledger_count": len(claims),
             "deduplication_ratio": round(len(source_records) / max(1, len(raw_sources)), 2),
         }
@@ -188,7 +200,9 @@ class ResearchEngine:
                     confidence_rationale=c.confidence_rationale,
                     excerpt=c.excerpt,
                     source_id=c.source_id,
-                    source_url=next((s.url for s, _, _, _, _ in source_records if s.id == c.source_id), None),
+                    source_url=next(
+                        (s.url for s, _, _, _, _ in source_records if s.id == c.source_id), None
+                    ),
                     contrary_evidence=c.contrary_evidence,
                     provenance=prov,
                     is_mock=is_m,

@@ -59,7 +59,9 @@ class TargetCompiler:
 
         target_profile = TargetProfileSchema(
             host=target_environment,
-            provider="google" if "antigravity" in target_environment or "gemini" in target_environment else "anthropic",
+            provider="google"
+            if "antigravity" in target_environment or "gemini" in target_environment
+            else "anthropic",
             model_id="gemini-3.8-flash",
             tools_available=["read_file", "write_file", "run_command", "mcp"],
             permissions=["read", "write", "execute"],
@@ -220,8 +222,16 @@ class TargetCompiler:
                 needs_browser = True
 
         scores = {
-            "google-antigravity": round(0.85 + (0.05 if needs_mcp else 0.0) + (0.05 if needs_subagents else 0.0) + (0.05 if needs_browser else 0.0), 2),
-            "claude-code": round(0.80 + (0.05 if needs_mcp else 0.0) + (0.05 if needs_subagents else 0.0), 2),
+            "google-antigravity": round(
+                0.85
+                + (0.05 if needs_mcp else 0.0)
+                + (0.05 if needs_subagents else 0.0)
+                + (0.05 if needs_browser else 0.0),
+                2,
+            ),
+            "claude-code": round(
+                0.80 + (0.05 if needs_mcp else 0.0) + (0.05 if needs_subagents else 0.0), 2
+            ),
             "cursor": 0.75,
             "openai-codex": 0.65,
             "gemini-cli": 0.60,

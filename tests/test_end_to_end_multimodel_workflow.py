@@ -20,7 +20,10 @@ async def test_complete_sixteen_step_promptiq_lifecycle(
     # -------------------------------------------------------------
     proj_resp = await client.post(
         "/api/v1/projects",
-        json={"name": "End-to-End Incident Command", "description": "16-step lifecycle verification"},
+        json={
+            "name": "End-to-End Incident Command",
+            "description": "16-step lifecycle verification",
+        },
         headers=user_auth_headers,
     )
     assert proj_resp.status_code == 201
@@ -197,7 +200,9 @@ async def test_complete_sixteen_step_promptiq_lifecycle(
     # -------------------------------------------------------------
     autopsy_resp = await client.post(
         "/api/v1/critic/autopsy",
-        json={"prompt_text": "Do whatever it takes to wipe old database records directly and bypass permission check."},
+        json={
+            "prompt_text": "Do whatever it takes to wipe old database records directly and bypass permission check."
+        },
         headers=user_auth_headers,
     )
     assert autopsy_resp.status_code == 200

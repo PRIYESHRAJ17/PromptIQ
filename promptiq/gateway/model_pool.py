@@ -23,7 +23,12 @@ CENTRAL_MODEL_POOL: list[ModelPoolRecord] = [
         version="3.8-flash-2026",
         eligibility_state=EligibilityState.CONDITIONALLY_ELIGIBLE,
         capabilities=ModelCapabilities(
-            reasoning=True, coding=True, structured_output=True, tools=True, vision=True, long_context=True
+            reasoning=True,
+            coding=True,
+            structured_output=True,
+            tools=True,
+            vision=True,
+            long_context=True,
         ),
         context_window=1048576,
         output_limit=8192,
@@ -41,7 +46,12 @@ CENTRAL_MODEL_POOL: list[ModelPoolRecord] = [
             "security_and_injection": 0.93,
         },
         composite_score=0.94,
-        eligible_use_cases=["general_orchestration", "adaptive_discovery", "long_context_synthesis", "prompt_compilation"],
+        eligible_use_cases=[
+            "general_orchestration",
+            "adaptive_discovery",
+            "long_context_synthesis",
+            "prompt_compilation",
+        ],
         ineligible_use_cases=["confidential_ip_data", "restricted_compliance_data"],
         verification_date="2026-11-20",
         verification_evidence="Verified under Google AI Studio Developer API zero-price tier. Confirmed no billable project attached.",
@@ -57,7 +67,12 @@ CENTRAL_MODEL_POOL: list[ModelPoolRecord] = [
         version="3.5-flash-lite-2026",
         eligibility_state=EligibilityState.CONDITIONALLY_ELIGIBLE,
         capabilities=ModelCapabilities(
-            reasoning=True, coding=True, structured_output=True, tools=True, vision=False, long_context=True
+            reasoning=True,
+            coding=True,
+            structured_output=True,
+            tools=True,
+            vision=False,
+            long_context=True,
         ),
         context_window=1048576,
         output_limit=8192,
@@ -91,7 +106,12 @@ CENTRAL_MODEL_POOL: list[ModelPoolRecord] = [
         version="2.5-flash-2025",
         eligibility_state=EligibilityState.CONDITIONALLY_ELIGIBLE,
         capabilities=ModelCapabilities(
-            reasoning=True, coding=True, structured_output=True, tools=True, vision=True, long_context=True
+            reasoning=True,
+            coding=True,
+            structured_output=True,
+            tools=True,
+            vision=True,
+            long_context=True,
         ),
         context_window=1048576,
         output_limit=8192,
@@ -125,7 +145,12 @@ CENTRAL_MODEL_POOL: list[ModelPoolRecord] = [
         version="120b",
         eligibility_state=EligibilityState.VERIFIED_ELIGIBLE,
         capabilities=ModelCapabilities(
-            reasoning=True, coding=True, structured_output=True, tools=True, vision=False, long_context=False
+            reasoning=True,
+            coding=True,
+            structured_output=True,
+            tools=True,
+            vision=False,
+            long_context=False,
         ),
         context_window=131072,
         output_limit=4096,
@@ -143,7 +168,12 @@ CENTRAL_MODEL_POOL: list[ModelPoolRecord] = [
             "security_and_injection": 0.94,
         },
         composite_score=0.94,
-        eligible_use_cases=["reasoning", "independent_critic", "prompt_engineering", "confidential_workflows"],
+        eligible_use_cases=[
+            "reasoning",
+            "independent_critic",
+            "prompt_engineering",
+            "confidential_workflows",
+        ],
         ineligible_use_cases=["extreme_long_context_gt_128k", "restricted_compliance_data"],
         verification_date="2026-11-21",
         verification_evidence="Active open-weight candidate on GroqCloud. Free-tier quota: 30 RPM, 1,000 RPD, 100k TPD. Paid Developer Plan excluded.",
@@ -159,7 +189,12 @@ CENTRAL_MODEL_POOL: list[ModelPoolRecord] = [
         version="20b",
         eligibility_state=EligibilityState.VERIFIED_ELIGIBLE,
         capabilities=ModelCapabilities(
-            reasoning=True, coding=True, structured_output=True, tools=True, vision=False, long_context=False
+            reasoning=True,
+            coding=True,
+            structured_output=True,
+            tools=True,
+            vision=False,
+            long_context=False,
         ),
         context_window=131072,
         output_limit=8192,
@@ -193,7 +228,12 @@ CENTRAL_MODEL_POOL: list[ModelPoolRecord] = [
         version="3.8-27b-preview",
         eligibility_state=EligibilityState.REVIEW_REQUIRED,
         capabilities=ModelCapabilities(
-            reasoning=True, coding=True, structured_output=True, tools=True, vision=False, long_context=False
+            reasoning=True,
+            coding=True,
+            structured_output=True,
+            tools=True,
+            vision=False,
+            long_context=False,
         ),
         context_window=131072,
         output_limit=4096,
@@ -212,7 +252,11 @@ CENTRAL_MODEL_POOL: list[ModelPoolRecord] = [
         },
         composite_score=0.93,
         eligible_use_cases=["experimental_evaluation_only"],
-        ineligible_use_cases=["production_routing", "production_verification", "extreme_long_context_gt_128k"],
+        ineligible_use_cases=[
+            "production_routing",
+            "production_verification",
+            "extreme_long_context_gt_128k",
+        ],
         verification_date="2026-11-21",
         verification_evidence="Preview/experimental model on GroqCloud. Per Phase 3.4 directive, preview models are strictly barred from production routes.",
         source_url="https://console.groq.com/docs/rate-limits",
@@ -227,7 +271,12 @@ CENTRAL_MODEL_POOL: list[ModelPoolRecord] = [
         version="v1",
         eligibility_state=EligibilityState.VERIFIED_ELIGIBLE,
         capabilities=ModelCapabilities(
-            reasoning=True, coding=True, structured_output=True, tools=True, vision=True, long_context=True
+            reasoning=True,
+            coding=True,
+            structured_output=True,
+            tools=True,
+            vision=True,
+            long_context=True,
         ),
         context_window=2000000,
         output_limit=16384,
@@ -245,7 +294,11 @@ CENTRAL_MODEL_POOL: list[ModelPoolRecord] = [
             "security_and_injection": 1.0,
         },
         composite_score=0.99,
-        eligible_use_cases=["deterministic_testing", "restricted_data_airgap", "offline_verification"],
+        eligible_use_cases=[
+            "deterministic_testing",
+            "restricted_data_airgap",
+            "offline_verification",
+        ],
         ineligible_use_cases=[],
         verification_date="2026-11-20",
         verification_evidence="Air-gapped in-memory execution. Zero external egress.",
@@ -261,7 +314,12 @@ CENTRAL_MODEL_POOL: list[ModelPoolRecord] = [
         version="3.3-70b-free",
         eligibility_state=EligibilityState.CONDITIONALLY_ELIGIBLE,
         capabilities=ModelCapabilities(
-            reasoning=True, coding=True, structured_output=True, tools=True, vision=False, long_context=False
+            reasoning=True,
+            coding=True,
+            structured_output=True,
+            tools=True,
+            vision=False,
+            long_context=False,
         ),
         context_window=131072,
         output_limit=4096,
@@ -289,7 +347,12 @@ CENTRAL_MODEL_POOL: list[ModelPoolRecord] = [
         version="3.1-8b-cf",
         eligibility_state=EligibilityState.CONDITIONALLY_ELIGIBLE,
         capabilities=ModelCapabilities(
-            reasoning=True, coding=True, structured_output=True, tools=False, vision=False, long_context=False
+            reasoning=True,
+            coding=True,
+            structured_output=True,
+            tools=False,
+            vision=False,
+            long_context=False,
         ),
         context_window=131072,
         output_limit=4096,
@@ -520,7 +583,9 @@ CENTRAL_MODEL_POOL: list[ModelPoolRecord] = [
         context_window=200000,
         output_limit=8192,
         rate_limits=ModelRateLimits(rpm=0, rpd=0, tpm=0, tpd=0),
-        privacy_card=ProviderPrivacyCard(training_policy="paid_commercial", data_retention_days=30, allows_confidential_data=True),
+        privacy_card=ProviderPrivacyCard(
+            training_policy="paid_commercial", data_retention_days=30, allows_confidential_data=True
+        ),
         max_allowed_data_sensitivity=DataSensitivityLevel.CONFIDENTIAL,
         cost_input_per_token=0.000003,
         cost_output_per_token=0.000015,
@@ -563,11 +628,19 @@ class ModelPoolService:
         return None
 
     @classmethod
-    def get_verified_eligible_models(cls, include_conditional: bool = False) -> list[ModelPoolRecord]:
+    def get_verified_eligible_models(
+        cls, include_conditional: bool = False
+    ) -> list[ModelPoolRecord]:
         """Returns all verified eligible zero-price models, optionally including conditional models."""
-        results = cls.list_models(eligibility_state=EligibilityState.VERIFIED_ELIGIBLE, zero_price_only=True)
+        results = cls.list_models(
+            eligibility_state=EligibilityState.VERIFIED_ELIGIBLE, zero_price_only=True
+        )
         if include_conditional:
-            results.extend(cls.list_models(eligibility_state=EligibilityState.CONDITIONALLY_ELIGIBLE, zero_price_only=True))
+            results.extend(
+                cls.list_models(
+                    eligibility_state=EligibilityState.CONDITIONALLY_ELIGIBLE, zero_price_only=True
+                )
+            )
         return results
 
     @classmethod
@@ -583,7 +656,9 @@ class ModelPoolService:
 
         eligible_models = cls.get_verified_eligible_models(include_conditional=include_conditional)
         # Filter for privacy
-        privacy_safe = PrivacyGovernanceService.filter_models_for_sensitivity(eligible_models, sensitivity)
+        privacy_safe = PrivacyGovernanceService.filter_models_for_sensitivity(
+            eligible_models, sensitivity
+        )
 
         candidates: list[ModelPoolRecord] = []
         for m in privacy_safe:
@@ -594,7 +669,9 @@ class ModelPoolService:
             # Role capability matching
             if role == LogicalModelRole.FAST:
                 # Lightweight fast model
-                if m.provider in ("google", "groq", "mock") and (m.rate_limits.rpm >= 30 or m.model_family == "internal"):
+                if m.provider in ("google", "groq", "mock") and (
+                    m.rate_limits.rpm >= 30 or m.model_family == "internal"
+                ):
                     candidates.append(m)
             elif role == LogicalModelRole.REASONING:
                 if m.capabilities.reasoning and m.composite_score >= 0.90:
@@ -607,7 +684,9 @@ class ModelPoolService:
                     candidates.append(m)
             elif role == LogicalModelRole.CRITIC:
                 # Critic must have reasoning capability (allows GPT-OSS 120B and GPT-OSS 20B)
-                if m.capabilities.reasoning and (m.composite_score >= 0.85 or m.model_id == "openai/gpt-oss-20b"):
+                if m.capabilities.reasoning and (
+                    m.composite_score >= 0.85 or m.model_id == "openai/gpt-oss-20b"
+                ):
                     candidates.append(m)
             elif role == LogicalModelRole.VERIFIER:
                 if m.capabilities.structured_output or m.model_family == "internal":

@@ -20,7 +20,9 @@ async def get_model(model_id: str):
     """Get verified capabilities and rate limits for a specific model."""
     model = ModelRegistryService.get_model(model_id)
     if not model:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Model '{model_id}' not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=f"Model '{model_id}' not found"
+        )
     return model
 
 
@@ -35,5 +37,7 @@ async def get_environment(host: str):
     """Get host capabilities and manifest rules for a specific execution surface."""
     env = EnvironmentRegistryService.get_environment(host)
     if not env:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Environment '{host}' not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=f"Environment '{host}' not found"
+        )
     return env

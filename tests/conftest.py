@@ -48,6 +48,7 @@ async def db_session():
 @pytest_asyncio.fixture(scope="function")
 async def client(db_session: AsyncSession):
     """Provides an asynchronous HTTP test client wired to the in-memory test database."""
+
     async def override_get_db():
         yield db_session
 

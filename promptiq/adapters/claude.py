@@ -23,12 +23,18 @@ class ClaudeCodeTargetAdapter(BaseTargetAdapter):
         "multimodal": True,
     }
 
-    def compile(self, pps: PromptSpecSchema, output_type: OutputType) -> tuple[dict[str, Any], dict[str, str], list[str]]:
+    def compile(
+        self, pps: PromptSpecSchema, output_type: OutputType
+    ) -> tuple[dict[str, Any], dict[str, str], list[str]]:
         files: dict[str, str] = {}
         warnings: list[str] = []
 
-        reqs_text = "\n".join([f"- [{r.get('id', 'REQ')}] {r.get('text')}" for r in pps.requirements])
-        exclusions_text = "\n".join([f"- {e}" for e in pps.constraints.get("out_of_scope", [])]) or "None."
+        reqs_text = "\n".join(
+            [f"- [{r.get('id', 'REQ')}] {r.get('text')}" for r in pps.requirements]
+        )
+        exclusions_text = (
+            "\n".join([f"- {e}" for e in pps.constraints.get("out_of_scope", [])]) or "None."
+        )
 
         claude_md = (
             f"# CLAUDE.md — Project Instructions for Claude Code\n\n"
@@ -48,8 +54,14 @@ class ClaudeCodeTargetAdapter(BaseTargetAdapter):
 
         elif output_type == "prompt_suite":
             files["CLAUDE.md"] = claude_md
-            files["DEVELOPER_BRIEF.md"] = f"# Developer Task Brief\n\n{pps.intent.primary_objective}\n"
-            manifest = {"target": self.target_name, "type": "prompt_suite", "files": list(files.keys())}
+            files["DEVELOPER_BRIEF.md"] = (
+                f"# Developer Task Brief\n\n{pps.intent.primary_objective}\n"
+            )
+            manifest = {
+                "target": self.target_name,
+                "type": "prompt_suite",
+                "files": list(files.keys()),
+            }
             return manifest, files, warnings
 
         else:  # complete_package
@@ -69,6 +81,12 @@ class ClaudeCodeTargetAdapter(BaseTargetAdapter):
                 f"- Pattern: {pps.constraints.get('technical', {}).get('architecture_pattern', 'modular_monolith')}\n"
                 f"- Adhere to test-driven implementation.\n"
             )
-            files["README.md"] = f"# Claude Code Instruction Package\n\nGoal: {pps.intent.primary_objective}\n"
-            manifest = {"target": self.target_name, "type": "complete_package", "files": list(files.keys())}
+            files["README.md"] = (
+                f"# Claude Code Instruction Package\n\nGoal: {pps.intent.primary_objective}\n"
+            )
+            manifest = {
+                "target": self.target_name,
+                "type": "complete_package",
+                "files": list(files.keys()),
+            }
             return manifest, files, warnings

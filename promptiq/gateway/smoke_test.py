@@ -67,7 +67,11 @@ async def execute_live_smoke_test(
             "notice": "Never substitute mock execution for live verification. Real operator credentials and opt-in required.",
         }
 
-    api_key = settings.effective_groq_api_key if provider.lower() == "groq" else settings.effective_gemini_api_key
+    api_key = (
+        settings.effective_groq_api_key
+        if provider.lower() == "groq"
+        else settings.effective_gemini_api_key
+    )
 
     request_time = datetime.now(UTC).isoformat()
     start_time = time.perf_counter()
@@ -119,7 +123,9 @@ async def execute_live_smoke_test(
             resp.raise_for_status()
             data = resp.json()
             usage = data.get("usage", {})
-            response_text = data.get("choices", [{}])[0].get("message", {}).get("content", "").strip()
+            response_text = (
+                data.get("choices", [{}])[0].get("message", {}).get("content", "").strip()
+            )
 
             # Cost classification rule: if only operator attested, status is LIVE_RESPONSE_RECEIVED_COST_UNVERIFIED
             status = (
@@ -190,11 +196,17 @@ async def execute_live_smoke_test(
 def main() -> None:
     """CLI entrypoint for operator smoke testing."""
     parser = argparse.ArgumentParser(description="PromptIQ Safe Hosted Inference Smoke Test")
-    parser.add_argument("--opt-in", action="store_true", help="Explicitly opt-in to execute live inference calls.")
-    parser.add_argument("--provider", default="groq", choices=["groq", "gemini"], help="Target provider.")
+    parser.add_argument(
+        "--opt-in", action="store_true", help="Explicitly opt-in to execute live inference calls."
+    )
+    parser.add_argument(
+        "--provider", default="groq", choices=["groq", "gemini"], help="Target provider."
+    )
     parser.add_argument("--model", default="openai/gpt-oss-120b", help="Target model identifier.")
     parser.add_argument("--prompt", default=None, help="Custom synthetic prompt to send.")
-    parser.add_argument("--max-tokens", type=int, default=128, help="Maximum completion tokens (default: 128).")
+    parser.add_argument(
+        "--max-tokens", type=int, default=128, help="Maximum completion tokens (default: 128)."
+    )
 
     args = parser.parse_args()
     print("=" * 60)
@@ -204,13 +216,15 @@ def main() -> None:
     print(f"Opt-In Status:   {args.opt_in}")
     print("=" * 60)
 
-    result = asyncio.run(execute_live_smoke_test(
-        provider=args.provider,
-        model_id=args.model,
-        opt_in=args.opt_in,
-        synthetic_prompt=args.prompt,
-        max_tokens=args.max_tokens,
-    ))
+    result = asyncio.run(
+        execute_live_smoke_test(
+            provider=args.provider,
+            model_id=args.model,
+            opt_in=args.opt_in,
+            synthetic_prompt=args.prompt,
+            max_tokens=args.max_tokens,
+        )
+    )
 
     print(f"\nExecution Result: {result['status']}")
     print(f"Success:          {result['success']}")
@@ -225,7 +239,9 @@ def main() -> None:
     if result.get("latency_ms"):
         print(f"Latency:          {result['latency_ms']} ms")
     if result.get("tokens_used"):
-        print(f"Tokens Used:      {result['tokens_used']} (Prompt: {result.get('prompt_tokens', 0)}, Completion: {result.get('completion_tokens', 0)})")
+        print(
+            f"Tokens Used:      {result['tokens_used']} (Prompt: {result.get('prompt_tokens', 0)}, Completion: {result.get('completion_tokens', 0)})"
+        )
     if result.get("rate_limit_headers"):
         rem_req = result["rate_limit_headers"].get("remaining_requests")
         rem_tok = result["rate_limit_headers"].get("remaining_tokens")

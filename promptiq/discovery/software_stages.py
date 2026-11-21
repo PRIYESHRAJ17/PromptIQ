@@ -29,7 +29,12 @@ SOFTWARE_STAGES = [
                 stage="stage_b",
                 question="What distinct user roles and permission levels exist?",
                 question_type="multi_select",
-                options=["Admin / Operator", "Standard User", "Viewer / Read-only", "API Client / Integration"],
+                options=[
+                    "Admin / Operator",
+                    "Standard User",
+                    "Viewer / Read-only",
+                    "API Client / Integration",
+                ],
             ),
             DiscoveryQuestion(
                 id="core_user_journey",
@@ -120,7 +125,12 @@ SOFTWARE_STAGES = [
                 stage="stage_g",
                 question="What architectural pattern should be adopted?",
                 question_type="single_select",
-                options=["Modular Monolith", "Microservices", "Event-Driven", "Serverless Functions"],
+                options=[
+                    "Modular Monolith",
+                    "Microservices",
+                    "Event-Driven",
+                    "Serverless Functions",
+                ],
                 default_value="Modular Monolith",
             ),
         ],
@@ -183,7 +193,9 @@ SOFTWARE_STAGES = [
 ]
 
 
-def get_software_stage_questions(current_stage_id: str, answered_keys: set[str]) -> list[DiscoveryQuestion]:
+def get_software_stage_questions(
+    current_stage_id: str, answered_keys: set[str]
+) -> list[DiscoveryQuestion]:
     """Returns questions for the active software stage, excluding already answered questions."""
     for stage in SOFTWARE_STAGES:
         if stage["id"] == current_stage_id:

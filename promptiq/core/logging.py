@@ -10,12 +10,17 @@ from promptiq.core.config import settings
 
 # Patterns for sensitive tokens, API keys, passwords, and authorization headers
 SECRET_PATTERNS = [
-    re.compile(r"Bearer\s+([A-Za-z0-9\-_=]+\.[A-Za-z0-9\-_=]+\.?[A-Za-z0-9\-_.+/=]*)", re.IGNORECASE),
-    re.compile(r"(api[_-]?key|secret|password|token)\s*[:=]\s*['\"]?([A-Za-z0-9_\-\.]{8,})['\"]?", re.IGNORECASE),
-    re.compile(r"(AIza[0-9A-Za-z-_]{35})"),       # Google API Key
-    re.compile(r"(gsk_[A-Za-z0-9]{48,})"),        # Groq API Key
-    re.compile(r"(sk-[A-Za-z0-9]{32,})"),         # OpenAI/generic secret key
-    re.compile(r"(ghp_[A-Za-z0-9]{36})"),         # GitHub personal access token
+    re.compile(
+        r"Bearer\s+([A-Za-z0-9\-_=]+\.[A-Za-z0-9\-_=]+\.?[A-Za-z0-9\-_.+/=]*)", re.IGNORECASE
+    ),
+    re.compile(
+        r"(api[_-]?key|secret|password|token)\s*[:=]\s*['\"]?([A-Za-z0-9_\-\.]{8,})['\"]?",
+        re.IGNORECASE,
+    ),
+    re.compile(r"(AIza[0-9A-Za-z-_]{35})"),  # Google API Key
+    re.compile(r"(gsk_[A-Za-z0-9]{48,})"),  # Groq API Key
+    re.compile(r"(sk-[A-Za-z0-9]{32,})"),  # OpenAI/generic secret key
+    re.compile(r"(ghp_[A-Za-z0-9]{36})"),  # GitHub personal access token
 ]
 
 
@@ -57,10 +62,28 @@ def redact_secrets(text: str) -> str:
 
 
 STANDARD_LOG_ATTRS = {
-    "name", "msg", "args", "levelname", "levelno", "pathname", "filename",
-    "module", "exc_info", "exc_text", "stack_info", "lineno", "funcName",
-    "created", "msecs", "relativeCreated", "thread", "threadName",
-    "processName", "process", "message", "extra",
+    "name",
+    "msg",
+    "args",
+    "levelname",
+    "levelno",
+    "pathname",
+    "filename",
+    "module",
+    "exc_info",
+    "exc_text",
+    "stack_info",
+    "lineno",
+    "funcName",
+    "created",
+    "msecs",
+    "relativeCreated",
+    "thread",
+    "threadName",
+    "processName",
+    "process",
+    "message",
+    "extra",
 }
 
 

@@ -35,7 +35,10 @@ TOOLS = [
             "type": "object",
             "properties": {
                 "name": {"type": "string", "description": "Project name"},
-                "description": {"type": "string", "description": "Project goal or problem statement"},
+                "description": {
+                    "type": "string",
+                    "description": "Project goal or problem statement",
+                },
             },
             "required": ["name"],
         },
@@ -72,7 +75,11 @@ TOOLS = [
             "properties": {
                 "project_id": {"type": "string"},
                 "target_environment": {"type": "string", "default": "google-antigravity"},
-                "output_type": {"type": "string", "enum": ["prompt_only", "prompt_suite", "complete_package"], "default": "complete_package"},
+                "output_type": {
+                    "type": "string",
+                    "enum": ["prompt_only", "prompt_suite", "complete_package"],
+                    "default": "complete_package",
+                },
             },
             "required": ["project_id"],
         },
@@ -97,7 +104,11 @@ TOOLS = [
             "properties": {
                 "project_id": {"type": "string"},
                 "query": {"type": "string"},
-                "mode": {"type": "string", "enum": ["quick", "decision", "deep"], "default": "quick"},
+                "mode": {
+                    "type": "string",
+                    "enum": ["quick", "decision", "deep"],
+                    "default": "quick",
+                },
             },
             "required": ["project_id", "query"],
         },
@@ -130,23 +141,36 @@ TOOLS = [
 ]
 
 
-async def _dispatch_tool(db: AsyncSession, tool_name: str, arguments: dict[str, Any], user_id: str) -> dict[str, Any]:
+async def _dispatch_tool(
+    db: AsyncSession, tool_name: str, arguments: dict[str, Any], user_id: str
+) -> dict[str, Any]:
     if tool_name == "forge.create_project":
         project = await ProjectService.create_project(
-            db, user_id, ProjectCreate(name=arguments["name"], description=arguments.get("description")), surface="mcp"
+            db,
+            user_id,
+            ProjectCreate(name=arguments["name"], description=arguments.get("description")),
+            surface="mcp",
         )
-        return {"project_id": project.id, "name": project.name, "version": project.current_constitution_version}
+        return {
+            "project_id": project.id,
+            "name": project.name,
+            "version": project.current_constitution_version,
+        }
 
     elif tool_name == "forge.run_discovery":
         intake = InitialIntakeRequest(
             goal=arguments["goal"],
             depth=arguments.get("depth", "guided"),
         )
-        res = await AdaptiveDiscoveryEngine.start_session(db, arguments["project_id"], user_id, intake)
+        res = await AdaptiveDiscoveryEngine.start_session(
+            db, arguments["project_id"], user_id, intake
+        )
         return res.model_dump()
 
     elif tool_name == "forge.get_project_constitution":
-        constitution = await ConstitutionService.get_current_constitution(db, arguments["project_id"], user_id)
+        constitution = await ConstitutionService.get_current_constitution(
+            db, arguments["project_id"], user_id
+        )
         return {
             "project_id": constitution.project_id,
             "version": constitution.version,
@@ -159,10 +183,16 @@ async def _dispatch_tool(db: AsyncSession, tool_name: str, arguments: dict[str, 
 
     elif tool_name == "forge.compile_prompt":
         # Auto-approve for MCP direct compilation convenience if unapproved
-        constitution = await ConstitutionService.get_current_constitution(db, arguments["project_id"], user_id)
+        constitution = await ConstitutionService.get_current_constitution(
+            db, arguments["project_id"], user_id
+        )
         if not constitution.is_approved:
             await ConstitutionService.approve_constitution(
-                db, arguments["project_id"], user_id, ConstitutionApprovalRequest(approve=True), surface="mcp"
+                db,
+                arguments["project_id"],
+                user_id,
+                ConstitutionApprovalRequest(approve=True),
+                surface="mcp",
             )
 
         pkg = await target_compiler.compile_package(
@@ -190,7 +220,9 @@ async def _dispatch_tool(db: AsyncSession, tool_name: str, arguments: dict[str, 
 
     elif tool_name == "forge.record_checkpoint":
         cp_in = CheckpointCreate(phase=arguments["phase"], summary=arguments["summary"])
-        res = await CheckpointManager.create_checkpoint(db, arguments["project_id"], user_id, cp_in, surface="mcp")
+        res = await CheckpointManager.create_checkpoint(
+            db, arguments["project_id"], user_id, cp_in, surface="mcp"
+        )
         return res.model_dump()
 
     elif tool_name == "forge.get_context_pack":
@@ -202,7 +234,9 @@ async def _dispatch_tool(db: AsyncSession, tool_name: str, arguments: dict[str, 
         raise ValueError(f"Unknown MCP tool '{tool_name}'")
 
 
-async def handle_tool_call(tool_name: str, arguments: dict[str, Any], user_id: str, db: AsyncSession | None = None) -> dict[str, Any]:
+async def handle_tool_call(
+    tool_name: str, arguments: dict[str, Any], user_id: str, db: AsyncSession | None = None
+) -> dict[str, Any]:
     """Routes an MCP tool call to the corresponding PromptIQ service."""
     if db is not None:
         return await _dispatch_tool(db, tool_name, arguments, user_id)
@@ -222,8 +256,14 @@ async def run_stdio_mcp_server():
         user = await AuthService.get_user_by_telegram_id(db, "mcp_host")
         if not user:
             from promptiq.schemas.auth import UserCreate
+
             user, _ = await AuthService.register_user(
-                db, UserCreate(email="mcp_agent@promptiq.local", password=secrets.token_urlsafe(32), full_name="MCP Agent")
+                db,
+                UserCreate(
+                    email="mcp_agent@promptiq.local",
+                    password=secrets.token_urlsafe(32),
+                    full_name="MCP Agent",
+                ),
             )
             await AuthService.link_telegram_account(db, user.id, "mcp_host")
         mcp_user_id = user.id

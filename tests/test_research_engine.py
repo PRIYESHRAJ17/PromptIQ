@@ -59,4 +59,3 @@ async def test_live_web_search_connector():
     assert len(results) > 0
     assert "url" in results[0]
     assert "publisher" in results[0]
-

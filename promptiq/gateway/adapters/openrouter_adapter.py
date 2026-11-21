@@ -30,7 +30,9 @@ class OpenRouterInferenceAdapter(BaseInferenceAdapter):
         api_key = settings.OPERATOR_OPENROUTER_API_KEY
         if not api_key:
             if settings.MANAGED_INFERENCE_ALLOW_MOCK_FALLBACK:
-                logger.info("No operator OpenRouter API key set; falling back to deterministic mock adapter")
+                logger.info(
+                    "No operator OpenRouter API key set; falling back to deterministic mock adapter"
+                )
                 mock = MockInferenceAdapter()
                 mock.model_id = f"{self.model_id}-mock"
                 return await mock.generate(request)
@@ -63,8 +65,14 @@ class OpenRouterInferenceAdapter(BaseInferenceAdapter):
             try:
                 resp = await client.post(url, json=payload, headers=headers)
                 if resp.status_code == 429:
-                    governor.trip_circuit_breaker(self.provider_name, "OpenRouter free rate limit exceeded", pause_duration_seconds=60)
-                    raise CapacityExhaustedError("OpenRouter free tier limit reached. Pausing route.", retry_after=60)
+                    governor.trip_circuit_breaker(
+                        self.provider_name,
+                        "OpenRouter free rate limit exceeded",
+                        pause_duration_seconds=60,
+                    )
+                    raise CapacityExhaustedError(
+                        "OpenRouter free tier limit reached. Pausing route.", retry_after=60
+                    )
 
                 resp.raise_for_status()
                 data = resp.json()
@@ -88,8 +96,14 @@ class OpenRouterInferenceAdapter(BaseInferenceAdapter):
                     route_cost=0.0,
                 )
             except httpx.HTTPStatusError as e:
-                governor.trip_circuit_breaker(self.provider_name, f"OpenRouter HTTP {e.response.status_code}")
-                raise CapacityExhaustedError(f"OpenRouter API error: {e.response.status_code}", retry_after=30)
+                governor.trip_circuit_breaker(
+                    self.provider_name, f"OpenRouter HTTP {e.response.status_code}"
+                )
+                raise CapacityExhaustedError(
+                    f"OpenRouter API error: {e.response.status_code}", retry_after=30
+                )
             except httpx.RequestError as e:
-                governor.trip_circuit_breaker(self.provider_name, f"OpenRouter connection failure: {e}")
+                governor.trip_circuit_breaker(
+                    self.provider_name, f"OpenRouter connection failure: {e}"
+                )
                 raise CapacityExhaustedError(f"OpenRouter connection error: {e}", retry_after=30)

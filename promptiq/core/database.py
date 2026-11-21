@@ -19,7 +19,7 @@ engine_kwargs: dict = {
     "echo": False,
     "future": True,
     "pool_pre_ping": True,  # Critical for Neon / serverless postgres connection recovery after sleep
-    "pool_recycle": 300,    # Recycle connections every 5 minutes to match cloud auto-suspend
+    "pool_recycle": 300,  # Recycle connections every 5 minutes to match cloud auto-suspend
 }
 
 if settings.DATABASE_URL.startswith("sqlite"):
@@ -68,7 +68,11 @@ async def init_db() -> None:
 
             for col in ["risks", "conflicts"]:
                 try:
-                    await conn.execute(text(f"ALTER TABLE project_constitutions ADD COLUMN {col} JSON DEFAULT '[]'"))
+                    await conn.execute(
+                        text(
+                            f"ALTER TABLE project_constitutions ADD COLUMN {col} JSON DEFAULT '[]'"
+                        )
+                    )
                 except Exception as ex:
                     logger.debug("Column %s already present or migration skipped: %s", col, ex)
         logger.info("Database schema initialized successfully.")

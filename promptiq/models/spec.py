@@ -12,7 +12,9 @@ class PromptSpecification(Base, UUIDMixin, TimestampMixin):
 
     __tablename__ = "prompt_specifications"
 
-    project_id: Mapped[str] = mapped_column(String(36), ForeignKey("projects.id"), nullable=False, index=True)
+    project_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("projects.id"), nullable=False, index=True
+    )
     constitution_version: Mapped[int] = mapped_column(Integer, nullable=False)
 
     # Core PPS Sections

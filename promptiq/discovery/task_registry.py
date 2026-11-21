@@ -168,7 +168,10 @@ TaskCategoryRegistry.register(
         missing_info_keys=[
             ("problem_statement", "Core problem statement and objective"),
             ("must_have_features", "Essential must-have feature boundaries"),
-            ("acceptance_criteria", "Measurable acceptance criteria / test validation conditions (Stage K)"),
+            (
+                "acceptance_criteria",
+                "Measurable acceptance criteria / test validation conditions (Stage K)",
+            ),
             ("tech_stack_preference", "Target programming language and runtime constraints"),
         ],
     )
@@ -254,7 +257,12 @@ TaskCategoryRegistry.register(
                 stage="monetization",
                 question="What is the monetization or revenue model?",
                 question_type="single_select",
-                options=["100% Free / Open Source", "SaaS Subscription", "Usage-Based / Metered", "Enterprise License"],
+                options=[
+                    "100% Free / Open Source",
+                    "SaaS Subscription",
+                    "Usage-Based / Metered",
+                    "Enterprise License",
+                ],
                 default_value="100% Free / Open Source",
             ),
             DiscoveryQuestion(
@@ -385,7 +393,12 @@ TaskCategoryRegistry.register(
                 stage="tone_style",
                 question="What style and tone should be adopted?",
                 question_type="single_select",
-                options=["Authoritative & Technical", "Conversational & Accessible", "Executive & High-Level", "Academic & Rigorous"],
+                options=[
+                    "Authoritative & Technical",
+                    "Conversational & Accessible",
+                    "Executive & High-Level",
+                    "Academic & Rigorous",
+                ],
                 default_value="Authoritative & Technical",
             ),
             DiscoveryQuestion(
@@ -393,7 +406,12 @@ TaskCategoryRegistry.register(
                 stage="structure",
                 question="What structural format is required?",
                 question_type="single_select",
-                options=["Comprehensive Guide with Subsections", "Executive Summary + Deep Dive", "FAQ / Q&A Style", "Step-by-Step Tutorial"],
+                options=[
+                    "Comprehensive Guide with Subsections",
+                    "Executive Summary + Deep Dive",
+                    "FAQ / Q&A Style",
+                    "Step-by-Step Tutorial",
+                ],
                 default_value="Comprehensive Guide with Subsections",
             ),
         ],
@@ -436,7 +454,12 @@ TaskCategoryRegistry.register(
                 stage="deliverables",
                 question="How should findings be formatted?",
                 question_type="single_select",
-                options=["Markdown Report with Summary Tables", "Clean SQL Queries + Explanations", "JSON Data Contract", "Python Pandas Pipeline Script"],
+                options=[
+                    "Markdown Report with Summary Tables",
+                    "Clean SQL Queries + Explanations",
+                    "JSON Data Contract",
+                    "Python Pandas Pipeline Script",
+                ],
                 default_value="Markdown Report with Summary Tables",
             ),
         ],
@@ -480,7 +503,11 @@ TaskCategoryRegistry.register(
                 stage="standards",
                 question="Should runnable code examples, request/response payloads, or CLI commands be included?",
                 question_type="single_select",
-                options=["Yes - fully validated examples", "Minimal illustrative snippets", "No code examples required"],
+                options=[
+                    "Yes - fully validated examples",
+                    "Minimal illustrative snippets",
+                    "No code examples required",
+                ],
                 default_value="Yes - fully validated examples",
             ),
         ],
@@ -516,7 +543,12 @@ TaskCategoryRegistry.register(
                 stage="pedagogy",
                 question="What instructional methodology is preferred?",
                 question_type="single_select",
-                options=["Hands-on project-based learning", "Socratic guided discovery", "Concept explanation + progressive exercises", "Reference-driven deep dive"],
+                options=[
+                    "Hands-on project-based learning",
+                    "Socratic guided discovery",
+                    "Concept explanation + progressive exercises",
+                    "Reference-driven deep dive",
+                ],
                 default_value="Hands-on project-based learning",
             ),
             DiscoveryQuestion(
@@ -559,7 +591,12 @@ TaskCategoryRegistry.register(
                 stage="output_format",
                 question="What exact output format is required?",
                 question_type="single_select",
-                options=["Clean Markdown", "Strict JSON Schema", "Source Code Only", "Structured Step-by-Step Report"],
+                options=[
+                    "Clean Markdown",
+                    "Strict JSON Schema",
+                    "Source Code Only",
+                    "Structured Step-by-Step Report",
+                ],
                 default_value="Clean Markdown",
             ),
             DiscoveryQuestion(

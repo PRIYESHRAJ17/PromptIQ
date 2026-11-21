@@ -173,7 +173,9 @@ def test_token_budget_calculation_for_revision_prompts():
         "Implement OTP pickup confirmation.",
         "Mask donor location until acceptance.",
     ]
-    prompt_text, max_tokens = prepare_revision_prompt(candidate, findings, DEFAULT_COLLABORATION_TASK)
+    prompt_text, max_tokens = prepare_revision_prompt(
+        candidate, findings, DEFAULT_COLLABORATION_TASK
+    )
 
     est_input_tokens = len(prompt_text) // 4
     total_footprint = est_input_tokens + max_tokens
@@ -247,7 +249,7 @@ async def test_rate_limit_preflight_detection_and_deferral(monkeypatch):
     rev_step = [s for s in audit.steps if s.stage == "revision"][0]
     assert rev_step.outcome_status == StageExecutionStatus.RATE_LIMITED.value
     assert rev_step.http_status is None  # Never default to HTTP 200 on in-memory hold
-    assert rev_step.request_id is None   # No false provider attribution
+    assert rev_step.request_id is None  # No false provider attribution
     assert "In-Memory Preflight" in rev_step.findings[0]
 
 
@@ -625,7 +627,11 @@ def test_governor_sync_from_execution_ledger(tmp_path):
                     "output_tokens": 4096,
                     "timestamp": "2026-11-21T19:37:29.209930Z",
                     "metadata": {
-                        "rate_limit_headers": {"limit_tokens": "8000", "remaining_tokens": "4433", "reset_tokens": "26.752s"},
+                        "rate_limit_headers": {
+                            "limit_tokens": "8000",
+                            "remaining_tokens": "4433",
+                            "reset_tokens": "26.752s",
+                        },
                         "response_timestamp": "2026-11-21T19:37:29.208230+00:00",
                     },
                 },
@@ -637,7 +643,11 @@ def test_governor_sync_from_execution_ledger(tmp_path):
                     "output_tokens": 4096,
                     "timestamp": "2026-11-21T19:37:34.324292Z",
                     "metadata": {
-                        "rate_limit_headers": {"limit_tokens": "8000", "remaining_tokens": "3421", "reset_tokens": "34.342s"},
+                        "rate_limit_headers": {
+                            "limit_tokens": "8000",
+                            "remaining_tokens": "3421",
+                            "reset_tokens": "34.342s",
+                        },
                         "response_timestamp": "2026-11-21T19:37:34.322988+00:00",
                     },
                 },
@@ -661,13 +671,17 @@ def test_revision_request_quota_headroom_verification():
     """Verifies that the revision request footprint comfortably fits within replenished 8,000 TPM quota."""
     from promptiq.orchestrator.collaboration import prepare_revision_prompt
 
-    candidate = "# Candidate Food Redistribution Architecture\n" + ("Service logic and database models.\n" * 150)
+    candidate = "# Candidate Food Redistribution Architecture\n" + (
+        "Service logic and database models.\n" * 150
+    )
     findings = [
         "Enforce cold-chain temperature monitoring.",
         "Implement OTP pickup confirmation.",
         "Mask donor exact location until confirmation.",
     ]
-    prompt_text, max_tokens = prepare_revision_prompt(candidate, findings, DEFAULT_COLLABORATION_TASK)
+    prompt_text, max_tokens = prepare_revision_prompt(
+        candidate, findings, DEFAULT_COLLABORATION_TASK
+    )
 
     est_input_tokens = len(prompt_text) // 4
     total_footprint = est_input_tokens + max_tokens
@@ -841,7 +855,9 @@ def test_final_verification_independent_hash_against_revised_artifact():
     assert step_4["provider"] == "internal"
     assert step_4["http_status"] is None
     assert step_4["request_id"] is None
-    assert "Deterministic invariants fully satisfied on candidate artifact." in step_4["findings"][0]
+    assert (
+        "Deterministic invariants fully satisfied on candidate artifact." in step_4["findings"][0]
+    )
 
     assert step_6["step_number"] == 6
     assert step_6["provider"] == "internal"
@@ -861,7 +877,10 @@ def test_cli_inspect_mode_renders_cleanly_without_api_calls(capsys):
 
     from promptiq.orchestrator.collaboration_cli import main
 
-    with patch("sys.argv", ["collaboration_cli.py", "--inspect", "docs/LIVE_COLLABORATION_EXECUTION_RESULTS.json"]):
+    with patch(
+        "sys.argv",
+        ["collaboration_cli.py", "--inspect", "docs/LIVE_COLLABORATION_EXECUTION_RESULTS.json"],
+    ):
         main()
 
     captured = capsys.readouterr()
@@ -906,7 +925,7 @@ def test_quota_ledger_durability_and_expiration_pruning(tmp_path):
 
     now = datetime.now(UTC).timestamp()
     expired_min = now - 120.0  # 2 minutes ago (expired for minute window)
-    active_min = now - 10.0   # 10 seconds ago (active for minute window)
+    active_min = now - 10.0  # 10 seconds ago (active for minute window)
 
     gov._model_requests_minute["openai/gpt-oss-120b"] = [expired_min, active_min]
     gov._model_tokens_minute["openai/gpt-oss-120b"] = [(expired_min, 1000), (active_min, 500)]
@@ -933,5 +952,3 @@ def test_quota_ledger_durability_and_expiration_pruning(tmp_path):
     assert "gsk_" not in raw_text
     assert "api_key" not in raw_text
     assert "Authorization" not in raw_text
-
-

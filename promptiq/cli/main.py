@@ -61,7 +61,6 @@ async def _get_or_create_cli_user(session) -> Any:
     return user
 
 
-
 def cli_entrypoint():
     """CLI entry point for terminal interaction."""
     parser = argparse.ArgumentParser(
@@ -74,13 +73,17 @@ def cli_entrypoint():
     subparsers.add_parser("init", help="Initialize the local database and environment")
 
     # mcp
-    subparsers.add_parser("mcp", help="Launch the PromptIQ Model Context Protocol (MCP) stdio server")
+    subparsers.add_parser(
+        "mcp", help="Launch the PromptIQ Model Context Protocol (MCP) stdio server"
+    )
 
     # status
     subparsers.add_parser("status", help="Display zero-price gateway and capacity status")
 
     # quota
-    quota_parser = subparsers.add_parser("quota", help="Display real-time model quota usage and limits")
+    quota_parser = subparsers.add_parser(
+        "quota", help="Display real-time model quota usage and limits"
+    )
     quota_parser.add_argument("--model", default=None, help="Specific model ID to inspect")
 
     # review
@@ -89,7 +92,9 @@ def cli_entrypoint():
     review_parser.add_argument("--target", default="google-antigravity", help="Target environment")
 
     # recommend
-    rec_parser = subparsers.add_parser("recommend", help="Recommend optimal target execution environment")
+    rec_parser = subparsers.add_parser(
+        "recommend", help="Recommend optimal target execution environment"
+    )
     rec_parser.add_argument("requirements", help="Requirements text or description")
 
     # export
@@ -117,11 +122,14 @@ def cli_entrypoint():
     disc_start = disc_sub.add_parser("start", help="Start a new discovery session")
     disc_start.add_argument("--project", required=True, help="Project ID")
     disc_start.add_argument("--intent", required=True, help="High-level user intent")
-    disc_start.add_argument("--mode", default="guided", choices=["quick", "guided", "deep"], help="Discovery mode")
+    disc_start.add_argument(
+        "--mode", default="guided", choices=["quick", "guided", "deep"], help="Discovery mode"
+    )
 
     args = parser.parse_args()
 
     if args.command == "init":
+
         async def _init():
             await init_db()
             async with async_session_factory() as session:
@@ -138,14 +146,20 @@ def cli_entrypoint():
         quota = inference_gateway.get_quota_status()
         print("\n=== PROMPTIQ CAPACITY & INFERENCE STATUS ===")
         print(f"Active Provider Route: {quota.provider}")
-        print(f"Zero-Price Policy: {'ACTIVE ($0)' if quota.zero_price_policy_active else 'INACTIVE'}")
+        print(
+            f"Zero-Price Policy: {'ACTIVE ($0)' if quota.zero_price_policy_active else 'INACTIVE'}"
+        )
         print(f"Route Status: {'PAUSED' if quota.is_paused else 'HEALTHY / ACTIVE'}")
         if quota.is_paused:
             print(f"Pause Reason: {quota.pause_reason}")
         print(f"Notice: {quota.notice}\n")
 
     elif args.command == "quota":
-        models_to_check = [args.model] if args.model else [m.model_id for m in ModelRegistryService.list_models(zero_price_only=True)]
+        models_to_check = (
+            [args.model]
+            if args.model
+            else [m.model_id for m in ModelRegistryService.list_models(zero_price_only=True)]
+        )
         print("\n=== PROMPTIQ REAL-TIME MODEL QUOTA LEDGER ===")
 
         header = f"{'MODEL ID':<25} | {'RPM USED':<9} | {'TPM USED / LIMIT':<20} | {'RESERVED':<8} | {'RESET':<7} | {'STATUS'}"
@@ -157,7 +171,9 @@ def cli_entrypoint():
             tpm_str = f"{st['tpm_used']} / {st['tpm_limit']}"
             rpm_str = f"{st['rpm_used']}/{st['rpm_limit']}"
             reset_str = f"{st['reset_seconds']}s" if st["reset_seconds"] > 0 else "0s"
-            print(f"{m_id:<25} | {rpm_str:<9} | {tpm_str:<20} | {st.get('reserved_tokens', 0):<8} | {reset_str:<7} | {status_str}")
+            print(
+                f"{m_id:<25} | {rpm_str:<9} | {tpm_str:<20} | {st.get('reserved_tokens', 0):<8} | {reset_str:<7} | {status_str}"
+            )
         print()
 
     elif args.command == "review":
@@ -166,7 +182,9 @@ def cli_entrypoint():
             with open(args.prompt, encoding="utf-8") as f:
                 prompt_text = f.read()
         except (OSError, UnicodeDecodeError):
-            logger.debug(f"Input '{args.prompt}' is not a local file path; evaluating as inline prompt text.")
+            logger.debug(
+                f"Input '{args.prompt}' is not a local file path; evaluating as inline prompt text."
+            )
 
         async def _run_review():
             res = await PromptAutopsyEngine.diagnose_prompt(
@@ -201,7 +219,9 @@ def cli_entrypoint():
             print(f"  {k}: {int(v * 100)}%")
         print()
 
-    elif args.command == "export" or (args.command == "projects" and getattr(args, "proj_command", None) == "export"):
+    elif args.command == "export" or (
+        args.command == "projects" and getattr(args, "proj_command", None) == "export"
+    ):
         project_id = args.project_id
         output_file = args.output
 
@@ -222,6 +242,7 @@ def cli_entrypoint():
     elif args.command == "projects":
         cmd = getattr(args, "proj_command", None)
         if cmd == "list":
+
             async def _run_list():
                 await init_db()
                 async with async_session_factory() as session:
@@ -229,15 +250,20 @@ def cli_entrypoint():
                     projs = await ProjectService.list_projects(session, user.id)
                     print("\n=== PROMPTIQ PROJECTS ===")
                     if not projs:
-                        print("No projects found. Create one with: promptiq projects create --name <NAME>")
+                        print(
+                            "No projects found. Create one with: promptiq projects create --name <NAME>"
+                        )
                     else:
                         for p in projs:
-                            print(f"- {p.name} (ID: {p.id}, Version: v{p.current_constitution_version})")
+                            print(
+                                f"- {p.name} (ID: {p.id}, Version: v{p.current_constitution_version})"
+                            )
                     print()
 
             asyncio.run(_run_list())
 
         elif cmd == "create":
+
             async def _run_create():
                 await init_db()
                 async with async_session_factory() as session:
@@ -261,6 +287,7 @@ def cli_entrypoint():
     elif args.command == "discovery":
         cmd = getattr(args, "disc_command", None)
         if cmd == "start":
+
             async def _run_disc_start():
                 await init_db()
                 async with async_session_factory() as session:
@@ -298,4 +325,3 @@ def cli_entrypoint():
 
 if __name__ == "__main__":
     cli_entrypoint()
-

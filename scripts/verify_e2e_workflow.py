@@ -269,13 +269,18 @@ async def run_e2e_workflow_audit() -> dict[str, Any]:
             provider="google",
             model_id="gemini-3.8-flash",
         )
-        pps = PPSBuilder.build_from_constitution(constitution=approved_const, target_profile=target_profile)
+        pps = PPSBuilder.build_from_constitution(
+            constitution=approved_const, target_profile=target_profile
+        )
         t1 = time.perf_counter()
 
         step5 = {
             "step_number": 5,
             "step_name": "PPS conversion",
-            "input_data": {"constitution_version": approved_const.version, "target_host": target_profile.host},
+            "input_data": {
+                "constitution_version": approved_const.version,
+                "target_host": target_profile.host,
+            },
             "execution_mechanism": "DETERMINISTIC",
             "actual_output_summary": f"Constructed PPS specification: primary_objective='{pps.intent.primary_objective}', requirements={len(pps.requirements)}.",
             "database_records_created": [],
@@ -338,7 +343,10 @@ async def run_e2e_workflow_audit() -> dict[str, Any]:
         step7 = {
             "step_number": 7,
             "step_name": "Prompt autopsy execution",
-            "input_data": {"flawed_prompt_length": len(flawed_candidate), "target": autopsy_req.target_environment},
+            "input_data": {
+                "flawed_prompt_length": len(flawed_candidate),
+                "target": autopsy_req.target_environment,
+            },
             "execution_mechanism": "DETERMINISTIC_HEURISTIC",
             "actual_output_summary": f"Diagnosed {len(autopsy_res.findings)} findings. Verdict: '{autopsy_res.verdict}', blocks_release={has_release_blockers}.",
             "database_records_created": [],
@@ -399,7 +407,10 @@ async def run_e2e_workflow_audit() -> dict[str, Any]:
         step9 = {
             "step_number": 9,
             "step_name": "Deterministic finding verification",
-            "input_data": {"findings_count": len(autopsy_res.findings), "artifact_len": len(remediated_artifact)},
+            "input_data": {
+                "findings_count": len(autopsy_res.findings),
+                "artifact_len": len(remediated_artifact),
+            },
             "execution_mechanism": "DETERMINISTIC",
             "actual_output_summary": f"Verification passed: all_resolved={verify_result.all_resolved}, blocks_release={verify_result.blocks_release}, resolved_count={verify_result.resolved_count}.",
             "database_records_created": [],
@@ -496,7 +507,10 @@ async def run_e2e_workflow_audit() -> dict[str, Any]:
         step11 = {
             "step_number": 11,
             "step_name": "Test lab suite creation and assertion evaluation",
-            "input_data": {"suite_name": suite_create.name, "test_cases_count": len(suite_create.test_cases)},
+            "input_data": {
+                "suite_name": suite_create.name,
+                "test_cases_count": len(suite_create.test_cases),
+            },
             "execution_mechanism": "DETERMINISTIC_ASSERTION",
             "actual_output_summary": f"Created suite '{suite.id}' and executed run '{run_resp.id}'. Passed: {run_resp.passed_cases}/{run_resp.total_cases} ({run_resp.pass_rate * 100:.1f}%).",
             "database_records_created": ["EvaluationSuite", "EvaluationRun"],
@@ -598,7 +612,10 @@ async def run_e2e_workflow_audit() -> dict[str, Any]:
         step14 = {
             "step_number": 14,
             "step_name": "Memory context pack retrieval in a new request",
-            "input_data": {"target_environment": ctx_req.target_environment, "token_budget": ctx_req.max_token_budget},
+            "input_data": {
+                "target_environment": ctx_req.target_environment,
+                "token_budget": ctx_req.max_token_budget,
+            },
             "execution_mechanism": "DETERMINISTIC",
             "actual_output_summary": f"Compiled context pack: estimated_tokens={context_pack.estimated_tokens}, items_included={context_pack.items_included}, items_truncated={context_pack.items_truncated}.",
             "database_records_created": [],
@@ -628,5 +645,7 @@ if __name__ == "__main__":
     out_file.parent.mkdir(parents=True, exist_ok=True)
     with open(out_file, "w", encoding="utf-8") as f:
         json.dump(report, f, indent=2)
-    print(f"Workflow completed: {report['total_steps']} steps executed. All passed: {report['all_passed']}.")
+    print(
+        f"Workflow completed: {report['total_steps']} steps executed. All passed: {report['all_passed']}."
+    )
     print(f"Total time: {report['total_duration_ms']}ms.")

@@ -1,6 +1,5 @@
 """Tests for TaskCategoryRegistry and the 10 task families."""
 
-
 from promptiq.discovery.task_registry import TaskCategoryDefinition, TaskCategoryRegistry
 from promptiq.schemas.discovery import DiscoveryQuestion
 
@@ -32,20 +31,28 @@ def test_ten_task_families_registered():
 def test_task_registry_depth_filtering():
     """Verifies that discovery depth controls question quantity without re-asking answered questions."""
     # Quick mode: 1 question
-    quick_q = TaskCategoryRegistry.get_questions("software_project", answered_keys=set(), depth="quick")
+    quick_q = TaskCategoryRegistry.get_questions(
+        "software_project", answered_keys=set(), depth="quick"
+    )
     assert len(quick_q) == 1
 
     # Guided mode: at most 3 questions
-    guided_q = TaskCategoryRegistry.get_questions("software_project", answered_keys=set(), depth="guided")
+    guided_q = TaskCategoryRegistry.get_questions(
+        "software_project", answered_keys=set(), depth="guided"
+    )
     assert len(guided_q) <= 3
 
     # Deep mode: full question set
-    deep_q = TaskCategoryRegistry.get_questions("software_project", answered_keys=set(), depth="deep")
+    deep_q = TaskCategoryRegistry.get_questions(
+        "software_project", answered_keys=set(), depth="deep"
+    )
     assert len(deep_q) >= 4
 
     # Anti-fatigue check: answered questions are omitted
     answered = {"problem_statement"}
-    filtered_q = TaskCategoryRegistry.get_questions("software_project", answered_keys=answered, depth="deep")
+    filtered_q = TaskCategoryRegistry.get_questions(
+        "software_project", answered_keys=answered, depth="deep"
+    )
     assert not any(q.id == "problem_statement" for q in filtered_q)
 
 
@@ -60,7 +67,9 @@ def test_missing_info_detection():
         "value_proposition": "Self-hosted prompt intelligence",
         "monetization_model": "100% Free / Open Source",
     }
-    missing_none = TaskCategoryRegistry.detect_missing_info("business_strategy", complete_answers, depth="guided")
+    missing_none = TaskCategoryRegistry.detect_missing_info(
+        "business_strategy", complete_answers, depth="guided"
+    )
     assert len(missing_none) == 0
 
 

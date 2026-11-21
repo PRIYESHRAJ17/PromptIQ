@@ -35,7 +35,10 @@ class DynamicModelRouter:
             )
 
         # 2. Strict eligibility state check
-        if candidate.eligibility_state not in (EligibilityState.VERIFIED_ELIGIBLE, EligibilityState.CONDITIONALLY_ELIGIBLE):
+        if candidate.eligibility_state not in (
+            EligibilityState.VERIFIED_ELIGIBLE,
+            EligibilityState.CONDITIONALLY_ELIGIBLE,
+        ):
             raise ZeroPriceViolationError(
                 provider=candidate.provider,
                 model_id=candidate.model_id,
@@ -43,7 +46,11 @@ class DynamicModelRouter:
             )
 
         # 3. Hard zero-price enforcement
-        if not candidate.is_zero_price or candidate.cost_input_per_token > 0.0 or candidate.cost_output_per_token > 0.0:
+        if (
+            not candidate.is_zero_price
+            or candidate.cost_input_per_token > 0.0
+            or candidate.cost_output_per_token > 0.0
+        ):
             raise ZeroPriceViolationError(
                 provider=candidate.provider,
                 model_id=candidate.model_id,
@@ -54,7 +61,9 @@ class DynamicModelRouter:
         verify_zero_price_route(candidate.provider, candidate.model_id, price_per_token=0.0)
 
         # 5. Data sensitivity and privacy policy check
-        PrivacyGovernanceService.validate_task_privacy(sensitivity, candidate.provider, candidate.model_id)
+        PrivacyGovernanceService.validate_task_privacy(
+            sensitivity, candidate.provider, candidate.model_id
+        )
 
     @classmethod
     def select_model_for_role(
@@ -79,14 +88,14 @@ class DynamicModelRouter:
 
         # Filter out excluded families and model IDs
         eligible_candidates = [
-            c for c in candidates
+            c
+            for c in candidates
             if c.model_family not in excluded_families and c.model_id not in excluded_ids
         ]
 
         if preferred_provider:
             eligible_candidates = [
-                c for c in eligible_candidates
-                if c.provider.lower() == preferred_provider.lower()
+                c for c in eligible_candidates if c.provider.lower() == preferred_provider.lower()
             ]
 
         if not eligible_candidates:
@@ -95,7 +104,11 @@ class DynamicModelRouter:
                 raise CapacityExhaustedError(
                     message=f"No independent candidate available for role '{role.value}' distinct from families={list(excluded_families)} models={list(excluded_ids)}.",
                     retry_after=30,
-                    details={"role": role.value, "excluded_families": list(excluded_families), "excluded_model_ids": list(excluded_ids)},
+                    details={
+                        "role": role.value,
+                        "excluded_families": list(excluded_families),
+                        "excluded_model_ids": list(excluded_ids),
+                    },
                 )
             raise CapacityExhaustedError(
                 message=f"No verified zero-price models available for role '{role.value}' with sensitivity '{sensitivity.value}'.",
@@ -117,12 +130,16 @@ class DynamicModelRouter:
             try:
                 capacity_governor.check_circuit_breaker(candidate.provider)
             except CapacityExhaustedError as e:
-                last_error_details[candidate.model_id] = f"Circuit breaker tripped on {candidate.provider}: {e.message}"
+                last_error_details[candidate.model_id] = (
+                    f"Circuit breaker tripped on {candidate.provider}: {e.message}"
+                )
                 continue
 
             # 2. Model-specific quota check
             try:
-                capacity_governor.check_model_quota(candidate.model_id, estimated_tokens=estimated_tokens)
+                capacity_governor.check_model_quota(
+                    candidate.model_id, estimated_tokens=estimated_tokens
+                )
             except CapacityExhaustedError as e:
                 last_error_details[candidate.model_id] = f"Quota limit reached: {e.message}"
                 continue

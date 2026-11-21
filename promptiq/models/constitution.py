@@ -12,9 +12,13 @@ class ProjectConstitution(Base, UUIDMixin, TimestampMixin):
 
     __tablename__ = "project_constitutions"
 
-    project_id: Mapped[str] = mapped_column(String(36), ForeignKey("projects.id"), nullable=False, index=True)
+    project_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("projects.id"), nullable=False, index=True
+    )
     version: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
-    status: Mapped[str] = mapped_column(String(32), default="draft", nullable=False)  # draft, approved, archived
+    status: Mapped[str] = mapped_column(
+        String(32), default="draft", nullable=False
+    )  # draft, approved, archived
     is_approved: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
 
     # Core structured sections
@@ -42,7 +46,9 @@ class ConstitutionVersion(Base, UUIDMixin, TimestampMixin):
 
     __tablename__ = "constitution_versions"
 
-    project_id: Mapped[str] = mapped_column(String(36), ForeignKey("projects.id"), nullable=False, index=True)
+    project_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("projects.id"), nullable=False, index=True
+    )
     version: Mapped[int] = mapped_column(Integer, nullable=False)
     snapshot: Mapped[dict] = mapped_column(JSON, nullable=False)
     diff: Mapped[dict] = mapped_column(JSON, default=dict, nullable=False)

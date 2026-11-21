@@ -32,18 +32,36 @@ class RequirementItem(BaseModel):
 
     id: str = Field(..., description="Stable requirement identifier, e.g. REQ-AUTH-001")
     text: str = Field(..., description="Exact requirement statement")
-    category: str = Field(default="functional", description="functional, non_functional, security, data, ux")
+    category: str = Field(
+        default="functional", description="functional, non_functional, security, data, ux"
+    )
     priority: RequirementPriority = Field(default="P1")
     status: RequirementStatus = Field(default="confirmed")
     provenance: ProvenanceType = Field(default="user_provided")
-    source_reference: str | None = Field(default=None, description="Originating document, turn, or citation")
-    acceptance_criteria: str | None = Field(default=None, description="Observable pass/fail test condition")
-    depends_on: list[str] = Field(default_factory=list, description="IDs of requirements this requirement depends on")
-    relationships: list[dict[str, str]] = Field(default_factory=list, description="Target and relationship type mapping")
-    deliverable_target: str | None = Field(default=None, description="Target artifact or file fulfilling this requirement")
-    verification_method: VerificationMethod = Field(default="deterministic_test", description="Validation mechanism")
-    verification_status: VerificationStatus = Field(default="unverified", description="Current validation state")
-    outstanding_gaps: list[str] = Field(default_factory=list, description="Remaining verification gaps")
+    source_reference: str | None = Field(
+        default=None, description="Originating document, turn, or citation"
+    )
+    acceptance_criteria: str | None = Field(
+        default=None, description="Observable pass/fail test condition"
+    )
+    depends_on: list[str] = Field(
+        default_factory=list, description="IDs of requirements this requirement depends on"
+    )
+    relationships: list[dict[str, str]] = Field(
+        default_factory=list, description="Target and relationship type mapping"
+    )
+    deliverable_target: str | None = Field(
+        default=None, description="Target artifact or file fulfilling this requirement"
+    )
+    verification_method: VerificationMethod = Field(
+        default="deterministic_test", description="Validation mechanism"
+    )
+    verification_status: VerificationStatus = Field(
+        default="unverified", description="Current validation state"
+    )
+    outstanding_gaps: list[str] = Field(
+        default_factory=list, description="Remaining verification gaps"
+    )
 
 
 class RiskRecord(BaseModel):
@@ -96,7 +114,9 @@ class UXSpecification(BaseModel):
     page_map: list[str] = Field(default_factory=list)
     screen_flows: list[dict[str, Any]] = Field(default_factory=list)
     accessibility_standards: list[str] = Field(default_factory=lambda: ["WCAG 2.1 AA"])
-    responsive_breakpoints: list[str] = Field(default_factory=lambda: ["mobile", "tablet", "desktop"])
+    responsive_breakpoints: list[str] = Field(
+        default_factory=lambda: ["mobile", "tablet", "desktop"]
+    )
     theme_support: Literal["light_only", "dark_only", "both_system"] = "both_system"
 
 
@@ -156,4 +176,3 @@ class ConstitutionComparisonResponse(BaseModel):
     v1: int
     v2: int
     diff: dict[str, Any]
-

@@ -14,7 +14,9 @@ import urllib.request
 def run_bridge(remote_url: str, auth_token: str | None = None):
     """Bridges stdin/stdout JSON-RPC to the remote PromptIQ MCP HTTP RPC endpoint."""
     if not remote_url.startswith(("http://", "https://")):
-        raise ValueError(f"Invalid scheme for remote URL: {remote_url}. Only http:// and https:// are permitted.")
+        raise ValueError(
+            f"Invalid scheme for remote URL: {remote_url}. Only http:// and https:// are permitted."
+        )
 
     token = auth_token or os.environ.get("PROMPTIQ_TOKEN")
     headers = {
@@ -44,7 +46,9 @@ def run_bridge(remote_url: str, auth_token: str | None = None):
 
         try:
             req_data = line_str.encode("utf-8")
-            http_req = urllib.request.Request(remote_url, data=req_data, headers=headers, method="POST")
+            http_req = urllib.request.Request(
+                remote_url, data=req_data, headers=headers, method="POST"
+            )
 
             with urllib.request.urlopen(http_req, timeout=30.0) as resp:  # nosec B310
                 resp_bytes = resp.read()
@@ -62,8 +66,12 @@ def run_bridge(remote_url: str, auth_token: str | None = None):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="PromptIQ Local Stdio Bridge to Cloud-Hosted MCP Service")
-    parser.add_argument("--url", default="http://127.0.0.1:8000/api/v1/mcp", help="Remote MCP Streamable HTTP URL")
+    parser = argparse.ArgumentParser(
+        description="PromptIQ Local Stdio Bridge to Cloud-Hosted MCP Service"
+    )
+    parser.add_argument(
+        "--url", default="http://127.0.0.1:8000/api/v1/mcp", help="Remote MCP Streamable HTTP URL"
+    )
     parser.add_argument(
         "--token",
         default=None,

@@ -52,11 +52,19 @@ def test_model_registry_eligibility_and_retirements():
 
 def test_retired_groq_and_gemini_models_strictly_rejected():
     """Regression test: retired models must be refused by route verification and never entered into active pool."""
-    for retired_id in ["llama-3.3-70b-versatile", "llama-3.1-8b-instant", "qwen-2.5-coder-32b", "gemini-2.0-flash"]:
+    for retired_id in [
+        "llama-3.3-70b-versatile",
+        "llama-3.1-8b-instant",
+        "qwen-2.5-coder-32b",
+        "gemini-2.0-flash",
+    ]:
         assert retired_id in RETIRED_MODELS
         # Route check must strictly fail
         with pytest.raises(ZeroPriceViolationError) as exc_info:
-            verify_zero_price_route(provider="groq" if "llama" in retired_id or "qwen" in retired_id else "gemini", model_id=retired_id)
+            verify_zero_price_route(
+                provider="groq" if "llama" in retired_id or "qwen" in retired_id else "gemini",
+                model_id=retired_id,
+            )
         assert "retired" in exc_info.value.message.lower()
 
         # Model pool record must be RETIRED
@@ -67,7 +75,9 @@ def test_retired_groq_and_gemini_models_strictly_rejected():
 
     # Router must never select any retired model for any role
     for role in [LogicalModelRole.FAST, LogicalModelRole.REASONING, LogicalModelRole.CRITIC]:
-        selected = DynamicModelRouter.select_model_for_role(role=role, sensitivity=DataSensitivityLevel.GENERAL)
+        selected = DynamicModelRouter.select_model_for_role(
+            role=role, sensitivity=DataSensitivityLevel.GENERAL
+        )
         assert selected.model_id not in RETIRED_MODELS
         assert selected.eligibility_state == EligibilityState.VERIFIED_ELIGIBLE
 
@@ -91,7 +101,9 @@ def test_capacity_governor_header_inspection():
     gov = CapacityGovernor()
 
     # Provider returns HTTP 429 with Retry-After: 45
-    gov.inspect_response_headers("groq", "openai/gpt-oss-120b", {"retry-after": "45"}, status_code=429)
+    gov.inspect_response_headers(
+        "groq", "openai/gpt-oss-120b", {"retry-after": "45"}, status_code=429
+    )
 
     # Circuit breaker must be active
     with pytest.raises(CapacityExhaustedError) as exc_info:
@@ -117,7 +129,10 @@ def test_cost_eligibility_gate():
     # Google Cloud Run requires credit card and auto-charges overage; MUST be rejected for auto-provisioning
     with pytest.raises(InfrastructureCostViolationError) as exc_info:
         CostEligibilityGate.verify_resource_provisioning("google_cloud_run")
-    assert "billing account" in exc_info.value.message.lower() or "hard stop" in exc_info.value.message.lower()
+    assert (
+        "billing account" in exc_info.value.message.lower()
+        or "hard stop" in exc_info.value.message.lower()
+    )
 
 
 @pytest.mark.asyncio
@@ -131,7 +146,9 @@ async def test_tournament_live_disclosure_unverified():
     assert res_retired["sample_size"] == 0
 
     # 2. Live model without operator key returns UNVERIFIED
-    res_unverified = await runner.evaluate_live_provider("gemini", "gemini-3.8-flash", operator_api_key=None)
+    res_unverified = await runner.evaluate_live_provider(
+        "gemini", "gemini-3.8-flash", operator_api_key=None
+    )
     assert "UNVERIFIED" in res_unverified["status"]
     assert res_unverified["sample_size"] == 0
     assert "Never manufacture scores" in res_unverified["notice"]
@@ -154,4 +171,3 @@ def test_candidate_ineligibility_and_conditions():
     cf_llama = ModelPoolService.get_model("@cf/meta/llama-3.1-8b-instruct")
     assert cf_llama is not None
     assert cf_llama.eligibility_state == EligibilityState.CONDITIONALLY_ELIGIBLE
-

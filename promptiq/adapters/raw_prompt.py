@@ -12,13 +12,22 @@ class RawPromptTargetAdapter(BaseTargetAdapter):
 
     target_name: str = "raw-prompt"
 
-    def compile(self, pps: PromptSpecSchema, output_type: OutputType) -> tuple[dict[str, Any], dict[str, str], list[str]]:
+    def compile(
+        self, pps: PromptSpecSchema, output_type: OutputType
+    ) -> tuple[dict[str, Any], dict[str, str], list[str]]:
         files: dict[str, str] = {}
         warnings: list[str] = []
 
-        reqs_text = "\n".join([f"- [{r.get('id', 'REQ')}] {r.get('text')}" for r in pps.requirements])
-        exclusions_text = "\n".join([f"- {e}" for e in pps.constraints.get("out_of_scope", [])]) or "None."
-        criteria_text = "\n".join([f"- {c}" for c in pps.intent.success_criteria]) or "Deliverable satisfies all requirements."
+        reqs_text = "\n".join(
+            [f"- [{r.get('id', 'REQ')}] {r.get('text')}" for r in pps.requirements]
+        )
+        exclusions_text = (
+            "\n".join([f"- {e}" for e in pps.constraints.get("out_of_scope", [])]) or "None."
+        )
+        criteria_text = (
+            "\n".join([f"- {c}" for c in pps.intent.success_criteria])
+            or "Deliverable satisfies all requirements."
+        )
 
         main_prompt = (
             f"# TASK DIRECTIVE\n\n"
@@ -33,8 +42,12 @@ class RawPromptTargetAdapter(BaseTargetAdapter):
         )
 
         if output_type == "prompt_suite":
-            files["system_prompt.md"] = f"You are a principal engineer.\n\nTask: {pps.intent.primary_objective}\n\nRequirements:\n{reqs_text}\n"
-            files["user_task.md"] = f"Please implement the requirements according to criteria:\n{criteria_text}\n"
+            files["system_prompt.md"] = (
+                f"You are a principal engineer.\n\nTask: {pps.intent.primary_objective}\n\nRequirements:\n{reqs_text}\n"
+            )
+            files["user_task.md"] = (
+                f"Please implement the requirements according to criteria:\n{criteria_text}\n"
+            )
             files["constraints.md"] = f"Exclusions:\n{exclusions_text}\n"
         else:
             files["prompt.md"] = main_prompt

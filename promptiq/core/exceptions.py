@@ -21,13 +21,28 @@ class PromptIQException(Exception):
 
 
 class AuthenticationError(PromptIQException):
-    def __init__(self, message: str = "Invalid credentials or expired session", details: dict[str, Any] | None = None):
-        super().__init__(message=message, error_code="AUTHENTICATION_FAILED", details=details, status_code=401)
+    def __init__(
+        self,
+        message: str = "Invalid credentials or expired session",
+        details: dict[str, Any] | None = None,
+    ):
+        super().__init__(
+            message=message, error_code="AUTHENTICATION_FAILED", details=details, status_code=401
+        )
 
 
 class TenantIsolationError(PromptIQException):
-    def __init__(self, message: str = "Access denied: resource belongs to another workspace", details: dict[str, Any] | None = None):
-        super().__init__(message=message, error_code="TENANT_ISOLATION_VIOLATION", details=details, status_code=403)
+    def __init__(
+        self,
+        message: str = "Access denied: resource belongs to another workspace",
+        details: dict[str, Any] | None = None,
+    ):
+        super().__init__(
+            message=message,
+            error_code="TENANT_ISOLATION_VIOLATION",
+            details=details,
+            status_code=403,
+        )
 
 
 class NotFoundError(PromptIQException):
@@ -55,7 +70,10 @@ class ZeroPriceViolationError(PromptIQException):
 class BYOKViolationError(PromptIQException):
     """Raised when user-supplied API keys are detected."""
 
-    def __init__(self, message: str = "User API keys (BYOK) are strictly prohibited. PromptIQ provides centrally managed zero-price inference."):
+    def __init__(
+        self,
+        message: str = "User API keys (BYOK) are strictly prohibited. PromptIQ provides centrally managed zero-price inference.",
+    ):
         super().__init__(
             message=message,
             error_code="BYOK_PROHIBITED",
@@ -81,7 +99,10 @@ class CapacityExhaustedError(PromptIQException):
 class ConstitutionApprovalRequiredError(PromptIQException):
     """Raised when attempting to compile an unapproved Project Constitution."""
 
-    def __init__(self, message: str = "Project Constitution must be reviewed and approved by user before compilation."):
+    def __init__(
+        self,
+        message: str = "Project Constitution must be reviewed and approved by user before compilation.",
+    ):
         super().__init__(
             message=message,
             error_code="CONSTITUTION_APPROVAL_REQUIRED",
@@ -124,7 +145,12 @@ class PrivacyPolicyViolationError(PromptIQException):
         super().__init__(
             message=f"Privacy Policy Violation: Data sensitivity '{sensitivity}' cannot be routed to '{provider}/{model_id}'. Reason: {reason}",
             error_code="PRIVACY_POLICY_VIOLATION",
-            details={"provider": provider, "model_id": model_id, "sensitivity": sensitivity, "reason": reason},
+            details={
+                "provider": provider,
+                "model_id": model_id,
+                "sensitivity": sensitivity,
+                "reason": reason,
+            },
             status_code=403,
         )
 
@@ -132,11 +158,14 @@ class PrivacyPolicyViolationError(PromptIQException):
 class SecurityError(PromptIQException):
     """Raised when an operation violates security policy, SSRF boundaries, or input safety."""
 
-    def __init__(self, message: str = "Security policy violation detected", details: dict[str, Any] | None = None):
+    def __init__(
+        self,
+        message: str = "Security policy violation detected",
+        details: dict[str, Any] | None = None,
+    ):
         super().__init__(
             message=message,
             error_code="SECURITY_VIOLATION",
             details=details,
             status_code=403,
         )
-

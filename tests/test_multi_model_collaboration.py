@@ -93,7 +93,9 @@ async def test_collaboration_high_risk_consensus_profile():
 @pytest.mark.asyncio
 async def test_deterministic_verifier_catches_frontend_code():
     """Verifies that forbidden frontend UI patterns are caught and overridden."""
-    prompt_with_frontend = "Create an auth screen. Include <div className='p-4'>import React from 'react'</div>"
+    prompt_with_frontend = (
+        "Create an auth screen. Include <div className='p-4'>import React from 'react'</div>"
+    )
     final_text, audit = await MultiModelCollaborationPipeline.execute_workflow(
         task_id="task-bad-1",
         project_id="proj-103",
@@ -186,4 +188,3 @@ async def test_multi_model_audit_disclosure_fields():
         assert audit.is_multi_family is False
         assert audit.model_diversity_rating == "SAME_FAMILY_SAME_PROVIDER"
         assert audit.consensus_status == "same_family_intra_provider_disclosed"
-

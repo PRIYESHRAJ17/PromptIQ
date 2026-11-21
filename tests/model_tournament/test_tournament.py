@@ -36,7 +36,9 @@ def test_tournament_dataset_completeness():
     }
 
     found_categories = {c["category"] for c in cases}
-    assert found_categories == expected_categories, f"Missing categories: {expected_categories - found_categories}"
+    assert found_categories == expected_categories, (
+        f"Missing categories: {expected_categories - found_categories}"
+    )
 
 
 @pytest.mark.asyncio
@@ -69,5 +71,11 @@ async def test_model_combination_quality_evaluation():
     assert "config_d_specialist_orchestration" in configs
 
     # Verify Config D and C have higher defect prevention than Config A
-    assert configs["config_d_specialist_orchestration"]["defect_prevention_rate_pct"] > configs["config_a_single_model"]["defect_prevention_rate_pct"]
-    assert configs["config_c_gen_critic_deterministic"]["defect_prevention_rate_pct"] > configs["config_a_single_model"]["defect_prevention_rate_pct"]
+    assert (
+        configs["config_d_specialist_orchestration"]["defect_prevention_rate_pct"]
+        > configs["config_a_single_model"]["defect_prevention_rate_pct"]
+    )
+    assert (
+        configs["config_c_gen_critic_deterministic"]["defect_prevention_rate_pct"]
+        > configs["config_a_single_model"]["defect_prevention_rate_pct"]
+    )

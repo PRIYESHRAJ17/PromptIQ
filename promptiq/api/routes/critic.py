@@ -41,4 +41,3 @@ async def verify_revised_findings(
         original_findings=request.original_findings,
         revised_text=request.revised_text,
     )
-

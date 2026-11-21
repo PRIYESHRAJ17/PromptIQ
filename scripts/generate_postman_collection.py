@@ -31,13 +31,7 @@ def generate_postman_assets():
         },
         "auth": {
             "type": "bearer",
-            "bearer": [
-                {
-                    "key": "token",
-                    "value": "{{bearerToken}}",
-                    "type": "string"
-                }
-            ]
+            "bearer": [{"key": "token", "value": "{{bearerToken}}", "type": "string"}],
         },
         "item": [],
         "variable": [
@@ -46,7 +40,7 @@ def generate_postman_assets():
             {"key": "projectId", "value": "", "type": "string"},
             {"key": "sessionId", "value": "", "type": "string"},
             {"key": "packageId", "value": "", "type": "string"},
-        ]
+        ],
     }
 
     folders: dict[str, list] = {}
@@ -64,28 +58,36 @@ def generate_postman_assets():
             description = op.get("description", "")
 
             # URL formatting with Postman variables
-            pm_path = path.replace("{project_id}", "{{projectId}}").replace("{session_id}", "{{sessionId}}").replace("{package_id}", "{{packageId}}").replace("{version}", "1")
+            pm_path = (
+                path.replace("{project_id}", "{{projectId}}")
+                .replace("{session_id}", "{{sessionId}}")
+                .replace("{package_id}", "{{packageId}}")
+                .replace("{version}", "1")
+            )
             path_segments = [p for p in pm_path.strip("/").split("/") if p]
 
             request_item = {
                 "name": summary,
                 "request": {
                     "method": method.upper(),
-                    "header": [
-                        {"key": "Accept", "value": "application/json", "type": "text"}
-                    ],
+                    "header": [{"key": "Accept", "value": "application/json", "type": "text"}],
                     "url": {
                         "raw": "{{baseUrl}}/" + "/".join(path_segments),
                         "host": ["{{baseUrl}}"],
-                        "path": path_segments
+                        "path": path_segments,
                     },
                     "description": description,
                 },
-                "response": []
+                "response": [],
             }
 
             # Auth override for public endpoints
-            if path in ("/health", "/api/v1/auth/register", "/api/v1/auth/login", "/api/v1/telegram/webhook"):
+            if path in (
+                "/health",
+                "/api/v1/auth/register",
+                "/api/v1/auth/login",
+                "/api/v1/telegram/webhook",
+            ):
                 request_item["request"]["auth"] = {"type": "noauth"}
 
             # Sample request bodies
@@ -95,30 +97,63 @@ def generate_postman_assets():
                 )
                 sample_body = {}
                 if "register" in path:
-                    sample_body = {"email": "engineer@example.com", "password": "Password123!", "full_name": "Senior Architect"}  # nosec B105
+                    sample_body = {
+                        "email": "engineer@example.com",
+                        "password": "Password123!",
+                        "full_name": "Senior Architect",
+                    }  # nosec B105
                 elif "login" in path:
                     sample_body = {"email": "engineer@example.com", "password": "Password123!"}  # nosec B105
                 elif path.endswith("/projects") and method == "post":
-                    sample_body = {"name": "PromptIQ E-Commerce Engine", "description": "High-throughput checkout service"}
+                    sample_body = {
+                        "name": "PromptIQ E-Commerce Engine",
+                        "description": "High-throughput checkout service",
+                    }
                 elif "discovery/start" in path:
-                    sample_body = {"goal": "Build an async order processing engine", "deliverable": "complete_package", "target": "google-antigravity", "depth": "guided"}
+                    sample_body = {
+                        "goal": "Build an async order processing engine",
+                        "deliverable": "complete_package",
+                        "target": "google-antigravity",
+                        "depth": "guided",
+                    }
                 elif "discovery/sessions" in path:
-                    sample_body = {"answers": {"primary_database": "PostgreSQL", "auth_mechanism": "OAuth2 / JWT"}}
+                    sample_body = {
+                        "answers": {
+                            "primary_database": "PostgreSQL",
+                            "auth_mechanism": "OAuth2 / JWT",
+                        }
+                    }
                 elif "constitution/approve" in path:
-                    sample_body = {"approve": True, "feedback": "Architecture and requirements approved"}
+                    sample_body = {
+                        "approve": True,
+                        "feedback": "Architecture and requirements approved",
+                    }
                 elif "compile" in path:
-                    sample_body = {"target_environment": "google-antigravity", "output_type": "complete_package"}
+                    sample_body = {
+                        "target_environment": "google-antigravity",
+                        "output_type": "complete_package",
+                    }
                 elif "critic/autopsy" in path:
-                    sample_body = {"prompt_text": "Write code to process orders etc using best practices", "target_environment": "google-antigravity"}
+                    sample_body = {
+                        "prompt_text": "Write code to process orders etc using best practices",
+                        "target_environment": "google-antigravity",
+                    }
                 elif "research" in path:
-                    sample_body = {"query": "PostgreSQL connection pooling under high concurrency", "mode": "deep"}
+                    sample_body = {
+                        "query": "PostgreSQL connection pooling under high concurrency",
+                        "mode": "deep",
+                    }
                 elif "eval/run" in path:
-                    sample_body = {"suite_id": "{{suiteId}}", "package_id": "{{packageId}}", "model_id": "gemini-2.0-flash"}
+                    sample_body = {
+                        "suite_id": "{{suiteId}}",
+                        "package_id": "{{packageId}}",
+                        "model_id": "gemini-2.0-flash",
+                    }
 
                 request_item["request"]["body"] = {
                     "mode": "raw",
                     "raw": json.dumps(sample_body, indent=2),
-                    "options": {"raw": {"language": "json"}}
+                    "options": {"raw": {"language": "json"}},
                 }
 
             if tag not in folders:
@@ -126,11 +161,9 @@ def generate_postman_assets():
             folders[tag].append(request_item)
 
     for tag, items in folders.items():
-        collection["item"].append({
-            "name": tag,
-            "item": items,
-            "description": f"Endpoints belonging to the {tag} domain"
-        })
+        collection["item"].append(
+            {"name": tag, "item": items, "description": f"Endpoints belonging to the {tag} domain"}
+        )
 
     # Save collection
     coll_file = Path("docs/promptiq.postman_collection.json")
@@ -143,7 +176,12 @@ def generate_postman_assets():
         "id": "promptiq-local-env",
         "name": "PromptIQ Local Environment",
         "values": [
-            {"key": "baseUrl", "value": "http://localhost:8000", "type": "default", "enabled": True},
+            {
+                "key": "baseUrl",
+                "value": "http://localhost:8000",
+                "type": "default",
+                "enabled": True,
+            },
             {"key": "bearerToken", "value": "", "type": "secret", "enabled": True},
             {"key": "projectId", "value": "", "type": "default", "enabled": True},
             {"key": "sessionId", "value": "", "type": "default", "enabled": True},

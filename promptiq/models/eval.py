@@ -12,7 +12,9 @@ class EvaluationSuite(Base, UUIDMixin, TimestampMixin):
 
     __tablename__ = "evaluation_suites"
 
-    project_id: Mapped[str] = mapped_column(String(36), ForeignKey("projects.id"), nullable=False, index=True)
+    project_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("projects.id"), nullable=False, index=True
+    )
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
 
@@ -25,8 +27,12 @@ class EvaluationRun(Base, UUIDMixin, TimestampMixin):
 
     __tablename__ = "evaluation_runs"
 
-    suite_id: Mapped[str] = mapped_column(String(36), ForeignKey("evaluation_suites.id"), nullable=False, index=True)
-    package_id: Mapped[str | None] = mapped_column(String(36), ForeignKey("prompt_packages.id"), nullable=True, index=True)
+    suite_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("evaluation_suites.id"), nullable=False, index=True
+    )
+    package_id: Mapped[str | None] = mapped_column(
+        String(36), ForeignKey("prompt_packages.id"), nullable=True, index=True
+    )
 
     model_id: Mapped[str] = mapped_column(String(128), nullable=False)
     provider_route: Mapped[str] = mapped_column(String(64), nullable=False)
@@ -37,7 +43,9 @@ class EvaluationRun(Base, UUIDMixin, TimestampMixin):
 
     results: Mapped[list] = mapped_column(JSON, default=list, nullable=False)
     latency_ms: Mapped[float | None] = mapped_column(Float, nullable=True)
-    cost_estimate: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)  # Always 0.0 under zero-price policy
+    cost_estimate: Mapped[float] = mapped_column(
+        Float, default=0.0, nullable=False
+    )  # Always 0.0 under zero-price policy
 
 
 class FailureRecord(Base, UUIDMixin, TimestampMixin):
@@ -45,10 +53,16 @@ class FailureRecord(Base, UUIDMixin, TimestampMixin):
 
     __tablename__ = "failure_records"
 
-    project_id: Mapped[str] = mapped_column(String(36), ForeignKey("projects.id"), nullable=False, index=True)
-    run_id: Mapped[str | None] = mapped_column(String(36), ForeignKey("evaluation_runs.id"), nullable=True)
+    project_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("projects.id"), nullable=False, index=True
+    )
+    run_id: Mapped[str | None] = mapped_column(
+        String(36), ForeignKey("evaluation_runs.id"), nullable=True
+    )
 
-    failure_class: Mapped[str] = mapped_column(String(64), nullable=False)  # intent_loss, format, hallucination, timeout
+    failure_class: Mapped[str] = mapped_column(
+        String(64), nullable=False
+    )  # intent_loss, format, hallucination, timeout
     observed_failure: Mapped[str] = mapped_column(Text, nullable=False)
     root_cause_hypothesis: Mapped[str] = mapped_column(Text, nullable=False)
     correction: Mapped[str] = mapped_column(Text, nullable=False)

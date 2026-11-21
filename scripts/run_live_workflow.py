@@ -107,8 +107,12 @@ async def execute_12_step_workflow(mode: str = "live") -> dict[str, Any]:
     if mode == "live" and not has_live_credentials:
         print("\n[NOTICE] No Groq operator credential detected in environment.")
         print("Steps 1-5 (Intake, Discovery, Constitution, PPS, Compilation) will execute fully.")
-        print("Step 6 (Hosted Provider Inference) will fail-closed with BLOCKED_EXTERNAL_NO_CREDENTIALS.")
-        print("To run live provider inference, launch via scripts/run_live_workflow_secure.ps1 -OptIn -ConfirmFreePlan")
+        print(
+            "Step 6 (Hosted Provider Inference) will fail-closed with BLOCKED_EXTERNAL_NO_CREDENTIALS."
+        )
+        print(
+            "To run live provider inference, launch via scripts/run_live_workflow_secure.ps1 -OptIn -ConfirmFreePlan"
+        )
 
     async with async_session_factory() as db:
         # ---------------------------------------------------------------------
@@ -150,7 +154,9 @@ async def execute_12_step_workflow(mode: str = "live") -> dict[str, Any]:
             "latency_ms": round((time.perf_counter() - t0) * 1000, 2),
         }
         steps_log.append(step_1_meta)
-        print(f"[Step 1] Completed: Project '{project.name}' created ({step_1_meta['latency_ms']}ms)")
+        print(
+            f"[Step 1] Completed: Project '{project.name}' created ({step_1_meta['latency_ms']}ms)"
+        )
 
         # ---------------------------------------------------------------------
         # STEP 2: RUN ADAPTIVE DISCOVERY
@@ -172,7 +178,9 @@ async def execute_12_step_workflow(mode: str = "live") -> dict[str, Any]:
             "latency_ms": round((time.perf_counter() - t0) * 1000, 2),
         }
         steps_log.append(step_2_meta)
-        print(f"[Step 2] Completed: Discovery session {disc_session.id} (Stage: {disc_session.current_stage})")
+        print(
+            f"[Step 2] Completed: Discovery session {disc_session.id} (Stage: {disc_session.current_stage})"
+        )
 
         # ---------------------------------------------------------------------
         # STEP 3: BUILD PROJECT CONSTITUTION
@@ -269,7 +277,9 @@ async def execute_12_step_workflow(mode: str = "live") -> dict[str, Any]:
             "latency_ms": round((time.perf_counter() - t0) * 1000, 2),
         }
         steps_log.append(step_4_meta)
-        print(f"[Step 4] Completed: PPS v{pps.spec_version} generated ({len(pps.requirements)} requirements)")
+        print(
+            f"[Step 4] Completed: PPS v{pps.spec_version} generated ({len(pps.requirements)} requirements)"
+        )
 
         # ---------------------------------------------------------------------
         # STEP 5: COMPILE TARGET-NATIVE DELIVERABLE PACKAGE
@@ -298,7 +308,9 @@ async def execute_12_step_workflow(mode: str = "live") -> dict[str, Any]:
             "latency_ms": round((time.perf_counter() - t0) * 1000, 2),
         }
         steps_log.append(step_5_meta)
-        print(f"[Step 5] Completed: Target 'google-antigravity' compiled ({len(pkg_files)} files: {list(pkg_files.keys())})")
+        print(
+            f"[Step 5] Completed: Target 'google-antigravity' compiled ({len(pkg_files)} files: {list(pkg_files.keys())})"
+        )
 
         # ---------------------------------------------------------------------
         # STEP 6: SUBMIT TO HOSTED INFERENCE PROVIDER (GPT-OSS 120B)
@@ -333,7 +345,9 @@ async def execute_12_step_workflow(mode: str = "live") -> dict[str, Any]:
                     GatewayMessage(
                         role="system",
                         content=system_instruction
-                        or ModelRoleContract.get_system_instruction(LogicalModelRole.PROMPT_ENGINEER),
+                        or ModelRoleContract.get_system_instruction(
+                            LogicalModelRole.PROMPT_ENGINEER
+                        ),
                     ),
                     GatewayMessage(role="user", content=task_prompt),
                 ],
@@ -364,7 +378,9 @@ async def execute_12_step_workflow(mode: str = "live") -> dict[str, Any]:
                 "rate_limit_headers": gen_resp.rate_limit_headers,
             }
             steps_log.append(step_6_meta)
-            print(f"[Step 6] Completed: Generation via {gen_model_id} (ReqID: {gen_request_id}, {step_6_meta['latency_ms']}ms)")
+            print(
+                f"[Step 6] Completed: Generation via {gen_model_id} (ReqID: {gen_request_id}, {step_6_meta['latency_ms']}ms)"
+            )
 
         # ---------------------------------------------------------------------
         # STEP 7: RUN INDEPENDENT CRITIC (GPT-OSS 20B)
@@ -430,7 +446,9 @@ async def execute_12_step_workflow(mode: str = "live") -> dict[str, Any]:
                 "rate_limit_headers": crit_resp.rate_limit_headers,
             }
             steps_log.append(step_7_meta)
-            print(f"[Step 7] Completed: Criticism via {critic_model_id} (ReqID: {critic_request_id})")
+            print(
+                f"[Step 7] Completed: Criticism via {critic_model_id} (ReqID: {critic_request_id})"
+            )
 
         # ---------------------------------------------------------------------
         # STEP 8: VERIFY FINDINGS
@@ -467,12 +485,16 @@ async def execute_12_step_workflow(mode: str = "live") -> dict[str, Any]:
 
         if candidate_text is not None and critic_text is not None:
             provider_choice = "mock" if mode == "mock" else "groq"
-            rev_prompt, rev_tokens = prepare_revision_prompt(candidate_text, autopsy_findings, TASK_PROMPT)
+            rev_prompt, rev_tokens = prepare_revision_prompt(
+                candidate_text, autopsy_findings, TASK_PROMPT
+            )
             rev_req = InferenceRequest(
                 messages=[
                     GatewayMessage(
                         role="system",
-                        content=ModelRoleContract.get_system_instruction(LogicalModelRole.PROMPT_ENGINEER),
+                        content=ModelRoleContract.get_system_instruction(
+                            LogicalModelRole.PROMPT_ENGINEER
+                        ),
                     ),
                     GatewayMessage(role="user", content=rev_prompt),
                 ],
@@ -519,7 +541,9 @@ async def execute_12_step_workflow(mode: str = "live") -> dict[str, Any]:
         # ---------------------------------------------------------------------
         t0 = time.perf_counter()
         target_eval_text = revised_text or candidate_text or system_instruction
-        frontend_violations = [p for p in FORBIDDEN_FRONTEND_PATTERNS if p.lower() in target_eval_text.lower()]
+        frontend_violations = [
+            p for p in FORBIDDEN_FRONTEND_PATTERNS if p.lower() in target_eval_text.lower()
+        ]
         passed_verifier = len(frontend_violations) == 0 and len(target_eval_text) > 100
 
         step_10_meta = {
@@ -532,7 +556,9 @@ async def execute_12_step_workflow(mode: str = "live") -> dict[str, Any]:
             "latency_ms": round((time.perf_counter() - t0) * 1000, 2),
         }
         steps_log.append(step_10_meta)
-        print(f"[Step 10] Completed: Deterministic Invariant Check (Violations: {len(frontend_violations)})")
+        print(
+            f"[Step 10] Completed: Deterministic Invariant Check (Violations: {len(frontend_violations)})"
+        )
 
         # ---------------------------------------------------------------------
         # STEP 11: PERSIST WORKFLOW RECORD & DATABASE CHECKPOINT
@@ -565,7 +591,11 @@ async def execute_12_step_workflow(mode: str = "live") -> dict[str, Any]:
             "final_status": (
                 "COMPLETED_LIVE_VERIFIED"
                 if mode == "live" and has_live_credentials
-                else ("COMPLETED_MOCK_VERIFIED" if mode == "mock" else "HELD_AWAITING_OPERATOR_CREDENTIALS")
+                else (
+                    "COMPLETED_MOCK_VERIFIED"
+                    if mode == "mock"
+                    else "HELD_AWAITING_OPERATOR_CREDENTIALS"
+                )
             ),
             "project_id": project.id,
             "checkpoint_id": checkpoint.id,
@@ -612,7 +642,9 @@ async def execute_12_step_workflow(mode: str = "live") -> dict[str, Any]:
             "latency_ms": round((time.perf_counter() - t0) * 1000, 2),
         }
         steps_log.append(step_12_meta)
-        print(f"[Step 12] Completed: Retrieved and cryptographically verified ({step_12_meta['latency_ms']}ms)")
+        print(
+            f"[Step 12] Completed: Retrieved and cryptographically verified ({step_12_meta['latency_ms']}ms)"
+        )
 
     print("\n" + "=" * 70)
     print(f"EXECUTION COMPLETE — Final Status: {execution_trace['final_status']}")

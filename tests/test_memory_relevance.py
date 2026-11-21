@@ -5,10 +5,14 @@ from httpx import AsyncClient
 
 
 @pytest.mark.asyncio
-async def test_context_compiler_relevance_and_priority(client: AsyncClient, user_auth_headers: dict[str, str]):
+async def test_context_compiler_relevance_and_priority(
+    client: AsyncClient, user_auth_headers: dict[str, str]
+):
     """Verifies that ContextCompiler respects priority cutoffs and ranks relevant requirements higher."""
     # 1. Create project
-    p_resp = await client.post("/api/v1/projects", json={"name": "Memory Relevance Proj"}, headers=user_auth_headers)
+    p_resp = await client.post(
+        "/api/v1/projects", json={"name": "Memory Relevance Proj"}, headers=user_auth_headers
+    )
     p_id = p_resp.json()["id"]
 
     # 2. Update constitution with P0, P1, P3 requirements
@@ -37,7 +41,9 @@ async def test_context_compiler_relevance_and_priority(client: AsyncClient, user
             },
         ]
     }
-    u_resp = await client.put(f"/api/v1/projects/{p_id}/constitution", json=const_update, headers=user_auth_headers)
+    u_resp = await client.put(
+        f"/api/v1/projects/{p_id}/constitution", json=const_update, headers=user_auth_headers
+    )
     assert u_resp.status_code == 200
 
     # 3. Create a checkpoint
@@ -47,7 +53,9 @@ async def test_context_compiler_relevance_and_priority(client: AsyncClient, user
         "verified_state": {"pool_size": 20},
         "next_actions": ["Implement auth"],
     }
-    await client.post(f"/api/v1/projects/{p_id}/memory/checkpoints", json=cp_payload, headers=user_auth_headers)
+    await client.post(
+        f"/api/v1/projects/{p_id}/memory/checkpoints", json=cp_payload, headers=user_auth_headers
+    )
 
     # 4. Pack context with priority cutoff = P1 (should exclude P3) and task_focus = "auth middleware"
     pack_req = {
@@ -56,7 +64,9 @@ async def test_context_compiler_relevance_and_priority(client: AsyncClient, user
         "priority_cutoff": "P1",
         "task_focus": "auth middleware",
     }
-    pack_resp = await client.post(f"/api/v1/projects/{p_id}/memory/context-pack", json=pack_req, headers=user_auth_headers)
+    pack_resp = await client.post(
+        f"/api/v1/projects/{p_id}/memory/context-pack", json=pack_req, headers=user_auth_headers
+    )
     assert pack_resp.status_code == 200
     data = pack_resp.json()
 

@@ -73,13 +73,14 @@ class CapacityGovernor:
 
         # Durable quota ledger path and last provider headers
 
-
         self._ledger_path: Path = Path(ledger_path) if ledger_path else DEFAULT_QUOTA_LEDGER_PATH
         self._auto_load: bool = auto_load
         self._last_provider_headers: dict[str, dict[str, Any]] = {}
 
         # Auto-load durable state across processes when not in clean test mode (or when explicitly requested)
-        if auto_load and (ledger_path is not None or (not settings.is_test and self._ledger_path.exists())):
+        if auto_load and (
+            ledger_path is not None or (not settings.is_test and self._ledger_path.exists())
+        ):
             self.load_durable_state()
 
     @property
@@ -119,13 +120,19 @@ class CapacityGovernor:
                 # Prune and merge minute tokens
                 for model_id, token_records in data.get("model_tokens_minute", {}).items():
                     active = [(t, tok) for t, tok in token_records if t > minute_cutoff]
-                    merged_tok = sorted(set([tuple(x) for x in self._model_tokens_minute[model_id]] + active), key=lambda x: x[0])
+                    merged_tok = sorted(
+                        set([tuple(x) for x in self._model_tokens_minute[model_id]] + active),
+                        key=lambda x: x[0],
+                    )
                     self._model_tokens_minute[model_id] = merged_tok
 
                 # Prune and merge daily tokens
                 for model_id, token_records in data.get("model_tokens_day", {}).items():
                     active = [(t, tok) for t, tok in token_records if t > day_cutoff]
-                    merged_tok_day = sorted(set([tuple(x) for x in self._model_tokens_day[model_id]] + active), key=lambda x: x[0])
+                    merged_tok_day = sorted(
+                        set([tuple(x) for x in self._model_tokens_day[model_id]] + active),
+                        key=lambda x: x[0],
+                    )
                     self._model_tokens_day[model_id] = merged_tok_day
 
                 # Restore paused providers
@@ -141,7 +148,8 @@ class CapacityGovernor:
 
                 # Restore active in-flight reservations
                 self._reservations = {
-                    tok: res for tok, res in data.get("reservations", {}).items()
+                    tok: res
+                    for tok, res in data.get("reservations", {}).items()
                     if res.get("expires_at", 0) > now
                 }
 
@@ -183,7 +191,8 @@ class CapacityGovernor:
                     for m, tk in self._model_tokens_day.items()
                 }
                 clean_reservations = {
-                    tok: res for tok, res in self._reservations.items()
+                    tok: res
+                    for tok, res in self._reservations.items()
                     if res.get("expires_at", 0) > now
                 }
 
@@ -286,7 +295,10 @@ class CapacityGovernor:
         if len(recent) >= max_limit:
             oldest_active = recent[0]
             retry_after = max(1, int(3600 - (now - oldest_active)))
-            logger.warning("User fair-use rate limit exceeded", extra={"user_id": user_id, "retry_after": retry_after})
+            logger.warning(
+                "User fair-use rate limit exceeded",
+                extra={"user_id": user_id, "retry_after": retry_after},
+            )
             raise CapacityExhaustedError(
                 message=f"Fair-use limit of {max_limit} requests/hour reached. Please wait before submitting more tasks.",
                 retry_after=retry_after,
@@ -301,7 +313,9 @@ class CapacityGovernor:
             return
 
         # Ensure latest cross-process state is reflected
-        if self._auto_load and (not settings.is_test or str(self._ledger_path) != str(DEFAULT_QUOTA_LEDGER_PATH)):
+        if self._auto_load and (
+            not settings.is_test or str(self._ledger_path) != str(DEFAULT_QUOTA_LEDGER_PATH)
+        ):
             self.load_durable_state()
 
         now = datetime.now(UTC).timestamp()
@@ -320,7 +334,11 @@ class CapacityGovernor:
                 hdr_reset_duration = self.parse_rate_limit_reset_seconds(reset_tokens_str)
                 if resp_ts_str:
                     try:
-                        r_clean = resp_ts_str[:-1] + "+00:00" if resp_ts_str.endswith("Z") else resp_ts_str
+                        r_clean = (
+                            resp_ts_str[:-1] + "+00:00"
+                            if resp_ts_str.endswith("Z")
+                            else resp_ts_str
+                        )
                         resp_ts = datetime.fromisoformat(r_clean).timestamp()
                     except Exception:
                         resp_ts = recorded_at or now
@@ -330,14 +348,20 @@ class CapacityGovernor:
                 time_since_resp = now - resp_ts
                 if time_since_resp < hdr_reset_duration:
                     time_left = max(1, int(round(hdr_reset_duration - time_since_resp)))
-                    rem_tokens_hdr = hdrs.get("remaining_tokens") or hdrs.get("x-ratelimit-remaining-tokens")
+                    rem_tokens_hdr = hdrs.get("remaining_tokens") or hdrs.get(
+                        "x-ratelimit-remaining-tokens"
+                    )
                     if rem_tokens_hdr is not None:
                         try:
                             if int(rem_tokens_hdr) < estimated_tokens:
                                 raise CapacityExhaustedError(
                                     message=f"Model '{model_id}' upstream quota pending reset ({rem_tokens_hdr} tokens left in header, required {estimated_tokens}). Resets in {time_left}s.",
                                     retry_after=time_left,
-                                    details={"model_id": model_id, "limit": "provider_header_tpm", "retry_after": time_left},
+                                    details={
+                                        "model_id": model_id,
+                                        "limit": "provider_header_tpm",
+                                        "retry_after": time_left,
+                                    },
                                 )
                         except ValueError:
                             pass
@@ -367,7 +391,9 @@ class CapacityGovernor:
             )
 
         # Prune minute tokens
-        recent_tok_min = [(t, tok) for t, tok in self._model_tokens_minute[model_id] if t > minute_cutoff]
+        recent_tok_min = [
+            (t, tok) for t, tok in self._model_tokens_minute[model_id] if t > minute_cutoff
+        ]
         self._model_tokens_minute[model_id] = recent_tok_min
         tok_sum_min = sum(tok for _, tok in recent_tok_min)
         tpm_limit = quota.get("tpm", 8000)
@@ -392,16 +418,26 @@ class CapacityGovernor:
         self._model_tokens_day[model_id] = recent_tok_day
         tok_sum_day = sum(tok for _, tok in recent_tok_day)
         if tok_sum_day + estimated_tokens > quota.get("tpd", 100000):
-            retry_after = max(1, int(86400 - (now - recent_tok_day[0][0]))) if recent_tok_day else 86400
+            retry_after = (
+                max(1, int(86400 - (now - recent_tok_day[0][0]))) if recent_tok_day else 86400
+            )
             raise CapacityExhaustedError(
                 message=f"Model '{model_id}' reached daily token ceiling ({quota['tpd']} TPD).",
                 retry_after=retry_after,
-                details={"model_id": model_id, "limit": "tpd", "cap": quota["tpd"], "tpd_used": tok_sum_day, "retry_after": retry_after},
+                details={
+                    "model_id": model_id,
+                    "limit": "tpd",
+                    "cap": quota["tpd"],
+                    "tpd_used": tok_sum_day,
+                    "retry_after": retry_after,
+                },
             )
 
     def get_model_quota_status(self, model_id: str) -> dict[str, Any]:
         """Returns real-time sliding-window quota usage, capacity, and reset times for a model."""
-        if self._auto_load and (not settings.is_test or str(self._ledger_path) != str(DEFAULT_QUOTA_LEDGER_PATH)):
+        if self._auto_load and (
+            not settings.is_test or str(self._ledger_path) != str(DEFAULT_QUOTA_LEDGER_PATH)
+        ):
             self.load_durable_state()
 
         self.purge_expired_reservations()
@@ -409,14 +445,18 @@ class CapacityGovernor:
             r["tokens"] for r in self._reservations.values() if r["model_id"] == model_id
         )
 
-        quota = MODEL_FREE_QUOTAS.get(model_id, {"rpm": 30, "rpd": 1000, "tpm": 8000, "tpd": 100000})
+        quota = MODEL_FREE_QUOTAS.get(
+            model_id, {"rpm": 30, "rpd": 1000, "tpm": 8000, "tpd": 100000}
+        )
         now = datetime.now(UTC).timestamp()
         minute_cutoff = now - 60.0
         day_cutoff = now - 86400.0
 
         recent_req_min = [t for t in self._model_requests_minute[model_id] if t > minute_cutoff]
         recent_req_day = [t for t in self._model_requests_day[model_id] if t > day_cutoff]
-        recent_tok_min = [(t, tok) for t, tok in self._model_tokens_minute[model_id] if t > minute_cutoff]
+        recent_tok_min = [
+            (t, tok) for t, tok in self._model_tokens_minute[model_id] if t > minute_cutoff
+        ]
         recent_tok_day = [(t, tok) for t, tok in self._model_tokens_day[model_id] if t > day_cutoff]
 
         tok_sum_min = sum(tok for _, tok in recent_tok_min)
@@ -434,7 +474,9 @@ class CapacityGovernor:
 
         reset_seconds = 0.0
         if recent_tok_min:
-            oldest_ts = min([recent_tok_min[0][0]] + ([recent_req_min[0]] if recent_req_min else []))
+            oldest_ts = min(
+                [recent_tok_min[0][0]] + ([recent_req_min[0]] if recent_req_min else [])
+            )
             time_since_oldest = now - oldest_ts
             if time_since_oldest < 60.0:
                 reset_seconds = max(0.0, round(60.0 - time_since_oldest, 2))
@@ -451,7 +493,11 @@ class CapacityGovernor:
                 hdr_reset_duration = self.parse_rate_limit_reset_seconds(reset_tokens_str)
                 if resp_ts_str:
                     try:
-                        r_clean = resp_ts_str[:-1] + "+00:00" if resp_ts_str.endswith("Z") else resp_ts_str
+                        r_clean = (
+                            resp_ts_str[:-1] + "+00:00"
+                            if resp_ts_str.endswith("Z")
+                            else resp_ts_str
+                        )
                         resp_ts = datetime.fromisoformat(r_clean).timestamp()
                     except Exception:
                         resp_ts = recorded_at or now
@@ -629,10 +675,11 @@ class CapacityGovernor:
     def release_reservation(self, token: str) -> bool:
         """Releases a reserved capacity token without recording usage."""
         res = self._reservations.pop(token, None)
-        if res and (not settings.is_test or str(self._ledger_path) != str(DEFAULT_QUOTA_LEDGER_PATH)):
+        if res and (
+            not settings.is_test or str(self._ledger_path) != str(DEFAULT_QUOTA_LEDGER_PATH)
+        ):
             self.save_durable_state()
         return res is not None
-
 
     def reconcile_reservation(
         self,
@@ -657,9 +704,10 @@ class CapacityGovernor:
                 model_id=model_id,
                 tokens_used=actual_tokens,
             )
-        elif res and (not settings.is_test or str(self._ledger_path) != str(DEFAULT_QUOTA_LEDGER_PATH)):
+        elif res and (
+            not settings.is_test or str(self._ledger_path) != str(DEFAULT_QUOTA_LEDGER_PATH)
+        ):
             self.save_durable_state()
-
 
     @staticmethod
     def parse_rate_limit_reset_seconds(reset_str: str | None) -> float:
@@ -668,6 +716,7 @@ class CapacityGovernor:
             return 0.0
         s = reset_str.strip().lower()
         import re
+
         m_match = re.match(r"^(?:(\d+(?:\.\d+)?)m)?(?:(\d+(?:\.\d+)?)s)?$", s)
         if m_match:
             mins = float(m_match.group(1) or 0)
@@ -793,7 +842,9 @@ class CapacityGovernor:
                 details={"provider": provider, "reason": reason},
             )
 
-    def trip_circuit_breaker(self, provider: str, reason: str, pause_duration_seconds: int = 60) -> None:
+    def trip_circuit_breaker(
+        self, provider: str, reason: str, pause_duration_seconds: int = 60
+    ) -> None:
         """Pauses a provider route upon detecting upstream 429/503 errors."""
         now = datetime.now(UTC).timestamp()
         self._paused_until[provider] = now + pause_duration_seconds
@@ -832,4 +883,3 @@ class CapacityGovernor:
 
 governor = CapacityGovernor()
 capacity_governor = governor
-

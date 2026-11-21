@@ -103,6 +103,7 @@ async def readiness_check():
     from sqlalchemy import text
 
     from promptiq.core.database import engine
+
     try:
         async with engine.connect() as conn:
             await conn.execute(text("SELECT 1"))

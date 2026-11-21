@@ -42,7 +42,11 @@ class TelegramBotClient:
             return False
         now = time.time()
         # Expire older update IDs
-        expired = [uid for uid, ts in self._processed_update_ids.items() if now - ts > self._dedup_window_seconds]
+        expired = [
+            uid
+            for uid, ts in self._processed_update_ids.items()
+            if now - ts > self._dedup_window_seconds
+        ]
         for uid in expired:
             self._processed_update_ids.pop(uid, None)
 
@@ -51,7 +55,9 @@ class TelegramBotClient:
         self._processed_update_ids[update_id] = now
         return False
 
-    async def send_message(self, chat_id: str | int, text: str, reply_markup: dict[str, Any] | None = None) -> dict[str, Any]:
+    async def send_message(
+        self, chat_id: str | int, text: str, reply_markup: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """Sends a text message with optional inline keyboard."""
         if not self.token:
             logger.info(f"[Mock Telegram Dispatch] To {chat_id}: {text[:100]}...")
@@ -123,8 +129,14 @@ class TelegramBotClient:
 
             menu = {
                 "inline_keyboard": [
-                    [{"text": "⚡ Generate Prompt", "callback_data": "/generate"}, {"text": "🔬 Autopsy Review", "callback_data": "/review"}],
-                    [{"text": "🛠️ Build Project", "callback_data": "/build"}, {"text": "📚 My Projects", "callback_data": "/projects"}],
+                    [
+                        {"text": "⚡ Generate Prompt", "callback_data": "/generate"},
+                        {"text": "🔬 Autopsy Review", "callback_data": "/review"},
+                    ],
+                    [
+                        {"text": "🛠️ Build Project", "callback_data": "/build"},
+                        {"text": "📚 My Projects", "callback_data": "/projects"},
+                    ],
                 ]
             }
             await self.send_message(chat_id, reply, reply_markup=menu)
@@ -133,19 +145,29 @@ class TelegramBotClient:
         # Require linked user for project operations
         if not user:
             from promptiq.schemas.auth import UserCreate
+
             user, _ = await AuthService.register_user(
-                db, UserCreate(email=f"tg_{chat_id}@promptiq.org", password=secrets.token_urlsafe(32), full_name="Telegram User")
+                db,
+                UserCreate(
+                    email=f"tg_{chat_id}@promptiq.org",
+                    password=secrets.token_urlsafe(32),
+                    full_name="Telegram User",
+                ),
             )
             user = await AuthService.link_telegram_account(db, user.id, chat_id)
-
 
         # 2. Handle /projects
         if text.startswith("/projects"):
             projects = await ProjectService.list_projects(db, user.id)
             if not projects:
-                msg = "📂 You have no projects yet. Use `/build <name>` to start your first project!"
+                msg = (
+                    "📂 You have no projects yet. Use `/build <name>` to start your first project!"
+                )
             else:
-                lines = [f"• *{p.name}* (v{p.current_constitution_version}) — ID: `{p.id}`" for p in projects[:10]]
+                lines = [
+                    f"• *{p.name}* (v{p.current_constitution_version}) — ID: `{p.id}`"
+                    for p in projects[:10]
+                ]
                 msg = "📂 *Your PromptIQ Projects:*\n\n" + "\n".join(lines)
             await self.send_message(chat_id, msg)
             return {"status": "processed", "command": "/projects"}
@@ -154,13 +176,19 @@ class TelegramBotClient:
         if text.startswith("/review") or text.startswith("/autopsy"):
             prompt_content = text.replace("/review", "").replace("/autopsy", "").strip()
             if not prompt_content:
-                await self.send_message(chat_id, "ℹ️ Please provide the prompt to review: `/review <paste prompt here>`")
+                await self.send_message(
+                    chat_id, "ℹ️ Please provide the prompt to review: `/review <paste prompt here>`"
+                )
                 return {"status": "awaiting_input"}
 
-            autopsy_req = AutopsyRequest(prompt_text=prompt_content, target_environment="google-antigravity")
+            autopsy_req = AutopsyRequest(
+                prompt_text=prompt_content, target_environment="google-antigravity"
+            )
             res = await PromptAutopsyEngine.diagnose_prompt(autopsy_req, user_id=user.id)
 
-            findings_text = "\n".join([f"• *[{f.severity.upper()}]* {f.finding}" for f in res.findings[:4]])
+            findings_text = "\n".join(
+                [f"• *[{f.severity.upper()}]* {f.finding}" for f in res.findings[:4]]
+            )
             msg = (
                 f"🔬 *Prompt Autopsy Diagnostic*\n\n"
                 f"*Verdict*: `{res.verdict.upper()}`\n"
@@ -178,17 +206,29 @@ class TelegramBotClient:
         if text.startswith("/research"):
             query = text.replace("/research", "").strip()
             if not query:
-                await self.send_message(chat_id, "ℹ️ Please specify a topic: `/research <topic or question>`")
+                await self.send_message(
+                    chat_id, "ℹ️ Please specify a topic: `/research <topic or question>`"
+                )
                 return {"status": "awaiting_input"}
 
             projects = await ProjectService.list_projects(db, user.id)
-            project_id = projects[0].id if projects else (await ProjectService.create_project(db, user.id, ProjectCreate(name="Research Project"))).id
+            project_id = (
+                projects[0].id
+                if projects
+                else (
+                    await ProjectService.create_project(
+                        db, user.id, ProjectCreate(name="Research Project")
+                    )
+                ).id
+            )
 
             res_research = await research_engine.execute_research(
                 db, project_id, user.id, ResearchRequest(query=query, mode="quick")
             )
 
-            claims_text = "\n".join([f"• {c.claim_text} ([Source]({c.source_url}))" for c in res_research.claims[:3]])
+            claims_text = "\n".join(
+                [f"• {c.claim_text} ([Source]({c.source_url}))" for c in res_research.claims[:3]]
+            )
             msg = (
                 f"🔎 *Research Evidence Ledger*\n\n"
                 f"*Topic*: {query}\n"
@@ -207,7 +247,10 @@ class TelegramBotClient:
 
             # Create project
             project = await ProjectService.create_project(
-                db, user.id, ProjectCreate(name=goal_text[:30], description=goal_text), surface="telegram"
+                db,
+                user.id,
+                ProjectCreate(name=goal_text[:30], description=goal_text),
+                surface="telegram",
             )
 
             # Start adaptive discovery
@@ -217,7 +260,9 @@ class TelegramBotClient:
                 target="google-antigravity",
                 depth="guided",
             )
-            discovery_resp = await AdaptiveDiscoveryEngine.start_session(db, project.id, user.id, intake)
+            discovery_resp = await AdaptiveDiscoveryEngine.start_session(
+                db, project.id, user.id, intake
+            )
 
             q_text = "\n".join([f"👉 {q.question}" for q in discovery_resp.next_questions])
             msg = (
@@ -235,7 +280,10 @@ class TelegramBotClient:
             latest_project = projects[0]
             stmt_active_sess = (
                 select(DiscoverySession)
-                .where(DiscoverySession.project_id == latest_project.id, DiscoverySession.is_completed.is_(False))
+                .where(
+                    DiscoverySession.project_id == latest_project.id,
+                    DiscoverySession.is_completed.is_(False),
+                )
                 .order_by(DiscoverySession.created_at.desc())
             )
             sess_res = await db.execute(stmt_active_sess)
@@ -260,13 +308,19 @@ class TelegramBotClient:
                         f"• `/review` — Run autopsy\n"
                     )
                 else:
-                    next_q = "\n".join([f"👉 {q.question}" for q in updated_discovery.next_questions])
+                    next_q = "\n".join(
+                        [f"👉 {q.question}" for q in updated_discovery.next_questions]
+                    )
                     msg = (
                         f"📝 *Answer recorded for '{latest_project.name}'*\n\n"
                         f"Next question:\n{next_q or 'All questions answered.'}"
                     )
                 await self.send_message(chat_id, msg)
-                return {"status": "processed", "command": "discovery_continuation", "project_id": latest_project.id}
+                return {
+                    "status": "processed",
+                    "command": "discovery_continuation",
+                    "project_id": latest_project.id,
+                }
 
         # 7. Default conversational response
         await self.send_message(

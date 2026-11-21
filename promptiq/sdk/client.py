@@ -28,7 +28,9 @@ class PromptIQClient:
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         await self.close()
 
-    async def register(self, email: str, password: str, full_name: str | None = None) -> dict[str, Any]:
+    async def register(
+        self, email: str, password: str, full_name: str | None = None
+    ) -> dict[str, Any]:
         resp = await self._client.post(
             "/api/v1/auth/register",
             json={"email": email, "password": password, "full_name": full_name},
@@ -61,7 +63,9 @@ class PromptIQClient:
         return resp.json()
 
     async def get_constitution(self, project_id: str) -> dict[str, Any]:
-        resp = await self._client.get(f"/api/v1/projects/{project_id}/constitution", headers=self._headers())
+        resp = await self._client.get(
+            f"/api/v1/projects/{project_id}/constitution", headers=self._headers()
+        )
         resp.raise_for_status()
         return resp.json()
 
@@ -88,7 +92,9 @@ class PromptIQClient:
         resp.raise_for_status()
         return resp.json()
 
-    async def review_prompt(self, prompt_text: str, target: str = "google-antigravity") -> dict[str, Any]:
+    async def review_prompt(
+        self, prompt_text: str, target: str = "google-antigravity"
+    ) -> dict[str, Any]:
         resp = await self._client.post(
             "/api/v1/critic/autopsy",
             json={"prompt_text": prompt_text, "target_environment": target},

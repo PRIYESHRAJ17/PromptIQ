@@ -41,6 +41,7 @@ def setup():
         from alembic.config import Config
 
         from alembic import command
+
         alembic_cfg = Config("alembic.ini")
         alembic_cfg.set_main_option("sqlalchemy.url", "sqlite+aiosqlite:///./promptiq_dev.db")
         command.upgrade(alembic_cfg, "head")

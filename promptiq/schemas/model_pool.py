@@ -56,7 +56,9 @@ class ExecutionProfile(StrEnum):
 class ProviderPrivacyCard(BaseModel):
     """Provider privacy terms, training policy, and data handling guarantees."""
 
-    training_policy: str = Field(..., description="e.g. human_review_for_training, no_training, opt_out")
+    training_policy: str = Field(
+        ..., description="e.g. human_review_for_training, no_training, opt_out"
+    )
     data_retention_days: int = Field(default=30)
     deletion_api_available: bool = Field(default=False)
     jurisdiction: str = Field(default="United States")
@@ -180,11 +182,17 @@ class MultiModelExecutionAuditRecord(BaseModel):
     execution_profile: ExecutionProfile = ExecutionProfile.STANDARD
     data_sensitivity: DataSensitivityLevel = DataSensitivityLevel.GENERAL
     steps: list[ExecutionStepRecord] = Field(default_factory=list)
-    consensus_status: str = Field(default="agreed", description="agreed, adjudicated, uncertainty_retained, deterministic_override, same_family_intra_provider_disclosed")
+    consensus_status: str = Field(
+        default="agreed",
+        description="agreed, adjudicated, uncertainty_retained, deterministic_override, same_family_intra_provider_disclosed",
+    )
     disagreement_details: dict[str, Any] | None = None
     total_latency_ms: float | None = 0.0
     total_tokens: int | None = 0
-    final_status: str = Field(default="COMPLETED", description="COMPLETED, PARTIALLY_COMPLETED, RATE_LIMITED, FAILED, RESUMABLE, PARTIALLY_COMPLETED_RATE_LIMITED, SUCCESS")
+    final_status: str = Field(
+        default="COMPLETED",
+        description="COMPLETED, PARTIALLY_COMPLETED, RATE_LIMITED, FAILED, RESUMABLE, PARTIALLY_COMPLETED_RATE_LIMITED, SUCCESS",
+    )
     stage_statuses: dict[str, str] = Field(default_factory=dict)
     generator_provider: str | None = None
     generator_model_id: str | None = None

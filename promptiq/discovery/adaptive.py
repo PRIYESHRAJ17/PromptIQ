@@ -39,18 +39,27 @@ class AdaptiveDiscoveryEngine:
         combined_context = f"{goal} {' '.join(constraints)} {context_text}"
 
         # 1. Frontend exclusion vs UI surface request
-        no_frontend = any("no frontend" in c or "backend only" in c or "no ui" in c for c in [combined_context])
+        no_frontend = any(
+            "no frontend" in c or "backend only" in c or "no ui" in c for c in [combined_context]
+        )
         surfaces = str(answers.get("surfaces_required", "")).lower()
         visual_dir = str(answers.get("visual_direction", "")).lower()
-        if no_frontend and ("react" in visual_dir or "web workspace" in surfaces or "mobile companion" in surfaces):
+        if no_frontend and (
+            "react" in visual_dir or "web workspace" in surfaces or "mobile companion" in surfaces
+        ):
             contradictions.append(
                 "Contradiction: Project specifies strict backend-only/no-frontend constraint, but answers request UI surfaces."
             )
 
         # 2. Free tier / Zero-price constraint vs paid cloud infrastructure
-        zero_cost = any("zero-price" in c or "free" in c or "zero cost" in c or "₹0" in c for c in [combined_context])
+        zero_cost = any(
+            "zero-price" in c or "free" in c or "zero cost" in c or "₹0" in c
+            for c in [combined_context]
+        )
         tech_pref = str(answers.get("tech_stack_preference", "")).lower()
-        if zero_cost and ("aws fargate" in tech_pref or "dynamodb global" in tech_pref or "paid tier" in tech_pref):
+        if zero_cost and (
+            "aws fargate" in tech_pref or "dynamodb global" in tech_pref or "paid tier" in tech_pref
+        ):
             contradictions.append(
                 "Contradiction: Strict zero-cost invariant specified, but technical stack preference requests billable commercial infrastructure."
             )
@@ -63,13 +72,21 @@ class AdaptiveDiscoveryEngine:
 
         # 4. Invariant: No Local Inference
         all_answers_str = " ".join(str(v).lower() for v in answers.values())
-        if "ollama" in all_answers_str or "llama.cpp" in all_answers_str or "local gpu" in all_answers_str:
+        if (
+            "ollama" in all_answers_str
+            or "llama.cpp" in all_answers_str
+            or "local gpu" in all_answers_str
+        ):
             contradictions.append(
                 "Contradiction: Local model inference requested, which violates PromptIQ's centrally hosted gateway invariant."
             )
 
         # 5. Invariant: No User API Keys / BYOK
-        if "user api key" in all_answers_str or "byok" in all_answers_str or "enter openai key" in all_answers_str:
+        if (
+            "user api key" in all_answers_str
+            or "byok" in all_answers_str
+            or "enter openai key" in all_answers_str
+        ):
             contradictions.append(
                 "Contradiction: User API key input requested, violating PromptIQ's zero-price / zero-BYOK policy."
             )
@@ -88,13 +105,20 @@ class AdaptiveDiscoveryEngine:
 
         # Fallback / software-specific additions for deep software workflows
         if task_type == "software_project" and depth == "deep":
-            if "auth_requirements" not in answers and "Authentication and multi-tenant authorization boundaries (Stage I)" not in missing:
+            if (
+                "auth_requirements" not in answers
+                and "Authentication and multi-tenant authorization boundaries (Stage I)"
+                not in missing
+            ):
                 missing.append("Authentication and multi-tenant authorization boundaries (Stage I)")
-            if "validation_rules" not in answers and "Domain business rules and input validation constraints (Stage D)" not in missing:
+            if (
+                "validation_rules" not in answers
+                and "Domain business rules and input validation constraints (Stage D)"
+                not in missing
+            ):
                 missing.append("Domain business rules and input validation constraints (Stage D)")
 
         return missing
-
 
     @classmethod
     async def start_session(
@@ -123,7 +147,9 @@ class AdaptiveDiscoveryEngine:
                 f_content = file_info.get("content", "")
                 if f_content:
                     extracted_facts.extend(
-                        ContextExtractor.extract_facts_from_text(f_content, source_label=f"file:{f_name}")
+                        ContextExtractor.extract_facts_from_text(
+                            f_content, source_label=f"file:{f_name}"
+                        )
                     )
 
         session = DiscoverySession(
@@ -133,7 +159,9 @@ class AdaptiveDiscoveryEngine:
             initial_intake=intake.model_dump(),
             answers={},
             extracted_facts=extracted_facts,
-            current_stage="stage_a" if intake.task_type == "software_project" and intake.depth == "deep" else "task_details",
+            current_stage="stage_a"
+            if intake.task_type == "software_project" and intake.depth == "deep"
+            else "task_details",
             is_completed=False,
         )
         db.add(session)
@@ -158,16 +186,18 @@ class AdaptiveDiscoveryEngine:
 
         # Generate initial candidate requirements from goal
         initial_reqs = list(constitution.requirements)
-        initial_reqs.append({
-            "id": "REQ-CORE-001",
-            "text": f"Core objective: {intake.goal}",
-            "category": "functional",
-            "priority": "P0",
-            "status": "confirmed",
-            "provenance": "user_provided",
-            "source_reference": "initial_intake",
-            "acceptance_criteria": "Observable delivery of stated goal",
-        })
+        initial_reqs.append(
+            {
+                "id": "REQ-CORE-001",
+                "text": f"Core objective: {intake.goal}",
+                "category": "functional",
+                "priority": "P0",
+                "status": "confirmed",
+                "provenance": "user_provided",
+                "source_reference": "initial_intake",
+                "acceptance_criteria": "Observable delivery of stated goal",
+            }
+        )
         constitution.requirements = initial_reqs
         await db.flush()
 
@@ -258,7 +288,9 @@ class AdaptiveDiscoveryEngine:
         session.answers = updated_answers
 
         # Convert high-value answers to Constitution requirements
-        constitution = await ConstitutionService.get_current_constitution(db, session.project_id, user_id)
+        constitution = await ConstitutionService.get_current_constitution(
+            db, session.project_id, user_id
+        )
         reqs = list(constitution.requirements)
 
         for q_id, ans in submitted_answers.items():
@@ -275,18 +307,25 @@ class AdaptiveDiscoveryEngine:
                             r["provenance"] = "user_provided"
                         else:
                             r["status"] = "rejected"
-            elif q_id in ("problem_statement", "must_have_features", "validation_rules", "acceptance_criteria"):
+            elif q_id in (
+                "problem_statement",
+                "must_have_features",
+                "validation_rules",
+                "acceptance_criteria",
+            ):
                 req_id = f"REQ-DISC-{len(reqs) + 1:03d}"
-                reqs.append({
-                    "id": req_id,
-                    "text": ans_str,
-                    "category": "functional",
-                    "priority": "P0" if q_id == "must_have_features" else "P1",
-                    "status": "confirmed",
-                    "provenance": "user_provided",
-                    "source_reference": f"discovery_answer:{q_id}",
-                    "acceptance_criteria": ans_str if q_id == "acceptance_criteria" else None,
-                })
+                reqs.append(
+                    {
+                        "id": req_id,
+                        "text": ans_str,
+                        "category": "functional",
+                        "priority": "P0" if q_id == "must_have_features" else "P1",
+                        "status": "confirmed",
+                        "provenance": "user_provided",
+                        "source_reference": f"discovery_answer:{q_id}",
+                        "acceptance_criteria": ans_str if q_id == "acceptance_criteria" else None,
+                    }
+                )
             elif q_id == "explicit_exclusions":
                 scope = dict(constitution.scope or {})
                 out_of_scope = list(scope.get("out_of_scope", []))
@@ -306,7 +345,9 @@ class AdaptiveDiscoveryEngine:
 
         # Call intelligence gateway to infer missing requirements if appropriate
         inference_req = InferenceRequest(
-            messages=[GatewayMessage(role="user", content=f"Analyze project answers: {updated_answers}")],
+            messages=[
+                GatewayMessage(role="user", content=f"Analyze project answers: {updated_answers}")
+            ],
             system_instruction="Identify implicit technical requirements and return JSON.",
             task_context="discovery",
             user_id=user_id,
@@ -317,16 +358,18 @@ class AdaptiveDiscoveryEngine:
             for inf in inferred_reqs:
                 # Add inferred requirements labeled with provenance='inferred'
                 req_id = f"REQ-INF-{len(reqs) + 1:03d}"
-                reqs.append({
-                    "id": req_id,
-                    "text": inf.get("text", "Inferred system requirement"),
-                    "category": inf.get("category", "functional"),
-                    "priority": inf.get("priority", "P2"),
-                    "status": "proposed",
-                    "provenance": "inferred",
-                    "source_reference": "promptiq_adaptive_inference",
-                    "acceptance_criteria": None,
-                })
+                reqs.append(
+                    {
+                        "id": req_id,
+                        "text": inf.get("text", "Inferred system requirement"),
+                        "category": inf.get("category", "functional"),
+                        "priority": inf.get("priority", "P2"),
+                        "status": "proposed",
+                        "provenance": "inferred",
+                        "source_reference": "promptiq_adaptive_inference",
+                        "acceptance_criteria": None,
+                    }
+                )
             constitution.requirements = reqs
 
         await db.flush()

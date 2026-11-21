@@ -80,7 +80,11 @@ async def test_evaluation_lab_execution_and_assertions(
     # 5. Cross-project isolation: Attempting to run with a package not belonging to project fails
     cross_resp = await client.post(
         f"/api/v1/projects/{project_id}/eval/run",
-        json={"suite_id": suite_id, "package_id": "non-existent-or-other-pkg", "model_id": "promptiq-mock-v1"},
+        json={
+            "suite_id": suite_id,
+            "package_id": "non-existent-or-other-pkg",
+            "model_id": "promptiq-mock-v1",
+        },
         headers=user_auth_headers,
     )
     assert cross_resp.status_code == 404

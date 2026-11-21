@@ -75,4 +75,3 @@ class TargetRecommendationResponse(BaseModel):
     cons: list[str] = Field(default_factory=list)
     compatibility_scores: dict[str, float] = Field(default_factory=dict)
     feature_support: dict[str, dict[str, bool]] = Field(default_factory=dict)
-

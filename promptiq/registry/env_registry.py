@@ -40,7 +40,9 @@ CURATED_ENVIRONMENTS: list[dict[str, Any]] = [
         "host": "openai-codex",
         "surface": "agent",
         "supported_formats": ["ai-plugin.json", "openapi.yaml", "skills"],
-        "manifest_schema": {"required_keys": ["schema_version", "name_for_model", "description_for_model"]},
+        "manifest_schema": {
+            "required_keys": ["schema_version", "name_for_model", "description_for_model"]
+        },
         "supported_tools": ["mcp", "openapi_endpoints"],
         "precedence_rules": ["manifest", "skill_instructions"],
         "verification_status": "tested",

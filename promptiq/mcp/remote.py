@@ -31,7 +31,9 @@ def validate_mcp_origin(request: Request) -> None:
         origin_lower = origin.lower()
         # Disallow untrusted origins or suspicious protocols
         if not (
-            origin_lower.startswith(("http://localhost", "http://127.0.0.1", "https://", "vscode-webview://"))
+            origin_lower.startswith(
+                ("http://localhost", "http://127.0.0.1", "https://", "vscode-webview://")
+            )
             or ".google.dev" in origin_lower
             or ".run.app" in origin_lower
         ):
@@ -106,13 +108,18 @@ async def mcp_streamable_http_endpoint(
     except Exception as e:
         return JSONResponse(
             status_code=400,
-            content={"jsonrpc": "2.0", "id": None, "error": {"code": -32700, "message": f"Parse error: {e}"}},
+            content={
+                "jsonrpc": "2.0",
+                "id": None,
+                "error": {"code": -32700, "message": f"Parse error: {e}"},
+            },
         )
 
     accept_header = request.headers.get("accept", "").lower()
 
     # If client explicitly requests text/event-stream (request-scoped SSE stream)
     if "text/event-stream" in accept_header and "application/json" not in accept_header:
+
         async def event_generator():
             try:
                 rpc_resp = await execute_mcp_rpc(rpc_req, user.id, db)

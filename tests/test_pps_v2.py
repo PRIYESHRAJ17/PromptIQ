@@ -1,6 +1,5 @@
 """Tests for PPS v2.0.0 completeness validation, structured sections, and deterministic hashing."""
 
-
 from promptiq.compiler.pps import PPSBuilder
 from promptiq.models.constitution import ProjectConstitution
 from promptiq.schemas.pps import (
@@ -64,9 +63,13 @@ def test_pps_v2_completeness_catches_missing_fields():
         project_id="p-1",
         constitution_version=1,
         intent=IntentSchema(primary_objective=""),  # Empty
-        target_profile=TargetProfileSchema(host="", provider="openai", model_id="gpt-4o"),  # Empty host
+        target_profile=TargetProfileSchema(
+            host="", provider="openai", model_id="gpt-4o"
+        ),  # Empty host
         requirements=[],  # Empty requirements
-        output_contract=OutputContractSchema(format="markdown", sections_required=[]),  # Empty sections
+        output_contract=OutputContractSchema(
+            format="markdown", sections_required=[]
+        ),  # Empty sections
     )
 
     gaps = incomplete_pps.validate_completeness()

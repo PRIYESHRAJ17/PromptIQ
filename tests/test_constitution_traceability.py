@@ -1,6 +1,5 @@
 """Tests for Project Constitution requirement traceability and contradiction detection."""
 
-
 from promptiq.models.constitution import ProjectConstitution
 from promptiq.services.constitution_service import ConstitutionService
 
@@ -74,7 +73,9 @@ def test_detect_prompt_contradictions():
     )
 
     # 1. Scope violation
-    c1 = ConstitutionService.detect_prompt_contradictions(const, "Please implement the billing gateway endpoint.")
+    c1 = ConstitutionService.detect_prompt_contradictions(
+        const, "Please implement the billing gateway endpoint."
+    )
     assert any("billing gateway" in c for c in c1)
 
     # 2. Prohibited stack violation
@@ -82,17 +83,25 @@ def test_detect_prompt_contradictions():
     assert any("MongoDB" in c for c in c2)
 
     # 3. Invariant: Strictly No Website Frontend
-    c3 = ConstitutionService.detect_prompt_contradictions(const, "Please build React frontend dashboard for monitoring.")
+    c3 = ConstitutionService.detect_prompt_contradictions(
+        const, "Please build React frontend dashboard for monitoring."
+    )
     assert any("frontend" in c.lower() for c in c3)
 
     # 4. Invariant: Zero BYOK
-    c4 = ConstitutionService.detect_prompt_contradictions(const, "Enter your OpenAI key to continue.")
+    c4 = ConstitutionService.detect_prompt_contradictions(
+        const, "Enter your OpenAI key to continue."
+    )
     assert any("user api key" in c.lower() or "zero-byok" in c.lower() for c in c4)
 
     # 5. Invariant: No Local Inference
-    c5 = ConstitutionService.detect_prompt_contradictions(const, "Please install Ollama to run the model locally.")
+    c5 = ConstitutionService.detect_prompt_contradictions(
+        const, "Please install Ollama to run the model locally."
+    )
     assert any("local inference" in c.lower() or "ollama" in c.lower() for c in c5)
 
     # 6. Clean prompt
-    c_clean = ConstitutionService.detect_prompt_contradictions(const, "Write a Python async queue worker in SQLite.")
+    c_clean = ConstitutionService.detect_prompt_contradictions(
+        const, "Write a Python async queue worker in SQLite."
+    )
     assert len(c_clean) == 0

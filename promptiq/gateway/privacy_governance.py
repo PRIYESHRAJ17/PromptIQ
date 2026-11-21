@@ -104,7 +104,10 @@ class PrivacyGovernanceService:
 
         # CONFIDENTIAL data cannot be routed to providers that use data for training or human review
         if task_sensitivity == DataSensitivityLevel.CONFIDENTIAL:
-            if not privacy_card.allows_confidential_data or privacy_card.training_policy == "human_review_for_training":
+            if (
+                not privacy_card.allows_confidential_data
+                or privacy_card.training_policy == "human_review_for_training"
+            ):
                 raise PrivacyPolicyViolationError(
                     provider=provider,
                     model_id=model_id,
@@ -151,7 +154,10 @@ class PrivacyGovernanceService:
 
             if task_rank <= max_rank:
                 # Additional check on provider privacy card
-                if task_sensitivity in (DataSensitivityLevel.CONFIDENTIAL, DataSensitivityLevel.RESTRICTED):
+                if task_sensitivity in (
+                    DataSensitivityLevel.CONFIDENTIAL,
+                    DataSensitivityLevel.RESTRICTED,
+                ):
                     try:
                         cls.validate_task_privacy(task_sensitivity, m.provider, m.model_id)
                         eligible.append(m)

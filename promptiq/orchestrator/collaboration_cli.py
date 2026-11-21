@@ -299,7 +299,9 @@ def format_latency(latency_ms: float | int | None) -> str:
         return "N/A"
 
 
-def format_tokens(in_tokens: int | None, out_tokens: int | None, provider: str | None = None) -> str:
+def format_tokens(
+    in_tokens: int | None, out_tokens: int | None, provider: str | None = None
+) -> str:
     """Safely format token pair."""
     if provider == "internal":
         return "0/0"
@@ -429,7 +431,9 @@ def render_execution_summary(
 def main() -> None:
     """CLI entrypoint for executing live multi-model collaboration."""
     parser = argparse.ArgumentParser(description="PromptIQ Live Multi-Model Collaboration Runner")
-    parser.add_argument("--opt-in", action="store_true", help="Explicitly opt-in to send live network requests.")
+    parser.add_argument(
+        "--opt-in", action="store_true", help="Explicitly opt-in to send live network requests."
+    )
     parser.add_argument(
         "--profile",
         default="STANDARD",

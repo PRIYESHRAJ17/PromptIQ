@@ -38,9 +38,9 @@
   ```python
   engine = create_async_engine(
       DATABASE_URL,
-      pool_pre_ping=True,      # Tests connection liveness before checkout
-      pool_recycle=300,        # Recycles connections every 5 minutes
-      pool_size=5,             # Conserves serverless connection slots
+      pool_pre_ping=True,  # Tests connection liveness before checkout
+      pool_recycle=300,  # Recycles connections every 5 minutes
+      pool_size=5,  # Conserves serverless connection slots
       max_overflow=10,
   )
   ```

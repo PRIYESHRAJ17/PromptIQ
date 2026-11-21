@@ -23,7 +23,9 @@ class CursorTargetAdapter(BaseTargetAdapter):
         "multimodal": False,
     }
 
-    def compile(self, pps: PromptSpecSchema, output_type: OutputType) -> tuple[dict[str, Any], dict[str, str], list[str]]:
+    def compile(
+        self, pps: PromptSpecSchema, output_type: OutputType
+    ) -> tuple[dict[str, Any], dict[str, str], list[str]]:
         files: dict[str, str] = {}
         warnings: list[str] = []
 
@@ -58,7 +60,9 @@ class CursorTargetAdapter(BaseTargetAdapter):
                 },
                 indent=2,
             )
-            files["README.md"] = f"# Cursor Configuration Bundle\n\nObjective: {pps.intent.primary_objective}\n"
+            files["README.md"] = (
+                f"# Cursor Configuration Bundle\n\nObjective: {pps.intent.primary_objective}\n"
+            )
 
         manifest = {"target": self.target_name, "type": output_type, "files": list(files.keys())}
         return manifest, files, warnings

@@ -50,11 +50,17 @@ class CheckpointManager:
         return CheckpointResponse.model_validate(checkpoint)
 
     @classmethod
-    async def list_checkpoints(cls, db: AsyncSession, project_id: str, user_id: str) -> list[CheckpointResponse]:
+    async def list_checkpoints(
+        cls, db: AsyncSession, project_id: str, user_id: str
+    ) -> list[CheckpointResponse]:
         """Lists all recorded checkpoints for a project in reverse chronological order."""
         await ProjectService.get_project(db, project_id, user_id)
 
-        stmt = select(Checkpoint).where(Checkpoint.project_id == project_id).order_by(Checkpoint.created_at.desc())
+        stmt = (
+            select(Checkpoint)
+            .where(Checkpoint.project_id == project_id)
+            .order_by(Checkpoint.created_at.desc())
+        )
         res = await db.execute(stmt)
         checkpoints = res.scalars().all()
         return [CheckpointResponse.model_validate(cp) for cp in checkpoints]

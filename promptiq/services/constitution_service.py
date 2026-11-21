@@ -16,7 +16,9 @@ class ConstitutionService:
     """Manages Project Constitution versions, approval gates, diffs, and rollback."""
 
     @classmethod
-    async def get_current_constitution(cls, db: AsyncSession, project_id: str, user_id: str) -> ProjectConstitution:
+    async def get_current_constitution(
+        cls, db: AsyncSession, project_id: str, user_id: str
+    ) -> ProjectConstitution:
         """Retrieves the current active version of a project's constitution."""
         project = await ProjectService.get_project(db, project_id, user_id)
 
@@ -28,9 +30,11 @@ class ConstitutionService:
         constitution = res.scalar_one_or_none()
         if not constitution:
             # Fallback to highest version if pointer is unaligned
-            fallback_stmt = select(ProjectConstitution).where(
-                ProjectConstitution.project_id == project.id
-            ).order_by(ProjectConstitution.version.desc())
+            fallback_stmt = (
+                select(ProjectConstitution)
+                .where(ProjectConstitution.project_id == project.id)
+                .order_by(ProjectConstitution.version.desc())
+            )
             res_fallback = await db.execute(fallback_stmt)
             constitution = res_fallback.scalar_one_or_none()
 
@@ -40,7 +44,9 @@ class ConstitutionService:
         return constitution
 
     @classmethod
-    async def get_constitution_by_version(cls, db: AsyncSession, project_id: str, version: int, user_id: str) -> ConstitutionVersion:
+    async def get_constitution_by_version(
+        cls, db: AsyncSession, project_id: str, version: int, user_id: str
+    ) -> ConstitutionVersion:
         """Retrieves an immutable snapshot of a specific constitution version."""
         await ProjectService.get_project(db, project_id, user_id)
 
@@ -51,7 +57,9 @@ class ConstitutionService:
         res = await db.execute(stmt)
         version_record = res.scalar_one_or_none()
         if not version_record:
-            raise NotFoundError(resource="ConstitutionVersion", resource_id=f"{project_id}/v{version}")
+            raise NotFoundError(
+                resource="ConstitutionVersion", resource_id=f"{project_id}/v{version}"
+            )
 
         return version_record
 
@@ -103,7 +111,11 @@ class ConstitutionService:
 
         # Apply updates
         new_goals = update_in.goals if update_in.goals is not None else current.goals
-        new_reqs = [r.model_dump() for r in update_in.requirements] if update_in.requirements is not None else current.requirements
+        new_reqs = (
+            [r.model_dump() for r in update_in.requirements]
+            if update_in.requirements is not None
+            else current.requirements
+        )
 
         new_scope = (current.scope or {}).copy()
         if update_in.scope_in is not None:
@@ -111,13 +123,39 @@ class ConstitutionService:
         if update_in.scope_out is not None:
             new_scope["out_of_scope"] = update_in.scope_out
 
-        new_ux = update_in.ux_specs.model_dump() if update_in.ux_specs is not None else current.ux_specs
-        new_tech = update_in.technical_direction.model_dump() if update_in.technical_direction is not None else current.technical_direction
-        new_decisions = [d.model_dump() for d in update_in.decisions] if update_in.decisions is not None else current.decisions
-        new_assumptions = [a.model_dump() for a in update_in.assumptions] if update_in.assumptions is not None else current.assumptions
-        new_questions = [q.model_dump() for q in update_in.open_questions] if update_in.open_questions is not None else current.open_questions
-        new_risks = [r.model_dump() for r in update_in.risks] if update_in.risks is not None else (getattr(current, "risks", []) or [])
-        new_conflicts = [c.model_dump() for c in update_in.conflicts] if update_in.conflicts is not None else (getattr(current, "conflicts", []) or [])
+        new_ux = (
+            update_in.ux_specs.model_dump() if update_in.ux_specs is not None else current.ux_specs
+        )
+        new_tech = (
+            update_in.technical_direction.model_dump()
+            if update_in.technical_direction is not None
+            else current.technical_direction
+        )
+        new_decisions = (
+            [d.model_dump() for d in update_in.decisions]
+            if update_in.decisions is not None
+            else current.decisions
+        )
+        new_assumptions = (
+            [a.model_dump() for a in update_in.assumptions]
+            if update_in.assumptions is not None
+            else current.assumptions
+        )
+        new_questions = (
+            [q.model_dump() for q in update_in.open_questions]
+            if update_in.open_questions is not None
+            else current.open_questions
+        )
+        new_risks = (
+            [r.model_dump() for r in update_in.risks]
+            if update_in.risks is not None
+            else (getattr(current, "risks", []) or [])
+        )
+        new_conflicts = (
+            [c.model_dump() for c in update_in.conflicts]
+            if update_in.conflicts is not None
+            else (getattr(current, "conflicts", []) or [])
+        )
 
         new_state = {
             "goals": new_goals,
@@ -176,7 +214,10 @@ class ConstitutionService:
             user_id=user_id,
             action="constitution.updated",
             surface=surface,
-            payload={"new_version": new_version_num, "modified_fields": list(diff["modified"].keys())},
+            payload={
+                "new_version": new_version_num,
+                "modified_fields": list(diff["modified"].keys()),
+            },
         )
         db.add(audit)
         await db.flush()
@@ -212,7 +253,11 @@ class ConstitutionService:
             user_id=user_id,
             action=action,
             surface=surface,
-            payload={"version": current.version, "approved": approval_in.approve, "feedback": approval_in.feedback},
+            payload={
+                "version": current.version,
+                "approved": approval_in.approve,
+                "feedback": approval_in.feedback,
+            },
         )
         db.add(audit)
         await db.flush()
@@ -250,7 +295,9 @@ class ConstitutionService:
         """Rolls back the constitution to the state of target_version, producing a new immutable version N+1."""
         project = await ProjectService.get_project(db, project_id, user_id)
         current = await cls.get_current_constitution(db, project_id, user_id)
-        target_record = await cls.get_constitution_by_version(db, project_id, target_version, user_id)
+        target_record = await cls.get_constitution_by_version(
+            db, project_id, target_version, user_id
+        )
 
         old_state = {
             "goals": current.goals or [],
@@ -334,10 +381,12 @@ class ConstitutionService:
         return new_constitution
 
     @classmethod
-    def get_requirement_traceability_matrix(cls, constitution: ProjectConstitution) -> list[dict[str, Any]]:
+    def get_requirement_traceability_matrix(
+        cls, constitution: ProjectConstitution
+    ) -> list[dict[str, Any]]:
         """Constructs an end-to-end traceability matrix linking requirements to verification states and deliverables."""
         matrix: list[dict[str, Any]] = []
-        for req in (constitution.requirements or []):
+        for req in constitution.requirements or []:
             if isinstance(req, dict):
                 req_id = req.get("id")
                 text = req.get("text", "")
@@ -365,24 +414,28 @@ class ConstitutionService:
                 v_status = getattr(req, "verification_status", "unverified")
                 gaps = getattr(req, "outstanding_gaps", [])
 
-            matrix.append({
-                "id": req_id,
-                "text": text,
-                "category": cat,
-                "priority": prio,
-                "status": status,
-                "provenance": prov,
-                "depends_on": depends,
-                "relationships": rels,
-                "deliverable_target": target,
-                "verification_method": method,
-                "verification_status": v_status,
-                "outstanding_gaps": gaps,
-            })
+            matrix.append(
+                {
+                    "id": req_id,
+                    "text": text,
+                    "category": cat,
+                    "priority": prio,
+                    "status": status,
+                    "provenance": prov,
+                    "depends_on": depends,
+                    "relationships": rels,
+                    "deliverable_target": target,
+                    "verification_method": method,
+                    "verification_status": v_status,
+                    "outstanding_gaps": gaps,
+                }
+            )
         return matrix
 
     @classmethod
-    def detect_prompt_contradictions(cls, constitution: ProjectConstitution, prompt_text: str) -> list[str]:
+    def detect_prompt_contradictions(
+        cls, constitution: ProjectConstitution, prompt_text: str
+    ) -> list[str]:
         """Validates prompt text against Constitution scope, technical direction, and core project invariants."""
         contradictions: list[str] = []
         prompt_lower = (prompt_text or "").lower()
@@ -393,7 +446,9 @@ class ConstitutionService:
         for item in out_of_scope:
             item_clean = item.lower().strip()
             if item_clean and item_clean in prompt_lower:
-                contradictions.append(f"Prompt mentions explicitly excluded out-of-scope element: '{item}'")
+                contradictions.append(
+                    f"Prompt mentions explicitly excluded out-of-scope element: '{item}'"
+                )
 
         # 2. Prohibited technology stack violations
         tech_dir = constitution.technical_direction or {}
@@ -401,34 +456,54 @@ class ConstitutionService:
         for tech in prohibited:
             tech_clean = tech.lower().strip()
             if tech_clean and tech_clean in prompt_lower:
-                contradictions.append(f"Prompt references prohibited technology stack item: '{tech}'")
+                contradictions.append(
+                    f"Prompt references prohibited technology stack item: '{tech}'"
+                )
 
         # 3. Core Invariant 1: Strictly No Website Frontend
-        frontend_keywords = ["react", "vue", "next.js", "nextjs", "angular", "html page", "tailwind ui", "frontend page"]
+        frontend_keywords = [
+            "react",
+            "vue",
+            "next.js",
+            "nextjs",
+            "angular",
+            "html page",
+            "tailwind ui",
+            "frontend page",
+        ]
         has_frontend_exclusion = any(
-            "no frontend" in item.lower() or "backend only" in item.lower()
-            for item in out_of_scope
+            "no frontend" in item.lower() or "backend only" in item.lower() for item in out_of_scope
         )
         if has_frontend_exclusion or True:  # Core PromptIQ Invariant
             for kw in frontend_keywords:
-                if f"build {kw}" in prompt_lower or f"create {kw}" in prompt_lower or f"generate {kw}" in prompt_lower:
+                if (
+                    f"build {kw}" in prompt_lower
+                    or f"create {kw}" in prompt_lower
+                    or f"generate {kw}" in prompt_lower
+                ):
                     contradictions.append(
                         f"Prompt requests generating website frontend ({kw}), violating strict backend-only invariant."
                     )
                     break
 
         # 4. Core Invariant 2: Zero User API Keys / No BYOK
-        if "user api key" in prompt_lower or "enter your openai key" in prompt_lower or "byok" in prompt_lower:
+        if (
+            "user api key" in prompt_lower
+            or "enter your openai key" in prompt_lower
+            or "byok" in prompt_lower
+        ):
             contradictions.append(
                 "Prompt requests user API key input, violating PromptIQ's zero-price / zero-BYOK invariant."
             )
 
         # 5. Core Invariant 3: No Local Inference
-        if "install ollama" in prompt_lower or "run llama.cpp" in prompt_lower or "local gpu inference" in prompt_lower:
+        if (
+            "install ollama" in prompt_lower
+            or "run llama.cpp" in prompt_lower
+            or "local gpu inference" in prompt_lower
+        ):
             contradictions.append(
                 "Prompt requires local inference tools, violating centrally managed hosted gateway invariant."
             )
 
         return contradictions
-
-

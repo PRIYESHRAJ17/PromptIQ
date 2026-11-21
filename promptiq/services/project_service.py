@@ -18,7 +18,9 @@ class ProjectService:
     """Manages project lifecycle, multi-tenant isolation, and initial constitution setup."""
 
     @staticmethod
-    async def verify_workspace_access(db: AsyncSession, user_id: str, workspace_id: str) -> WorkspaceMembership:
+    async def verify_workspace_access(
+        db: AsyncSession, user_id: str, workspace_id: str
+    ) -> WorkspaceMembership:
         """Verifies that the user has valid membership in the specified workspace."""
         stmt = select(WorkspaceMembership).where(
             WorkspaceMembership.user_id == user_id,
@@ -27,11 +29,15 @@ class ProjectService:
         res = await db.execute(stmt)
         membership = res.scalar_one_or_none()
         if not membership:
-            raise TenantIsolationError(f"User '{user_id}' does not have access to workspace '{workspace_id}'")
+            raise TenantIsolationError(
+                f"User '{user_id}' does not have access to workspace '{workspace_id}'"
+            )
         return membership
 
     @classmethod
-    async def create_project(cls, db: AsyncSession, user_id: str, project_in: ProjectCreate, surface: str = "api") -> Project:
+    async def create_project(
+        cls, db: AsyncSession, user_id: str, project_in: ProjectCreate, surface: str = "api"
+    ) -> Project:
         """Creates a project with an initialized draft Project Constitution."""
         # Resolve target workspace
         workspace_id = project_in.workspace_id
@@ -137,50 +143,72 @@ class ProjectService:
         return project
 
     @classmethod
-    async def list_projects(cls, db: AsyncSession, user_id: str, workspace_id: str | None = None) -> list[Project]:
+    async def list_projects(
+        cls, db: AsyncSession, user_id: str, workspace_id: str | None = None
+    ) -> list[Project]:
         """Lists all projects in the workspace accessible to the user."""
         if workspace_id:
             await cls.verify_workspace_access(db, user_id, workspace_id)
-            stmt = select(Project).where(Project.workspace_id == workspace_id).order_by(Project.created_at.desc())
+            stmt = (
+                select(Project)
+                .where(Project.workspace_id == workspace_id)
+                .order_by(Project.created_at.desc())
+            )
         else:
             # Query all workspaces the user belongs to
-            ws_stmt = select(WorkspaceMembership.workspace_id).where(WorkspaceMembership.user_id == user_id)
+            ws_stmt = select(WorkspaceMembership.workspace_id).where(
+                WorkspaceMembership.user_id == user_id
+            )
             res_ws = await db.execute(ws_stmt)
             allowed_ws_ids = res_ws.scalars().all()
             if not allowed_ws_ids:
                 return []
-            stmt = select(Project).where(Project.workspace_id.in_(allowed_ws_ids)).order_by(Project.created_at.desc())
+            stmt = (
+                select(Project)
+                .where(Project.workspace_id.in_(allowed_ws_ids))
+                .order_by(Project.created_at.desc())
+            )
 
         res = await db.execute(stmt)
         return list(res.scalars().all())
 
     @classmethod
-    async def delete_project(cls, db: AsyncSession, project_id: str, user_id: str, surface: str = "api") -> bool:
+    async def delete_project(
+        cls, db: AsyncSession, project_id: str, user_id: str, surface: str = "api"
+    ) -> bool:
         """Deletes a project and cleanly cascades through all dependent records after validating tenant boundaries."""
         project = await cls.get_project(db, project_id, user_id)
         workspace_id = project.workspace_id
 
         # 1. Cleanly delete dependent research jobs & evidence claims
         from promptiq.models.research import EvidenceClaim, ResearchJob, SourceRecord
+
         stmt_res = select(ResearchJob.id).where(ResearchJob.project_id == project.id)
         res_res = await db.execute(stmt_res)
         job_ids = list(res_res.scalars().all())
         if job_ids:
-            await db.execute(delete(EvidenceClaim).where(EvidenceClaim.research_job_id.in_(job_ids)))
+            await db.execute(
+                delete(EvidenceClaim).where(EvidenceClaim.research_job_id.in_(job_ids))
+            )
             await db.execute(delete(SourceRecord).where(SourceRecord.research_job_id.in_(job_ids)))
             await db.execute(delete(ResearchJob).where(ResearchJob.project_id == project.id))
 
         # 2. Cleanly delete dependent evaluation suites, runs, and failure records
         from promptiq.models.eval import EvaluationRun, EvaluationSuite, FailureRecord
+
         stmt_suite = select(EvaluationSuite.id).where(EvaluationSuite.project_id == project.id)
         res_suite = await db.execute(stmt_suite)
         suite_ids = list(res_suite.scalars().all())
         if suite_ids:
             await db.execute(delete(EvaluationRun).where(EvaluationRun.suite_id.in_(suite_ids)))
-            await db.execute(delete(EvaluationSuite).where(EvaluationSuite.project_id == project.id))
+            await db.execute(
+                delete(EvaluationSuite).where(EvaluationSuite.project_id == project.id)
+            )
 
         await db.execute(delete(FailureRecord).where(FailureRecord.project_id == project.id))
-        await db.execute(delete(ConstitutionVersion).where(ConstitutionVersion.project_id == project.id))
+        await db.execute(
+            delete(ConstitutionVersion).where(ConstitutionVersion.project_id == project.id)
+        )
 
         await db.delete(project)
 
@@ -198,12 +226,18 @@ class ProjectService:
         return True
 
     @classmethod
-    async def export_project_data(cls, db: AsyncSession, project_id: str, user_id: str) -> dict[str, Any]:
+    async def export_project_data(
+        cls, db: AsyncSession, project_id: str, user_id: str
+    ) -> dict[str, Any]:
         """Gathers all project artifacts, memory, discovery sessions, constitutions, and packages into a single export."""
         project = await cls.get_project(db, project_id, user_id)
 
         # 1. Constitutions
-        stmt_const = select(ProjectConstitution).where(ProjectConstitution.project_id == project.id).order_by(ProjectConstitution.version.asc())
+        stmt_const = (
+            select(ProjectConstitution)
+            .where(ProjectConstitution.project_id == project.id)
+            .order_by(ProjectConstitution.version.asc())
+        )
         res_const = await db.execute(stmt_const)
         constitutions = [
             {
@@ -225,7 +259,12 @@ class ProjectService:
 
         # 2. Packages
         from promptiq.models.package import PromptPackage
-        stmt_pkg = select(PromptPackage).where(PromptPackage.project_id == project.id).order_by(PromptPackage.created_at.asc())
+
+        stmt_pkg = (
+            select(PromptPackage)
+            .where(PromptPackage.project_id == project.id)
+            .order_by(PromptPackage.created_at.asc())
+        )
         res_pkg = await db.execute(stmt_pkg)
         packages = [
             {
@@ -243,7 +282,12 @@ class ProjectService:
 
         # 3. Discovery Sessions
         from promptiq.models.discovery import DiscoverySession
-        stmt_disc = select(DiscoverySession).where(DiscoverySession.project_id == project.id).order_by(DiscoverySession.created_at.asc())
+
+        stmt_disc = (
+            select(DiscoverySession)
+            .where(DiscoverySession.project_id == project.id)
+            .order_by(DiscoverySession.created_at.asc())
+        )
         res_disc = await db.execute(stmt_disc)
         discovery_sessions = [
             {
@@ -262,7 +306,12 @@ class ProjectService:
 
         # 4. Research Jobs & Evidence Ledger
         from promptiq.models.research import EvidenceClaim, ResearchJob, SourceRecord
-        stmt_res = select(ResearchJob).where(ResearchJob.project_id == project.id).order_by(ResearchJob.created_at.asc())
+
+        stmt_res = (
+            select(ResearchJob)
+            .where(ResearchJob.project_id == project.id)
+            .order_by(ResearchJob.created_at.asc())
+        )
         res_res = await db.execute(stmt_res)
         research_jobs = []
         for rj in res_res.scalars().all():
@@ -292,20 +341,27 @@ class ProjectService:
                 for c in res_c.scalars().all()
             ]
 
-            research_jobs.append({
-                "id": rj.id,
-                "query": rj.query,
-                "mode": rj.mode,
-                "status": rj.status,
-                "summary": rj.summary,
-                "sources": sources,
-                "claims": claims,
-                "created_at": rj.created_at.isoformat() if rj.created_at else None,
-            })
+            research_jobs.append(
+                {
+                    "id": rj.id,
+                    "query": rj.query,
+                    "mode": rj.mode,
+                    "status": rj.status,
+                    "summary": rj.summary,
+                    "sources": sources,
+                    "claims": claims,
+                    "created_at": rj.created_at.isoformat() if rj.created_at else None,
+                }
+            )
 
         # 5. Checkpoints
         from promptiq.models.memory import Checkpoint
-        stmt_chk = select(Checkpoint).where(Checkpoint.project_id == project.id).order_by(Checkpoint.created_at.asc())
+
+        stmt_chk = (
+            select(Checkpoint)
+            .where(Checkpoint.project_id == project.id)
+            .order_by(Checkpoint.created_at.asc())
+        )
         res_chk = await db.execute(stmt_chk)
         checkpoints = [
             {
@@ -338,4 +394,3 @@ class ProjectService:
             "checkpoints": checkpoints,
             "exported_at": datetime.now(UTC).isoformat(),
         }
-

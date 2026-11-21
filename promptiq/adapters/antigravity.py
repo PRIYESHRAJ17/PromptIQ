@@ -23,13 +23,28 @@ class AntigravityTargetAdapter(BaseTargetAdapter):
         "multimodal": True,
     }
 
-    def compile(self, pps: PromptSpecSchema, output_type: OutputType) -> tuple[dict[str, Any], dict[str, str], list[str]]:
+    def compile(
+        self, pps: PromptSpecSchema, output_type: OutputType
+    ) -> tuple[dict[str, Any], dict[str, str], list[str]]:
         files: dict[str, str] = {}
         warnings: list[str] = []
 
-        reqs_text = "\n".join([f"- [{r.get('id', 'REQ')}] ({r.get('priority', 'P1')} - {r.get('provenance', 'user_provided')}): {r.get('text')}" for r in pps.requirements])
-        exclusions_text = "\n".join([f"- {e}" for e in pps.constraints.get("out_of_scope", [])]) or "None specified."
-        phases_text = "\n".join([f"{p.get('phase')}. **{p.get('name')}**: {p.get('objective')}" for p in pps.workflow_phases])
+        reqs_text = "\n".join(
+            [
+                f"- [{r.get('id', 'REQ')}] ({r.get('priority', 'P1')} - {r.get('provenance', 'user_provided')}): {r.get('text')}"
+                for r in pps.requirements
+            ]
+        )
+        exclusions_text = (
+            "\n".join([f"- {e}" for e in pps.constraints.get("out_of_scope", [])])
+            or "None specified."
+        )
+        phases_text = "\n".join(
+            [
+                f"{p.get('phase')}. **{p.get('name')}**: {p.get('objective')}"
+                for p in pps.workflow_phases
+            ]
+        )
 
         if output_type == "prompt_only":
             prompt = (
@@ -57,7 +72,11 @@ class AntigravityTargetAdapter(BaseTargetAdapter):
             )
             files["system_instructions.md"] = system_prompt
             files["user_task.md"] = user_prompt
-            manifest = {"target": self.target_name, "type": "prompt_suite", "files": list(files.keys())}
+            manifest = {
+                "target": self.target_name,
+                "type": "prompt_suite",
+                "files": list(files.keys()),
+            }
             return manifest, files, warnings
 
         else:  # complete_package
@@ -131,5 +150,9 @@ class AntigravityTargetAdapter(BaseTargetAdapter):
                 f"Load this package into Google Antigravity as a native plugin.\n"
             )
 
-            manifest = {"target": self.target_name, "type": output_type, "files": list(files.keys())}
+            manifest = {
+                "target": self.target_name,
+                "type": output_type,
+                "files": list(files.keys()),
+            }
             return manifest, files, warnings

@@ -23,7 +23,9 @@ class GeminiCLITargetAdapter(BaseTargetAdapter):
         "multimodal": True,
     }
 
-    def compile(self, pps: PromptSpecSchema, output_type: OutputType) -> tuple[dict[str, Any], dict[str, str], list[str]]:
+    def compile(
+        self, pps: PromptSpecSchema, output_type: OutputType
+    ) -> tuple[dict[str, Any], dict[str, str], list[str]]:
         files: dict[str, str] = {}
         warnings: list[str] = []
 
@@ -45,7 +47,9 @@ class GeminiCLITargetAdapter(BaseTargetAdapter):
 
         if output_type == "complete_package":
             files["commands/run.sh"] = "#!/bin/bash\necho 'Executing PromptIQ task...'\n"
-            files["README.md"] = f"# Gemini CLI Extension Package\n\nObjective: {pps.intent.primary_objective}\n"
+            files["README.md"] = (
+                f"# Gemini CLI Extension Package\n\nObjective: {pps.intent.primary_objective}\n"
+            )
 
         manifest = {"target": self.target_name, "type": output_type, "files": list(files.keys())}
         return manifest, files, warnings

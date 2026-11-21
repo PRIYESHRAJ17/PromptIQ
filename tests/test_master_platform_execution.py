@@ -111,6 +111,7 @@ async def test_constitution_rollback_and_compare(db_session, test_user):
     await db_session.commit()
 
     from promptiq.schemas.constitution import ConstitutionUpdate, RequirementItem
+
     update_v2 = ConstitutionUpdate(
         goals=["Build updated system v2"],
         requirements=[
@@ -146,7 +147,9 @@ async def test_constitution_rollback_and_compare(db_session, test_user):
 async def test_target_recommendation_and_multi_target(db_session, test_user):
     """Validates target recommendation engine and multi-target compilation."""
     user, _ = test_user
-    rec_antigravity = target_compiler.recommend_target("Autonomous multi-agent system with MCP tool integration")
+    rec_antigravity = target_compiler.recommend_target(
+        "Autonomous multi-agent system with MCP tool integration"
+    )
     assert rec_antigravity["recommended_target"] == "google-antigravity"
     assert rec_antigravity["compatibility_scores"]["google-antigravity"] > 0.90
     assert len(rec_antigravity["pros"]) > 0
@@ -157,6 +160,7 @@ async def test_target_recommendation_and_multi_target(db_session, test_user):
         ProjectCreate(name="Multi-Target Project", description="Testing multi-compile"),
     )
     from promptiq.schemas.constitution import ConstitutionApprovalRequest
+
     await ConstitutionService.approve_constitution(
         db_session, proj.id, user.id, ConstitutionApprovalRequest(approve=True)
     )
@@ -369,6 +373,7 @@ async def test_project_data_export_and_clean_delete(db_session, test_user):
     await db_session.commit()
 
     from promptiq.core.exceptions import NotFoundError
+
     with pytest.raises(NotFoundError):
         await ProjectService.get_project(db_session, proj.id, user.id)
 
@@ -425,4 +430,3 @@ async def test_api_routes_for_master_platform(client, test_user, user_auth_heade
     )
     assert resp_export.status_code == 200
     assert resp_export.json()["project"]["id"] == proj_id
-

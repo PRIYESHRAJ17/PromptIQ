@@ -85,7 +85,7 @@ class ModelTournamentRunner:
 
             for exp in expected:
                 if exp.lower() not in output.lower():
-                    score -= (50.0 / max(1, len(expected)))
+                    score -= 50.0 / max(1, len(expected))
                     failures.append(f"Missing required pattern: '{exp}'")
 
             for pro in prohibited:
@@ -100,20 +100,24 @@ class ModelTournamentRunner:
                 passed_cases += 1
 
             category_score_lists[category].append(score)
-            case_results.append({
-                "case_id": case_id,
-                "category": category,
-                "score": score,
-                "passed": passed,
-                "failures": failures,
-                "latency_ms": round(elapsed_ms, 2),
-            })
+            case_results.append(
+                {
+                    "case_id": case_id,
+                    "category": category,
+                    "score": score,
+                    "passed": passed,
+                    "failures": failures,
+                    "latency_ms": round(elapsed_ms, 2),
+                }
+            )
 
         final_category_scores = {
             cat: round(sum(scores) / max(1, len(scores)), 1)
             for cat, scores in category_score_lists.items()
         }
-        avg_score = round(sum(final_category_scores.values()) / max(1, len(final_category_scores)), 2)
+        avg_score = round(
+            sum(final_category_scores.values()) / max(1, len(final_category_scores)), 2
+        )
         avg_latency_ms = round(total_latency_ms / max(1, len(test_cases)), 2)
         pass_rate = round((passed_cases / max(1, len(test_cases))) * 100.0, 1)
 
@@ -188,25 +192,29 @@ class ModelTournamentRunner:
             try:
                 resp = await inference_gateway.generate(infer_req, provider=provider)
                 lat_ms = (time.perf_counter() - t0) * 1000.0
-                live_results.append({
-                    "case_id": case["id"],
-                    "category": case["category"],
-                    "status_code": 200,
-                    "latency_ms": round(lat_ms, 2),
-                    "tokens_used": resp.tokens_used,
-                    "raw_response_preview": resp.text[:150],
-                    "success": True,
-                })
+                live_results.append(
+                    {
+                        "case_id": case["id"],
+                        "category": case["category"],
+                        "status_code": 200,
+                        "latency_ms": round(lat_ms, 2),
+                        "tokens_used": resp.tokens_used,
+                        "raw_response_preview": resp.text[:150],
+                        "success": True,
+                    }
+                )
             except Exception as e:
                 lat_ms = (time.perf_counter() - t0) * 1000.0
-                live_results.append({
-                    "case_id": case["id"],
-                    "category": case["category"],
-                    "status_code": 429 if "rate limit" in str(e).lower() else 500,
-                    "latency_ms": round(lat_ms, 2),
-                    "error": str(e),
-                    "success": False,
-                })
+                live_results.append(
+                    {
+                        "case_id": case["id"],
+                        "category": case["category"],
+                        "status_code": 429 if "rate limit" in str(e).lower() else 500,
+                        "latency_ms": round(lat_ms, 2),
+                        "error": str(e),
+                        "success": False,
+                    }
+                )
 
         return {
             "evaluation_type": "live_provider_evaluation",
@@ -292,20 +300,28 @@ class ModelTournamentRunner:
             # Critic pass
             resp_crit = await inference_gateway.generate(
                 InferenceRequest(
-                    messages=[GatewayMessage(role="user", content=f"Critique this candidate:\n{resp_gen.text}")],
+                    messages=[
+                        GatewayMessage(
+                            role="user", content=f"Critique this candidate:\n{resp_gen.text}"
+                        )
+                    ],
                     task_context="critic",
                     user_id="combo_eval_b",
                 ),
                 provider=adapter_route,
             )
             config_b_tokens += resp_crit.tokens_used
-            if all(exp.lower() in resp_gen.text.lower() for exp in case.get("expected_patterns", [])):
+            if all(
+                exp.lower() in resp_gen.text.lower() for exp in case.get("expected_patterns", [])
+            ):
                 config_b_passed += 1
         lat_b = ((time.perf_counter() - t0) * 1000.0) / max(1, len(cases))
 
         results_by_config["config_b_generator_critic"] = {
             "name": "Configuration B: Generator + Independent Critic",
-            "accuracy_score": round(min(100.0, ((config_b_passed / max(1, len(cases))) * 100.0) + 12.0), 1),
+            "accuracy_score": round(
+                min(100.0, ((config_b_passed / max(1, len(cases))) * 100.0) + 12.0), 1
+            ),
             "contradiction_catch_rate_pct": 84.5,
             "defect_prevention_rate_pct": 81.0,
             "avg_latency_ms": round(lat_b, 2),
@@ -347,4 +363,3 @@ class ModelTournamentRunner:
             "configurations_evaluated": results_by_config,
             "recommendation": "PromptIQ implements Configuration C as default (STANDARD profile) and Configuration D for DEEP/HIGH_RISK profiles.",
         }
-

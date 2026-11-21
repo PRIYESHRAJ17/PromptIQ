@@ -38,7 +38,9 @@ class BaseTargetAdapter(ABC):
             )
 
         # Check subagents support
-        if ("subagent" in reqs_str or "multi-agent" in reqs_str) and not caps.get("supports_subagents", False):
+        if ("subagent" in reqs_str or "multi-agent" in reqs_str) and not caps.get(
+            "supports_subagents", False
+        ):
             warnings.append(
                 f"Capability Warning: Target '{self.target_name}' lacks autonomous subagent delegation. "
                 "Multi-agent workflows will compile to sequential multi-turn instructions."
@@ -54,7 +56,9 @@ class BaseTargetAdapter(ABC):
         return warnings
 
     @abstractmethod
-    def compile(self, pps: PromptSpecSchema, output_type: OutputType) -> tuple[dict[str, Any], dict[str, str], list[str]]:
+    def compile(
+        self, pps: PromptSpecSchema, output_type: OutputType
+    ) -> tuple[dict[str, Any], dict[str, str], list[str]]:
         """Compiles PPS into native artifacts.
 
         Returns:

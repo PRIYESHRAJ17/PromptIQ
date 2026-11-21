@@ -13,7 +13,11 @@ async def test_user_registration_and_login(client: AsyncClient):
     # Register
     reg_resp = await client.post(
         "/api/v1/auth/register",
-        json={"email": "developer@example.com", "password": "SecurePassword123!", "full_name": "Dev User"},
+        json={
+            "email": "developer@example.com",
+            "password": "SecurePassword123!",
+            "full_name": "Dev User",
+        },
     )
     assert reg_resp.status_code == 201
     data = reg_resp.json()
@@ -145,7 +149,9 @@ async def test_exhaustive_cross_tenant_idor_enforcement(
 
     # 2. User B attacks Constitution
     # GET Constitution
-    b_const_get = await client.get(f"/api/v1/projects/{project_id}/constitution", headers=second_auth_headers)
+    b_const_get = await client.get(
+        f"/api/v1/projects/{project_id}/constitution", headers=second_auth_headers
+    )
     assert b_const_get.status_code in (403, 404)
 
     # PUT Constitution update
@@ -165,14 +171,21 @@ async def test_exhaustive_cross_tenant_idor_enforcement(
     assert b_const_app.status_code in (403, 404)
 
     # GET Constitution historical snapshot
-    b_const_snap = await client.get(f"/api/v1/projects/{project_id}/constitution/versions/1", headers=second_auth_headers)
+    b_const_snap = await client.get(
+        f"/api/v1/projects/{project_id}/constitution/versions/1", headers=second_auth_headers
+    )
     assert b_const_snap.status_code in (403, 404)
 
     # 3. User B attacks Discovery
     # POST Discovery start
     b_disc_start = await client.post(
         f"/api/v1/projects/{project_id}/discovery/start",
-        json={"goal": "Infiltrate", "deliverable": "complete_package", "target": "google-antigravity", "depth": "quick"},
+        json={
+            "goal": "Infiltrate",
+            "deliverable": "complete_package",
+            "target": "google-antigravity",
+            "depth": "quick",
+        },
         headers=second_auth_headers,
     )
     assert b_disc_start.status_code in (403, 404)
@@ -187,7 +200,9 @@ async def test_exhaustive_cross_tenant_idor_enforcement(
     assert b_compile.status_code in (403, 404)
 
     # GET Package Export
-    b_export = await client.get(f"/api/v1/projects/{project_id}/packages/{package_id}/export", headers=second_auth_headers)
+    b_export = await client.get(
+        f"/api/v1/projects/{project_id}/packages/{package_id}/export", headers=second_auth_headers
+    )
     assert b_export.status_code in (403, 404)
 
     # 5. User B attacks Project Memory & Checkpoints
@@ -200,7 +215,9 @@ async def test_exhaustive_cross_tenant_idor_enforcement(
     assert b_cp_create.status_code in (403, 404)
 
     # GET Checkpoints list
-    b_cp_list = await client.get(f"/api/v1/projects/{project_id}/memory/checkpoints", headers=second_auth_headers)
+    b_cp_list = await client.get(
+        f"/api/v1/projects/{project_id}/memory/checkpoints", headers=second_auth_headers
+    )
     assert b_cp_list.status_code in (403, 404)
 
     # POST Context pack

@@ -25,7 +25,9 @@ def test_model_pool_contents_and_eligibility():
         assert m.source_url.startswith(("http", "internal"))
 
     # Conditional models (Gemini adult-only, Cloudflare Workers AI, OpenRouter free)
-    conditional = ModelPoolService.list_models(eligibility_state=EligibilityState.CONDITIONALLY_ELIGIBLE)
+    conditional = ModelPoolService.list_models(
+        eligibility_state=EligibilityState.CONDITIONALLY_ELIGIBLE
+    )
     assert len(conditional) >= 4
 
     # Preview models (Qwen 3.8 27B isolated to evaluation)

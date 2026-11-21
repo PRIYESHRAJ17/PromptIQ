@@ -27,9 +27,9 @@ INFRASTRUCTURE_AUDIT_LEDGER: dict[str, dict[str, Any]] = {
         "service": "Google Cloud Run (Compute)",
         "free_allowance": "2,000,000 requests/month; 360,000 vCPU-seconds; 180,000 GiB-seconds",
         "billing_account_required": True,  # Credit card on file required to enable Cloud Run API
-        "auto_charges_overage": True,      # Automatically charges credit card if quota is exceeded
+        "auto_charges_overage": True,  # Automatically charges credit card if quota is exceeded
         "native_hard_stop_available": False,  # GCP budgets alert via email/PubSub, but do not shut down service natively
-        "is_zero_spend_guaranteed": False, # Risk of unexpected billing on DDoS or traffic spikes
+        "is_zero_spend_guaranteed": False,  # Risk of unexpected billing on DDoS or traffic spikes
         "approved_for_auto_provisioning": False,
         "recommendation": "Operator deployment only with custom billing-kill Cloud Function or strict rate-limiting proxy.",
     },
@@ -37,7 +37,7 @@ INFRASTRUCTURE_AUDIT_LEDGER: dict[str, dict[str, Any]] = {
         "service": "Google Artifact Registry (Container Storage)",
         "free_allowance": "0.5 GB storage per month",
         "billing_account_required": True,
-        "auto_charges_overage": True,      # $0.10/GB/month auto-billed
+        "auto_charges_overage": True,  # $0.10/GB/month auto-billed
         "native_hard_stop_available": False,
         "is_zero_spend_guaranteed": False,
         "approved_for_auto_provisioning": False,
@@ -47,7 +47,7 @@ INFRASTRUCTURE_AUDIT_LEDGER: dict[str, dict[str, Any]] = {
         "service": "Google Cloud Secret Manager",
         "free_allowance": "6 active secret versions; 10,000 access operations/month",
         "billing_account_required": True,
-        "auto_charges_overage": True,      # $0.06 per 10,000 operations
+        "auto_charges_overage": True,  # $0.06 per 10,000 operations
         "native_hard_stop_available": False,
         "is_zero_spend_guaranteed": False,
         "approved_for_auto_provisioning": False,
@@ -56,9 +56,9 @@ INFRASTRUCTURE_AUDIT_LEDGER: dict[str, dict[str, Any]] = {
     "neon_postgres": {
         "service": "Neon Serverless PostgreSQL",
         "free_allowance": "0.5 GiB storage; 1 compute branch; 190 compute hours/month (auto-suspends after 5m idle)",
-        "billing_account_required": False, # Free signup without credit card
-        "auto_charges_overage": False,     # Refuses connections / read-only mode upon quota exhaustion
-        "native_hard_stop_available": True, # Hard stops without charging money
+        "billing_account_required": False,  # Free signup without credit card
+        "auto_charges_overage": False,  # Refuses connections / read-only mode upon quota exhaustion
+        "native_hard_stop_available": True,  # Hard stops without charging money
         "is_zero_spend_guaranteed": True,  # 100% free with strict zero-cost boundary
         "approved_for_auto_provisioning": True,
         "recommendation": "Approved primary zero-cost persistent relational database.",
@@ -67,7 +67,7 @@ INFRASTRUCTURE_AUDIT_LEDGER: dict[str, dict[str, Any]] = {
         "service": "Render Free Web Service",
         "free_allowance": "750 hours/month shared across free web services; spins down on 15m idle",
         "billing_account_required": False,
-        "auto_charges_overage": False,     # Free tier services suspend when hours expire; no auto-charge
+        "auto_charges_overage": False,  # Free tier services suspend when hours expire; no auto-charge
         "native_hard_stop_available": True,
         "is_zero_spend_guaranteed": True,
         "approved_for_auto_provisioning": False,
@@ -79,7 +79,7 @@ INFRASTRUCTURE_AUDIT_LEDGER: dict[str, dict[str, Any]] = {
         "billing_account_required": False,
         "auto_charges_overage": False,
         "native_hard_stop_available": True,
-        "is_zero_spend_guaranteed": False, # Ephemeral: 30-day deletion violates persistent memory requirement
+        "is_zero_spend_guaranteed": False,  # Ephemeral: 30-day deletion violates persistent memory requirement
         "approved_for_auto_provisioning": False,
         "recommendation": "REJECTED: 30-day database expiration causes catastrophic data loss. Use Neon Serverless Postgres instead.",
     },
@@ -87,7 +87,7 @@ INFRASTRUCTURE_AUDIT_LEDGER: dict[str, dict[str, Any]] = {
         "service": "Cloudflare Workers (Edge Proxy / Ingress WAF)",
         "free_allowance": "100,000 requests/day; 10ms CPU/request; native hard stop",
         "billing_account_required": False,
-        "auto_charges_overage": False,     # Returns HTTP 1027 error when daily limit reached; never charges
+        "auto_charges_overage": False,  # Returns HTTP 1027 error when daily limit reached; never charges
         "native_hard_stop_available": True,
         "is_zero_spend_guaranteed": True,
         "approved_for_auto_provisioning": True,

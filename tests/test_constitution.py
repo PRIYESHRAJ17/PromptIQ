@@ -18,7 +18,9 @@ async def test_constitution_lifecycle_versioning_and_approval(
     project_id = proj_resp.json()["id"]
 
     # 2. Get active initial Constitution (version 1, unapproved)
-    const_resp = await client.get(f"/api/v1/projects/{project_id}/constitution", headers=user_auth_headers)
+    const_resp = await client.get(
+        f"/api/v1/projects/{project_id}/constitution", headers=user_auth_headers
+    )
     assert const_resp.status_code == 200
     const_data = const_resp.json()
     assert const_data["version"] == 1
@@ -75,7 +77,9 @@ async def test_constitution_lifecycle_versioning_and_approval(
     assert v2_data["requirements"][1]["provenance"] == "inferred"
 
     # Verify immutable snapshot of Version 1 is preserved
-    v1_hist = await client.get(f"/api/v1/projects/{project_id}/constitution/versions/1", headers=user_auth_headers)
+    v1_hist = await client.get(
+        f"/api/v1/projects/{project_id}/constitution/versions/1", headers=user_auth_headers
+    )
     assert v1_hist.status_code == 200
     assert v1_hist.json()["version"] == 1
 

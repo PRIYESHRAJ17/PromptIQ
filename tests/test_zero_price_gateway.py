@@ -22,7 +22,9 @@ async def test_zero_price_eligibility_gate():
     # Allowed $0 routes pass
     verify_zero_price_route(provider="mock", model_id="promptiq-mock-v1", price_per_token=0.0)
     verify_zero_price_route(provider="gemini", model_id="gemini-3.8-flash", price_per_token=0.0)
-    verify_zero_price_route(provider="gemini", model_id="gemini-3.5-flash-lite", price_per_token=0.0)
+    verify_zero_price_route(
+        provider="gemini", model_id="gemini-3.5-flash-lite", price_per_token=0.0
+    )
     verify_zero_price_route(provider="groq", model_id="openai/gpt-oss-120b", price_per_token=0.0)
     verify_zero_price_route(provider="groq", model_id="openai/gpt-oss-20b", price_per_token=0.0)
     verify_zero_price_route(provider="groq", model_id="qwen/qwen3.8-27b", price_per_token=0.0)
@@ -32,11 +34,15 @@ async def test_zero_price_eligibility_gate():
         verify_zero_price_route(provider="openai", model_id="gpt-4o", price_per_token=0.005)
 
     with pytest.raises(ZeroPriceViolationError):
-        verify_zero_price_route(provider="anthropic", model_id="claude-3-7-sonnet", price_per_token=0.003)
+        verify_zero_price_route(
+            provider="anthropic", model_id="claude-3-7-sonnet", price_per_token=0.003
+        )
 
     # Unverified route without :free tag raises error
     with pytest.raises(ZeroPriceViolationError):
-        verify_zero_price_route(provider="unverified_vendor", model_id="commercial-model-v1", price_per_token=0.0)
+        verify_zero_price_route(
+            provider="unverified_vendor", model_id="commercial-model-v1", price_per_token=0.0
+        )
 
     # Gemini 2.0 Flash (shutdown on June 1, 2026) MUST raise ZeroPriceViolationError
     with pytest.raises(ZeroPriceViolationError) as exc_gemini2:
@@ -120,7 +126,9 @@ async def test_deterministic_mock_inference():
 async def test_capacity_governor_circuit_breaker():
     """Verifies that the circuit breaker pauses requests on upstream errors."""
     provider = "test_failing_route"
-    governor.trip_circuit_breaker(provider, reason="Simulated 429 rate limit", pause_duration_seconds=5)
+    governor.trip_circuit_breaker(
+        provider, reason="Simulated 429 rate limit", pause_duration_seconds=5
+    )
 
     # Subsequent check must raise CapacityExhaustedError
     with pytest.raises(CapacityExhaustedError) as exc_info:

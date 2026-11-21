@@ -23,7 +23,9 @@ def test_cli_help(capsys):
 
 
 def test_cli_review_inline_text(capsys):
-    with patch("sys.argv", ["promptiq", "review", "Do something useful please", "--target", "claude-code"]):
+    with patch(
+        "sys.argv", ["promptiq", "review", "Do something useful please", "--target", "claude-code"]
+    ):
         cli_entrypoint()
 
     captured = capsys.readouterr()
@@ -36,7 +38,9 @@ def test_cli_review_file(tmp_path, capsys):
     test_prompt_file = tmp_path / "sample_prompt.txt"
     test_prompt_file.write_text("You are an assistant. Help the user.", encoding="utf-8")
 
-    with patch("sys.argv", ["promptiq", "review", str(test_prompt_file), "--target", "google-antigravity"]):
+    with patch(
+        "sys.argv", ["promptiq", "review", str(test_prompt_file), "--target", "google-antigravity"]
+    ):
         cli_entrypoint()
 
     captured = capsys.readouterr()
