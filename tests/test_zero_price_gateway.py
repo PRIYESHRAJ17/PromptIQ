@@ -23,7 +23,9 @@ async def test_zero_price_eligibility_gate():
     verify_zero_price_route(provider="mock", model_id="promptiq-mock-v1", price_per_token=0.0)
     verify_zero_price_route(provider="gemini", model_id="gemini-3.8-flash", price_per_token=0.0)
     verify_zero_price_route(provider="gemini", model_id="gemini-3.5-flash-lite", price_per_token=0.0)
-    verify_zero_price_route(provider="groq", model_id="llama-3.3-70b-versatile", price_per_token=0.0)
+    verify_zero_price_route(provider="groq", model_id="openai/gpt-oss-120b", price_per_token=0.0)
+    verify_zero_price_route(provider="groq", model_id="openai/gpt-oss-20b", price_per_token=0.0)
+    verify_zero_price_route(provider="groq", model_id="qwen/qwen3.8-27b", price_per_token=0.0)
 
     # Paid routes MUST raise ZeroPriceViolationError
     with pytest.raises(ZeroPriceViolationError):
@@ -49,6 +51,12 @@ async def test_zero_price_eligibility_gate():
 
     with pytest.raises(ZeroPriceViolationError):
         verify_zero_price_route(provider="gemini", model_id="gemini-1.0-pro", price_per_token=0.0)
+
+    # Retired Groq models MUST raise ZeroPriceViolationError
+    for retired_groq in ["llama-3.3-70b-versatile", "llama-3.1-8b-instant", "qwen-2.5-coder-32b"]:
+        with pytest.raises(ZeroPriceViolationError) as exc_groq_ret:
+            verify_zero_price_route(provider="groq", model_id=retired_groq, price_per_token=0.0)
+        assert "officially retired" in str(exc_groq_ret.value)
 
 
 @pytest.mark.asyncio

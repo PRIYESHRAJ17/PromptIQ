@@ -29,8 +29,8 @@ Any candidate model route proposed for PromptIQ's internal intelligence engine m
 
 | Provider Route | Model Identifier | Documented Free Quotas | Privacy / Data Terms | Current Status in PromptIQ |
 | :--- | :--- | :--- | :--- | :--- |
-| **Google Gemini Developer API** | `gemini-1.5-flash` / `gemini-2.0-flash` | Free tier input/output with rate limits (RPM/RPD). | Free tier content may be used to improve Google products; transparent disclosure required. | **Primary Candidate** for fast, high-context discovery & compilation. |
-| **Groq Free Plan** | `llama-3.3-70b-versatile` | Documented org limits (e.g. 30 RPM, 1,000 RPD, 12k TPM). | Standard API terms; no training on API traffic. | **Secondary Candidate** for rapid static autopsy and classification. |
+| **Google Gemini Developer API** | `gemini-3.8-flash` / `gemini-3.5-flash-lite` | Free tier input/output with rate limits (15–30 RPM, 1,500 RPD). | Free tier content may be used to improve Google products; transparent disclosure required. GENERAL data only. | **Orchestrator & High-Context Candidate** for fast discovery & compilation. |
+| **Groq Free Plan** | `openai/gpt-oss-120b` / `20b` / `qwen3.8-27b` | Documented free limits (30 RPM, 1,000–14,400 RPD). | Standard API terms; no training on API traffic. CONFIDENTIAL data allowed. | **Reasoning & Coding Candidate** for rapid autopsy and compilation. |
 | **OpenRouter Free Tier** | `meta-llama/llama-3.3-70b-instruct:free` | $0 listed pricing; 20 RPM / 50 RPD limit without purchased credits. | Varies by upstream host; aggregator terms apply. | **Contingency / Fallback Route** only. |
 | **Deterministic Mock Adapter** | `promptiq-mock-v1` | Unlimited local in-memory execution; zero external requests. | 100% private; zero network data transmission. | **Mandatory Standard** for automated CI/CD testing and unit test suites. |
 

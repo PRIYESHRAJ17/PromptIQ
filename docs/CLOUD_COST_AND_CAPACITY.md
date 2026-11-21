@@ -25,9 +25,10 @@ To eliminate the risk of automated infrastructure provisioning creating billable
 2. Any service where `is_zero_spend_guaranteed` is `False` or `auto_charges_overage` is `True` **cannot be provisioned automatically**.
 3. It must either be deployed with explicit operator acknowledgment or replaced by an approved zero-spend alternative.
 
-### Approved Zero-Spend Alternatives for Pure $0 Operation (No Credit Card):
-- **Database**: Neon Serverless Postgres (free tier without credit card; hard quota shutoff).
-- **Compute Alternative**: Render Free Web Service (free tier spins down after 15m idle; no auto-charges) or Cloudflare Workers (100k requests/day free with native hard stop).
+### Approved Zero-Spend Boundaries for Pure $0 Operation:
+- **Database**: Neon Serverless Postgres (free tier without credit card; hard quota shutoff upon reaching 0.5 GiB / 190 CU-hrs).
+- **Edge Ingress / WAF**: Cloudflare Workers (100k requests/day free with native hard stop; rejected for full backend compute due to Pyodide Wasm limits).
+- **Backend Compute**: Evaluated alternatives (Render Free rejected due to 50s cold-start and ephemeral disk; Google Cloud Run rejected as pure zero-cost due to card requirement and auto-charges). Deployment requires operator runner or sponsored container environment with custom spending kill-switch.
 - **Container Registry**: GitHub Container Registry (`ghcr.io`) with zero storage billing for public open-source packages.
 
 ---
@@ -37,10 +38,10 @@ To eliminate the risk of automated infrastructure provisioning creating billable
 Under the ₹0 cost profile, PromptIQ can sustainably support the following daily operational capacity:
 
 1. **Daily Active Projects**: Up to 1,500 interactive project discovery turns per day (Gemini Developer API quota).
-2. **Burst Diagnostics**: Up to 1,000 prompt autopsies per day on Groq `llama-3.3-70b-versatile` or 14,400 on `llama-3.1-8b-instant`.
+2. **Burst Diagnostics**: Up to 1,000 prompt autopsies per day on Groq `openai/gpt-oss-120b` or 14,400 on `openai/gpt-oss-20b`.
 3. **Concurrent Invocations**: 10 simultaneous user requests (enforced via `CapacityGovernor.concurrency_semaphore`).
 4. **Database Storage**: 0.5 GiB in Neon Postgres supports approximately 15,000 distinct Project Constitutions and versioned snapshots before reaching quota.
 5. **Cold-Start Response**:
-   - Cloud Run container cold start: ~1.2 seconds.
+   - Container cold start: ~1.2 seconds.
    - Neon Postgres compute cold start: ~400 milliseconds (with `pool_pre_ping=True` preventing connection drops).
    - Warm latency: < 50 milliseconds (FastAPI response).

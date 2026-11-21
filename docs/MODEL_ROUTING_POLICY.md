@@ -41,8 +41,8 @@ To prevent **confirmation bias** and shared model family blind spots, the Indepe
 
 $$\text{ModelFamily}(\text{Critic}) \neq \text{ModelFamily}(\text{Generator})$$
 
-- If Generator is **Groq Llama** (`llama-3.3-70b-versatile`), the Critic must be **Google Gemini** (`gemini-3.8-flash`) or **Groq Qwen** (`qwen-2.5-coder-32b`).
-- If Generator is **Google Gemini**, the Critic must be **Groq Llama** or **Groq Qwen**.
+- If Generator is **Groq GPT-OSS** (`openai/gpt-oss-120b`), the Critic must be **Google Gemini** (`gemini-3.8-flash`) or **Groq Qwen** (`qwen/qwen3.8-27b`).
+- If Generator is **Google Gemini**, the Critic must be **Groq GPT-OSS** or **Groq Qwen**.
 - In offline deterministic test environments, independent specialized prompts and assertion rules enforce this separation.
 
 ### 2.2 Fail-Closed Zero-Price Invariant
@@ -61,6 +61,6 @@ The router evaluates model-specific quotas before dispatching requests:
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | `gemini-3.8-flash` | Google | 15 | 1,500 | 1,000,000 | 10,000,000 | `retry-after` on HTTP 429 |
 | `gemini-3.5-flash-lite` | Google | 30 | 1,500 | 1,000,000 | 10,000,000 | `retry-after` on HTTP 429 |
-| `llama-3.3-70b-versatile` | Groq | 30 | 1,000 | 12,000 | 100,000 | `x-ratelimit-remaining-tokens < 500` trips breaker |
-| `llama-3.1-8b-instant` | Groq | 30 | 14,400 | 6,000 | 500,000 | `x-ratelimit-remaining-requests == 0` trips breaker |
-| `qwen-2.5-coder-32b` | Groq | 30 | 1,000 | 6,000 | 100,000 | `x-ratelimit-remaining-tokens < 500` trips breaker |
+| `openai/gpt-oss-120b` | Groq | 30 | 1,000 | 8,000 | 100,000 | `x-ratelimit-remaining-tokens < 500` trips breaker |
+| `openai/gpt-oss-20b` | Groq | 30 | 14,400 | 6,000 | 500,000 | `x-ratelimit-remaining-requests == 0` trips breaker |
+| `qwen/qwen3.8-27b` | Groq | 30 | 1,000 | 6,000 | 100,000 | `x-ratelimit-remaining-tokens < 500` trips breaker |

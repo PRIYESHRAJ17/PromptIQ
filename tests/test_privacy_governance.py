@@ -15,7 +15,7 @@ def test_public_and_general_data_allowed_on_standard_providers():
         DataSensitivityLevel.PUBLIC, "google", "gemini-3.8-flash"
     )
     PrivacyGovernanceService.validate_task_privacy(
-        DataSensitivityLevel.GENERAL, "groq", "llama-3.3-70b-versatile"
+        DataSensitivityLevel.GENERAL, "groq", "openai/gpt-oss-120b"
     )
 
 
@@ -30,12 +30,16 @@ def test_confidential_data_rejects_google_free_tier():
 
 def test_restricted_data_rejects_all_external_free_providers():
     """Verifies that RESTRICTED compliance data is blocked from all external cloud APIs."""
-    for provider, model in [("google", "gemini-3.8-flash"), ("groq", "llama-3.3-70b-versatile"), ("openrouter", "meta-llama/llama-3.3-70b-instruct:free")]:
+    for provider, model in [("google", "gemini-3.8-flash"), ("groq", "openai/gpt-oss-120b"), ("openrouter", "meta-llama/llama-3.3-70b-instruct:free")]:
         with pytest.raises(PrivacyPolicyViolationError) as exc_info:
             PrivacyGovernanceService.validate_task_privacy(
                 DataSensitivityLevel.RESTRICTED, provider, model
             )
         assert "RESTRICTED data requires zero-egress internal execution" in str(exc_info.value)
+
+    assert PrivacyGovernanceService.is_generative_ai_permitted(DataSensitivityLevel.RESTRICTED) is False
+    assert PrivacyGovernanceService.is_generative_ai_permitted(DataSensitivityLevel.CONFIDENTIAL) is True
+    assert PrivacyGovernanceService.is_generative_ai_permitted(DataSensitivityLevel.GENERAL) is True
 
 
 def test_filter_models_for_sensitivity():

@@ -3,10 +3,14 @@
 import pytest
 
 from promptiq.core.cost_gate import CostEligibilityGate, InfrastructureCostViolationError
-from promptiq.core.exceptions import CapacityExhaustedError
+from promptiq.core.exceptions import CapacityExhaustedError, ZeroPriceViolationError
 from promptiq.eval.tournament import ModelTournamentRunner
+from promptiq.gateway.eligibility import RETIRED_MODELS, verify_zero_price_route
 from promptiq.gateway.governor import CapacityGovernor
+from promptiq.gateway.model_pool import ModelPoolService
+from promptiq.orchestrator.router import DynamicModelRouter
 from promptiq.registry.model_registry import ModelRegistryService
+from promptiq.schemas.model_pool import DataSensitivityLevel, EligibilityState, LogicalModelRole
 
 
 def test_model_registry_eligibility_and_retirements():
@@ -20,34 +24,65 @@ def test_model_registry_eligibility_and_retirements():
     assert gemini_2.eligibility_status == "retired_shutdown"
     assert "2026-06-01" in (gemini_2.retirement_date or "")
 
+    # Groq retired models are shutdown and NOT marked as active zero-price route
+    for ret_id in ["llama-3.3-70b-versatile", "llama-3.1-8b-instant", "qwen-2.5-coder-32b"]:
+        m = model_map[ret_id]
+        assert m.is_zero_price is False
+        assert m.eligibility_status == "retired_shutdown"
+        assert "2026-10-31" in (m.retirement_date or "")
+
     # Gemini 3.8 Flash is active zero-price
     gemini_38 = model_map["gemini-3.8-flash"]
     assert gemini_38.is_zero_price is True
     assert gemini_38.eligibility_status == "eligible_zero_price"
     assert gemini_38.rate_limits["rpd"] == 1500
 
-    # Groq Llama 3.3 70B has exact 1,000 RPD and 100,000 TPD limits (NOT generic 14,400)
-    llama_70b = model_map["llama-3.3-70b-versatile"]
-    assert llama_70b.rate_limits["rpd"] == 1000
-    assert llama_70b.rate_limits["tpd"] == 100000
+    # Groq OpenAI GPT-OSS 120B has exact 1,000 RPD and 100,000 TPD limits
+    gpt_120b = model_map["openai/gpt-oss-120b"]
+    assert gpt_120b.is_zero_price is True
+    assert gpt_120b.rate_limits["rpd"] == 1000
+    assert gpt_120b.rate_limits["tpd"] == 100000
 
-    # Groq Llama 3.1 8B has 14,400 RPD
-    llama_8b = model_map["llama-3.1-8b-instant"]
-    assert llama_8b.rate_limits["rpd"] == 14400
-    assert llama_8b.rate_limits["tpd"] == 500000
+    # Groq OpenAI GPT-OSS 20B has 14,400 RPD
+    gpt_20b = model_map["openai/gpt-oss-20b"]
+    assert gpt_20b.is_zero_price is True
+    assert gpt_20b.rate_limits["rpd"] == 14400
+    assert gpt_20b.rate_limits["tpd"] == 500000
+
+
+def test_retired_groq_and_gemini_models_strictly_rejected():
+    """Regression test: retired models must be refused by route verification and never entered into active pool."""
+    for retired_id in ["llama-3.3-70b-versatile", "llama-3.1-8b-instant", "qwen-2.5-coder-32b", "gemini-2.0-flash"]:
+        assert retired_id in RETIRED_MODELS
+        # Route check must strictly fail
+        with pytest.raises(ZeroPriceViolationError) as exc_info:
+            verify_zero_price_route(provider="groq" if "llama" in retired_id or "qwen" in retired_id else "gemini", model_id=retired_id)
+        assert "retired" in exc_info.value.message.lower()
+
+        # Model pool record must be RETIRED
+        pool_record = ModelPoolService.get_model(retired_id)
+        assert pool_record is not None
+        assert pool_record.eligibility_state == EligibilityState.RETIRED
+        assert pool_record.is_zero_price is False
+
+    # Router must never select any retired model for any role
+    for role in [LogicalModelRole.FAST, LogicalModelRole.REASONING, LogicalModelRole.CRITIC]:
+        selected = DynamicModelRouter.select_model_for_role(role=role, sensitivity=DataSensitivityLevel.GENERAL)
+        assert selected.model_id not in RETIRED_MODELS
+        assert selected.eligibility_state == EligibilityState.VERIFIED_ELIGIBLE
 
 
 def test_capacity_governor_model_specific_quotas():
     """Verifies that model-specific RPM/RPD/TPM/TPD rate limits are strictly enforced."""
     gov = CapacityGovernor()
 
-    # Simulate 30 requests for llama-3.3-70b-versatile (reaches RPM limit)
+    # Simulate 30 requests for openai/gpt-oss-120b (reaches RPM limit)
     for _ in range(30):
-        gov.record_model_usage("llama-3.3-70b-versatile", tokens_used=100)
+        gov.record_model_usage("openai/gpt-oss-120b", tokens_used=100)
 
     # 31st request MUST raise CapacityExhaustedError
     with pytest.raises(CapacityExhaustedError) as exc_info:
-        gov.check_model_quota("llama-3.3-70b-versatile")
+        gov.check_model_quota("openai/gpt-oss-120b")
     assert "rpm" in exc_info.value.message.lower() or "rate limit" in exc_info.value.message.lower()
 
 
@@ -56,7 +91,7 @@ def test_capacity_governor_header_inspection():
     gov = CapacityGovernor()
 
     # Provider returns HTTP 429 with Retry-After: 45
-    gov.inspect_response_headers("groq", "llama-3.3-70b-versatile", {"retry-after": "45"}, status_code=429)
+    gov.inspect_response_headers("groq", "openai/gpt-oss-120b", {"retry-after": "45"}, status_code=429)
 
     # Circuit breaker must be active
     with pytest.raises(CapacityExhaustedError) as exc_info:
@@ -71,8 +106,13 @@ def test_cost_eligibility_gate():
     assert neon_audit["is_zero_spend_guaranteed"] is True
     CostEligibilityGate.verify_resource_provisioning("neon_postgres")
 
-    # Cloudflare workers is approved
+    # Cloudflare workers is approved for edge proxy
     CostEligibilityGate.verify_resource_provisioning("cloudflare_workers")
+
+    # Render web service is NOT approved for production backend
+    with pytest.raises(InfrastructureCostViolationError) as exc_info:
+        CostEligibilityGate.verify_resource_provisioning("render_web_service")
+    assert "rejected" in exc_info.value.message.lower()
 
     # Google Cloud Run requires credit card and auto-charges overage; MUST be rejected for auto-provisioning
     with pytest.raises(InfrastructureCostViolationError) as exc_info:

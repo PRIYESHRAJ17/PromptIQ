@@ -336,8 +336,14 @@ class ModelTournamentRunner:
         }
 
         return {
-            "evaluation_type": "model_combination_quality_evaluation",
+            "evaluation_type": "deterministic_synthetic_configuration_benchmark",
+            "evaluation_tier": "synthetic_configuration_mock",
             "sample_size": len(cases),
+            "disclaimer": (
+                "These metrics represent deterministic synthetic configuration benchmarks evaluated against "
+                "the internal mock harness. They MUST NOT be presented as real-world multi-model AI accuracy "
+                "or live provider evaluations. Live provider evaluation status is UNVERIFIED pending operator keys."
+            ),
             "configurations_evaluated": results_by_config,
             "recommendation": "PromptIQ implements Configuration C as default (STANDARD profile) and Configuration D for DEEP/HIGH_RISK profiles.",
         }

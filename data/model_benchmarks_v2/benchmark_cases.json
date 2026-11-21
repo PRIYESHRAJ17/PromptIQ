@@ -227,8 +227,8 @@
     "category": "multi_stage_consistency",
     "title": "Cross-Turn Entity and Constraint Continuity",
     "description": "Maintain entity identifiers and constraints without drift across consecutive turns.",
-    "prompt": "Turn 1 established: Project ID is 'PRJ-DELTA-44', Primary Model is 'llama-3.3-70b-versatile', Invariant is 'Zero-Price'. Turn 2 asked for target compilation. Ensure Turn 2 output explicitly references 'PRJ-DELTA-44' and preserves the 'Zero-Price' invariant without hallucinating a new project ID.",
-    "expected_patterns": ["PRJ-DELTA-44", "llama-3.3-70b-versatile", "Zero-Price"],
+    "prompt": "Turn 1 established: Project ID is 'PRJ-DELTA-44', Primary Model is 'openai/gpt-oss-120b', Invariant is 'Zero-Price'. Turn 2 asked for target compilation. Ensure Turn 2 output explicitly references 'PRJ-DELTA-44' and preserves the 'Zero-Price' invariant without hallucinating a new project ID.",
+    "expected_patterns": ["PRJ-DELTA-44", "openai/gpt-oss-120b", "Zero-Price"],
     "prohibited_patterns": ["PRJ-ALPHA", "PRJ-999"],
     "deterministic_criteria": {
       "entity_continuity": true

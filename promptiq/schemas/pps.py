@@ -15,7 +15,7 @@ class IntentSchema(BaseModel):
 class TargetProfileSchema(BaseModel):
     host: str = Field(..., description="e.g. google-antigravity, claude-code, cursor, openai-codex, gemini-cli")
     provider: str = Field(..., description="e.g. google, anthropic, openai")
-    model_id: str = Field(..., description="e.g. gemini-2.0-flash, claude-3-7-sonnet, gpt-4o")
+    model_id: str = Field(..., description="e.g. gemini-3.8-flash, claude-3-7-sonnet, gpt-4o")
     route: str = Field(default="hosted_adapter", description="Access route")
     runtime_version: str | None = None
     tools_available: list[str] = Field(default_factory=list)

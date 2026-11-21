@@ -57,7 +57,7 @@ def test_antigravity_target_adapter(sample_approved_constitution):
     target_prof = TargetProfileSchema(
         host="google-antigravity",
         provider="google",
-        model_id="gemini-2.0-flash",
+        model_id="gemini-3.8-flash",
     )
     pps = PPSBuilder.build_from_constitution(sample_approved_constitution, target_prof)
     adapter = AntigravityTargetAdapter()

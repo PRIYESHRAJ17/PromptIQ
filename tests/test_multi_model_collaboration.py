@@ -105,3 +105,51 @@ async def test_deterministic_verifier_catches_frontend_code():
     # Verifier must catch forbidden pattern or pass clean mock
     verifier_steps = [s for s in audit.steps if s.role == LogicalModelRole.VERIFIER]
     assert len(verifier_steps) == 1
+
+
+@pytest.mark.asyncio
+async def test_collaboration_restricted_data_handling():
+    """Verifies that RESTRICTED compliance data enforces deterministic processing only."""
+    final_text, audit = await MultiModelCollaborationPipeline.execute_workflow(
+        task_id="task-restr-1",
+        project_id="proj-104",
+        user_id="user-1",
+        prompt="Synthesize database schema invariants for HIPAA health records.",
+        profile=ExecutionProfile.STANDARD,
+        sensitivity=DataSensitivityLevel.RESTRICTED,
+    )
+
+    assert audit.data_sensitivity == DataSensitivityLevel.RESTRICTED
+    assert "RESTRICTED DATA SPECIFICATION (DETERMINISTIC PROCESSING ONLY)" in final_text
+    assert "External generative AI synthesis is withheld" in final_text
+
+
+@pytest.mark.asyncio
+async def test_collaboration_critic_failure_marks_audit_failed(monkeypatch):
+    """Verifies that a critic failure is never masked as approval and fails the audit."""
+    from promptiq.gateway.gateway import inference_gateway
+    from promptiq.gateway.models import InferenceRequest
+
+    orig_generate = inference_gateway.generate
+
+    async def mock_fail_critic(request: InferenceRequest, provider: str = "mock"):
+        if request.task_context == "critic":
+            raise RuntimeError("Critic upstream network timeout")
+        return await orig_generate(request, provider=provider)
+
+    monkeypatch.setattr(inference_gateway, "generate", mock_fail_critic)
+
+    final_text, audit = await MultiModelCollaborationPipeline.execute_workflow(
+        task_id="task-fail-crit-1",
+        project_id="proj-105",
+        user_id="user-1",
+        prompt="Generate backend data validation rules.",
+        profile=ExecutionProfile.STANDARD,
+    )
+
+    assert audit.final_status == "FAILED"
+    assert audit.consensus_status == "critic_failed"
+    critic_step = [s for s in audit.steps if s.role == LogicalModelRole.CRITIC][0]
+    assert critic_step.verification_passed is False
+    assert any("CRITIC EXECUTION FAILED" in f for f in critic_step.findings)
+    assert "WARNING: Adversarial review failed" in final_text

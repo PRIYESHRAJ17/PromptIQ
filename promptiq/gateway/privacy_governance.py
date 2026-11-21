@@ -126,3 +126,12 @@ class PrivacyGovernanceService:
                     eligible.append(m)
 
         return eligible
+
+    @classmethod
+    def is_generative_ai_permitted(cls, task_sensitivity: DataSensitivityLevel) -> bool:
+        """Determines if external generative AI synthesis is permitted for the given sensitivity.
+
+        RESTRICTED data permits only deterministic structural operations and local invariant verification.
+        External generative LLMs over public free APIs are strictly forbidden.
+        """
+        return task_sensitivity != DataSensitivityLevel.RESTRICTED

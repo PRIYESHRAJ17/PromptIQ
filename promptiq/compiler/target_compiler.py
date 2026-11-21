@@ -58,7 +58,7 @@ class TargetCompiler:
         target_profile = TargetProfileSchema(
             host=target_environment,
             provider="google" if "antigravity" in target_environment or "gemini" in target_environment else "anthropic",
-            model_id="gemini-2.0-flash",
+            model_id="gemini-3.8-flash",
             tools_available=["read_file", "write_file", "run_command", "mcp"],
             permissions=["read", "write", "execute"],
         )

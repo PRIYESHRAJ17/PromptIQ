@@ -19,7 +19,7 @@ class GroqInferenceAdapter(BaseInferenceAdapter):
     """Adapter for Groq free plan."""
 
     provider_name: str = "groq"
-    model_id: str = "llama-3.3-70b-versatile"
+    model_id: str = "openai/gpt-oss-120b"
 
     def __init__(self, model_id: str | None = None):
         if model_id:

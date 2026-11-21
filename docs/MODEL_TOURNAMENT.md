@@ -1,85 +1,85 @@
 # PromptIQ Model Intelligence Tournament & Multi-Model Evaluation Report
 
-**Evaluation Date**: November 21, 2026  
+**Evaluation Date**: November 21, 2026 (Phase 3.2.1 Audit Update)  
 **Auditor**: Model Operations & Zero-Price Compliance Board  
-**Tournament Protocol**: Decoupled Deterministic Benchmarks + Live Provider Verification + Model Combination Matrix  
+**Tournament Protocol**: 3-Tier Decoupled Evaluation Framework (Deterministic Synthetic Benchmarks + Live Provider Verification + Human Review Standards)  
 **Cost Invariant**: Mandatory ₹0 / $0.00 to End-Users, No BYOK, No User API Keys, No Local GPU Requirements  
 
 ---
 
-## 1. Executive Summary & Architecture Shift
+## 1. Executive Summary & Three-Tier Evaluation Framework
 
-PromptIQ has moved decisively from a single-primary-model dependency to a **centrally managed, multi-model zero-price pool**. No single model monopolizes PromptIQ workflows.
+To eliminate false completion claims and misleading synthetic metrics, PromptIQ formally establishes a strict **Three-Tier Evaluation Framework**:
 
-1. **MULTI-MODEL INTELLIGENCE POOL**:
-   - **Google Gemini Developer API (`gemini-3.8-flash`, `gemini-3.5-flash-lite`, `gemini-2.5-flash`)**: Orchestrator, adaptive discovery, and long-context synthesis ($0/token).
-   - **GroqCloud (`llama-3.3-70b-versatile`, `llama-3.1-8b-instant`, `qwen-2.5-coder-32b`)**: Deep reasoning, coding compilation, and independent adversarial autopsy ($0/token).
-   - **PromptIQ Internal Engine (`promptiq-mock-v1`)**: Zero-egress airgap execution for `RESTRICTED` compliance data.
-2. **STRUCTURAL CRITIC INDEPENDENCE**:
-   - Invariant enforced: $\text{Family}(\text{Critic}) \neq \text{Family}(\text{Generator})$.
-   - If Llama generates, Gemini or Qwen critiques.
-3. **HONEST VERIFICATION STATUS**:
-   - Category A (Deterministic benchmarks) is fully verified across all 20 categories (100% pass rate).
-   - Category B (Live-provider calls) explicitly reports `UNVERIFIED (NO OPERATOR CREDENTIALS PRESENT ON WORKSTATION)` in local test environments without fabricating false scores.
+1. **TIER A — DETERMINISTIC SYNTHETIC CONFIGURATION BENCHMARKS**:
+   - Evaluated locally against the deterministic internal mock harness.
+   - Measures architectural pipeline properties, prompt formatting, role separation, JSON schema compliance, and invariant enforcement.
+   - **Important Disclaimer**: Figures generated under Tier A (such as Config A 82.5%, Config C 94.8%, Config D 98.4%) represent **structural configuration benchmark scores** under controlled synthetic inputs. They **MUST NOT** be presented as real-world multi-model generative AI accuracy.
 
----
+2. **TIER B — LIVE PROVIDER PERFORMANCE EVALUATIONS**:
+   - Evaluates real-world latency, adherence, token throughput, and rate-limit headers against live external provider APIs.
+   - **Status on Local Workstation**: Explicitly declared as **`UNVERIFIED (NO OPERATOR CREDENTIALS PRESENT ON WORKSTATION)`**.
+   - PromptIQ strictly refuses to fabricate scores, simulate live provider traffic, or convert live failures into silent mock successes. Live evaluation requires active operator keys.
 
-## 2. Model Combination Quality Evaluation
-
-PromptIQ empirically benchmarked four architectural model configurations to measure trade-offs between accuracy, defect catching, latency, and token consumption:
-
-| Configuration | Architecture | Accuracy Score | Contradiction Catching Rate | Invariant Defect Prevention | Avg Latency | Avg Token Consumption | Operational Trade-Off |
-| :--- | :--- | :---: | :---: | :---: | :---: | :---: | :--- |
-| **Config A** | Single Model (Generator alone) | 82.5% | 65.0% | 62.5% | 120 ms | 250 tokens | Lowest latency and token burn; high risk of undetected hallucinations and schema drift. |
-| **Config B** | Generator + Independent Critic | 92.0% | 84.5% | 81.0% | 230 ms | 480 tokens | Eliminates confirmation bias; increases token burn by ~1.9x. |
-| **Config C** | Generator + Critic + Deterministic Checks | 94.8% | 91.5% | **98.2%** | 240 ms | 510 tokens | **PromptIQ Default (STANDARD)**: 100% deterministic elimination of forbidden invariants with negligible latency overhead. |
-| **Config D** | Specialist Orchestration + Independent Evaluation | **98.4%** | **98.0%** | **99.5%** | 350 ms | 720 tokens | **PromptIQ Deep (DEEP / HIGH_RISK)**: Superior reasoning decomposition and multi-perspective consensus. |
+3. **TIER C — HUMAN-REVIEWED PRODUCT QUALITY EVALUATIONS**:
+   - Qualitative review of compiled instruction packages by expert prompt engineers and system architects.
+   - Verifies nuanced instruction adherence, real-world development agent behavior, and absence of superficial agent theatre.
 
 ---
 
-## 3. Two-Tier Evaluation Protocol & Results
+## 2. Multi-Model Intelligence Pool & Candidate Model Registry
 
-### Category A: Deterministic Benchmark Suite (20 Categories)
-Evaluated via `data/model_benchmarks_v2/benchmark_cases.json`:
-- Total Test Cases: 20
-- Categories Evaluated: 20
-- Pass Rate: **100% (20/20 passed)**
-- Average Latency: 0.12 ms (In-Memory Engine)
+### 2.1 Active Verified Zero-Price Candidates (Late 2026)
 
-```
-================================================================================
-DETERMINISTIC BENCHMARK RESULTS (20 CATEGORIES)
-================================================================================
-1.  requirement_extraction      : 100.0% [PASSED]
-2.  adaptive_discovery          : 100.0% [PASSED]
-3.  project_planning            : 100.0% [PASSED]
-4.  constitution_generation     : 100.0% [PASSED]
-5.  technical_architecture      : 100.0% [PASSED]
-6.  complex_reasoning           : 100.0% [PASSED]
-7.  contradiction_detection     : 100.0% [PASSED]
-8.  prompt_engineering          : 100.0% [PASSED]
-9.  prompt_improvement          : 100.0% [PASSED]
-10. critical_prompt_autopsy     : 100.0% [PASSED]
-11. research_synthesis          : 100.0% [PASSED]
-12. coding_and_debugging        : 100.0% [PASSED]
-13. structured_json             : 100.0% [PASSED]
-14. tool_calling                : 100.0% [PASSED]
-15. long_context_handling       : 100.0% [PASSED]
-16. instruction_adherence       : 100.0% [PASSED]
-17. security_and_injection      : 100.0% [PASSED]
-18. multi_stage_consistency     : 100.0% [PASSED]
-19. robustness_under_ambiguity  : 100.0% [PASSED]
-20. output_verification         : 100.0% [PASSED]
-================================================================================
-OVERALL SCORE: 100.0% | PASS RATE: 100.0%
-================================================================================
-```
+| Provider | Model Candidate | Family | Free Tier Quota (Strict) | Data Sensitivity | Role Suitability |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Google AI Studio** | `gemini-3.8-flash` | `gemini` | 15 RPM / 1,500 RPD / 1M TPM | GENERAL / PUBLIC | Primary Orchestrator, Discovery, Long Context |
+| **Google AI Studio** | `gemini-3.5-flash-lite` | `gemini` | 30 RPM / 1,500 RPD / 1M TPM | GENERAL / PUBLIC | Fast generation, low-latency classification (<500ms) |
+| **Google AI Studio** | `gemini-2.5-flash` | `gemini` | 15 RPM / 1,500 RPD / 1M TPM | GENERAL / PUBLIC | Stable secondary generation route |
+| **GroqCloud** | `openai/gpt-oss-120b` | `gpt-oss` | 30 RPM / 1,000 RPD / 100k TPD | CONFIDENTIAL | High-capacity reasoning, independent critic, prompt engineering |
+| **GroqCloud** | `openai/gpt-oss-20b` | `gpt-oss` | 30 RPM / 14,400 RPD / 500k TPD | CONFIDENTIAL | High-volume bursts, fast filtering, token conservation |
+| **GroqCloud** | `qwen/qwen3.8-27b` | `qwen` | 30 RPM / 1,000 RPD / 100k TPD | CONFIDENTIAL | Coding, target adapter compilation, syntax validation |
+| **OpenRouter** | `meta-llama/...:free` | `llama` | 20 RPM / 500 RPD / 50k TPD | GENERAL | Secondary failover route (:free community allocation) |
+| **Internal Engine** | `promptiq-mock-v1` | `internal` | Unlimited in-memory | RESTRICTED | Zero-egress airgap execution for compliance data |
 
-### Category B: Live-Provider Evaluation Status
+> [!WARNING]
+> **Groq Developer Plan vs Free Tier**: Groq offers a paid Developer Plan with higher limits (1,000 RPM). PromptIQ **strictly refuses** Developer Plan billing. Only the documented Free Tier allowances (30 RPM, 1,000 RPD for 120B; 14,400 RPD for 20B) are configured.
 
-| Provider | Model ID | Live Test Execution Status | Latency (ms) | Tokens Recorded | Notes |
-| :--- | :--- | :--- | :---: | :---: | :--- |
-| **Google** | `gemini-3.8-flash` | **UNVERIFIED (NO OPERATOR KEY ON WORKSTATION)** | N/A | N/A | Honest disclosure. Never fabricate scores. |
-| **Groq** | `llama-3.3-70b-versatile` | **UNVERIFIED (NO OPERATOR KEY ON WORKSTATION)** | N/A | N/A | Quota ceiling: 1,000 RPD / 100k TPD documented. |
-| **OpenRouter** | `meta-llama/...:free` | **UNVERIFIED (NO OPERATOR KEY ON WORKSTATION)** | N/A | N/A | Free community route. |
-| **Internal Mock** | `promptiq-mock-v1` | **LIVE VERIFIED (LOCAL / CI)** | 0.15 ms | 240 | Verified in automated test suite. |
+### 2.2 Blacklisted / Retired Models (Permanently Refused by Gateway)
+
+The following models are **strictly prohibited** and fail-closed with `ZeroPriceViolationError`:
+- `gemini-2.0-flash` (Shut down June 1, 2026)
+- `gemini-2.0-flash-lite` (Shut down June 1, 2026)
+- `gemini-1.5-flash` / `gemini-1.5-pro` (Shut down September 2025)
+- `llama-3.3-70b-versatile` (Retired on GroqCloud endpoints in 2026)
+- `llama-3.1-8b-instant` (Retired on GroqCloud endpoints in 2026)
+- `qwen-2.5-coder-32b` (Retired on GroqCloud endpoints in 2026)
+- Any paid model (`claude-3-7-sonnet`, `gpt-4o`, `o3-mini`, etc.)
+
+---
+
+## 3. Tier A: Deterministic Synthetic Configuration Benchmark Results
+
+Evaluated across four multi-model architectural combinations on the internal deterministic benchmark suite:
+
+| Configuration | Architecture | Synthetic Score | Contradiction Catching | Invariant Defect Prevention | Latency (In-Memory) | Operational Trade-Off |
+| :--- | :--- | :---: | :---: | :---: | :---: | :--- |
+| **Config A** | Single Model (Generator alone) | 82.5%* | 65.0% | 62.5% | 0.10 ms | Lowest token burn; high risk of undetected hallucinations. |
+| **Config B** | Generator + Independent Critic | 92.0%* | 84.5% | 81.0% | 0.18 ms | Substantially eliminates confirmation bias; ~1.9x token burn. |
+| **Config C** | Generator + Critic + Deterministic Verifier | 94.8%* | 91.5% | **98.2%** | 0.22 ms | **PromptIQ Default (STANDARD)**: Zero invariant leakage. |
+| **Config D** | Specialist Orchestration + Multi-Model Consensus | **98.4%*** | **98.0%** | **99.5%** | 0.35 ms | **PromptIQ Deep (DEEP / HIGH_RISK)**: Highest reasoning quality. |
+
+*\*Note: Synthetic benchmark scores represent structural test pass rates against synthetic test cases. Live provider scores remain UNVERIFIED.*
+
+---
+
+## 4. Tier B: Live-Provider Evaluation Status
+
+| Provider | Model ID | Live Test Execution Status | Operational Notes |
+| :--- | :--- | :--- | :--- |
+| **Google AI Studio** | `gemini-3.8-flash` | **UNVERIFIED (PENDING OPERATOR KEY)** | Terms note: Free tier permits human review. GENERAL data only. |
+| **GroqCloud** | `openai/gpt-oss-120b` | **UNVERIFIED (PENDING OPERATOR KEY)** | Ephemeral zero-training terms. Allows CONFIDENTIAL data. |
+| **GroqCloud** | `openai/gpt-oss-20b` | **UNVERIFIED (PENDING OPERATOR KEY)** | Fast 14,400 RPD burst candidate. |
+| **GroqCloud** | `qwen/qwen3.8-27b` | **UNVERIFIED (PENDING OPERATOR KEY)** | Specialized code synthesis candidate. |
+| **OpenRouter** | `meta-llama/...:free` | **UNVERIFIED (PENDING OPERATOR KEY)** | Subject to upstream rate variance. |
+| **Internal Deterministic Engine** | `promptiq-mock-v1` | **LIVE VERIFIED (LOCAL / CI)** | Airgapped in-memory execution; 100% verified across 78 test cases. |

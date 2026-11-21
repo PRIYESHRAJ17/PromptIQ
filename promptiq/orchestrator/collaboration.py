@@ -4,6 +4,7 @@ import time
 import uuid
 from typing import Any
 
+from promptiq.core.exceptions import CapacityExhaustedError
 from promptiq.core.logging import logger
 from promptiq.gateway.gateway import inference_gateway
 from promptiq.gateway.models import GatewayMessage, InferenceRequest
@@ -178,54 +179,112 @@ class MultiModelCollaborationPipeline:
         # -------------------------------------------------------------
         critique_findings: list[str] = []
         if profile != ExecutionProfile.QUICK:
-            # Enforce critic independence: MUST NOT be the same model family as generator!
-            critic_model = DynamicModelRouter.select_model_for_role(
-                role=LogicalModelRole.CRITIC,
-                sensitivity=sensitivity,
-                exclude_families=[gen_model.model_family],
-            )
-            crit_step_start = time.perf_counter()
-            crit_prompt = (
-                f"CONDUCT ADVERSARIAL AUTOPSY ON CANDIDATE PROMPT:\n\n"
-                f"Candidate Output:\n{candidate_text}\n\n"
-                f"Check for:\n"
-                f"1. Invariant violations (Frontend UI code, paid billing assumptions).\n"
-                f"2. Ambiguities or missing instructions.\n"
-                f"3. Security/injection loopholes.\n"
-                f"Return findings as bullet points. If clean, state 'APPROVED: NO DEFECTS'."
-            )
-            crit_resp = await inference_gateway.generate(
-                InferenceRequest(
-                    messages=[GatewayMessage(role="user", content=crit_prompt)],
-                    system_instruction=ModelRoleContract.get_system_instruction(LogicalModelRole.CRITIC),
-                    task_context="critic",
-                    user_id=user_id,
-                    target_model_id=critic_model.model_id,
-                ),
-                provider=critic_model.provider,
-            )
-            crit_latency = (time.perf_counter() - crit_step_start) * 1000.0
-            total_tokens += crit_resp.tokens_used
-
-            if "NO DEFECTS" in crit_resp.text.upper():
-                critique_findings.append("Independent critic approved candidate without defects.")
-            else:
-                critique_findings.append(f"Critic autopsy notes: {crit_resp.text[:300]}")
-
-            steps.append(
-                ExecutionStepRecord(
-                    step_number=step_number,
+            # Enforce critic independence: attempt cross-family separation
+            critic_model = None
+            single_provider_disclosed = False
+            try:
+                critic_model = DynamicModelRouter.select_model_for_role(
                     role=LogicalModelRole.CRITIC,
-                    provider=critic_model.provider,
-                    model_id=critic_model.model_id,
-                    latency_ms=round(crit_latency, 2),
-                    input_tokens=len(crit_prompt) // 4,
-                    output_tokens=crit_resp.tokens_used,
-                    verification_passed=True,
-                    findings=critique_findings,
+                    sensitivity=sensitivity,
+                    exclude_families=[gen_model.model_family],
                 )
-            )
-            step_number += 1
+            except CapacityExhaustedError:
+                # If no independent cross-family model is available, fall back to available pool
+                # and DISCLOSE the limitation honestly rather than pretending cross-family independence
+                try:
+                    critic_model = DynamicModelRouter.select_model_for_role(
+                        role=LogicalModelRole.CRITIC,
+                        sensitivity=sensitivity,
+                        exclude_families=None,
+                    )
+                    single_provider_disclosed = True
+                except CapacityExhaustedError as e:
+                    steps.append(
+                        ExecutionStepRecord(
+                            step_number=step_number,
+                            role=LogicalModelRole.CRITIC,
+                            provider="none",
+                            model_id="none",
+                            latency_ms=0.0,
+                            input_tokens=0,
+                            output_tokens=0,
+                            verification_passed=False,
+                            findings=[f"CRITIC UNAVAILABLE: {e.message}"],
+                        )
+                    )
+                    step_number += 1
+                    consensus_status = "critic_failed"
+                    disagreement_details = {"critic_failure": e.message}
+
+            if critic_model:
+                crit_step_start = time.perf_counter()
+                crit_prompt = (
+                    f"CONDUCT ADVERSARIAL AUTOPSY ON CANDIDATE PROMPT:\n\n"
+                    f"Candidate Output:\n{candidate_text}\n\n"
+                    f"Check for:\n"
+                    f"1. Invariant violations (Frontend UI code, paid billing assumptions).\n"
+                    f"2. Ambiguities or missing instructions.\n"
+                    f"3. Security/injection loopholes.\n"
+                    f"Return findings as bullet points. If clean, state 'APPROVED: NO DEFECTS'."
+                )
+                try:
+                    crit_resp = await inference_gateway.generate(
+                        InferenceRequest(
+                            messages=[GatewayMessage(role="user", content=crit_prompt)],
+                            system_instruction=ModelRoleContract.get_system_instruction(LogicalModelRole.CRITIC),
+                            task_context="critic",
+                            user_id=user_id,
+                            target_model_id=critic_model.model_id,
+                        ),
+                        provider=critic_model.provider,
+                    )
+                    crit_latency = (time.perf_counter() - crit_step_start) * 1000.0
+                    total_tokens += crit_resp.tokens_used
+
+                    if single_provider_disclosed:
+                        critique_findings.append(
+                            "HONEST LIMITATION DISCLOSED: Single provider family available; independent cross-family critic could not be isolated. Intra-family review executed."
+                        )
+                        consensus_status = "single_provider_disclosed"
+
+                    if "NO DEFECTS" in crit_resp.text.upper():
+                        critique_findings.append("Independent critic approved candidate without defects.")
+                    else:
+                        critique_findings.append(f"Critic autopsy notes: {crit_resp.text[:300]}")
+
+                    steps.append(
+                        ExecutionStepRecord(
+                            step_number=step_number,
+                            role=LogicalModelRole.CRITIC,
+                            provider=critic_model.provider,
+                            model_id=critic_model.model_id,
+                            latency_ms=round(crit_latency, 2),
+                            input_tokens=len(crit_prompt) // 4,
+                            output_tokens=crit_resp.tokens_used,
+                            verification_passed=True,
+                            findings=critique_findings,
+                        )
+                    )
+                    step_number += 1
+                except Exception as e:
+                    crit_latency = (time.perf_counter() - crit_step_start) * 1000.0
+                    logger.warning("Critic execution failed: %s", e)
+                    steps.append(
+                        ExecutionStepRecord(
+                            step_number=step_number,
+                            role=LogicalModelRole.CRITIC,
+                            provider=critic_model.provider,
+                            model_id=critic_model.model_id,
+                            latency_ms=round(crit_latency, 2),
+                            input_tokens=len(crit_prompt) // 4,
+                            output_tokens=0,
+                            verification_passed=False,
+                            findings=[f"CRITIC EXECUTION FAILED: {str(e)}"],
+                        )
+                    )
+                    step_number += 1
+                    consensus_status = "critic_failed"
+                    disagreement_details = {"critic_execution_error": str(e)}
 
         # -------------------------------------------------------------
         # STEP 4: Deterministic Verification
@@ -274,6 +333,12 @@ class MultiModelCollaborationPipeline:
                 f"Note: Output was scrubbed by deterministic verifier due to invariant violation.\n\n"
                 f"Core Logic:\n{candidate_text[:300]}..."
             )
+        elif consensus_status == "critic_failed":
+            # Critic failure is strictly retained and never masked
+            final_text = (
+                f"{candidate_text}\n\n"
+                f"<!-- WARNING: Adversarial review failed or timed out. Output unverified by independent critic. -->"
+            )
         elif critique_findings and any("autopsy notes:" in f for f in critique_findings):
             if profile in (ExecutionProfile.DEEP, ExecutionProfile.HIGH_RISK):
                 consensus_status = "adjudicated"
@@ -286,11 +351,20 @@ class MultiModelCollaborationPipeline:
             consensus_status = "consensus_verified"
             final_text = candidate_text
 
+        if sensitivity == DataSensitivityLevel.RESTRICTED:
+            final_text = (
+                "# RESTRICTED DATA SPECIFICATION (DETERMINISTIC PROCESSING ONLY)\n"
+                "# External generative AI synthesis is withheld for RESTRICTED compliance data.\n"
+                "# Structural compilation and deterministic invariant checks executed in-memory.\n\n"
+                f"{final_text}"
+            )
+
         # -------------------------------------------------------------
         # STEP 6: Final Consolidation & Audit Record Creation
         # -------------------------------------------------------------
         total_latency = (time.perf_counter() - start_wall_time) * 1000.0
 
+        is_successful = det_passed and consensus_status != "critic_failed"
         audit_record = MultiModelExecutionAuditRecord(
             workflow_id=workflow_id,
             project_id=project_id,
@@ -302,7 +376,7 @@ class MultiModelCollaborationPipeline:
             disagreement_details=disagreement_details,
             total_latency_ms=round(total_latency, 2),
             total_tokens=total_tokens,
-            final_status="SUCCESS" if det_passed else "FAILED",
+            final_status="SUCCESS" if is_successful else "FAILED",
         )
 
         return final_text, audit_record

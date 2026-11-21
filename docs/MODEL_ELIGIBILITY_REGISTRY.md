@@ -33,9 +33,9 @@ PromptIQ enforces nine explicit model eligibility states across all gateways and
 | **`gemini-3.8-flash`** | Google (Gemini) | 1,048,576 / 8,192 | 15 RPM / 1,500 RPD / 1M TPM / 10M TPD | Orchestrator, Discovery, Synthesis | Google AI Studio Developer API free tier. Prohibits Vertex AI billable routes. [Pricing Docs](https://ai.google.dev/gemini-api/docs/pricing) |
 | **`gemini-3.5-flash-lite`**| Google (Gemini) | 1,048,576 / 8,192 | 30 RPM / 1,500 RPD / 1M TPM / 10M TPD | Fast Model, Routine Extraction | Sub-second lightweight execution on AI Studio free tier. [Pricing Docs](https://ai.google.dev/gemini-api/docs/pricing) |
 | **`gemini-2.5-flash`** | Google (Gemini) | 1,048,576 / 8,192 | 15 RPM / 1,500 RPD / 1M TPM / 10M TPD | Secondary Generator, Continual Turns | Stable generation route on Developer API free tier. [Pricing Docs](https://ai.google.dev/gemini-api/docs/pricing) |
-| **`llama-3.3-70b-versatile`**| Groq (Llama) | 131,072 / 4,096 | 30 RPM / 1,000 RPD / 12k TPM / 100k TPD | Reasoning, Independent Critic | GroqCloud free tier on LPU hardware. Strict 100k TPD hard stop. [Groq Limits](https://console.groq.com/docs/rate-limits) |
-| **`llama-3.1-8b-instant`** | Groq (Llama) | 131,072 / 8,192 | 30 RPM / 14,400 RPD / 6k TPM / 500k TPD | Fast Burst, Classification | High-volume burst route under GroqCloud free tier. [Groq Limits](https://console.groq.com/docs/rate-limits) |
-| **`qwen-2.5-coder-32b`** | Groq (Qwen) | 131,072 / 4,096 | 30 RPM / 1,000 RPD / 6k TPM / 100k TPD | Coding, Syntax Verification | Specialized coding model on GroqCloud free tier. [Groq Limits](https://console.groq.com/docs/rate-limits) |
+| **`openai/gpt-oss-120b`** | Groq (gpt-oss) | 131,072 / 4,096 | 30 RPM / 1,000 RPD / 8k TPM / 100k TPD | Reasoning, Independent Critic | Active open-weight candidate on GroqCloud free tier. Strict 100k TPD ceiling. Paid Developer Plan excluded. [Groq Limits](https://console.groq.com/docs/rate-limits) |
+| **`openai/gpt-oss-20b`** | Groq (gpt-oss) | 131,072 / 8,192 | 30 RPM / 14,400 RPD / 6k TPM / 500k TPD | Fast Burst, Classification | High-volume burst route under GroqCloud free tier. 14,400 RPD. [Groq Limits](https://console.groq.com/docs/rate-limits) |
+| **`qwen/qwen3.8-27b`** | Groq (Qwen) | 131,072 / 4,096 | 30 RPM / 1,000 RPD / 6k TPM / 100k TPD | Coding, Syntax Verification | Specialized coding model on GroqCloud free tier, superseding legacy 2.5/3.6. [Groq Limits](https://console.groq.com/docs/rate-limits) |
 | **`promptiq-mock-v1`** | Internal (Mock) | 2,000,000 / 16,384| Unlimited / Zero-Cost | Deterministic Testing, RESTRICTED Airgap | In-memory deterministic engine. Zero external egress. Safe for all classifications. |
 
 ---
@@ -58,6 +58,9 @@ PromptIQ enforces nine explicit model eligibility states across all gateways and
 | **`gemini-2.0-flash-lite`** | Google | June 1, 2026 | **Officially shut down by Google.** Hard-blocked by gateway. |
 | **`gemini-1.5-flash`** | Google | September 30, 2025 | Decommissioned legacy generation endpoint. |
 | **`gemini-1.5-pro`** | Google | September 30, 2025 | Decommissioned; remaining Vertex route is billable ($/token). |
+| **`llama-3.3-70b-versatile`** | Groq | October 31, 2026 | **Retired on GroqCloud endpoints.** Hard-blocked by gateway. |
+| **`llama-3.1-8b-instant`** | Groq | October 31, 2026 | **Retired on GroqCloud endpoints.** Hard-blocked by gateway. |
+| **`qwen-2.5-coder-32b`** | Groq | October 31, 2026 | **Retired on GroqCloud endpoints.** Hard-blocked by gateway. |
 | **`text-davinci-003`** | OpenAI | January 4, 2024 | Legacy completions API shut down. |
 
 ---

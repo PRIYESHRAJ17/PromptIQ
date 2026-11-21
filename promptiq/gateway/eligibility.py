@@ -13,10 +13,9 @@ VERIFIED_ZERO_PRICE_ROUTES: dict[str, list[str]] = {
         "gemini-2.5-flash",
     ],
     "groq": [
-        "llama-3.3-70b-versatile",
-        "llama-3.1-8b-instant",
         "openai/gpt-oss-120b",
-        "qwen-2.5-coder-32b",
+        "openai/gpt-oss-20b",
+        "qwen/qwen3.8-27b",
     ],
     "openrouter": [
         "meta-llama/llama-3.3-70b-instruct:free",
@@ -35,6 +34,9 @@ RETIRED_MODELS: dict[str, str] = {
     "gemini-1.5-flash": "Shut down in September 2025",
     "gemini-1.5-pro": "Shut down in September 2025",
     "gemini-1.0-pro": "Shut down in early 2025",
+    "llama-3.3-70b-versatile": "Retired on GroqCloud endpoints in 2026",
+    "llama-3.1-8b-instant": "Retired on GroqCloud endpoints in 2026",
+    "qwen-2.5-coder-32b": "Retired on GroqCloud endpoints in 2026",
     "text-davinci-003": "Shut down in January 2024",
     "gpt-3.5-turbo": "Deprecated legacy model",
 }

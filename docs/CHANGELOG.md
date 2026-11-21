@@ -7,6 +7,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.3.2.1] - 2026-11-21
+
+### Phase 3.2.1: Critical Regression Correction, Model Registry Repair and Multi-Model Validation
+
+### Fixed
+- **Critical Model Registry Purge & Re-validation**:
+  - Permanently purged retired Groq models (`llama-3.3-70b-versatile`, `llama-3.1-8b-instant`, `qwen-2.5-coder-32b`) from all active zero-price routes, configurations, adapters, test fixtures, and benchmark files.
+  - Placed them into `RETIRED_MODELS` with documented shutdown notes and fail-closed gateway rejection.
+  - Integrated active open-weight candidates: `openai/gpt-oss-120b`, `openai/gpt-oss-20b`, and `qwen/qwen3.8-27b` on GroqCloud free tier.
+  - Cleaned up lingering `gemini-2.0-flash` defaults in `target_compiler.py` and `schemas/pps.py`, designating `gemini-3.8-flash` as active default.
+  - Audited and separated Groq Developer Plan limits ($/token billing) from verified free-tier developer entitlements (30 RPM, 1,000 RPD, 100k TPD).
+- **Model Eligibility Logic Hardening (`promptiq/orchestrator/router.py`)**:
+  - Router now independently enforces eligibility state (`VERIFIED_ELIGIBLE`), zero-price guarantee, route verification, and privacy compliance before selecting any candidate.
+  - Added automated regression tests strictly asserting that retired models raise `ZeroPriceViolationError` and can never be selected.
+- **Benchmark Claims Reclassification (`promptiq/eval/tournament.py`, `docs/MODEL_TOURNAMENT.md`)**:
+  - Reclassified previous 82.5%, 94.8%, and 98.4% figures as **Deterministic Synthetic Configuration Benchmark** scores evaluated against the internal mock harness.
+  - Established formal three-tier evaluation taxonomy: Tier A (Synthetic configuration tests), Tier B (Live provider evaluations, declared `UNVERIFIED` without credentials), and Tier C (Human-reviewed product evaluations).
+- **Multi-Model Collaboration Fail-Safe Handling (`promptiq/orchestrator/collaboration.py`)**:
+  - Critic failures or timeouts now explicitly set `verification_passed=False`, `consensus_status="critic_failed"`, and fail the audit (`final_status="FAILED"`).
+  - Explicitly ensured Critic prompt receives candidate output artifact (`Candidate Output:\n{candidate_text}`).
+  - When cross-family model separation is unavailable, the system honestly discloses the limitation (`consensus_status="single_provider_disclosed"`).
+- **Provider Privacy Handling (`promptiq/gateway/privacy_governance.py`)**:
+  - Documented Google AI Studio free tier terms (human review / model improvement).
+  - For `RESTRICTED` compliance workloads, external generative LLMs are strictly refused, and deterministic in-memory operations are executed with clear disclosures.
+- **Cloud Architecture & Infrastructure Matrix (`docs/CLOUD_ARCHITECTURE.md`, `promptiq/core/cost_gate.py`)**:
+  - Formally rejected Render Free (50s cold-start, ephemeral disk) and Google Cloud Run (card required, auto-charges overages) as approved zero-spend production infrastructure.
+  - Produced exhaustive 11-provider cloud comparison matrix.
+  - Evaluated Cloudflare Workers as Edge Proxy / WAF only, documenting Pyodide Wasm limits (10ms CPU limit, lack of raw TCP sockets for asyncpg).
+- **Database & External Integration Reality (`docs/INTEGRATION_VERIFICATION.md`)**:
+  - Decoupled verified workstation tests (SQLite Async, 78/78 passing) from remote interfaces (`IMPLEMENTED_NOT_LIVE_VERIFIED` for Neon Postgres, Telegram Bot, Remote MCP, Gemini, and Groq).
+
+---
+
 ## [0.3.2] - 2026-11-21
 
 ### Phase 3.2: Master Correction, Multi-Model Intelligence and Production Readiness

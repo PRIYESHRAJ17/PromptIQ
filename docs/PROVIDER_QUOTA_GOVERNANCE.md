@@ -41,9 +41,9 @@ The PromptIQ Capacity Governor implements a layered defense against provider thr
 | **`gemini-3.8-flash`** | Google AI Studio | 15 | 1,500 | 1,000,000 | 10,000,000 | Throttles on 15 RPM |
 | **`gemini-3.5-flash-lite`** | Google AI Studio | 30 | 1,500 | 1,000,000 | 10,000,000 | Throttles on 30 RPM |
 | **`gemini-2.5-flash`** | Google AI Studio | 15 | 1,500 | 1,000,000 | 10,000,000 | Throttles on 15 RPM |
-| **`llama-3.3-70b-versatile`** | GroqCloud | 30 | 1,000 | 12,000 | 100,000 | **Strict daily ceiling: 1,000 RPD or 100k TPD** |
-| **`llama-3.1-8b-instant`** | GroqCloud | 30 | 14,400 | 6,000 | 500,000 | High-volume burst route |
-| **`qwen-2.5-coder-32b`** | GroqCloud | 30 | 1,000 | 6,000 | 100,000 | Daily ceiling: 100k TPD |
+| **`openai/gpt-oss-120b`** | GroqCloud | 30 | 1,000 | 8,000 | 100,000 | **Strict daily ceiling: 1,000 RPD or 100k TPD** |
+| **`openai/gpt-oss-20b`** | GroqCloud | 30 | 14,400 | 6,000 | 500,000 | High-volume burst route (14,400 RPD) |
+| **`qwen/qwen3.8-27b`** | GroqCloud | 30 | 1,000 | 6,000 | 100,000 | Daily coding ceiling: 100k TPD |
 | **`promptiq-mock-v1`** | Internal Engine | 10,000 | 1,000,000 | 10,000,000 | 100,000,000 | Unlimited local/CI test harness |
 
 ---

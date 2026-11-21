@@ -13,11 +13,10 @@ from promptiq.core.logging import logger
 
 # Official provider rate limits on free developer tiers (strictly non-paid)
 MODEL_FREE_QUOTAS: dict[str, dict[str, int]] = {
-    # Groq free tier per-model allowances (verified against Groq Console docs)
-    "llama-3.3-70b-versatile": {"rpm": 30, "rpd": 1000, "tpm": 12000, "tpd": 100000},
-    "llama-3.1-8b-instant": {"rpm": 30, "rpd": 14400, "tpm": 6000, "tpd": 500000},
-    "qwen-2.5-coder-32b": {"rpm": 30, "rpd": 1000, "tpm": 6000, "tpd": 100000},
-    "openai/gpt-oss-120b": {"rpm": 30, "rpd": 1000, "tpm": 6000, "tpd": 100000},
+    # Groq free tier per-model allowances (verified against Groq Console docs; developer-tier paid limits strictly excluded)
+    "openai/gpt-oss-120b": {"rpm": 30, "rpd": 1000, "tpm": 8000, "tpd": 100000},
+    "openai/gpt-oss-20b": {"rpm": 30, "rpd": 14400, "tpm": 6000, "tpd": 500000},
+    "qwen/qwen3.8-27b": {"rpm": 30, "rpd": 1000, "tpm": 6000, "tpd": 100000},
     # Google AI Studio Developer API free tier per-model allowances
     "gemini-3.8-flash": {"rpm": 15, "rpd": 1500, "tpm": 1000000, "tpd": 100000000},
     "gemini-3.5-flash-lite": {"rpm": 30, "rpd": 1500, "tpm": 1000000, "tpd": 100000000},

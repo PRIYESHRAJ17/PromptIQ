@@ -31,6 +31,12 @@ def test_retired_and_paid_models_flagged():
     assert gemini_2_flash.eligibility_state == EligibilityState.RETIRED
     assert gemini_2_flash.is_zero_price is False
 
+    for groq_ret in ["llama-3.3-70b-versatile", "llama-3.1-8b-instant", "qwen-2.5-coder-32b"]:
+        m = ModelPoolService.get_model(groq_ret)
+        assert m is not None
+        assert m.eligibility_state == EligibilityState.RETIRED
+        assert m.is_zero_price is False
+
     claude_paid = ModelPoolService.get_model("claude-3-7-sonnet")
     assert claude_paid is not None
     assert claude_paid.eligibility_state == EligibilityState.INELIGIBLE_PAID
