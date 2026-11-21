@@ -1,5 +1,8 @@
-# PromptIQ Cloud Cost and Capacity Analysis — Phase 3.1 Hard Zero-Spend Audit
+# PromptIQ Cloud Cost and Capacity Analysis — Phase 3.3 Zero-Spend Audit
 
+**Revision**: 2026.11-v3.3  
+**Date**: November 21, 2026  
+**Auditor**: Cloud FinOps and Zero-Spend Governance Group  
 **Objective**: Deliver a resilient cloud intelligence backend adhering to the strict **₹0 / $0.00 recurring operating cost** invariant, with complete transparency regarding cloud provider billing mechanics.
 
 ---

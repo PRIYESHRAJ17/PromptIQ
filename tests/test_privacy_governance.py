@@ -65,3 +65,21 @@ def test_filter_models_for_sensitivity():
     # Only internal/mock permitted for RESTRICTED
     assert len(restricted_models) >= 1
     assert all(m.provider == "mock" for m in restricted_models)
+
+
+def test_audience_terms_rejection_for_minors():
+    """Verifies that Google Gemini API terms reject applications targeting minors (<18)."""
+    with pytest.raises(PrivacyPolicyViolationError) as exc_info:
+        PrivacyGovernanceService.validate_audience_terms(
+            "google", "gemini-3.8-flash", target_audience_includes_minors=True
+        )
+    assert "under 18" in str(exc_info.value)
+
+    # Groq and mock allow minor audience without raising
+    PrivacyGovernanceService.validate_audience_terms(
+        "groq", "openai/gpt-oss-120b", target_audience_includes_minors=True
+    )
+    PrivacyGovernanceService.validate_audience_terms(
+        "mock", "promptiq-mock-v1", target_audience_includes_minors=True
+    )
+

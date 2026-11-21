@@ -135,3 +135,23 @@ async def test_tournament_live_disclosure_unverified():
     assert "UNVERIFIED" in res_unverified["status"]
     assert res_unverified["sample_size"] == 0
     assert "Never manufacture scores" in res_unverified["notice"]
+
+
+def test_candidate_ineligibility_and_conditions():
+    """Verifies that candidates evaluated during Phase 3.3 have accurate non-eligible / conditional states."""
+    cerebras = ModelPoolService.get_model("cerebras/llama-3.3-70b")
+    assert cerebras is not None
+    assert cerebras.eligibility_state == EligibilityState.INELIGIBLE_BILLING
+
+    sambanova = ModelPoolService.get_model("sambanova/Meta-Llama-3.3-70B-Instruct")
+    assert sambanova is not None
+    assert sambanova.eligibility_state == EligibilityState.INELIGIBLE_TERMS
+
+    nvidia = ModelPoolService.get_model("nvidia/meta/llama-3.3-70b-instruct")
+    assert nvidia is not None
+    assert nvidia.eligibility_state == EligibilityState.INELIGIBLE_TERMS
+
+    cf_llama = ModelPoolService.get_model("@cf/meta/llama-3.1-8b-instruct")
+    assert cf_llama is not None
+    assert cf_llama.eligibility_state == EligibilityState.CONDITIONALLY_ELIGIBLE
+

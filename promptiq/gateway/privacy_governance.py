@@ -11,7 +11,10 @@ PROVIDER_PRIVACY_PROFILES: dict[str, ProviderPrivacyCard] = {
         deletion_api_available=False,
         jurisdiction="United States",
         allows_confidential_data=False,
-        privacy_notes="Google AI Studio free tier logs prompts and outputs for human review and model improvement. Rejects CONFIDENTIAL/RESTRICTED.",
+        min_operator_age=18,
+        allows_minors=False,
+        audience_restrictions="Google Gemini API Terms prohibit using services in applications directed towards or likely to be accessed by individuals under 18.",
+        privacy_notes="Google AI Studio free tier logs prompts and outputs for human review. Rejects CONFIDENTIAL/RESTRICTED and minor-directed audiences.",
     ),
     "groq": ProviderPrivacyCard(
         training_policy="no_training_opt_out_default",
@@ -19,6 +22,9 @@ PROVIDER_PRIVACY_PROFILES: dict[str, ProviderPrivacyCard] = {
         deletion_api_available=False,
         jurisdiction="United States",
         allows_confidential_data=True,
+        min_operator_age=18,
+        allows_minors=True,
+        audience_restrictions=None,
         privacy_notes="GroqCloud free tier does not train base models on user prompts. Retention 30 days for abuse detection. Allows CONFIDENTIAL.",
     ),
     "openrouter": ProviderPrivacyCard(
@@ -27,6 +33,9 @@ PROVIDER_PRIVACY_PROFILES: dict[str, ProviderPrivacyCard] = {
         deletion_api_available=False,
         jurisdiction="United States",
         allows_confidential_data=False,
+        min_operator_age=18,
+        allows_minors=False,
+        audience_restrictions="Aggregator terms pass through variable upstream policies.",
         privacy_notes="OpenRouter free tier routes to variable upstream hosts. Logs may be retained by intermediary. Rejects CONFIDENTIAL/RESTRICTED.",
     ),
     "mock": ProviderPrivacyCard(
@@ -35,7 +44,10 @@ PROVIDER_PRIVACY_PROFILES: dict[str, ProviderPrivacyCard] = {
         deletion_api_available=True,
         jurisdiction="Local/Internal",
         allows_confidential_data=True,
-        privacy_notes="Deterministic internal mock generator. Zero external egress, zero retention. Safe for all classifications including RESTRICTED.",
+        min_operator_age=0,
+        allows_minors=True,
+        audience_restrictions=None,
+        privacy_notes="Deterministic internal mock generator. Zero external egress, zero retention. Safe for all classifications including RESTRICTED and all audiences.",
     ),
 }
 
@@ -99,6 +111,29 @@ class PrivacyGovernanceService:
                     sensitivity=task_sensitivity.value,
                     reason=f"Provider '{provider}' terms ({privacy_card.training_policy}) allow human review or model training on free-tier requests.",
                 )
+
+    @classmethod
+    def validate_audience_terms(
+        cls,
+        provider: str,
+        model_id: str,
+        target_audience_includes_minors: bool = False,
+    ) -> None:
+        """Enforces provider age and minor audience compliance restrictions.
+
+        Google AI Studio terms strictly prohibit services directed towards minors (<18).
+        """
+        if not target_audience_includes_minors:
+            return
+
+        privacy_card = cls.get_provider_privacy_card(provider)
+        if not privacy_card.allows_minors:
+            raise PrivacyPolicyViolationError(
+                provider=provider,
+                model_id=model_id,
+                sensitivity="AUDIENCE_RESTRICTION",
+                reason=f"Provider '{provider}' terms strictly prohibit applications directed towards or accessed by individuals under 18: {privacy_card.audience_restrictions}",
+            )
 
     @classmethod
     def filter_models_for_sensitivity(

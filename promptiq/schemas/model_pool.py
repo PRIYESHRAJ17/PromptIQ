@@ -17,6 +17,8 @@ class EligibilityState(StrEnum):
     INELIGIBLE_TERMS = "INELIGIBLE_TERMS"
     INELIGIBLE_PRIVACY = "INELIGIBLE_PRIVACY"
     INELIGIBLE_PAID = "INELIGIBLE_PAID"
+    INELIGIBLE_BILLING = "INELIGIBLE_BILLING"
+    INELIGIBLE_AUDIENCE = "INELIGIBLE_AUDIENCE"
     RETIRED = "RETIRED"
     UNAVAILABLE = "UNAVAILABLE"
 
@@ -59,6 +61,9 @@ class ProviderPrivacyCard(BaseModel):
     deletion_api_available: bool = Field(default=False)
     jurisdiction: str = Field(default="United States")
     allows_confidential_data: bool = Field(default=False)
+    min_operator_age: int = Field(default=18)
+    allows_minors: bool = Field(default=False)
+    audience_restrictions: str | None = None
     privacy_notes: str | None = None
 
     model_config = ConfigDict(from_attributes=True)

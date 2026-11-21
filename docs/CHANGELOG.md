@@ -7,6 +7,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.3.3] - 2026-11-21
+
+### Phase 3.3: Zero-Cost Provider Discovery, Multi-Model Activation and Cloud Infrastructure Feasibility
+
+### Added
+- **Exhaustive 22-Point Provider Feasibility Audit (`docs/PROVIDER_FEASIBILITY_AUDIT.md`)**:
+  - Investigated 12 hosted AI inference providers using primary documentation.
+  - Exposed billing traps: Cerebras 30-day promotional credit requiring credit card; SambaNova 20 RPD free bottleneck; NVIDIA NIM non-commercial evaluation license; Mistral MNPL non-production terms; Cohere 1,000 call non-commercial trial.
+  - Formally classified providers across 11 eligibility states (added `INELIGIBLE_BILLING` and `INELIGIBLE_AUDIENCE`).
+- **Google Gemini Developer API Age Restriction Compliance (`promptiq/gateway/privacy_governance.py`)**:
+  - Identified Gemini API Additional Terms clause restricting services from being accessed by or directed towards individuals under 18 years old.
+  - Added `validate_audience_terms` in `PrivacyGovernanceService`, raising `PrivacyPolicyViolationError` when target audience includes minors.
+- **Outcome B Zero-Spend Cloud Architecture Decision (`docs/ZERO_SPEND_ARCHITECTURE_DECISION.md`)**:
+  - Adopted Outcome B (honest hybrid cloud architecture with explicit boundaries): Cloudflare Workers for Edge Ingress/WAF (100k req/day free with native hard stop), Neon Serverless Postgres for Database (0.5 GiB / 190 CU-hrs with native hard stop), and containerized compute runner.
+  - Strictly enforced laptop independence: production service operates 24/7 independently of workstation; local runners prohibited from production.
+- **Provider Pricing and Quota Matrix (`docs/PROVIDER_PRICING_AND_QUOTA_MATRIX.md`)**:
+  - Comprehensive documentation of RPM, RPD, TPM, TPD, reset windows, and overage behavior for all eligible models.
+  - Documented OpenRouter 50 RPD limit for cardless accounts.
+- **Multi-Model Availability Report & Live Test Plan (`docs/MULTI_MODEL_AVAILABILITY_REPORT.md`, `docs/MULTI_MODEL_LIVE_TEST_PLAN.md`)**:
+  - Formulated 7 logical model roles, 3-tier model independence hierarchy, and consensus adjudication protocols.
+  - Designed blind empirical evaluation protocol for Configurations A, B, C, D with strict prohibition against manufactured metrics.
+- **Database Feasibility Report (`docs/DATABASE_FEASIBILITY_REPORT.md`)**:
+  - Evaluated Neon, Supabase, Cloudflare D1, and Turso.
+  - Selected Neon as primary (cardless, hard stop, standard Postgres 16+ with asyncpg); rejected Supabase due to 7-day inactivity pause policy.
+
+### Fixed
+- **Silent Mock Fallback Decoupling (`promptiq/gateway/adapters/`)**:
+  - Hardened `GeminiInferenceAdapter`, `GroqInferenceAdapter`, and `OpenRouterInferenceAdapter` to fail closed and raise `CapacityExhaustedError` when operator keys are unconfigured, preventing silent disguising of missing credentials as mock execution.
+- **OpenRouter Free Tier Rate Limit**:
+  - Corrected OpenRouter free model rate limits from 500 RPD to the verified 50 RPD limit applicable to cardless accounts.
+- **Automated Verification Expansion**:
+  - Added test cases in `tests/test_privacy_governance.py` and `tests/test_model_registry_and_costs.py`.
+  - Expanded test suite to 80 passing automated tests (100% pass rate).
+
+---
+
 ## [0.3.2.1] - 2026-11-21
 
 ### Phase 3.2.1: Critical Regression Correction, Model Registry Repair and Multi-Model Validation

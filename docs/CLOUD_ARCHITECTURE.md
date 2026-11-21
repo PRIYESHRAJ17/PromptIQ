@@ -1,7 +1,7 @@
 # PromptIQ Cloud-Native Production Architecture
 
-**Status**: ARCHITECTURE_SPECIFIED_PENDING_DEPLOYMENT (Phase 3.2.1 Critical Audit)  
-**Core Invariant**: **PROMPTIQ RUNS IN THE CLOUD, NOT ON THE LAPTOP**. The development laptop is an editing workstation only. Production operation continues 24/7 independently of whether the laptop is turned on, shut down, disconnected, or traveling.
+**Status**: ARCHITECTURE_SPECIFIED_OUTCOME_B (Phase 3.3 Production Feasibility Release)  
+**Core Invariant**: **PROMPTIQ RUNS IN THE CLOUD, NOT ON THE LAPTOP**. The development laptop is an editing workstation only. Production operation continues 24/7 independently of whether the laptop is turned on, shut down, disconnected, or traveling. Production cannot rely on local laptop processes, local Uvicorn, ngrok, local DB, local background workers, or a laptop-based self-hosted runner.
 
 ---
 
@@ -81,7 +81,7 @@ The table below provides an exhaustive audit of candidate cloud infrastructure e
 | **Railway** | $5 one-time trial credit | **YES** | **YES** | **NO** | 500 ms | Ephemeral / Volume | Direct TCP | Full container | **REJECTED**: No permanent free tier; credit card mandatory. |
 | **Koyeb Free Tier** | 1 free nano instance (512MB RAM) | **NO** | **NO** | **YES** | ~10 seconds | Ephemeral | Outbound Postgres OK | Limited | **REJECTED**: 512MB RAM causes OOM on multi-model pipelines and Python AST compilation. |
 | **Oracle Cloud (OCI Free)** | 4 Ampere cores, 24GB RAM | **YES** | **NO** (free tier tenancy) | **YES** | 0 ms (Always on VM) | Persistent boot volume | Direct TCP | Full Linux VM | **REJECTED FOR AUTO-PROVISIONING**: Credit card required; high risk of idle tenancy reclamation / termination. |
-| **Operator Self-Hosted Runner** | Unconstrained workstation hardware | **NO** | **NO** | **YES** | 0 ms | Workstation disk | Local SQLite / Remote Postgres | Full OS processes | **APPROVED OPERATOR DEVELOPMENT BACKEND**. |
+| **Operator Workstation (Local Dev)** | Unconstrained workstation hardware | **NO** | **NO** | **YES** | 0 ms | Workstation disk | Local SQLite / Remote Postgres | Full OS processes | **STRICTLY LOCAL DEV / TEST ONLY**. Prohibited as a production runner (violates laptop independence). |
 
 ---
 
