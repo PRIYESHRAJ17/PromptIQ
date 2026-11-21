@@ -69,6 +69,8 @@ def test_antigravity_target_adapter(sample_approved_constitution):
     assert "AGENTS.md" in files
     assert "skills/implementation/SKILL.md" in files
     assert "rules/project_invariants.md" in files
+    assert "rules/AGENTS.md" in files
+    assert "mcp_config.json" in files
 
     # Verify requirements are preserved
     assert "REQ-PERF-001" in files["AGENTS.md"]
@@ -110,13 +112,18 @@ def test_cursor_target_adapter(sample_approved_constitution):
 
 
 def test_codex_and_gemini_cli_adapters(sample_approved_constitution):
-    """Tests compilation into OpenAI Codex and Gemini CLI formats."""
+    """Tests compilation into modern OpenAI Codex and Gemini CLI formats."""
     target_prof = TargetProfileSchema(host="openai-codex", provider="openai", model_id="gpt-4o")
     pps = PPSBuilder.build_from_constitution(sample_approved_constitution, target_prof)
 
     codex_adapter = CodexTargetAdapter()
     manifest_codex, files_codex, _ = codex_adapter.compile(pps, output_type="complete_package")
-    assert ".well-known/ai-plugin.json" in files_codex
+    # Verify modern Codex / AGENTS instructions and MCP config, not deprecated ai-plugin.json
+    assert "CODEX.md" in files_codex
+    assert "AGENTS.md" in files_codex
+    assert ".codex/instructions.md" in files_codex
+    assert ".codex/mcp.json" in files_codex
+    assert ".well-known/ai-plugin.json" not in files_codex
 
     gemini_adapter = GeminiCLITargetAdapter()
     manifest_gemini, files_gemini, _ = gemini_adapter.compile(pps, output_type="complete_package")

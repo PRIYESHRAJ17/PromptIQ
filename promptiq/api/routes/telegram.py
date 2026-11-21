@@ -1,5 +1,6 @@
-"""Telegram Webhook endpoint."""
+"""Telegram Webhook endpoint with secure secret token comparison and deduplication."""
 
+import secrets
 from typing import Any
 
 from fastapi import APIRouter, Depends, Header, HTTPException, status
@@ -18,9 +19,12 @@ async def telegram_webhook(
     x_telegram_bot_api_secret_token: str | None = Header(default=None, alias="X-Telegram-Bot-Api-Secret-Token"),
     db: AsyncSession = Depends(get_db),
 ):
-    """Receives incoming updates from the official Telegram Bot API with webhook secret validation."""
-    if settings.TELEGRAM_WEBHOOK_SECRET and x_telegram_bot_api_secret_token != settings.TELEGRAM_WEBHOOK_SECRET:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid webhook secret token")
+    """Receives incoming updates from the official Telegram Bot API with timing-attack resistant secret validation."""
+    if settings.TELEGRAM_WEBHOOK_SECRET:
+        if not x_telegram_bot_api_secret_token or not secrets.compare_digest(
+            x_telegram_bot_api_secret_token, settings.TELEGRAM_WEBHOOK_SECRET
+        ):
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid webhook secret token")
 
     result = await telegram_bot.handle_update(db, update)
     return result

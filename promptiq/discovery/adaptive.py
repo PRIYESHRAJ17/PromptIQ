@@ -18,6 +18,7 @@ from promptiq.schemas.discovery import (
     InitialIntakeRequest,
 )
 from promptiq.services.constitution_service import ConstitutionService
+from promptiq.services.project_service import ProjectService
 
 
 class AdaptiveDiscoveryEngine:
@@ -32,6 +33,9 @@ class AdaptiveDiscoveryEngine:
         intake: InitialIntakeRequest,
     ) -> DiscoverySessionResponse:
         """Initializes a new discovery session from the first 4 inputs."""
+        # Verify tenant access before creating discovery session
+        await ProjectService.get_project(db, project_id, user_id)
+
         # Extract initial facts from supplied context text
         extracted_facts = []
         if intake.context_text:
@@ -147,6 +151,9 @@ class AdaptiveDiscoveryEngine:
         session = res.scalar_one_or_none()
         if not session:
             raise NotFoundError("DiscoverySession", session_id)
+
+        # Verify tenant access before updating session
+        await ProjectService.get_project(db, session.project_id, user_id)
 
         # Merge answers
         updated_answers = dict(session.answers)

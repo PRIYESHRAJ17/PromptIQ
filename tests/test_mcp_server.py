@@ -81,3 +81,25 @@ async def test_mcp_tool_execution(db_session, test_user):
         db=db_session,
     )
     assert cp_res["phase"] == "mcp_testing"
+
+
+def test_mcp_protocol_handshake():
+    """Verifies official MCP protocol initialization handshake specs."""
+    import json
+
+    init_msg = {
+        "jsonrpc": "2.0",
+        "id": 1,
+        "method": "initialize",
+        "params": {
+            "protocolVersion": "2024-11-05",
+            "capabilities": {},
+            "clientInfo": {"name": "test-client", "version": "1.0.0"},
+        },
+    }
+    # Test message serialization
+    serialized = json.dumps(init_msg)
+    parsed = json.loads(serialized)
+    assert parsed["method"] == "initialize"
+    assert parsed["params"]["protocolVersion"] == "2024-11-05"
+

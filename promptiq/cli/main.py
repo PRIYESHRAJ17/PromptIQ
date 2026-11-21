@@ -4,6 +4,7 @@ import argparse
 import asyncio
 
 from promptiq.core.database import init_db
+from promptiq.core.logging import logger
 from promptiq.critic.autopsy import PromptAutopsyEngine
 from promptiq.gateway.gateway import inference_gateway
 from promptiq.mcp.server import run_stdio_mcp_server
@@ -56,8 +57,8 @@ def cli_entrypoint():
         try:
             with open(args.prompt, encoding="utf-8") as f:
                 prompt_text = f.read()
-        except Exception:
-            pass
+        except (OSError, UnicodeDecodeError):
+            logger.debug(f"Input '{args.prompt}' is not a local file path; evaluating as inline prompt text.")
 
         async def _run_review():
             res = await PromptAutopsyEngine.diagnose_prompt(

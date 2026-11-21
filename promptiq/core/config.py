@@ -18,8 +18,8 @@ class Settings(BaseSettings):
     PROMPTIQ_ENV: Literal["development", "staging", "production", "test"] = "development"
     PROMPTIQ_LOG_LEVEL: str = "INFO"
 
-    # API Settings
-    PROMPTIQ_API_HOST: str = "0.0.0.0"
+    # API Settings (Default to loopback for security; set to 0.0.0.0 for external container binding)
+    PROMPTIQ_API_HOST: str = "127.0.0.1"
     PROMPTIQ_API_PORT: int = 8000
     PROMPTIQ_SECRET_KEY: str = "promptiq_dev_secret_key_change_in_production_min_32_chars"
     PROMPTIQ_ACCESS_TOKEN_EXPIRE_MINUTES: int = 1440  # 24 hours

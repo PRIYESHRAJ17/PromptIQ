@@ -67,8 +67,8 @@ class GeminiInferenceAdapter(BaseInferenceAdapter):
                 if request.response_schema:
                     try:
                         structured_data = json.loads(candidate)
-                    except Exception:
-                        pass
+                    except (json.JSONDecodeError, ValueError):
+                        logger.debug("Failed to deserialize response schema into structured JSON.")
 
                 return InferenceResponse(
                     text=candidate,

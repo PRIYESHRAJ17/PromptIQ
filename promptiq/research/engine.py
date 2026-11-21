@@ -5,7 +5,8 @@ from datetime import UTC, datetime
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from promptiq.models.research import EvidenceClaim, ResearchJob, SourceRecord
-from promptiq.research.connectors.base import BaseSearchConnector, MockSearchConnector
+from promptiq.research.connectors.base import BaseSearchConnector
+from promptiq.research.connectors.live_search import LiveWebSearchConnector
 from promptiq.schemas.research import (
     EvidenceClaimSchema,
     ResearchRequest,
@@ -19,7 +20,7 @@ class ResearchEngine:
     """Orchestrates multi-source investigations, claim extraction, and Evidence Ledger persistence."""
 
     def __init__(self, search_connector: BaseSearchConnector | None = None):
-        self.search_connector = search_connector or MockSearchConnector()
+        self.search_connector = search_connector or LiveWebSearchConnector(fallback_on_error=True)
 
     async def execute_research(
         self,

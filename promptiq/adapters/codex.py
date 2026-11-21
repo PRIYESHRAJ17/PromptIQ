@@ -1,4 +1,4 @@
-"""OpenAI Codex / ChatGPT Plugin adapter."""
+"""OpenAI Codex / Developer Agent instructions adapter."""
 
 import json
 from typing import Any
@@ -9,7 +9,12 @@ from promptiq.schemas.pps import PromptSpecSchema
 
 
 class CodexTargetAdapter(BaseTargetAdapter):
-    """Compiles PPS into OpenAI plugin packaging and instructions."""
+    """Compiles PPS into modern OpenAI Codex / Agent developer instructions and MCP configurations.
+
+    Note: Legacy ChatGPT Plugins (.well-known/ai-plugin.json) were officially sunset by OpenAI
+    in April 2024. This adapter emits modern CODEX.md, AGENTS.md, .codex/instructions.md,
+    and .codex/mcp.json specifications.
+    """
 
     target_name: str = "openai-codex"
 
@@ -17,30 +22,74 @@ class CodexTargetAdapter(BaseTargetAdapter):
         files: dict[str, str] = {}
         warnings: list[str] = []
 
-        reqs_text = "\n".join([f"- {r.get('id')}: {r.get('text')}" for r in pps.requirements])
+        reqs_text = "\n".join([f"- [{r.get('id', 'REQ')}] ({r.get('priority', 'P1')}): {r.get('text')}" for r in pps.requirements])
+        exclusions_text = "\n".join([f"- {e}" for e in pps.constraints.get("out_of_scope", [])]) or "None specified."
+        phases_text = "\n".join([f"{p.get('phase')}. **{p.get('name')}**: {p.get('objective')}" for p in pps.workflow_phases])
 
-        plugin_json = {
-            "schema_version": "v1",
-            "name_for_model": "promptiq_executor",
-            "name_for_human": "PromptIQ Execution Adapter",
-            "description_for_model": f"Instructions and tools for: {pps.intent.primary_objective}",
-            "description_for_human": pps.intent.primary_objective,
-            "auth": {"type": "none"},
-            "api": {"type": "openapi", "url": "/openapi.yaml"},
-        }
+        codex_md = (
+            f"# CODEX.md — Project Instructions for OpenAI Codex\n\n"
+            f"## Objective\n{pps.intent.primary_objective}\n\n"
+            f"## Target Audience\n{pps.intent.target_audience}\n\n"
+            f"## Requirements\n{reqs_text}\n\n"
+            f"## Constraints & Exclusions\n{exclusions_text}\n\n"
+            f"## Execution Phases\n{phases_text}\n\n"
+            f"## Invariants\n"
+            f"- Verify all code changes with automated unit and integration tests.\n"
+            f"- Strictly observe tenant isolation and zero-trust security boundaries.\n"
+            f"- Never leak credentials or private user information.\n"
+        )
 
-        files[".well-known/ai-plugin.json"] = json.dumps(plugin_json, indent=2)
-        files["instructions.md"] = f"# CODEX INSTRUCTIONS\n\nObjective: {pps.intent.primary_objective}\n\nRequirements:\n{reqs_text}\n"
+        agents_md = (
+            f"# AGENTS.md — Cross-Agent Workspace Instructions\n\n"
+            f"## Objective\n{pps.intent.primary_objective}\n\n"
+            f"## Rules & Guidelines\n"
+            f"- Adhere to project architecture: {pps.constraints.get('technical', {}).get('architecture_pattern', 'modular_monolith')}\n"
+            f"- Do not create frontend or UI components unless explicitly authorized.\n"
+            f"- Write robust, idiomatic, clean code with full test coverage.\n"
+        )
 
-        if output_type == "complete_package":
-            files["openapi.yaml"] = (
-                "openapi: 3.0.1\n"
-                "info:\n"
-                "  title: PromptIQ Tool Contract\n"
-                "  version: 1.0.0\n"
-                "paths: {}\n"
+        if output_type == "prompt_only":
+            files["CODEX.md"] = codex_md
+            manifest = {"target": self.target_name, "type": "prompt_only", "files": ["CODEX.md"]}
+            return manifest, files, warnings
+
+        elif output_type == "prompt_suite":
+            files["CODEX.md"] = codex_md
+            files["AGENTS.md"] = agents_md
+            files["DEVELOPER_TASK.md"] = (
+                f"# Developer Task Brief\n\n"
+                f"**Primary Objective**: {pps.intent.primary_objective}\n\n"
+                f"**Success Criteria**:\n"
+                + "\n".join([f"- {sc}" for sc in pps.intent.success_criteria])
+                + "\n"
             )
-            files["README.md"] = f"# OpenAI Codex Package\n\nGoal: {pps.intent.primary_objective}\n"
+            manifest = {"target": self.target_name, "type": "prompt_suite", "files": list(files.keys())}
+            return manifest, files, warnings
 
-        manifest = {"target": self.target_name, "type": output_type, "files": list(files.keys())}
-        return manifest, files, warnings
+        else:  # complete_package
+            files["CODEX.md"] = codex_md
+            files["AGENTS.md"] = agents_md
+            files[".codex/instructions.md"] = (
+                f"# System Instructions for Codex Agent\n\n"
+                f"Objective: {pps.intent.primary_objective}\n\n"
+                f"Requirements Checklist:\n{reqs_text}\n"
+            )
+            files[".codex/mcp.json"] = json.dumps(
+                {
+                    "mcpServers": {
+                        "promptiq": {
+                            "command": "python",
+                            "args": ["-m", "promptiq.mcp.server"],
+                        }
+                    }
+                },
+                indent=2,
+            )
+            files["README.md"] = (
+                f"# OpenAI Codex Configuration Package\n\n"
+                f"**Project**: `{pps.project_id}`\n"
+                f"**Goal**: {pps.intent.primary_objective}\n\n"
+                f"Includes `CODEX.md`, `AGENTS.md`, `.codex/instructions.md`, and MCP configuration.\n"
+            )
+            manifest = {"target": self.target_name, "type": "complete_package", "files": list(files.keys())}
+            return manifest, files, warnings

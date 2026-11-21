@@ -2,6 +2,7 @@
 
 import asyncio
 import json
+import secrets
 import sys
 from typing import Any
 
@@ -213,7 +214,7 @@ async def handle_tool_call(tool_name: str, arguments: dict[str, Any], user_id: s
 
 
 async def run_stdio_mcp_server():
-    """Runs standard stdio MCP JSON-RPC protocol loop."""
+    """Runs standard stdio MCP JSON-RPC protocol loop with full initialize handshake support."""
     await init_db()
 
     # Create/resolve default MCP user
@@ -222,7 +223,7 @@ async def run_stdio_mcp_server():
         if not user:
             from promptiq.schemas.auth import UserCreate
             user, _ = await AuthService.register_user(
-                db, UserCreate(email="mcp_agent@promptiq.local", password="mcp_password_12345", full_name="MCP Agent")
+                db, UserCreate(email="mcp_agent@promptiq.local", password=secrets.token_urlsafe(32), full_name="MCP Agent")
             )
             await AuthService.link_telegram_account(db, user.id, "mcp_host")
         mcp_user_id = user.id
@@ -236,13 +237,37 @@ async def run_stdio_mcp_server():
         if not line_str:
             continue
 
+        req_id = None
         try:
             rpc_req = json.loads(line_str)
             req_id = rpc_req.get("id")
             method = rpc_req.get("method")
             params = rpc_req.get("params", {})
 
-            if method == "tools/list":
+            if method == "initialize":
+                response = {
+                    "jsonrpc": "2.0",
+                    "id": req_id,
+                    "result": {
+                        "protocolVersion": "2024-11-05",
+                        "serverInfo": {
+                            "name": "promptiq-mcp",
+                            "version": "1.0.0",
+                        },
+                        "capabilities": {
+                            "tools": {},
+                        },
+                    },
+                }
+            elif method == "notifications/initialized":
+                # Notification acknowledgment — no response if id is null
+                if req_id is not None:
+                    response = {"jsonrpc": "2.0", "id": req_id, "result": {}}
+                else:
+                    continue
+            elif method == "ping":
+                response = {"jsonrpc": "2.0", "id": req_id, "result": {}}
+            elif method == "tools/list":
                 response = {
                     "jsonrpc": "2.0",
                     "id": req_id,
@@ -273,7 +298,7 @@ async def run_stdio_mcp_server():
         except Exception as e:
             err_resp = {
                 "jsonrpc": "2.0",
-                "id": None,
+                "id": req_id,
                 "error": {"code": -32603, "message": str(e)},
             }
             sys.stdout.buffer.write((json.dumps(err_resp) + "\n").encode("utf-8"))

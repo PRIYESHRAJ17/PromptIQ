@@ -1,8 +1,11 @@
 """Telegram Bot companion client interfacing with PromptIQ backend."""
 
+import secrets
+import time
 from typing import Any
 
 import httpx
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from promptiq.core.config import settings
@@ -11,6 +14,7 @@ from promptiq.core.logging import logger
 from promptiq.core.security import verify_telegram_link_token
 from promptiq.critic.autopsy import PromptAutopsyEngine
 from promptiq.discovery.adaptive import AdaptiveDiscoveryEngine
+from promptiq.models.discovery import DiscoverySession
 from promptiq.research.engine import research_engine
 from promptiq.schemas.critic import AutopsyRequest
 from promptiq.schemas.discovery import InitialIntakeRequest
@@ -21,11 +25,31 @@ from promptiq.services.project_service import ProjectService
 
 
 class TelegramBotClient:
-    """Conversational Telegram client connected to the shared PromptIQ domain services."""
+    """Conversational Telegram client connected to the shared PromptIQ domain services.
+
+    Includes update deduplication to handle Telegram webhook retries and full conversational
+    project discovery continuity.
+    """
 
     def __init__(self, token: str | None = None):
         self.token = token or settings.TELEGRAM_BOT_TOKEN
-        self.api_base = f"https://api.telegram.org/bot{self.token}"
+        self.api_base = f"https://api.telegram.org/bot{self.token}" if self.token else ""
+        self._processed_update_ids: dict[int, float] = {}
+        self._dedup_window_seconds: float = 600.0  # 10 minute deduplication window
+
+    def _is_duplicate_update(self, update_id: int | None) -> bool:
+        if update_id is None:
+            return False
+        now = time.time()
+        # Expire older update IDs
+        expired = [uid for uid, ts in self._processed_update_ids.items() if now - ts > self._dedup_window_seconds]
+        for uid in expired:
+            self._processed_update_ids.pop(uid, None)
+
+        if update_id in self._processed_update_ids:
+            return True
+        self._processed_update_ids[update_id] = now
+        return False
 
     async def send_message(self, chat_id: str | int, text: str, reply_markup: dict[str, Any] | None = None) -> dict[str, Any]:
         """Sends a text message with optional inline keyboard."""
@@ -48,7 +72,12 @@ class TelegramBotClient:
                 return {"ok": False, "error": str(e)}
 
     async def handle_update(self, db: AsyncSession, update: dict[str, Any]) -> dict[str, Any]:
-        """Processes an incoming Telegram webhook or polled update."""
+        """Processes an incoming Telegram webhook or polled update with duplicate deduplication."""
+        update_id = update.get("update_id")
+        if self._is_duplicate_update(update_id):
+            logger.warning(f"Telegram duplicate webhook rejected for update_id={update_id}")
+            return {"status": "duplicate_ignored", "update_id": update_id}
+
         message = update.get("message") or update.get("callback_query", {}).get("message")
         if not message:
             return {"status": "ignored"}
@@ -103,15 +132,11 @@ class TelegramBotClient:
 
         # Require linked user for project operations
         if not user:
-            # Fallback guest user for standalone Telegram interactions if unlinked
-            user_stmt_anon = await AuthService.get_user_by_telegram_id(db, "guest")
-            if not user_stmt_anon:
-                # Create a local guest user
-                from promptiq.schemas.auth import UserCreate
-                user, _ = await AuthService.register_user(
-                    db, UserCreate(email=f"tg_{chat_id}@promptiq.local", password="guest_password_12345", full_name="Telegram User")
-                )
-                user = await AuthService.link_telegram_account(db, user.id, chat_id)
+            from promptiq.schemas.auth import UserCreate
+            user, _ = await AuthService.register_user(
+                db, UserCreate(email=f"tg_{chat_id}@promptiq.local", password=secrets.token_urlsafe(32), full_name="Telegram User")
+            )
+            user = await AuthService.link_telegram_account(db, user.id, chat_id)
 
         # 2. Handle /projects
         if text.startswith("/projects"):
@@ -155,7 +180,6 @@ class TelegramBotClient:
                 await self.send_message(chat_id, "ℹ️ Please specify a topic: `/research <topic or question>`")
                 return {"status": "awaiting_input"}
 
-            # Get user's active project or create a research project
             projects = await ProjectService.list_projects(db, user.id)
             project_id = projects[0].id if projects else (await ProjectService.create_project(db, user.id, ProjectCreate(name="Research Project"))).id
 
@@ -202,9 +226,48 @@ class TelegramBotClient:
                 f"Reply directly to this message with your details."
             )
             await self.send_message(chat_id, msg)
-            return {"status": "processed", "command": "/build"}
+            return {"status": "processed", "command": "/build", "project_id": project.id}
 
-        # 6. Default conversational response
+        # 6. Check for Active Discovery Session Continuation (Conversational Continuity)
+        projects = await ProjectService.list_projects(db, user.id)
+        if projects:
+            latest_project = projects[0]
+            stmt_active_sess = (
+                select(DiscoverySession)
+                .where(DiscoverySession.project_id == latest_project.id, DiscoverySession.is_completed.is_(False))
+                .order_by(DiscoverySession.created_at.desc())
+            )
+            sess_res = await db.execute(stmt_active_sess)
+            active_sess = sess_res.scalars().first()
+
+            if active_sess:
+                # Find the next unanswered question for the session
+                pending_questions = AdaptiveDiscoveryEngine.get_next_questions(active_sess)
+                q_id = pending_questions[0].id if pending_questions else "clarification"
+
+                updated_discovery = await AdaptiveDiscoveryEngine.submit_answers(
+                    db, active_sess.id, user.id, {q_id: text}, project_id=latest_project.id
+                )
+
+                if updated_discovery.is_completed:
+                    msg = (
+                        f"🎯 *Discovery Complete for '{latest_project.name}'!*\n\n"
+                        f"Your Project Constitution has been synthesized (v{latest_project.current_constitution_version}).\n\n"
+                        f"You can now review or compile this project from your CLI, MCP client, or Telegram.\n"
+                        f"Commands:\n"
+                        f"• `/projects` — View status\n"
+                        f"• `/review` — Run autopsy\n"
+                    )
+                else:
+                    next_q = "\n".join([f"👉 {q.question}" for q in updated_discovery.next_questions])
+                    msg = (
+                        f"📝 *Answer recorded for '{latest_project.name}'*\n\n"
+                        f"Next question:\n{next_q or 'All questions answered.'}"
+                    )
+                await self.send_message(chat_id, msg)
+                return {"status": "processed", "command": "discovery_continuation", "project_id": latest_project.id}
+
+        # 7. Default conversational response
         await self.send_message(
             chat_id,
             "💡 PromptIQ understood your message. Use `/projects`, `/build <goal>`, `/review <prompt>`, or `/help`.",

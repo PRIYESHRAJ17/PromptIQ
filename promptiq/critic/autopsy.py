@@ -1,6 +1,7 @@
 """Prompt Autopsy and Adversarial Critique Engine."""
 
 import re
+from typing import Any
 
 from promptiq.gateway.gateway import inference_gateway
 from promptiq.gateway.models import GatewayMessage, InferenceRequest
@@ -21,9 +22,35 @@ class PromptAutopsyEngine:
     INJECTION_RISK = re.compile(r"\b(ignore previous instructions|system prompt override)\b", re.IGNORECASE)
 
     @classmethod
-    async def diagnose_prompt(cls, request: AutopsyRequest, user_id: str = "system") -> AutopsyResponse:
+    async def diagnose_prompt(
+        cls,
+        request: AutopsyRequest,
+        user_id: str = "system",
+        db: Any | None = None,
+    ) -> AutopsyResponse:
         """Executes multi-dimensional static and heuristic critique of a prompt or package."""
         text = request.prompt_text or ""
+
+        # If package_id is provided, resolve package with tenant isolation check
+        if request.package_id and db is not None:
+            from sqlalchemy import select
+
+            from promptiq.core.exceptions import NotFoundError
+            from promptiq.models.package import PromptPackage
+            from promptiq.services.project_service import ProjectService
+
+            stmt = select(PromptPackage).where(PromptPackage.id == request.package_id)
+            res = await db.execute(stmt)
+            pkg = res.scalar_one_or_none()
+            if not pkg:
+                raise NotFoundError("PromptPackage", request.package_id)
+
+            # Enforce tenant isolation
+            await ProjectService.get_project(db, pkg.project_id, user_id)
+
+            if not text and pkg.files:
+                text = "\n\n".join(pkg.files.values())
+
         findings: list[CriticFindingSchema] = []
 
         # 1. Static Heuristic Inspections

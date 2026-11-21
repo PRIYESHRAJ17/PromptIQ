@@ -78,3 +78,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - In-memory `MetricsCollector` tracking requests, latency, errors, and token usage.
   - Comprehensive automated test suite with **32 passing tests out of 32 (100% pass rate)**.
   - Zero static analysis or linting warnings (`ruff check` clean).
+
+---
+
+## [0.2.0] - 2026-11-21
+
+### Phase 2: Adversarial Implementation Audit & Hardening
+
+### Added
+- **Database Migrations Framework (Alembic)**:
+  - Initialized async Alembic engine (`alembic.ini`, `alembic/env.py`).
+  - Generated initial schema migration `0001_initial_schema.py` covering all 22 database tables.
+  - Added bidirectional upgrade/downgrade migration test in `tests/test_database_migrations.py`.
+- **Live Research Retrieval Connector**:
+  - Implemented `LiveWebSearchConnector` in `promptiq/research/connectors/live_search.py` querying public documentation APIs with zero-cost and fallback to deterministic mock.
+- **Telegram Update Deduplication & Conversational Discovery**:
+  - Added sliding-window `update_id` deduplication cache in `TelegramBotClient` to prevent duplicate processing on network retries.
+  - Added conversational discovery interview continuation in Telegram without requiring slash commands.
+  - Constant-time secret comparison with `secrets.compare_digest` on the Telegram webhook.
+- **MCP Protocol Handshake & Security**:
+  - Added full MCP protocol JSON-RPC 2.0 handshake support (`initialize`, `notifications/initialized`, and `ping`).
+  - Switched fallback user password generation to `secrets.token_urlsafe(32)`.
+  - Added `test_mcp_protocol_handshake` in `tests/test_mcp_server.py`.
+- **Exhaustive Cross-Tenant IDOR Test Suite**:
+  - Implemented `test_exhaustive_cross_tenant_idor_enforcement` covering all project-scoped routes.
+
+### Changed / Modernized
+- **Modern OpenAI Codex / Agent Instructions Adapter**:
+  - Deprecated and removed obsolete `.well-known/ai-plugin.json` (OpenAI Plugins sunset April 2024).
+  - Modernized `CodexTargetAdapter` to output `CODEX.md`, `AGENTS.md`, `.codex/instructions.md`, and `.codex/mcp.json`.
+- **Google Antigravity Customization System Alignment**:
+  - Verified and enhanced `AntigravityTargetAdapter` to strictly comply with `plugin.json` schema, `rules/AGENTS.md`, `mcp_config.json`, and valid frontmatter in `skills/implementation/SKILL.md`.
+- **Default Network Binding**:
+  - Hardened default API host binding from `0.0.0.0` to loopback `127.0.0.1`.
+
+### Fixed
+- **CQ-006 Clarification**: Confirmed `EvaluationSuite.project_id == project_id` and `PromptPackage.project_id == project_id` were correctly implemented in code; clarified documentation summary text typo.
+- **Real IDOR in Adaptive Discovery**: Fixed `start_session` and `submit_answers` in `promptiq/discovery/adaptive.py` to enforce tenant ownership verification via `ProjectService.get_project`.
+- **Real IDOR in Prompt Autopsy**: Fixed `/critic/autopsy` in `promptiq/api/routes/critic.py` to verify package project ownership before executing critique.
+- **Vulnerability Remediation**: Upgraded pip to 26.3 resolving PYSEC-2026-3721 (verified 0 vulnerabilities with `pip-audit`).
+- **Static Security Remediation**: Eliminated all Bandit SAST issues across 5,856 LOC (0 High, 0 Medium, 0 Low).
+- **Test Suite Expansion**: Test suite increased to **39 passing automated tests (100% pass rate)**.
+

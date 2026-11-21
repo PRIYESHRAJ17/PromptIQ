@@ -9,7 +9,7 @@ from promptiq.schemas.pps import PromptSpecSchema
 
 
 class AntigravityTargetAdapter(BaseTargetAdapter):
-    """Compiles PPS into Google Antigravity native plugin bundles."""
+    """Compiles PPS into Google Antigravity native plugin bundles conforming to the Antigravity Customization System."""
 
     target_name: str = "google-antigravity"
 
@@ -51,18 +51,20 @@ class AntigravityTargetAdapter(BaseTargetAdapter):
             return manifest, files, warnings
 
         else:  # complete_package
-            manifest = {
+            plugin_id = f"promptiq-{pps.project_id[:8]}"
+            plugin_manifest = {
+                "id": plugin_id,
                 "name": f"promptiq-{pps.project_id[:8]}",
                 "version": "1.0.0",
                 "description": pps.intent.primary_objective,
-                "target": self.target_name,
-                "skills": ["implementation"],
-                "rules": ["invariants"],
+                "author": "PromptIQ Intelligence Engine",
+                "skills": ["skills/implementation"],
+                "rules": ["rules/AGENTS.md"],
                 "permissions": pps.tools_and_permissions.get("allowed_tools", []),
             }
-            files["plugin.json"] = json.dumps(manifest, indent=2)
+            files["plugin.json"] = json.dumps(plugin_manifest, indent=2)
 
-            # AGENTS.md workspace instructions
+            # AGENTS.md workspace instructions (Antigravity standard)
             files["AGENTS.md"] = (
                 f"# AGENTS WORKSPACE INSTRUCTIONS\n\n"
                 f"## PRIMARY OBJECTIVE\n{pps.intent.primary_objective}\n\n"
@@ -71,7 +73,7 @@ class AntigravityTargetAdapter(BaseTargetAdapter):
                 f"## WORKFLOW PHASES\n{phases_text}\n"
             )
 
-            # Skill definition
+            # Skill definition with valid YAML frontmatter matching Antigravity skill specification
             files["skills/implementation/SKILL.md"] = (
                 f"---\n"
                 f"name: implementation-guide\n"
@@ -81,14 +83,35 @@ class AntigravityTargetAdapter(BaseTargetAdapter):
                 f"## Instructions\n"
                 f"1. Implement all confirmed requirements according to defined priorities.\n"
                 f"2. Validate deliverables against acceptance criteria.\n"
+                f"3. Run automated test suites before claiming task completion.\n"
             )
 
-            # Workspace rules
+            # Workspace rules (under rules/AGENTS.md and rules/project_invariants.md)
+            files["rules/AGENTS.md"] = (
+                "# Project Invariants & Safety Rules\n\n"
+                "- Read-only by default; explicit approval required for destructive operations.\n"
+                "- Enforce 100% automated test coverage for critical paths.\n"
+                "- Zero credential exposure.\n"
+                "- Strictly verify all claims against code and automated tests.\n"
+            )
             files["rules/project_invariants.md"] = (
                 "# Project Invariants & Safety Rules\n\n"
                 "- Read-only by default; explicit approval required for file mutations.\n"
                 "- Enforce 100% automated test coverage for critical paths.\n"
                 "- Zero credential exposure.\n"
+            )
+
+            # MCP configuration for native tool discovery
+            files["mcp_config.json"] = json.dumps(
+                {
+                    "mcpServers": {
+                        "promptiq": {
+                            "command": "python",
+                            "args": ["-m", "promptiq.mcp.server"],
+                        }
+                    }
+                },
+                indent=2,
             )
 
             files["README.md"] = (
@@ -98,4 +121,5 @@ class AntigravityTargetAdapter(BaseTargetAdapter):
                 f"Load this package into Google Antigravity as a native plugin.\n"
             )
 
+            manifest = {"target": self.target_name, "type": output_type, "files": list(files.keys())}
             return manifest, files, warnings

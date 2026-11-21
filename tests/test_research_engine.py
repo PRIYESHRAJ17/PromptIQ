@@ -47,3 +47,16 @@ async def test_research_investigation_and_evidence_ledger(
     assert claim["support_status"] == "verified"
     assert claim["confidence_score"] > 0.8
     assert len(claim["confidence_rationale"]) > 0
+
+
+@pytest.mark.asyncio
+async def test_live_web_search_connector():
+    """Verifies LiveWebSearchConnector with graceful fallback handling."""
+    from promptiq.research.connectors.live_search import LiveWebSearchConnector
+
+    connector = LiveWebSearchConnector(fallback_on_error=True)
+    results = await connector.search("FastAPI", max_results=2)
+    assert len(results) > 0
+    assert "url" in results[0]
+    assert "publisher" in results[0]
+
