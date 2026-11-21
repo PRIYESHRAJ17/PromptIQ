@@ -3,12 +3,14 @@
 import argparse
 import asyncio
 import json
+import secrets
 from pathlib import Path
 from typing import Any
 
 from promptiq.compiler.target_compiler import target_compiler
 from promptiq.core.database import async_session_factory, init_db
 from promptiq.core.logging import logger
+from promptiq.core.security import get_password_hash
 from promptiq.critic.autopsy import PromptAutopsyEngine
 from promptiq.discovery.adaptive import AdaptiveDiscoveryEngine
 from promptiq.gateway.gateway import inference_gateway
@@ -27,17 +29,18 @@ async def _get_or_create_cli_user(session) -> Any:
 
     from promptiq.models.user import User, Workspace, WorkspaceMembership
 
-    stmt = select(User).where(User.email == "cli@promptiq.local")
+    stmt = select(User).where(User.email == "cli@promptiq.org")
     res = await session.execute(stmt)
     user = res.scalar_one_or_none()
     if not user:
         user = User(
-            email="cli@promptiq.local",
-            hashed_password="cli-local-disabled-password",
+            email="cli@promptiq.org",
+            hashed_password=get_password_hash(secrets.token_urlsafe(32)),
             full_name="PromptIQ CLI User",
             is_active=True,
             is_superuser=True,
         )
+
         session.add(user)
         await session.flush()
 

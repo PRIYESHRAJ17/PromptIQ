@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-11-21T21:13:25.317495+00:00",
+  "updated_at": "2026-11-21T21:42:50.593577+00:00",
   "model_requests_minute": {
     "openai/gpt-oss-120b": [],
     "promptiq-mock-v1": [],
@@ -21,6 +21,7 @@
     "promptiq-mock-v1": [],
     "openai/gpt-oss-20b": []
   },
+  "reservations": {},
   "paused_until": {},
   "pause_reasons": {},
   "last_provider_headers": {}

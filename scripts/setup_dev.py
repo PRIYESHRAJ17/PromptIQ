@@ -5,7 +5,6 @@ in compliance with Windows Smart App Control and cross-platform standards.
 """
 
 import os
-import subprocess
 import sys
 
 # Ensure repository root is on sys.path
@@ -27,11 +26,10 @@ def setup():
 
     # 3. Verify core imports
     try:
-        import fastapi
-        import pydantic
-        import sqlalchemy
-        import alembic
-        import promptiq
+        import importlib
+
+        for mod_name in ("fastapi", "pydantic", "sqlalchemy", "alembic", "promptiq"):
+            importlib.import_module(mod_name)
         print("[3/4] Core dependencies successfully imported.")
     except ImportError as e:
         print(f"[ERROR] Missing dependency: {e}. Please run: pip install -e .")
@@ -40,8 +38,9 @@ def setup():
     # 4. Run database migration check
     print("[4/4] Verifying database schema & migrations...")
     try:
-        from alembic import command
         from alembic.config import Config
+
+        from alembic import command
         alembic_cfg = Config("alembic.ini")
         alembic_cfg.set_main_option("sqlalchemy.url", "sqlite+aiosqlite:///./promptiq_dev.db")
         command.upgrade(alembic_cfg, "head")

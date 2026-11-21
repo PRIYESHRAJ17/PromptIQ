@@ -134,9 +134,10 @@ class TelegramBotClient:
         if not user:
             from promptiq.schemas.auth import UserCreate
             user, _ = await AuthService.register_user(
-                db, UserCreate(email=f"tg_{chat_id}@promptiq.local", password=secrets.token_urlsafe(32), full_name="Telegram User")
+                db, UserCreate(email=f"tg_{chat_id}@promptiq.org", password=secrets.token_urlsafe(32), full_name="Telegram User")
             )
             user = await AuthService.link_telegram_account(db, user.id, chat_id)
+
 
         # 2. Handle /projects
         if text.startswith("/projects"):

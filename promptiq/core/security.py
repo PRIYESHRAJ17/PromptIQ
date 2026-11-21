@@ -152,7 +152,7 @@ def validate_and_sanitize_url(url: str) -> str:
 
     hostname_lower = hostname.lower()
 
-    # Explicit blacklist for well-known cloud metadata endpoints and local names
+    # Blocked domains and internal network suffixes
     BLOCKED_HOSTNAMES = {
         "localhost",
         "metadata.google.internal",
@@ -162,12 +162,43 @@ def validate_and_sanitize_url(url: str) -> str:
         "127.0.0.1",
         "::1",
     }
-    if hostname_lower in BLOCKED_HOSTNAMES or hostname_lower.endswith(".internal") or hostname_lower.endswith(".local"):
+    blocked_suffixes = (
+        ".internal",
+        ".local",
+        ".corp",
+        ".lan",
+        ".home",
+        ".localhost",
+        ".arpa",
+    )
+    if hostname_lower in BLOCKED_HOSTNAMES or any(hostname_lower.endswith(sfx) for sfx in blocked_suffixes):
         raise SecurityError(f"SSRF Protection: Access to restricted host '{hostname}' is blocked.")
 
-    # Check direct IP address literal
+    # 1. Normalize alternate IP representations (integer IP, hex, octal, dotted hex/octal)
+    def _parse_c_int(s: str) -> int:
+        s_clean = s.strip()
+        if s_clean.startswith(("0x", "0X")):
+            return int(s_clean, 16)
+        if s_clean.startswith("0") and len(s_clean) > 1 and s_clean.isdigit():
+            return int(s_clean, 8)
+        return int(s_clean, 10)
+
+    target_for_ip_check = hostname_lower
     try:
-        ip_obj = ipaddress.ip_address(hostname_lower)
+        if "." in hostname_lower:
+            parts = [_parse_c_int(p) for p in hostname_lower.split(".")]
+            if len(parts) == 4 and all(0 <= p <= 255 for p in parts):
+                target_for_ip_check = ".".join(str(p) for p in parts)
+        elif hostname_lower.isdigit() or hostname_lower.startswith(("0x", "0X")):
+            val = _parse_c_int(hostname_lower)
+            if 0 <= val <= 0xFFFFFFFF:
+                target_for_ip_check = str(ipaddress.IPv4Address(val))
+    except (ValueError, OverflowError):
+        pass
+
+    # 2. Check direct IP address literal
+    try:
+        ip_obj = ipaddress.ip_address(target_for_ip_check)
         if (
             ip_obj.is_private
             or ip_obj.is_loopback
@@ -197,3 +228,36 @@ def validate_and_sanitize_url(url: str) -> str:
             raise SecurityError(f"DNS resolution failed for host '{hostname}': {e}")
 
     return url
+
+
+async def safe_fetch_url(
+    url: str,
+    timeout: float = 5.0,
+    max_redirects: int = 3,
+    headers: dict[str, str] | None = None,
+) -> Any:
+    """Fetches an external URL securely with strict SSRF validation at every redirect hop."""
+    import urllib.parse
+
+    import httpx
+
+    from promptiq.core.exceptions import SecurityError
+
+    current_url = validate_and_sanitize_url(url)
+    redirect_count = 0
+
+    async with httpx.AsyncClient(timeout=timeout, follow_redirects=False) as client:
+        while True:
+            resp = await client.get(current_url, headers=headers)
+            if resp.status_code in (301, 302, 303, 307, 308):
+                redirect_count += 1
+                if redirect_count > max_redirects:
+                    raise SecurityError(f"Too many redirects (exceeded limit of {max_redirects})")
+                loc = resp.headers.get("location")
+                if not loc:
+                    return resp
+                next_url = urllib.parse.urljoin(current_url, loc)
+                current_url = validate_and_sanitize_url(next_url)
+            else:
+                return resp
+

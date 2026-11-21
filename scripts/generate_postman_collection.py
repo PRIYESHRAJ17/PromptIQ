@@ -95,9 +95,9 @@ def generate_postman_assets():
                 )
                 sample_body = {}
                 if "register" in path:
-                    sample_body = {"email": "engineer@example.com", "password": "Password123!", "full_name": "Senior Architect"}
+                    sample_body = {"email": "engineer@example.com", "password": "Password123!", "full_name": "Senior Architect"}  # nosec B105
                 elif "login" in path:
-                    sample_body = {"email": "engineer@example.com", "password": "Password123!"}
+                    sample_body = {"email": "engineer@example.com", "password": "Password123!"}  # nosec B105
                 elif path.endswith("/projects") and method == "post":
                     sample_body = {"name": "PromptIQ E-Commerce Engine", "description": "High-throughput checkout service"}
                 elif "discovery/start" in path:

@@ -53,8 +53,10 @@ class CapacityGovernor:
 
         # In-flight capacity reservations: token -> {model_id, tokens, created_at, expires_at}
         self._reservations: dict[str, dict[str, Any]] = {}
+        self._released_tokens: set[str] = set()
 
         # Durable quota ledger path and last provider headers
+
 
         self._ledger_path: Path = Path(ledger_path) if ledger_path else DEFAULT_QUOTA_LEDGER_PATH
         self._auto_load: bool = auto_load
@@ -119,6 +121,13 @@ class CapacityGovernor:
 
             # Restore last provider headers
             self._last_provider_headers.update(data.get("last_provider_headers", {}))
+
+            # Restore active in-flight reservations
+            self._reservations = {
+                tok: res for tok, res in data.get("reservations", {}).items()
+                if res.get("expires_at", 0) > now
+            }
+
             return True
         except Exception as e:
             logger.warning("Failed to load durable quota ledger from %s: %s", target_path, e)
@@ -155,6 +164,10 @@ class CapacityGovernor:
                 m: [[t, k] for t, k in tk if t > day_cutoff]
                 for m, tk in self._model_tokens_day.items()
             }
+            clean_reservations = {
+                tok: res for tok, res in self._reservations.items()
+                if res.get("expires_at", 0) > now
+            }
 
             payload = {
                 "version": 1,
@@ -163,10 +176,12 @@ class CapacityGovernor:
                 "model_requests_day": clean_req_day,
                 "model_tokens_minute": clean_tok_min,
                 "model_tokens_day": clean_tok_day,
+                "reservations": clean_reservations,
                 "paused_until": self._paused_until,
                 "pause_reasons": self._pause_reasons,
                 "last_provider_headers": self._last_provider_headers,
             }
+
             tmp_path = target_path.with_suffix(".tmp")
             with open(tmp_path, "w", encoding="utf-8") as f:
                 json.dump(payload, f, indent=2)
@@ -492,12 +507,17 @@ class CapacityGovernor:
             "created_at": now,
             "expires_at": now + ttl_seconds,
         }
+        if not settings.is_test or str(self._ledger_path) != str(DEFAULT_QUOTA_LEDGER_PATH):
+            self.save_durable_state()
         return token
 
     def release_reservation(self, token: str) -> bool:
         """Releases a reserved capacity token without recording usage."""
         res = self._reservations.pop(token, None)
+        if res and (not settings.is_test or str(self._ledger_path) != str(DEFAULT_QUOTA_LEDGER_PATH)):
+            self.save_durable_state()
         return res is not None
+
 
     def reconcile_reservation(
         self,
@@ -522,6 +542,8 @@ class CapacityGovernor:
                 model_id=model_id,
                 tokens_used=actual_tokens,
             )
+        elif res and (not settings.is_test or str(self._ledger_path) != str(DEFAULT_QUOTA_LEDGER_PATH)):
+            self.save_durable_state()
 
 
     @staticmethod

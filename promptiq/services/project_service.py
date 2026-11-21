@@ -248,11 +248,13 @@ class ProjectService:
         discovery_sessions = [
             {
                 "id": d.id,
-                "mode": d.mode,
-                "status": d.status,
-                "completed_turns": d.completed_turns,
-                "identified_contradictions": d.identified_contradictions,
-                "missing_high_impact_info": d.missing_high_impact_info,
+                "task_type": d.task_type,
+                "depth": d.depth,
+                "current_stage": d.current_stage,
+                "is_completed": d.is_completed,
+                "initial_intake": d.initial_intake,
+                "answers": d.answers,
+                "extracted_facts": d.extracted_facts,
                 "created_at": d.created_at.isoformat() if d.created_at else None,
             }
             for d in res_disc.scalars().all()
@@ -308,15 +310,18 @@ class ProjectService:
         checkpoints = [
             {
                 "id": chk.id,
-                "name": chk.name,
-                "description": chk.description,
-                "state_snapshot": chk.state_snapshot,
+                "phase": chk.phase,
+                "summary": chk.summary,
+                "verified_state": chk.verified_state,
+                "blockers": chk.blockers,
+                "next_actions": chk.next_actions,
                 "created_at": chk.created_at.isoformat() if chk.created_at else None,
             }
             for chk in res_chk.scalars().all()
         ]
 
         return {
+            "schema_version": "1.0.0",
             "project": {
                 "id": project.id,
                 "workspace_id": project.workspace_id,
