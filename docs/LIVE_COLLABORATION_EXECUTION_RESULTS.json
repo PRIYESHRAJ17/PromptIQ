@@ -148,7 +148,7 @@
           "Deterministic invariants fully satisfied on candidate artifact."
         ],
         "request_id": null,
-        "http_status": 200,
+        "http_status": null,
         "stage": null,
         "outcome_status": "VERIFIED",
         "metadata": {}

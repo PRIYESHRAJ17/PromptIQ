@@ -152,12 +152,12 @@ class ExecutionStepRecord(BaseModel):
 
     step_number: int
     role: LogicalModelRole
-    provider: str
-    model_id: str
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
-    latency_ms: float
-    input_tokens: int = 0
-    output_tokens: int = 0
+    provider: str = "internal"
+    model_id: str | None = None
+    timestamp: datetime | None = Field(default_factory=lambda: datetime.now(UTC))
+    latency_ms: float | None = 0.0
+    input_tokens: int | None = 0
+    output_tokens: int | None = 0
     quota_remaining: int | None = None
     verification_passed: bool = True
     findings: list[str] = Field(default_factory=list)
@@ -175,15 +175,15 @@ class MultiModelExecutionAuditRecord(BaseModel):
 
     workflow_id: str
     parent_workflow_id: str | None = None
-    project_id: str
-    task_id: str
-    execution_profile: ExecutionProfile
-    data_sensitivity: DataSensitivityLevel
+    project_id: str = "proj-default"
+    task_id: str = "task-default"
+    execution_profile: ExecutionProfile = ExecutionProfile.STANDARD
+    data_sensitivity: DataSensitivityLevel = DataSensitivityLevel.GENERAL
     steps: list[ExecutionStepRecord] = Field(default_factory=list)
     consensus_status: str = Field(default="agreed", description="agreed, adjudicated, uncertainty_retained, deterministic_override, same_family_intra_provider_disclosed")
     disagreement_details: dict[str, Any] | None = None
-    total_latency_ms: float = 0.0
-    total_tokens: int = 0
+    total_latency_ms: float | None = 0.0
+    total_tokens: int | None = 0
     final_status: str = Field(default="COMPLETED", description="COMPLETED, PARTIALLY_COMPLETED, RATE_LIMITED, FAILED, RESUMABLE, PARTIALLY_COMPLETED_RATE_LIMITED, SUCCESS")
     stage_statuses: dict[str, str] = Field(default_factory=dict)
     generator_provider: str | None = None
@@ -194,7 +194,7 @@ class MultiModelExecutionAuditRecord(BaseModel):
     is_multi_provider: bool = False
     is_multi_family: bool = False
     model_diversity_rating: str = "MULTI_MODEL_SAME_FAMILY_SAME_PROVIDER"
-    deterministic_verification_passed: bool = True
+    deterministic_verification_passed: bool | None = True
     failure_occurred: bool = False
     fallback_occurred: bool = False
     initial_artifact: str | None = None

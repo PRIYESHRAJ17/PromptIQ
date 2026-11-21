@@ -96,13 +96,13 @@ class CapacityGovernor:
             # Prune and merge minute tokens
             for model_id, token_records in data.get("model_tokens_minute", {}).items():
                 active = [(t, tok) for t, tok in token_records if t > minute_cutoff]
-                merged_tok = sorted(set(self._model_tokens_minute[model_id] + active), key=lambda x: x[0])
+                merged_tok = sorted(set([tuple(x) for x in self._model_tokens_minute[model_id]] + active), key=lambda x: x[0])
                 self._model_tokens_minute[model_id] = merged_tok
 
             # Prune and merge daily tokens
             for model_id, token_records in data.get("model_tokens_day", {}).items():
                 active = [(t, tok) for t, tok in token_records if t > day_cutoff]
-                merged_tok_day = sorted(set(self._model_tokens_day[model_id] + active), key=lambda x: x[0])
+                merged_tok_day = sorted(set([tuple(x) for x in self._model_tokens_day[model_id]] + active), key=lambda x: x[0])
                 self._model_tokens_day[model_id] = merged_tok_day
 
             # Restore paused providers
@@ -121,17 +121,44 @@ class CapacityGovernor:
             return False
 
     def save_durable_state(self, path: Path | str | None = None) -> bool:
-        """Flushes current quota tracking state to the durable ledger file atomically."""
+        """Flushes current quota tracking state to the durable ledger file atomically.
+
+        Removes expired sliding-window entries (minute > 60s, day > 86400s) before writing.
+        Note: This ledger is strictly a workstation-local, single-host synchronization
+        mechanism across CLI and background worker processes; it is not a distributed
+        cloud consensus mechanism.
+        """
         target_path = Path(path) if path else self._ledger_path
         try:
             target_path.parent.mkdir(parents=True, exist_ok=True)
+            now = datetime.now(UTC).timestamp()
+            minute_cutoff = now - 60.0
+            day_cutoff = now - 86400.0
+
+            clean_req_min = {
+                m: [t for t in ts if t > minute_cutoff]
+                for m, ts in self._model_requests_minute.items()
+            }
+            clean_req_day = {
+                m: [t for t in ts if t > day_cutoff]
+                for m, ts in self._model_requests_day.items()
+            }
+            clean_tok_min = {
+                m: [[t, k] for t, k in tk if t > minute_cutoff]
+                for m, tk in self._model_tokens_minute.items()
+            }
+            clean_tok_day = {
+                m: [[t, k] for t, k in tk if t > day_cutoff]
+                for m, tk in self._model_tokens_day.items()
+            }
+
             payload = {
                 "version": 1,
                 "updated_at": datetime.now(UTC).isoformat(),
-                "model_requests_minute": dict(self._model_requests_minute),
-                "model_requests_day": dict(self._model_requests_day),
-                "model_tokens_minute": dict(self._model_tokens_minute),
-                "model_tokens_day": dict(self._model_tokens_day),
+                "model_requests_minute": clean_req_min,
+                "model_requests_day": clean_req_day,
+                "model_tokens_minute": clean_tok_min,
+                "model_tokens_day": clean_tok_day,
                 "paused_until": self._paused_until,
                 "pause_reasons": self._pause_reasons,
                 "last_provider_headers": self._last_provider_headers,

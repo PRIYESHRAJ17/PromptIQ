@@ -264,16 +264,219 @@ async def resume_live_collaboration(
     return final_text, audit, summary
 
 
+def format_str(val: Any, default: str = "N/A") -> str:
+    """Safely format string or fallback to default."""
+    if val is None or val == "":
+        return default
+    return str(val)
+
+
+def format_http_status(status: int | None, provider: str | None = None) -> str:
+    """Format HTTP status, rendering internal steps and None as N/A."""
+    if provider == "internal":
+        return "N/A"
+    if status is None:
+        return "N/A"
+    return str(status)
+
+
+def format_request_id(req_id: str | None, provider: str | None = None) -> str:
+    """Format request ID, distinguishing internal steps from external."""
+    if provider == "internal":
+        return "N/A (Internal)"
+    if not req_id:
+        return "N/A"
+    return str(req_id)
+
+
+def format_latency(latency_ms: float | int | None) -> str:
+    """Safely format latency in milliseconds."""
+    if latency_ms is None:
+        return "N/A"
+    try:
+        return f"{float(latency_ms):.1f}"
+    except (ValueError, TypeError):
+        return "N/A"
+
+
+def format_tokens(in_tokens: int | None, out_tokens: int | None, provider: str | None = None) -> str:
+    """Safely format token pair."""
+    if provider == "internal":
+        return "0/0"
+    in_str = str(in_tokens) if in_tokens is not None else "N/A"
+    out_str = str(out_tokens) if out_tokens is not None else "N/A"
+    return f"{in_str}/{out_str}"
+
+
+def format_provider(provider: str | None) -> str:
+    """Format provider name, marking internal steps clearly."""
+    if not provider or provider == "internal":
+        return "[INTERNAL]"
+    return provider.lower()
+
+
+def format_timestamp(ts: Any) -> str:
+    """Safely format datetime timestamp or string."""
+    if ts is None:
+        return "N/A"
+    if hasattr(ts, "isoformat"):
+        return ts.isoformat()
+    return str(ts)
+
+
+def render_execution_summary(
+    audit: MultiModelExecutionAuditRecord | None,
+    summary: dict[str, Any],
+    output_path: str | None = None,
+) -> None:
+    """Safely renders collaboration execution summary and step trace with null-safe formatting."""
+    print(f"\nExecution Status: {summary.get('status', 'UNKNOWN')}")
+    if not audit:
+        print(f"Failure Reason:   {summary.get('error', 'Unknown failure')}")
+        if summary.get("notice"):
+            print(f"Notice:           {summary.get('notice')}")
+        return
+
+    parent_id = getattr(audit, "parent_workflow_id", None) or summary.get("workflow_id")
+    resumed_id = summary.get("resumed_workflow_id") or (
+        audit.workflow_id if parent_id and parent_id != audit.workflow_id else None
+    )
+
+    if parent_id and resumed_id and parent_id != resumed_id:
+        print(f"Workflow ID:      {parent_id}")
+        print(f"Resumed ID:       {resumed_id}")
+    else:
+        print(f"Workflow ID:      {audit.workflow_id or parent_id or 'N/A'}")
+
+    total_lat = getattr(audit, "total_latency_ms", None)
+    lat_str = format_latency(total_lat)
+    print(f"Total Latency:    {lat_str} ms" if lat_str != "N/A" else "Total Latency:    N/A")
+    print(f"Total Tokens:     {format_str(getattr(audit, 'total_tokens', None))}")
+    print(f"Consensus Status: {format_str(getattr(audit, 'consensus_status', None))}")
+    det_passed = getattr(audit, "deterministic_verification_passed", None)
+    if det_passed is None:
+        det_str = "N/A"
+    else:
+        det_str = "PASSED" if det_passed else "FAILED"
+    print(f"Deterministic:    {det_str}")
+    print("\n--- Model Diversity Disclosures ---")
+    print(f"is_multi_model:         {getattr(audit, 'is_multi_model', 'N/A')}")
+    print(f"is_multi_family:        {getattr(audit, 'is_multi_family', 'N/A')}")
+    print(f"is_multi_provider:      {getattr(audit, 'is_multi_provider', 'N/A')}")
+    print(f"model_diversity_rating: {getattr(audit, 'model_diversity_rating', 'N/A')}")
+
+    print("\n--- Multi-Model Execution Step Trace ---")
+    print(
+        f"{'Step':<5} {'Role':<18} {'Provider':<12} {'Model':<26} {'Req ID':<32} {'HTTP':<6} {'Latency (ms)':<14} {'Tokens'}"
+    )
+    print("-" * 122)
+    for s in audit.steps:
+        prov = getattr(s, "provider", None) or "internal"
+        role_val = s.role.value if hasattr(s.role, "value") else str(s.role)
+        prov_disp = format_provider(prov)
+        model_disp = format_str(getattr(s, "model_id", None))
+        req_disp = format_request_id(getattr(s, "request_id", None), prov)
+        http_disp = format_http_status(getattr(s, "http_status", None), prov)
+        lat_disp = format_latency(getattr(s, "latency_ms", None))
+        tok_disp = format_tokens(
+            getattr(s, "input_tokens", None),
+            getattr(s, "output_tokens", None),
+            prov,
+        )
+
+        step_num = getattr(s, "step_number", "?")
+        print(
+            f"{step_num:<5} "
+            f"{role_val:<18} "
+            f"{prov_disp:<12} "
+            f"{model_disp:<26} "
+            f"{req_disp:<32} "
+            f"{http_disp:<6} "
+            f"{lat_disp:<14} "
+            f"{tok_disp}"
+        )
+
+    res = getattr(audit, "resolution_breakdown", None) or summary.get("resolution_breakdown", {})
+    if res:
+        resolved = res.get("resolved", [])
+        if resolved:
+            print("\n--- Resolution Breakdown ---")
+            print(f"Resolved Findings ({len(resolved)}):")
+            for f in resolved[:5]:
+                print(f"  [RESOLVED] {f[:90]}...")
+            if len(resolved) > 5:
+                print(f"  ... and {len(resolved) - 5} more")
+
+        rejected = res.get("rejected_with_reason", [])
+        if rejected:
+            print(f"\nRejected with Reason ({len(rejected)}):")
+            for f in rejected:
+                print(f"  [REJECTED] {f[:90]}...")
+
+        unresolved = res.get("unresolved", [])
+        if unresolved:
+            print(f"\nUnresolved Findings ({len(unresolved)}):")
+            for f in unresolved:
+                print(f"  [UNRESOLVED] {f[:90]}...")
+
+    if output_path:
+        print("\n" + "=" * 70)
+        print("LIVE COLLABORATION COMPLETE")
+        print(f"Full execution artifact written to: {output_path}")
+        print("=" * 70)
+
+
 def main() -> None:
     """CLI entrypoint for executing live multi-model collaboration."""
     parser = argparse.ArgumentParser(description="PromptIQ Live Multi-Model Collaboration Runner")
     parser.add_argument("--opt-in", action="store_true", help="Explicitly opt-in to send live network requests.")
-    parser.add_argument("--profile", default="STANDARD", choices=["STANDARD", "DEEP", "HIGH_RISK", "QUICK"], help="Execution profile.")
-    parser.add_argument("--prompt", default=None, help="Custom prompt or use standard food redistribution platform task.")
-    parser.add_argument("--output", default="docs/LIVE_COLLABORATION_EXECUTION_RESULTS.json", help="Path to save execution ledger.")
-    parser.add_argument("--resume", default=None, help="Workflow ID of partially completed workflow to resume at Stage D.")
+    parser.add_argument(
+        "--profile",
+        default="STANDARD",
+        choices=["STANDARD", "DEEP", "HIGH_RISK", "QUICK"],
+        help="Execution profile.",
+    )
+    parser.add_argument(
+        "--prompt",
+        default=None,
+        help="Custom prompt or use standard food redistribution platform task.",
+    )
+    parser.add_argument(
+        "--output",
+        default="docs/LIVE_COLLABORATION_EXECUTION_RESULTS.json",
+        help="Path to save execution ledger.",
+    )
+    parser.add_argument(
+        "--resume",
+        default=None,
+        help="Workflow ID of partially completed workflow to resume at Stage D.",
+    )
+    parser.add_argument(
+        "--inspect",
+        nargs="?",
+        const="docs/LIVE_COLLABORATION_EXECUTION_RESULTS.json",
+        default=None,
+        help="Inspect and display formatted execution summary from a saved JSON ledger without making any API calls.",
+    )
 
     args = parser.parse_args()
+
+    # If --inspect requested, display formatted summary and exit cleanly without network calls
+    if args.inspect:
+        inspect_file = Path(args.inspect)
+        if not inspect_file.exists():
+            print(f"Error: Inspect file not found: {inspect_file}")
+            sys.exit(1)
+        with open(inspect_file, encoding="utf-8") as f:
+            data = json.load(f)
+        summary = data.get("summary", data)
+        try:
+            audit = MultiModelExecutionAuditRecord.model_validate(summary)
+        except Exception as e:
+            logger.debug("Could not validate audit record directly: %s", e)
+            audit = None
+        render_execution_summary(audit, summary, output_path=str(inspect_file))
+        return
 
     print("=" * 70)
     print("PROMPTIQ LIVE MULTI-MODEL COLLABORATION RUNNER")
@@ -283,73 +486,35 @@ def main() -> None:
         print("Stage Sequence: Skip A/B/C -> Stage D (120B Rev) -> Stage E (Final Verif)")
     else:
         print(f"Profile:        {args.profile}")
-        print("Stage Sequence: Stage A (Gen) -> Stage B (Critic) -> Stage C (Det Verif) -> Stage D (Rev) -> Stage E (Final Verif)")
+        print(
+            "Stage Sequence: Stage A (Gen) -> Stage B (Critic) -> Stage C (Det Verif) -> Stage D (Rev) -> Stage E (Final Verif)"
+        )
     print(f"Opt-In Status:  {args.opt_in}")
     print(f"Output File:    {args.output}")
     print("=" * 70)
 
     if args.resume:
-        final_text, audit, summary = asyncio.run(resume_live_collaboration(
-            workflow_id=args.resume,
-            opt_in=args.opt_in,
-            output_json_path=args.output,
-        ))
+        final_text, audit, summary = asyncio.run(
+            resume_live_collaboration(
+                workflow_id=args.resume,
+                opt_in=args.opt_in,
+                output_json_path=args.output,
+            )
+        )
     else:
         exec_profile = ExecutionProfile(args.profile)
-        final_text, audit, summary = asyncio.run(execute_live_collaboration(
-            opt_in=args.opt_in,
-            task_prompt=args.prompt,
-            profile=exec_profile,
-            output_json_path=args.output,
-        ))
+        final_text, audit, summary = asyncio.run(
+            execute_live_collaboration(
+                opt_in=args.opt_in,
+                task_prompt=args.prompt,
+                profile=exec_profile,
+                output_json_path=args.output,
+            )
+        )
 
-    print(f"\nExecution Status: {summary.get('status')}")
+    render_execution_summary(audit, summary, output_path=args.output)
     if not audit:
-        print(f"Failure Reason:   {summary.get('error')}")
-        if summary.get("notice"):
-            print(f"Notice:           {summary.get('notice')}")
         sys.exit(1 if summary.get("status") != "BLOCKED_EXTERNAL" else 2)
-
-    print(f"Workflow ID:      {audit.workflow_id}")
-    print(f"Total Latency:    {audit.total_latency_ms} ms")
-    print(f"Total Tokens:     {audit.total_tokens}")
-    print(f"Consensus Status: {audit.consensus_status}")
-    print(f"Deterministic:    {'PASSED' if audit.deterministic_verification_passed else 'FAILED'}")
-    print("\n--- Model Diversity Disclosures ---")
-    print(f"is_multi_model:         {audit.is_multi_model}")
-    print(f"is_multi_family:        {audit.is_multi_family}")
-    print(f"is_multi_provider:      {audit.is_multi_provider}")
-    print(f"model_diversity_rating: {audit.model_diversity_rating}")
-
-    print("\n--- Multi-Model Execution Step Trace ---")
-    print(f"{'Step':<5} {'Role':<18} {'Model':<24} {'Req ID':<32} {'HTTP':<6} {'Latency (ms)':<14} {'Tokens'}")
-    print("-" * 110)
-    for s in audit.steps:
-        req_id_display = s.request_id or "internal"
-        tokens_display = f"{s.input_tokens}/{s.output_tokens}"
-        print(f"{s.step_number:<5} {s.role.value:<18} {s.model_id:<24} {req_id_display:<32} {s.http_status:<6} {s.latency_ms:<14} {tokens_display}")
-
-    if audit.resolution_breakdown:
-        res = audit.resolution_breakdown
-        print("\n--- Resolution Breakdown ---")
-        print(f"Resolved Findings ({len(res.get('resolved', []))}):")
-        for f in res.get("resolved", [])[:5]:
-            print(f"  [RESOLVED] {f[:90]}...")
-        if len(res.get("resolved", [])) > 5:
-            print(f"  ... and {len(res.get('resolved', [])) - 5} more")
-
-        print(f"\nRejected with Reason ({len(res.get('rejected_with_reason', []))}):")
-        for f in res.get("rejected_with_reason", []):
-            print(f"  [REJECTED] {f[:90]}...")
-
-        print(f"\nUnresolved Findings ({len(res.get('unresolved', []))}):")
-        for f in res.get("unresolved", []):
-            print(f"  [UNRESOLVED] {f[:90]}...")
-
-    print("\n" + "=" * 70)
-    print("LIVE COLLABORATION COMPLETE")
-    print(f"Full execution artifact written to: {args.output}")
-    print("=" * 70)
 
 
 if __name__ == "__main__":

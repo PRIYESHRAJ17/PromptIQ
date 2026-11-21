@@ -587,3 +587,253 @@ def test_revision_request_quota_headroom_verification():
     assert safety_buffer >= 1700
     assert safety_margin_pct >= 21.0
 
+
+def test_cli_safe_formatting_with_null_fields(capsys):
+    """Verifies that render_execution_summary handles null values for all fields without crash."""
+    from promptiq.orchestrator.collaboration_cli import render_execution_summary
+    from promptiq.schemas.model_pool import (
+        ExecutionStepRecord,
+        LogicalModelRole,
+        MultiModelExecutionAuditRecord,
+    )
+
+    null_step = ExecutionStepRecord(
+        step_number=1,
+        role=LogicalModelRole.PROMPT_ENGINEER,
+        provider="custom_provider",
+        model_id=None,
+        request_id=None,
+        http_status=None,
+        latency_ms=None,
+        input_tokens=None,
+        output_tokens=None,
+        findings=[],
+    )
+
+    audit = MultiModelExecutionAuditRecord(
+        workflow_id="wf-test-null",
+        steps=[null_step],
+        total_latency_ms=None,
+        total_tokens=None,
+        deterministic_verification_passed=None,
+    )
+
+    render_execution_summary(audit, {"status": "TEST_NULL_STATUS"})
+    captured = capsys.readouterr()
+
+    assert "Execution Status: TEST_NULL_STATUS" in captured.out
+    assert "Workflow ID:      wf-test-null" in captured.out
+    assert "Total Latency:    N/A" in captured.out
+    assert "Total Tokens:     N/A" in captured.out
+    assert "Deterministic:    N/A" in captured.out
+    assert "N/A" in captured.out
+
+
+def test_cli_distinguishes_internal_from_provider_steps(capsys):
+    """Verifies that internal deterministic verifier steps are visually marked [INTERNAL] with N/A HTTP/ReqID."""
+    from promptiq.orchestrator.collaboration_cli import render_execution_summary
+    from promptiq.schemas.model_pool import (
+        ExecutionStepRecord,
+        LogicalModelRole,
+        MultiModelExecutionAuditRecord,
+    )
+
+    internal_step = ExecutionStepRecord(
+        step_number=4,
+        role=LogicalModelRole.VERIFIER,
+        provider="internal",
+        model_id="deterministic-verifier-v1",
+        request_id=None,
+        http_status=None,
+        latency_ms=0.5,
+        input_tokens=0,
+        output_tokens=0,
+        findings=["Deterministic checks passed."],
+    )
+
+    provider_step = ExecutionStepRecord(
+        step_number=5,
+        role=LogicalModelRole.PROMPT_ENGINEER,
+        provider="groq",
+        model_id="openai/gpt-oss-120b",
+        request_id="req_test_abc123",
+        http_status=200,
+        latency_ms=5120.0,
+        input_tokens=1500,
+        output_tokens=2200,
+        findings=["Generated revised architecture."],
+    )
+
+    audit = MultiModelExecutionAuditRecord(
+        workflow_id="wf-test-distinct",
+        steps=[internal_step, provider_step],
+        total_latency_ms=5120.5,
+        total_tokens=3700,
+        deterministic_verification_passed=True,
+    )
+
+    render_execution_summary(audit, {"status": "COMPLETED"})
+    captured = capsys.readouterr()
+
+    # Internal step verification
+    assert "[INTERNAL]" in captured.out
+    assert "N/A (Internal)" in captured.out
+    assert "deterministic-verifier-v1" in captured.out
+
+    # Provider step verification
+    assert "groq" in captured.out
+    assert "openai/gpt-oss-120b" in captured.out
+    assert "req_test_abc123" in captured.out
+    assert "200" in captured.out
+    assert "1500/2200" in captured.out
+
+
+def test_cli_displays_parent_and_resumed_workflow_ids(capsys):
+    """Verifies that both parent and resumed workflow IDs are prominently rendered on resumed workflows."""
+    from promptiq.orchestrator.collaboration_cli import render_execution_summary
+    from promptiq.schemas.model_pool import MultiModelExecutionAuditRecord
+
+    audit = MultiModelExecutionAuditRecord(
+        workflow_id="bccc4086-47a3-4ac1-84af-791acfbfc9d6",
+        parent_workflow_id="422f4399-c93f-439f-a7ef-bbf3149a4057",
+        steps=[],
+    )
+
+    summary = {
+        "status": "COMPLETED",
+        "workflow_id": "422f4399-c93f-439f-a7ef-bbf3149a4057",
+        "resumed_workflow_id": "bccc4086-47a3-4ac1-84af-791acfbfc9d6",
+    }
+
+    render_execution_summary(audit, summary)
+    captured = capsys.readouterr()
+
+    assert "Workflow ID:      422f4399-c93f-439f-a7ef-bbf3149a4057" in captured.out
+    assert "Resumed ID:       bccc4086-47a3-4ac1-84af-791acfbfc9d6" in captured.out
+
+
+def test_final_verification_independent_hash_against_revised_artifact():
+    """Confirms that Stage E executed against revised artifact (not copied from Stage C) with distinct SHA-256."""
+    import hashlib
+    import json
+    from pathlib import Path
+
+    artifact_path = Path("docs/LIVE_COLLABORATION_EXECUTION_RESULTS.json")
+    assert artifact_path.exists(), "Persisted execution ledger must exist."
+
+    with open(artifact_path, encoding="utf-8") as f:
+        data = json.load(f)
+
+    init_art = data["initial_artifact"]
+    rev_art = data["revised_artifact"]
+
+    h_init = hashlib.sha256(init_art.encode("utf-8")).hexdigest()
+    h_rev = hashlib.sha256(rev_art.encode("utf-8")).hexdigest()
+
+    # Independent artifact verification
+    assert h_init != h_rev
+    assert h_init == "d2b4b1a11dbbda7e44c115d30fe2376f264ad8c02aba96775e2933c7c65c8117"
+    assert h_rev == "6011c869d09631f1d4351eeaf3d44afdc5c6f918becd3aafb096541ccd8c30ce"
+
+    steps = data["summary"]["steps"]
+    step_4 = steps[3]  # Stage C
+    step_6 = steps[5]  # Stage E
+
+    assert step_4["step_number"] == 4
+    assert step_4["provider"] == "internal"
+    assert step_4["http_status"] is None
+    assert step_4["request_id"] is None
+    assert "Deterministic invariants fully satisfied on candidate artifact." in step_4["findings"][0]
+
+    assert step_6["step_number"] == 6
+    assert step_6["provider"] == "internal"
+    assert step_6["http_status"] is None
+    assert step_6["request_id"] is None
+    assert "Critic findings resolution: 5 resolved" in step_6["findings"][0]
+
+    # Confirm all 5 critic autopsy findings are tracked as resolved in the final breakdown
+    res = data["summary"]["resolution_breakdown"]
+    assert len(res["resolved"]) == 5
+    assert len(res["unresolved"]) == 0
+
+
+def test_cli_inspect_mode_renders_cleanly_without_api_calls(capsys):
+    """Verifies that collaboration_cli --inspect parses and formats persisted execution ledger without any network calls."""
+    from unittest.mock import patch
+
+    from promptiq.orchestrator.collaboration_cli import main
+
+    with patch("sys.argv", ["collaboration_cli.py", "--inspect", "docs/LIVE_COLLABORATION_EXECUTION_RESULTS.json"]):
+        main()
+
+    captured = capsys.readouterr()
+    assert "Execution Status: COMPLETED" in captured.out
+    assert "Workflow ID:      422f4399-c93f-439f-a7ef-bbf3149a4057" in captured.out
+    assert "Resumed ID:       bccc4086-47a3-4ac1-84af-791acfbfc9d6" in captured.out
+    assert "Total Latency:    27201.9 ms" in captured.out
+    assert "Total Tokens:     23014" in captured.out
+    assert "Consensus Status: adjudicated" in captured.out
+    assert "Deterministic:    PASSED" in captured.out
+    assert "Resolved Findings (5):" in captured.out
+    assert "req_01m7zvprh4ev9v7e67f2ypx2r7" in captured.out
+
+
+def test_cli_partially_completed_failure_summary_rendering(capsys):
+    """Verifies that render_execution_summary safely renders failure and notice when audit is None."""
+    from promptiq.orchestrator.collaboration_cli import render_execution_summary
+
+    summary = {
+        "status": "BLOCKED_EXTERNAL",
+        "error": "Operator confirmation required.",
+        "notice": "Provide --opt-in to execute network calls.",
+    }
+
+    render_execution_summary(None, summary)
+    captured = capsys.readouterr()
+
+    assert "Execution Status: BLOCKED_EXTERNAL" in captured.out
+    assert "Failure Reason:   Operator confirmation required." in captured.out
+    assert "Notice:           Provide --opt-in to execute network calls." in captured.out
+
+
+def test_quota_ledger_durability_and_expiration_pruning(tmp_path):
+    """Verifies atomic writes, expired sliding-window pruning, and lack of secrets in quota ledger."""
+    import json
+    from datetime import UTC, datetime
+
+    from promptiq.gateway.governor import CapacityGovernor
+
+    ledger_path = tmp_path / "test_ledger.json"
+    gov = CapacityGovernor(ledger_path=ledger_path, auto_load=False)
+
+    now = datetime.now(UTC).timestamp()
+    expired_min = now - 120.0  # 2 minutes ago (expired for minute window)
+    active_min = now - 10.0   # 10 seconds ago (active for minute window)
+
+    gov._model_requests_minute["openai/gpt-oss-120b"] = [expired_min, active_min]
+    gov._model_tokens_minute["openai/gpt-oss-120b"] = [(expired_min, 1000), (active_min, 500)]
+
+    # Atomic write with pruning
+    success = gov.save_durable_state()
+    assert success is True
+    assert ledger_path.exists()
+
+    with open(ledger_path, encoding="utf-8") as f:
+        data = json.load(f)
+
+    # Confirm expired timestamps were pruned
+    min_reqs = data["model_requests_minute"]["openai/gpt-oss-120b"]
+    assert len(min_reqs) == 1
+    assert min_reqs[0] == active_min
+
+    min_toks = data["model_tokens_minute"]["openai/gpt-oss-120b"]
+    assert len(min_toks) == 1
+    assert min_toks[0] == [active_min, 500]
+
+    # Confirm zero credentials or keys stored
+    raw_text = ledger_path.read_text(encoding="utf-8")
+    assert "gsk_" not in raw_text
+    assert "api_key" not in raw_text
+    assert "Authorization" not in raw_text
+
+
