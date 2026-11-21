@@ -7,6 +7,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.3.1] - 2026-11-21
+
+### Phase 3.1: Critical Corrections, Model Re-Evaluation & Production Readiness Gate
+
+### Added
+- **Official MCP Streamable HTTP Primary Transport**:
+  - Implemented primary Streamable HTTP endpoint (`POST /api/v1/mcp`, `/api/v1/mcp/http`) adhering to the official Model Context Protocol 2024-11-05/2026 specification.
+  - Strictly stateless execution across serverless container restarts without requiring Cloud Run session affinity or container memory queues.
+  - DNS rebinding security: implemented `validate_mcp_origin` rejecting suspicious Origin headers with 403 Forbidden.
+  - Retained legacy dual-endpoint SSE (`/sse` + `/messages`) with tenant session binding for backwards compatibility.
+- **Model-Specific Rate Limits & Header Inspection**:
+  - Replaced generic 14,400 RPD assumption with verified model-specific quotas in `CapacityGovernor` (`llama-3.3-70b-versatile`: 1,000 RPD, 100k TPD; `llama-3.1-8b-instant`: 14,400 RPD, 500k TPD).
+  - Implemented provider response header inspection (`retry-after`, `x-ratelimit-remaining-*`) for proactive circuit breaker tripping.
+- **Global Cost-Eligibility Gate (`promptiq/core/cost_gate.py`)**:
+  - Audited all candidate cloud infrastructure services against zero-spend requirements.
+  - Forbids automated provisioning of services requiring billing credit cards or lacking native hard spending freezes (e.g. Google Cloud Run auto-overage risk).
+  - Approved 100% verified zero-spend alternatives: Neon Serverless Postgres and Cloudflare Workers.
+- **Two-Tier Tournament Separation**:
+  - Decoupled Category A deterministic benchmark tests from Category B live-provider evaluations.
+  - Strict disclosure: live providers marked `UNVERIFIED (NO OPERATOR KEY)` in development environments without manufacturing false scores.
+- **PostgreSQL Connection Recovery**:
+  - Added `pool_pre_ping=True` and `pool_recycle=300` in `database.py` to handle Neon serverless Postgres auto-suspend and reconnection without dropped requests.
+
+### Changed / Corrected
+- **Model Intelligence Registry Corrections**:
+  - Removed shut-down models (`gemini-2.0-flash`, `gemini-2.0-flash-lite`, `gemini-1.5-flash`, `gemini-1.5-pro`) from all active routing.
+  - Added dated shutdown records (`gemini-2.0-flash`: shutdown June 1, 2026).
+  - Designated active GA `gemini-3.8-flash` as primary internal model under Google AI Studio Developer API terms.
+- **Test Suite Expansion**:
+  - Expanded automated test suite to **60 passed tests (100% pass rate)** with **75% statement coverage**.
+
+---
+
 ## [0.3.0] - 2026-11-21
 
 ### Phase 3: Model Intelligence Tournament & Cloud-Native Production Architecture

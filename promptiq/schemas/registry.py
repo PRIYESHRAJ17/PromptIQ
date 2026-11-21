@@ -18,6 +18,9 @@ class ModelRecordSchema(BaseModel):
     cutoff_date: str | None = None
     release_date: str | None = None
     is_zero_price: bool
+    eligibility_status: str = "eligible_zero_price"
+    retirement_date: str | None = None
+    eligibility_notes: str | None = None
     rate_limits: dict[str, Any]
     confidence: str
     verified_at: datetime | None = None

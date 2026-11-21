@@ -17,7 +17,10 @@ def run_bridge(remote_url: str, auth_token: str | None = None):
         raise ValueError(f"Invalid scheme for remote URL: {remote_url}. Only http:// and https:// are permitted.")
 
     token = auth_token or os.environ.get("PROMPTIQ_TOKEN")
-    headers = {"Content-Type": "application/json"}
+    headers = {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+    }
     if token:
         headers["Authorization"] = f"Bearer {token}"
 
@@ -60,7 +63,7 @@ def run_bridge(remote_url: str, auth_token: str | None = None):
 
 def main():
     parser = argparse.ArgumentParser(description="PromptIQ Local Stdio Bridge to Cloud-Hosted MCP Service")
-    parser.add_argument("--url", default="http://127.0.0.1:8000/api/v1/mcp/rpc", help="Remote MCP RPC URL")
+    parser.add_argument("--url", default="http://127.0.0.1:8000/api/v1/mcp", help="Remote MCP Streamable HTTP URL")
     parser.add_argument(
         "--token",
         default=None,

@@ -21,7 +21,8 @@ async def test_zero_price_eligibility_gate():
     """
     # Allowed $0 routes pass
     verify_zero_price_route(provider="mock", model_id="promptiq-mock-v1", price_per_token=0.0)
-    verify_zero_price_route(provider="gemini", model_id="gemini-2.0-flash", price_per_token=0.0)
+    verify_zero_price_route(provider="gemini", model_id="gemini-3.8-flash", price_per_token=0.0)
+    verify_zero_price_route(provider="gemini", model_id="gemini-3.5-flash-lite", price_per_token=0.0)
     verify_zero_price_route(provider="groq", model_id="llama-3.3-70b-versatile", price_per_token=0.0)
 
     # Paid routes MUST raise ZeroPriceViolationError
@@ -34,6 +35,12 @@ async def test_zero_price_eligibility_gate():
     # Unverified route without :free tag raises error
     with pytest.raises(ZeroPriceViolationError):
         verify_zero_price_route(provider="unverified_vendor", model_id="commercial-model-v1", price_per_token=0.0)
+
+    # Gemini 2.0 Flash (shutdown on June 1, 2026) MUST raise ZeroPriceViolationError
+    with pytest.raises(ZeroPriceViolationError) as exc_gemini2:
+        verify_zero_price_route(provider="gemini", model_id="gemini-2.0-flash", price_per_token=0.0)
+    assert "officially retired" in str(exc_gemini2.value)
+    assert "June 1, 2026" in str(exc_gemini2.value)
 
     # Retired model MUST raise ZeroPriceViolationError even if price is 0.0
     with pytest.raises(ZeroPriceViolationError) as exc_retired:

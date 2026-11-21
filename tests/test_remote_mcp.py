@@ -110,3 +110,63 @@ async def test_remote_mcp_sse_cross_tenant_isolation(
         assert "another tenant" in hijack_resp.json()["detail"].lower()
     finally:
         _active_sse_sessions.pop(fake_session_id, None)
+
+
+@pytest.mark.asyncio
+async def test_streamable_http_primary_transport(client: AsyncClient, user_auth_headers: dict[str, str]):
+    """Verifies official MCP Streamable HTTP primary transport on /api/v1/mcp."""
+    # 1. Standard application/json response
+    init_payload = {
+        "jsonrpc": "2.0",
+        "id": 201,
+        "method": "initialize",
+        "params": {"protocolVersion": "2024-11-05"},
+    }
+    resp = await client.post(
+        "/api/v1/mcp",
+        json=init_payload,
+        headers={**user_auth_headers, "Accept": "application/json"},
+    )
+    assert resp.status_code == 200
+    assert "application/json" in resp.headers["content-type"]
+    assert resp.json()["result"]["serverInfo"]["name"] == "promptiq-cloud-mcp"
+
+    # 2. text/event-stream chunked SSE response over HTTP POST
+    sse_req_payload = {
+        "jsonrpc": "2.0",
+        "id": 202,
+        "method": "ping",
+    }
+    sse_resp = await client.post(
+        "/api/v1/mcp",
+        json=sse_req_payload,
+        headers={**user_auth_headers, "Accept": "text/event-stream"},
+    )
+    assert sse_resp.status_code == 200
+    assert "text/event-stream" in sse_resp.headers["content-type"]
+    body = sse_resp.text
+    assert "event: message" in body
+    assert '"id": 202' in body
+
+
+@pytest.mark.asyncio
+async def test_streamable_http_origin_security(client: AsyncClient, user_auth_headers: dict[str, str]):
+    """Verifies Origin header validation prevents DNS rebinding attacks."""
+    ping_payload = {"jsonrpc": "2.0", "id": 203, "method": "ping"}
+
+    # Suspicious origin MUST be rejected with 403 Forbidden
+    bad_resp = await client.post(
+        "/api/v1/mcp",
+        json=ping_payload,
+        headers={**user_auth_headers, "Origin": "http://evil-attacker-site.com"},
+    )
+    assert bad_resp.status_code == 403
+    assert "rebinding" in bad_resp.json()["detail"].lower()
+
+    # Allowed localhost origin passes
+    good_resp = await client.post(
+        "/api/v1/mcp",
+        json=ping_payload,
+        headers={**user_auth_headers, "Origin": "http://localhost:3000"},
+    )
+    assert good_resp.status_code == 200

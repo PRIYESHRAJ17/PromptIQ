@@ -14,14 +14,20 @@ from promptiq.core.logging import logger
 
 Base = declarative_base()
 
-# Configure engine kwargs based on dialect
+# Configure engine kwargs based on dialect with production connection recovery
 engine_kwargs: dict = {
     "echo": False,
     "future": True,
+    "pool_pre_ping": True,  # Critical for Neon / serverless postgres connection recovery after sleep
+    "pool_recycle": 300,    # Recycle connections every 5 minutes to match cloud auto-suspend
 }
 
 if settings.DATABASE_URL.startswith("sqlite"):
     engine_kwargs["connect_args"] = {"check_same_thread": False}
+else:
+    # PostgreSQL connection pool settings for cloud serverless environments
+    engine_kwargs["pool_size"] = 5
+    engine_kwargs["max_overflow"] = 10
 
 engine = create_async_engine(settings.DATABASE_URL, **engine_kwargs)
 

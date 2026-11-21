@@ -19,7 +19,7 @@ class GeminiInferenceAdapter(BaseInferenceAdapter):
     """Adapter for Google Gemini Developer API free tier."""
 
     provider_name: str = "gemini"
-    model_id: str = "gemini-2.0-flash"
+    model_id: str = "gemini-3.8-flash"
 
     def __init__(self, model_id: str | None = None):
         if model_id:
@@ -37,6 +37,7 @@ class GeminiInferenceAdapter(BaseInferenceAdapter):
             raise CapacityExhaustedError("Gemini operator route is unconfigured.")
 
         governor.check_circuit_breaker(self.provider_name)
+        governor.check_model_quota(self.model_id)
 
         start_time = time.perf_counter()
         url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model_id}:generateContent?key={api_key}"
@@ -53,9 +54,11 @@ class GeminiInferenceAdapter(BaseInferenceAdapter):
         async with httpx.AsyncClient(timeout=30.0) as client:
             try:
                 resp = await client.post(url, json=payload)
+                governor.inspect_response_headers(self.provider_name, self.model_id, resp.headers, resp.status_code)
+
                 if resp.status_code == 429:
-                    governor.trip_circuit_breaker(self.provider_name, "Gemini rate limit exceeded", pause_duration_seconds=60)
-                    raise CapacityExhaustedError("Gemini free tier rate limit reached. Pausing route.", retry_after=60)
+                    retry_after = int(resp.headers.get("retry-after", 60))
+                    raise CapacityExhaustedError("Gemini free tier rate limit reached. Pausing route.", retry_after=retry_after)
 
                 resp.raise_for_status()
                 data = resp.json()
@@ -70,13 +73,16 @@ class GeminiInferenceAdapter(BaseInferenceAdapter):
                     except (json.JSONDecodeError, ValueError):
                         logger.debug("Failed to deserialize response schema into structured JSON.")
 
+                tokens_used = len(candidate) // 4
+                governor.record_model_usage(self.model_id, tokens_used)
+
                 return InferenceResponse(
                     text=candidate,
                     structured_data=structured_data,
                     model_id=self.model_id,
                     provider=self.provider_name,
                     latency_ms=round(latency_ms, 2),
-                    tokens_used=len(candidate) // 4,
+                    tokens_used=tokens_used,
                     route_cost=0.0,
                 )
             except httpx.HTTPStatusError as e:

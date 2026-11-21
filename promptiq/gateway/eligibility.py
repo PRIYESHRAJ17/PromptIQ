@@ -4,14 +4,13 @@ from typing import Any
 
 from promptiq.core.exceptions import BYOKViolationError, ZeroPriceViolationError
 
-# Known verified zero-price provider routes and active model versions
+# Known verified zero-price provider routes and active model versions (as of late 2026)
 VERIFIED_ZERO_PRICE_ROUTES: dict[str, list[str]] = {
     "mock": ["promptiq-mock-v1", "deterministic-mock-v1"],
     "gemini": [
-        "gemini-2.0-flash",
-        "gemini-2.0-flash-lite",
         "gemini-3.8-flash",
         "gemini-3.5-flash-lite",
+        "gemini-2.5-flash",
     ],
     "groq": [
         "llama-3.3-70b-versatile",
@@ -21,19 +20,23 @@ VERIFIED_ZERO_PRICE_ROUTES: dict[str, list[str]] = {
     ],
     "openrouter": [
         "meta-llama/llama-3.3-70b-instruct:free",
-        "google/gemini-2.0-flash-exp:free",
         "deepseek/deepseek-r1:free",
         "baidu/ernie-5.5-flash-preview:free",
     ],
 }
 
-# Retired models that are explicitly rejected
-RETIRED_MODELS: set[str] = {
-    "gemini-1.0-pro",
-    "gemini-1.5-flash",
-    "gemini-1.5-pro",
-    "text-davinci-003",
-    "gpt-3.5-turbo",
+# Officially retired / shut-down models that are strictly rejected by the gateway
+RETIRED_MODELS: dict[str, str] = {
+    "gemini-2.0-flash": "Shut down on June 1, 2026",
+    "gemini-2.0-flash-lite": "Shut down on June 1, 2026",
+    "gemini-2.0-flash-001": "Shut down on June 1, 2026",
+    "gemini-2.0-flash-exp": "Experimental preview retired in 2025",
+    "google/gemini-2.0-flash-exp:free": "Retired in 2025",
+    "gemini-1.5-flash": "Shut down in September 2025",
+    "gemini-1.5-pro": "Shut down in September 2025",
+    "gemini-1.0-pro": "Shut down in early 2025",
+    "text-davinci-003": "Shut down in January 2024",
+    "gpt-3.5-turbo": "Deprecated legacy model",
 }
 
 PROHIBITED_KEY_FIELDS: set[str] = {
@@ -67,10 +70,11 @@ def verify_zero_price_route(provider: str, model_id: str, price_per_token: float
 
     # Check for retired models
     if model_id.lower() in RETIRED_MODELS:
+        detail = RETIRED_MODELS[model_id.lower()]
         raise ZeroPriceViolationError(
             provider=provider,
             model_id=model_id,
-            reason=f"Model '{model_id}' is officially retired and cannot be invoked.",
+            reason=f"Model '{model_id}' is officially retired ({detail}) and cannot be invoked.",
         )
 
     provider_routes = VERIFIED_ZERO_PRICE_ROUTES.get(provider.lower())

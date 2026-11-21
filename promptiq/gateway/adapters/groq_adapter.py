@@ -37,6 +37,7 @@ class GroqInferenceAdapter(BaseInferenceAdapter):
             raise CapacityExhaustedError("Groq operator route is unconfigured.")
 
         governor.check_circuit_breaker(self.provider_name)
+        governor.check_model_quota(self.model_id)
 
         start_time = time.perf_counter()
         url = "https://api.groq.com/openai/v1/chat/completions"
@@ -58,9 +59,12 @@ class GroqInferenceAdapter(BaseInferenceAdapter):
             headers = {"Authorization": f"Bearer {api_key}"}
             try:
                 resp = await client.post(url, json=payload, headers=headers)
+                # Inspect Groq rate-limit headers (RPM/RPD/TPM/TPD and retry-after)
+                governor.inspect_response_headers(self.provider_name, self.model_id, resp.headers, resp.status_code)
+
                 if resp.status_code == 429:
-                    governor.trip_circuit_breaker(self.provider_name, "Groq rate limit exceeded", pause_duration_seconds=60)
-                    raise CapacityExhaustedError("Groq free tier rate limit reached. Route paused.", retry_after=60)
+                    retry_after = int(resp.headers.get("retry-after", 60))
+                    raise CapacityExhaustedError("Groq free tier rate limit reached. Route paused.", retry_after=retry_after)
 
                 resp.raise_for_status()
                 data = resp.json()
@@ -74,13 +78,16 @@ class GroqInferenceAdapter(BaseInferenceAdapter):
                     except (json.JSONDecodeError, ValueError):
                         logger.debug("Failed to parse response schema JSON from Groq output.")
 
+                tokens_used = data.get("usage", {}).get("total_tokens", len(content) // 4)
+                governor.record_model_usage(self.model_id, tokens_used)
+
                 return InferenceResponse(
                     text=content,
                     structured_data=structured_data,
                     model_id=self.model_id,
                     provider=self.provider_name,
                     latency_ms=round(latency_ms, 2),
-                    tokens_used=data.get("usage", {}).get("total_tokens", len(content) // 4),
+                    tokens_used=tokens_used,
                     route_cost=0.0,
                 )
             except httpx.HTTPStatusError as e:
