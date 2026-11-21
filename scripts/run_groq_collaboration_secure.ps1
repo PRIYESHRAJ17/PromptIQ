@@ -33,13 +33,20 @@
 param(
     [string]$Profile = "STANDARD",
     [switch]$OptIn,
-    [switch]$ConfirmFreePlan
+    [switch]$ConfirmFreePlan,
+    [switch]$Resume,
+    [string]$WorkflowId = "422f4399-c93f-439f-a7ef-bbf3149a4057"
 )
 
 Write-Host "============================================================" -ForegroundColor Cyan
 Write-Host "PROMPTIQ SECURE MULTI-MODEL COLLABORATION LAUNCHER" -ForegroundColor Cyan
-Write-Host "Stage Sequence: Stage A (120B Gen) -> Stage B (20B Critic) -> Stage C (Det Verif) -> Stage D (120B Rev) -> Stage E (Final Verif)" -ForegroundColor Gray
-Write-Host "Profile: $Profile" -ForegroundColor Gray
+if ($Resume) {
+    Write-Host "Mode: RESUME WORKFLOW Stage D (120B Rev) -> Stage E (Final Verif)" -ForegroundColor Yellow
+    Write-Host "Target Workflow ID: $WorkflowId" -ForegroundColor Yellow
+} else {
+    Write-Host "Mode: FULL COLLABORATION Stage A -> B -> C -> D -> E" -ForegroundColor Gray
+    Write-Host "Profile: $Profile" -ForegroundColor Gray
+}
 Write-Host "============================================================" -ForegroundColor Cyan
 
 # 1. Verification of Mandatory Flags
@@ -89,7 +96,11 @@ try {
     }
 
     Write-Host "`nExecuting isolated multi-model collaboration..." -ForegroundColor Cyan
-    & $pythonExe -m promptiq.orchestrator.collaboration_cli --opt-in --profile $Profile
+    if ($Resume) {
+        & $pythonExe -m promptiq.orchestrator.collaboration_cli --opt-in --resume $WorkflowId
+    } else {
+        & $pythonExe -m promptiq.orchestrator.collaboration_cli --opt-in --profile $Profile
+    }
     $exitCode = $LASTEXITCODE
 }
 finally {

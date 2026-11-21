@@ -129,7 +129,7 @@ async def execute_live_collaboration(
 
     # 5. Build Comprehensive Output Ledger
     summary = {
-        "status": "SUCCESS" if audit.final_status == "SUCCESS" else "FAILED",
+        "status": audit.final_status,
         "workflow_id": audit.workflow_id,
         "task_id": audit.task_id,
         "execution_profile": audit.execution_profile.value,
@@ -145,6 +145,7 @@ async def execute_live_collaboration(
         "deterministic_verification_passed": audit.deterministic_verification_passed,
         "account_verification_state": verification_record.verification_state,
         "steps_count": len(audit.steps),
+        "stage_statuses": audit.stage_statuses,
         "resolution_breakdown": audit.resolution_breakdown,
         "steps": [s.model_dump(mode="json") for s in audit.steps],
     }
@@ -167,6 +168,102 @@ async def execute_live_collaboration(
     return final_text, audit, summary
 
 
+async def resume_live_collaboration(
+    workflow_id: str,
+    opt_in: bool = False,
+    output_json_path: str = "docs/LIVE_COLLABORATION_EXECUTION_RESULTS.json",
+) -> tuple[str, MultiModelExecutionAuditRecord | None, dict[str, Any]]:
+    """Resumes a partially completed live collaboration workflow at Stage D (Revision)."""
+    # 1. Zero-price invariant checks
+    verify_zero_price_route(provider="groq", model_id="openai/gpt-oss-120b", price_per_token=0.0)
+
+    # 2. Operator account confirmation gate
+    try:
+        verification_record = OperatorAccountVerifier.verify_operator_account(
+            provider="groq",
+            model_id="openai/gpt-oss-120b",
+            opt_in_confirmed=opt_in,
+        )
+    except OperatorConfirmationRequiredError as e:
+        logger.info("Live collaboration resumption held: %s", e.message)
+        error_result = {
+            "status": "BLOCKED_EXTERNAL",
+            "provider": "groq",
+            "success": False,
+            "error": e.message,
+            "notice": "Real operator credentials, free tier confirmation, and explicit --opt-in required. Never substitute mock execution.",
+        }
+        return "", None, error_result
+
+    # 3. Enforce fail-closed inference
+    settings.MANAGED_INFERENCE_ALLOW_MOCK_FALLBACK = False
+    settings.MANAGED_INFERENCE_PRIMARY_ROUTE = "groq"
+
+    api_key = settings.effective_groq_api_key
+    if not api_key:
+        error_result = {
+            "status": "BLOCKED_EXTERNAL",
+            "provider": "groq",
+            "success": False,
+            "error": "No operator Groq API key available in process environment. Failing closed.",
+            "notice": "Provide API key via in-memory secure launcher scripts/run_groq_collaboration_secure.ps1.",
+        }
+        return "", None, error_result
+
+    # 4. Resume workflow
+    try:
+        final_text, audit = await MultiModelCollaborationPipeline.resume_workflow_revision(
+            workflow_id=workflow_id,
+            user_id="operator",
+            persisted_json_path=output_json_path,
+            preferred_provider="groq",
+        )
+    except CapacityExhaustedError as e:
+        error_result = {
+            "status": "CAPACITY_EXHAUSTED",
+            "provider": "groq",
+            "success": False,
+            "error": f"Collaboration resumption held by governor: {e.message}",
+            "details": e.details,
+            "retry_after": e.retry_after,
+        }
+        return "", None, error_result
+    except Exception as e:
+        err_str = str(e).replace(api_key, "[REDACTED_API_KEY]") if api_key else str(e)
+        error_result = {
+            "status": "EXECUTION_ERROR",
+            "provider": "groq",
+            "success": False,
+            "error": err_str,
+        }
+        return "", None, error_result
+
+    summary = {
+        "status": audit.final_status,
+        "workflow_id": workflow_id,
+        "resumed_workflow_id": audit.workflow_id,
+        "task_id": audit.task_id,
+        "execution_profile": audit.execution_profile.value,
+        "generator_model": audit.generator_model_id,
+        "critic_model": audit.critic_model_id,
+        "is_multi_model": audit.is_multi_model,
+        "is_multi_family": audit.is_multi_family,
+        "is_multi_provider": audit.is_multi_provider,
+        "model_diversity_rating": audit.model_diversity_rating,
+        "consensus_status": audit.consensus_status,
+        "total_latency_ms": audit.total_latency_ms,
+        "total_tokens": audit.total_tokens,
+        "deterministic_verification_passed": audit.deterministic_verification_passed,
+        "account_verification_state": verification_record.verification_state,
+        "steps_count": len(audit.steps),
+        "stage_statuses": audit.stage_statuses,
+        "resolution_breakdown": audit.resolution_breakdown,
+        "steps": [s.model_dump(mode="json") for s in audit.steps],
+    }
+
+    return final_text, audit, summary
+
+
 def main() -> None:
     """CLI entrypoint for executing live multi-model collaboration."""
     parser = argparse.ArgumentParser(description="PromptIQ Live Multi-Model Collaboration Runner")
@@ -174,25 +271,37 @@ def main() -> None:
     parser.add_argument("--profile", default="STANDARD", choices=["STANDARD", "DEEP", "HIGH_RISK", "QUICK"], help="Execution profile.")
     parser.add_argument("--prompt", default=None, help="Custom prompt or use standard food redistribution platform task.")
     parser.add_argument("--output", default="docs/LIVE_COLLABORATION_EXECUTION_RESULTS.json", help="Path to save execution ledger.")
+    parser.add_argument("--resume", default=None, help="Workflow ID of partially completed workflow to resume at Stage D.")
 
     args = parser.parse_args()
 
     print("=" * 70)
     print("PROMPTIQ LIVE MULTI-MODEL COLLABORATION RUNNER")
     print("=" * 70)
-    print(f"Profile:        {args.profile}")
+    if args.resume:
+        print(f"Action:         RESUME WORKFLOW ({args.resume})")
+        print("Stage Sequence: Skip A/B/C -> Stage D (120B Rev) -> Stage E (Final Verif)")
+    else:
+        print(f"Profile:        {args.profile}")
+        print("Stage Sequence: Stage A (Gen) -> Stage B (Critic) -> Stage C (Det Verif) -> Stage D (Rev) -> Stage E (Final Verif)")
     print(f"Opt-In Status:  {args.opt_in}")
     print(f"Output File:    {args.output}")
-    print("Stage Sequence: Stage A (Gen) -> Stage B (Critic) -> Stage C (Det Verif) -> Stage D (Rev) -> Stage E (Final Verif)")
     print("=" * 70)
 
-    exec_profile = ExecutionProfile(args.profile)
-    final_text, audit, summary = asyncio.run(execute_live_collaboration(
-        opt_in=args.opt_in,
-        task_prompt=args.prompt,
-        profile=exec_profile,
-        output_json_path=args.output,
-    ))
+    if args.resume:
+        final_text, audit, summary = asyncio.run(resume_live_collaboration(
+            workflow_id=args.resume,
+            opt_in=args.opt_in,
+            output_json_path=args.output,
+        ))
+    else:
+        exec_profile = ExecutionProfile(args.profile)
+        final_text, audit, summary = asyncio.run(execute_live_collaboration(
+            opt_in=args.opt_in,
+            task_prompt=args.prompt,
+            profile=exec_profile,
+            output_json_path=args.output,
+        ))
 
     print(f"\nExecution Status: {summary.get('status')}")
     if not audit:

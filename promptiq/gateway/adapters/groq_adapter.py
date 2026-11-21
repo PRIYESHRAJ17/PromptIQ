@@ -40,8 +40,15 @@ class GroqInferenceAdapter(BaseInferenceAdapter):
         model_to_use = request.target_model_id or self.model_id
         verify_zero_price_route(self.provider_name, model_to_use, price_per_token=0.0)
 
+        # Estimate token footprint for preflight quota check
+        est_input_tokens = sum(len(m.content) for m in request.messages) // 4
+        if request.system_instruction:
+            est_input_tokens += len(request.system_instruction) // 4
+        est_output_tokens = min(request.max_tokens or 2000, 4096)
+        est_total_tokens = est_input_tokens + est_output_tokens
+
         governor.check_circuit_breaker(self.provider_name)
-        governor.check_model_quota(model_to_use)
+        governor.check_model_quota(model_to_use, estimated_tokens=est_total_tokens)
 
         request_time = datetime.now(UTC).isoformat()
         start_time = time.perf_counter()
@@ -84,13 +91,31 @@ class GroqInferenceAdapter(BaseInferenceAdapter):
                 governor.inspect_response_headers(self.provider_name, model_to_use, resp.headers, resp.status_code)
 
                 if resp.status_code == 429:
-                    retry_after = int(resp.headers.get("retry-after", 60))
-                    raise CapacityExhaustedError("Groq free tier rate limit reached. Route paused.", retry_after=retry_after)
+                    raw_retry_after = resp.headers.get("retry-after")
+                    reset_tokens_hdr = resp.headers.get("x-ratelimit-reset-tokens")
+                    calc_retry = governor.parse_rate_limit_reset_seconds(reset_tokens_hdr) or 60.0
+                    try:
+                        retry_after = int(raw_retry_after) if raw_retry_after else int(calc_retry)
+                    except ValueError:
+                        retry_after = int(calc_retry)
+                    raise CapacityExhaustedError(
+                        f"Groq free tier rate limit reached (HTTP 429). Route paused for {retry_after}s.",
+                        retry_after=retry_after,
+                        details={
+                            "provider": self.provider_name,
+                            "model_id": model_to_use,
+                            "http_status": 429,
+                            "request_id": req_id,
+                            "rate_limit_headers": rate_limit_headers,
+                            "retry_after": retry_after,
+                        },
+                    )
 
                 resp.raise_for_status()
                 data = resp.json()
                 req_id = req_id or data.get("id")
-                content = data["choices"][0]["message"]["content"]
+                choice_msg = data.get("choices", [{}])[0].get("message", {})
+                content = choice_msg.get("content") or choice_msg.get("reasoning") or choice_msg.get("reasoning_content") or ""
 
                 usage = data.get("usage", {})
                 tokens_used = usage.get("total_tokens", len(content) // 4)

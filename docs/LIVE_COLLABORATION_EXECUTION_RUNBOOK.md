@@ -29,14 +29,23 @@
 
 From the root of the PromptIQ repository (`c:\Users\Priyesh Raj\Desktop\PromptIQ`):
 
+### Option A: Full Multi-Model Collaboration (Stages A ➔ B ➔ C ➔ D ➔ E)
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts\run_groq_collaboration_secure.ps1 -OptIn -ConfirmFreePlan
+```
+
+### Option B: Resume Partially Completed Workflow (Stage D ➔ E Only)
+When an earlier execution successfully ran Stages A, B, and C but was rate-limited on Stage D (e.g. Workflow `422f4399-c93f-439f-a7ef-bbf3149a4057`), use `-Resume` to avoid repeating previous calls:
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\run_groq_collaboration_secure.ps1 -Resume -WorkflowId 422f4399-c93f-439f-a7ef-bbf3149a4057 -OptIn -ConfirmFreePlan
 ```
 
 ### Script Execution Parameters:
 - `-OptIn`: Confirms operator authorization to send live API requests over the network.
 - `-ConfirmFreePlan`: Confirms operator verified the cardless Free Plan in Groq Console (Settings > Billing: No card; Settings > Limits: Free Plan).
 - `-Profile`: Optional profile (default: `STANDARD`).
+- `-Resume`: Switch to resume from persisted candidate artifact and critic review without repeating Stages A, B, or C.
+- `-WorkflowId`: Specific workflow UUID to resume (defaults to `422f4399-c93f-439f-a7ef-bbf3149a4057`).
 
 ---
 

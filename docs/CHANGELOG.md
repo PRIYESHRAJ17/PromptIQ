@@ -9,9 +9,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.3.4.2] - 2026-11-22
 
-### Phase 3.4.2: First Actual Live Inference, Multi-Model Collaboration and Operator-Verified Execution
+### Phase 3.4.2: First Actual Live Inference, Multi-Model Collaboration Recovery and Revision Resumption
 
 ### Added
+- **Multi-Model Collaboration Resumption Engine (`promptiq/orchestrator/collaboration.py`)**:
+  - Implemented `MultiModelCollaborationPipeline.resume_workflow_revision` and CLI `--resume <WORKFLOW_ID>` for resilient stage-level resumption.
+  - Skips already verified Stages A (Generation), B (Criticism), and C (Candidate Verification), reusing persisted candidate architecture (~13.5k chars) and structured critic autopsy notes.
+  - Executes Stage D (Specialist Revision via GPT-OSS 120B) and Stage E (Final Deterministic Verification & Resolution Breakdown) without redundant provider calls.
+- **Token-Budget-Aware Revision Prompt Engineering (`promptiq/orchestrator/collaboration.py`)**:
+  - Added `prepare_revision_prompt` helper function: structures prioritized actionable critic findings and bounds `max_tokens=2500` to guarantee prompt + completion footprint (~6,200 tokens) remains safely below Groq's 8,000 TPM limit with a 1,800-token safety buffer.
+- **In-Memory Governor Preflight Quota Verification (`promptiq/gateway/governor.py`, `promptiq/gateway/adapters/groq_adapter.py`)**:
+  - Implemented `CapacityGovernor.get_model_quota_status` and `parse_rate_limit_reset_seconds` to inspect sliding-window token usage, capacity, and reset times before network socket dispatch.
+  - Enhanced Groq adapter and collaboration pipeline to catch rate limits at preflight, setting `outcome_status="RATE_LIMITED"` and `http_status=None` (eliminating false HTTP 200 attribution).
+- **Four-Category Resolution Breakdown (`promptiq/orchestrator/collaboration.py`)**:
+  - Upgraded `classify_critic_resolutions` to formally categorize critic findings into `resolved`, `partially_resolved`, `rejected_with_reason`, and `unresolved`.
+- **PowerShell Resumption Support (`scripts/run_groq_collaboration_secure.ps1`)**:
+  - Added `-Resume` switch and `-WorkflowId` parameter to the secure in-memory credential launcher.
+- **Automated Resumption & Preflight Tests (`tests/test_live_collaboration_pipeline.py`)**:
+  - Added 5 new automated tests covering revision token budget calculation, 4-way resolution classification, rate-limit preflight detection without network dispatch, workflow resumption from persisted state, and validation error on missing artifacts. Total suite: 96 passing tests.
+
+### Changed
+- **Workflow Status Correction (`docs/LIVE_COLLABORATION_EXECUTION_RESULTS.json`)**:
+  - Reclassified Workflow `422f4399-c93f-439f-a7ef-bbf3149a4057` from `SUCCESS` to `PARTIALLY_COMPLETED_RATE_LIMITED`.
+  - Added discrete `stage_statuses` tracking for all stages (`orchestration`, `generation`, `criticism`, `initial_verification`, `revision`, `final_verification`).
+  - Corrected Step 5: `http_status: null` (was unassigned default 200), `latency_ms: 0.19` documented as in-memory governor check, `outcome_status: "RATE_LIMITED"`.
+- **Reasoning Model Content Extraction (`promptiq/gateway/adapters/groq_adapter.py`)**:
+  - Enhanced message unpacking: `content = msg.get("content") or msg.get("reasoning") or msg.get("reasoning_content") or ""`, preventing empty string extraction when reasoning tokens exhaust completion.
+- **Model Pool Execution Schemas (`promptiq/schemas/model_pool.py`)**:
+  - Added `WorkflowExecutionStatus` enum (`COMPLETED`, `PARTIALLY_COMPLETED`, `RATE_LIMITED`, `FAILED`, `RESUMABLE`, `PARTIALLY_COMPLETED_RATE_LIMITED`, `SUCCESS`).
+  - Added `StageExecutionStatus` enum (`PENDING`, `IN_PROGRESS`, `VERIFIED`, `RATE_LIMITED`, `FAILED`, `SKIPPED`, `INCOMPLETE`).
+  - Updated `ExecutionStepRecord`: `http_status: int | None = None`, `stage: str | None = None`, `outcome_status: str = "VERIFIED"`.
+  - Updated `MultiModelExecutionAuditRecord`: `parent_workflow_id: str | None = None`, `stage_statuses: dict[str, str] = Field(default_factory=dict)`.
 - **Verified Live Hosted Smoke Tests Recorded**:
   - `openai/gpt-oss-120b` (Primary Generator): HTTP 200, Provider Request ID `req_01m7zr9k96ethbpvc22gc1hddj`, `LIVE_VERIFIED_FREE`, `DASHBOARD_EVIDENCED`.
   - `openai/gpt-oss-20b` (Critic Specialist): HTTP 200, Provider Request ID `req_01m7zrbddcea793zn4xvrhtskw`, `LIVE_VERIFIED_FREE`, `DASHBOARD_EVIDENCED`.

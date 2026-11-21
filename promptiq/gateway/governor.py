@@ -118,10 +118,19 @@ class CapacityGovernor:
         self._model_tokens_minute[model_id] = recent_tok_min
         tok_sum_min = sum(tok for _, tok in recent_tok_min)
         if tok_sum_min + estimated_tokens > quota.get("tpm", 12000):
+            retry_after = max(1, int(60 - (now - recent_tok_min[0][0]))) if recent_tok_min else 60
             raise CapacityExhaustedError(
-                message=f"Model '{model_id}' reached token rate limit ({quota['tpm']} TPM).",
-                retry_after=max(1, int(60 - (now - recent_tok_min[0][0]))) if recent_tok_min else 60,
-                details={"model_id": model_id, "limit": "tpm", "cap": quota["tpm"]},
+                message=f"Model '{model_id}' reached token rate limit ({quota['tpm']} TPM). Required: {estimated_tokens}, Used in window: {tok_sum_min}/{quota['tpm']} TPM.",
+                retry_after=retry_after,
+                details={
+                    "model_id": model_id,
+                    "limit": "tpm",
+                    "cap": quota["tpm"],
+                    "tpm_used": tok_sum_min,
+                    "tpm_remaining": max(0, quota["tpm"] - tok_sum_min),
+                    "estimated_tokens": estimated_tokens,
+                    "retry_after": retry_after,
+                },
             )
 
         # Prune daily tokens
@@ -129,11 +138,79 @@ class CapacityGovernor:
         self._model_tokens_day[model_id] = recent_tok_day
         tok_sum_day = sum(tok for _, tok in recent_tok_day)
         if tok_sum_day + estimated_tokens > quota.get("tpd", 100000):
+            retry_after = max(1, int(86400 - (now - recent_tok_day[0][0]))) if recent_tok_day else 86400
             raise CapacityExhaustedError(
                 message=f"Model '{model_id}' reached daily token ceiling ({quota['tpd']} TPD).",
-                retry_after=max(1, int(86400 - (now - recent_tok_day[0][0]))) if recent_tok_day else 86400,
-                details={"model_id": model_id, "limit": "tpd", "cap": quota["tpd"]},
+                retry_after=retry_after,
+                details={"model_id": model_id, "limit": "tpd", "cap": quota["tpd"], "tpd_used": tok_sum_day, "retry_after": retry_after},
             )
+
+    def get_model_quota_status(self, model_id: str) -> dict[str, Any]:
+        """Returns real-time sliding-window quota usage, capacity, and reset times for a model."""
+        quota = MODEL_FREE_QUOTAS.get(model_id, {"rpm": 30, "rpd": 1000, "tpm": 8000, "tpd": 100000})
+        now = datetime.now(UTC).timestamp()
+        minute_cutoff = now - 60.0
+        day_cutoff = now - 86400.0
+
+        recent_req_min = [t for t in self._model_requests_minute[model_id] if t > minute_cutoff]
+        recent_req_day = [t for t in self._model_requests_day[model_id] if t > day_cutoff]
+        recent_tok_min = [(t, tok) for t, tok in self._model_tokens_minute[model_id] if t > minute_cutoff]
+        recent_tok_day = [(t, tok) for t, tok in self._model_tokens_day[model_id] if t > day_cutoff]
+
+        tok_sum_min = sum(tok for _, tok in recent_tok_min)
+        tok_sum_day = sum(tok for _, tok in recent_tok_day)
+        req_count_min = len(recent_req_min)
+        req_count_day = len(recent_req_day)
+
+        tpm_limit = quota.get("tpm", 8000)
+        rpm_limit = quota.get("rpm", 30)
+        tpd_limit = quota.get("tpd", 100000)
+        rpd_limit = quota.get("rpd", 1000)
+
+        tpm_remaining = max(0, tpm_limit - tok_sum_min)
+        rpm_remaining = max(0, rpm_limit - req_count_min)
+
+        reset_seconds = 0.0
+        if recent_tok_min:
+            oldest_ts = min([recent_tok_min[0][0]] + ([recent_req_min[0]] if recent_req_min else []))
+            time_since_oldest = now - oldest_ts
+            if time_since_oldest < 60.0:
+                reset_seconds = max(0.0, round(60.0 - time_since_oldest, 2))
+
+        return {
+            "model_id": model_id,
+            "requests_last_minute": req_count_min,
+            "rpm_used": req_count_min,
+            "rpm_limit": rpm_limit,
+            "rpm_remaining": rpm_remaining,
+            "requests_last_24h": req_count_day,
+            "rpd_limit": rpd_limit,
+            "tokens_last_minute": tok_sum_min,
+            "tpm_used": tok_sum_min,
+            "tpm_limit": tpm_limit,
+            "tpm_remaining": tpm_remaining,
+            "tokens_last_24h": tok_sum_day,
+            "tpd_limit": tpd_limit,
+            "reset_seconds": reset_seconds,
+            "is_rate_limited": (tok_sum_min >= tpm_limit or req_count_min >= rpm_limit),
+        }
+
+    @staticmethod
+    def parse_rate_limit_reset_seconds(reset_str: str | None) -> float:
+        """Parses rate limit reset strings like '26.752s', '1m26.4s', or '60s' into float seconds."""
+        if not reset_str:
+            return 0.0
+        s = reset_str.strip().lower()
+        import re
+        m_match = re.match(r"^(?:(\d+(?:\.\d+)?)m)?(?:(\d+(?:\.\d+)?)s)?$", s)
+        if m_match:
+            mins = float(m_match.group(1) or 0)
+            secs = float(m_match.group(2) or 0)
+            return round(mins * 60.0 + secs, 2)
+        try:
+            return float(s.rstrip("s"))
+        except ValueError:
+            return 0.0
 
     def record_model_usage(self, model_id: str, tokens_used: int) -> None:
         """Records actual request timestamp and token usage for model-specific quota tracking."""
@@ -240,28 +317,6 @@ class CapacityGovernor:
         cutoff = now - 3600.0
         recent = [t for t in self._user_requests[user_id] if t > cutoff]
         return max(0, settings.RATE_LIMIT_USER_REQUESTS_PER_HOUR - len(recent))
-
-    def get_model_quota_status(self, model_id: str) -> dict[str, Any]:
-        """Returns current consumption metrics for a specific model."""
-        now = datetime.now(UTC).timestamp()
-        min_cutoff = now - 60.0
-        day_cutoff = now - 86400.0
-        req_min = len([t for t in self._model_requests_minute[model_id] if t > min_cutoff])
-        req_day = len([t for t in self._model_requests_day[model_id] if t > day_cutoff])
-        tok_min = sum(tok for t, tok in self._model_tokens_minute[model_id] if t > min_cutoff)
-        tok_day = sum(tok for t, tok in self._model_tokens_day[model_id] if t > day_cutoff)
-        quota = MODEL_FREE_QUOTAS.get(model_id, {})
-        return {
-            "model_id": model_id,
-            "requests_last_minute": req_min,
-            "rpm_limit": quota.get("rpm"),
-            "requests_last_24h": req_day,
-            "rpd_limit": quota.get("rpd"),
-            "tokens_last_minute": tok_min,
-            "tpm_limit": quota.get("tpm"),
-            "tokens_last_24h": tok_day,
-            "tpd_limit": quota.get("tpd"),
-        }
 
 
 governor = CapacityGovernor()

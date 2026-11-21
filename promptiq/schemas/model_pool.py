@@ -123,6 +123,30 @@ class ModelPoolRecord(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+class WorkflowExecutionStatus(StrEnum):
+    """Accurate lifecycle execution states for multi-model collaboration workflows."""
+
+    COMPLETED = "COMPLETED"
+    PARTIALLY_COMPLETED = "PARTIALLY_COMPLETED"
+    RATE_LIMITED = "RATE_LIMITED"
+    FAILED = "FAILED"
+    RESUMABLE = "RESUMABLE"
+    PARTIALLY_COMPLETED_RATE_LIMITED = "PARTIALLY_COMPLETED_RATE_LIMITED"
+    SUCCESS = "SUCCESS"
+
+
+class StageExecutionStatus(StrEnum):
+    """Independent status for an individual stage in a multi-model collaboration."""
+
+    PENDING = "PENDING"
+    IN_PROGRESS = "IN_PROGRESS"
+    VERIFIED = "VERIFIED"
+    RATE_LIMITED = "RATE_LIMITED"
+    FAILED = "FAILED"
+    SKIPPED = "SKIPPED"
+    INCOMPLETE = "INCOMPLETE"
+
+
 class ExecutionStepRecord(BaseModel):
     """Audit record for an individual step in a multi-model collaboration workflow."""
 
@@ -138,7 +162,9 @@ class ExecutionStepRecord(BaseModel):
     verification_passed: bool = True
     findings: list[str] = Field(default_factory=list)
     request_id: str | None = None
-    http_status: int = 200
+    http_status: int | None = None
+    stage: str | None = None
+    outcome_status: str = "VERIFIED"
     metadata: dict[str, Any] = Field(default_factory=dict)
 
     model_config = ConfigDict(from_attributes=True)
@@ -148,6 +174,7 @@ class MultiModelExecutionAuditRecord(BaseModel):
     """Immutable audit trail for a multi-model execution session."""
 
     workflow_id: str
+    parent_workflow_id: str | None = None
     project_id: str
     task_id: str
     execution_profile: ExecutionProfile
@@ -157,7 +184,8 @@ class MultiModelExecutionAuditRecord(BaseModel):
     disagreement_details: dict[str, Any] | None = None
     total_latency_ms: float = 0.0
     total_tokens: int = 0
-    final_status: str = Field(default="SUCCESS", description="SUCCESS, FAILED, QUOTA_EXHAUSTED, POLICY_REJECTED")
+    final_status: str = Field(default="COMPLETED", description="COMPLETED, PARTIALLY_COMPLETED, RATE_LIMITED, FAILED, RESUMABLE, PARTIALLY_COMPLETED_RATE_LIMITED, SUCCESS")
+    stage_statuses: dict[str, str] = Field(default_factory=dict)
     generator_provider: str | None = None
     generator_model_id: str | None = None
     critic_provider: str | None = None
