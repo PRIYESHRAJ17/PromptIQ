@@ -85,3 +85,25 @@ async def test_telegram_link_token_lifecycle():
     expired_token = generate_telegram_link_token(user_id, expires_in_minutes=-1)
     with pytest.raises(AuthenticationError):
         verify_telegram_link_token(expired_token)
+
+
+@pytest.mark.asyncio
+async def test_telegram_link_api_endpoint(client: AsyncClient, test_user):
+    """Tests the /api/v1/auth/telegram-link API route with token verification."""
+    user, _ = test_user
+    link_token = generate_telegram_link_token(user.id, expires_in_minutes=15)
+
+    # Valid link request
+    resp = await client.post(
+        "/api/v1/auth/telegram-link",
+        json={"telegram_chat_id": "9988776655", "link_token": link_token},
+    )
+    assert resp.status_code == 200
+    assert resp.json()["success"] is True
+
+    # Invalid/tampered link token MUST be rejected
+    fail_resp = await client.post(
+        "/api/v1/auth/telegram-link",
+        json={"telegram_chat_id": "11223344", "link_token": "invalid:token:signature"},
+    )
+    assert fail_resp.status_code == 401

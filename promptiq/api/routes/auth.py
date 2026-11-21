@@ -5,7 +5,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from promptiq.api.deps import get_current_user, get_db
 from promptiq.core.exceptions import AuthenticationError, ConflictError
-from promptiq.core.security import create_access_token, generate_telegram_link_token
+from promptiq.core.security import (
+    create_access_token,
+    generate_telegram_link_token,
+    verify_telegram_link_token,
+)
 from promptiq.models.user import User
 from promptiq.schemas.auth import (
     TelegramLinkRequest,
@@ -73,11 +77,14 @@ async def generate_telegram_token(user: User = Depends(get_current_user)):
 async def link_telegram(req: TelegramLinkRequest, db: AsyncSession = Depends(get_db)):
     """Links a Telegram account to a user via signed link token."""
     try:
-        user = await AuthService.link_telegram_account(db, req.link_token, req.telegram_chat_id)
+        user_id = verify_telegram_link_token(req.link_token)
+        user = await AuthService.link_telegram_account(db, user_id, req.telegram_chat_id)
         return TelegramLinkResponse(
             success=True,
             message="Telegram account successfully linked.",
             user_id=user.id,
         )
+    except AuthenticationError as e:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=e.message)
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))

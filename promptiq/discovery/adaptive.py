@@ -137,9 +137,12 @@ class AdaptiveDiscoveryEngine:
         session_id: str,
         user_id: str,
         submitted_answers: dict[str, Any],
+        project_id: str | None = None,
     ) -> DiscoverySessionResponse:
         """Processes submitted answers, infers new requirements, and updates Constitution."""
         stmt = select(DiscoverySession).where(DiscoverySession.id == session_id)
+        if project_id:
+            stmt = stmt.where(DiscoverySession.project_id == project_id)
         res = await db.execute(stmt)
         session = res.scalar_one_or_none()
         if not session:

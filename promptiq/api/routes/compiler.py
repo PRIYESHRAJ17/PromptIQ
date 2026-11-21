@@ -16,6 +16,7 @@ from promptiq.schemas.package import (
     PackageExportResponse,
     PromptPackageResponse,
 )
+from promptiq.services.project_service import ProjectService
 
 router = APIRouter(prefix="/projects/{project_id}", tags=["Compiler"])
 
@@ -55,6 +56,12 @@ async def export_package(
     from sqlalchemy import select
 
     from promptiq.models.package import PromptPackage
+
+    # Enforce tenant isolation
+    try:
+        await ProjectService.get_project(db, project_id, user.id)
+    except (NotFoundError, TenantIsolationError) as e:
+        raise HTTPException(status_code=e.status_code, detail=e.message)
 
     stmt = select(PromptPackage).where(PromptPackage.id == package_id, PromptPackage.project_id == project_id)
     res = await db.execute(stmt)

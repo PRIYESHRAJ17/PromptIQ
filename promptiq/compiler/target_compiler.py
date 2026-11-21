@@ -43,7 +43,7 @@ class TargetCompiler:
         return self._adapters[target_clean]
 
     async def compile_package(
-        cls,
+        self,
         db: AsyncSession,
         project_id: str,
         user_id: str,
@@ -85,8 +85,7 @@ class TargetCompiler:
         await db.flush()
 
         # 2. Resolve adapter and compile
-        compiler_instance = TargetCompiler()
-        adapter = compiler_instance.get_adapter(target_environment)
+        adapter = self.get_adapter(target_environment)
         manifest, files, warnings = adapter.compile(pps, output_type)
 
         # 3. Validation Gate

@@ -55,11 +55,12 @@ class InferenceGateway:
         if cached is not None:
             return cached
 
-        # 3. Resolve adapter
+        # 3. Resolve adapter and check circuit breaker centrally
         adapter = self.get_adapter(provider)
+        governor.check_circuit_breaker(adapter.provider_name)
 
         # 4. Execute generation with concurrency control
-        async with governor._concurrency_semaphore:
+        async with governor.concurrency_semaphore:
             response = await adapter.generate(request)
 
         # 5. Invariant Assertion: Route cost MUST be 0.0

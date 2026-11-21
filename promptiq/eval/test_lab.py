@@ -56,13 +56,19 @@ class PromptTestLab:
         """Executes test cases against a compiled package using fixed assertions."""
         await ProjectService.get_project(db, project_id, user_id)
 
-        stmt = select(EvaluationSuite).where(EvaluationSuite.id == run_req.suite_id)
+        stmt = select(EvaluationSuite).where(
+            EvaluationSuite.id == run_req.suite_id,
+            EvaluationSuite.project_id == project_id,
+        )
         res = await db.execute(stmt)
         suite = res.scalar_one_or_none()
         if not suite:
             raise NotFoundError("EvaluationSuite", run_req.suite_id)
 
-        stmt_pkg = select(PromptPackage).where(PromptPackage.id == run_req.package_id)
+        stmt_pkg = select(PromptPackage).where(
+            PromptPackage.id == run_req.package_id,
+            PromptPackage.project_id == project_id,
+        )
         res_pkg = await db.execute(stmt_pkg)
         pkg = res_pkg.scalar_one_or_none()
         if not pkg:

@@ -56,6 +56,14 @@ def redact_secrets(text: str) -> str:
     return redacted
 
 
+STANDARD_LOG_ATTRS = {
+    "name", "msg", "args", "levelname", "levelno", "pathname", "filename",
+    "module", "exc_info", "exc_text", "stack_info", "lineno", "funcName",
+    "created", "msecs", "relativeCreated", "thread", "threadName",
+    "processName", "process", "message", "extra",
+}
+
+
 class RedactingJsonFormatter(logging.Formatter):
     """Formats log records as structured JSON while scrubbing sensitive data."""
 
@@ -67,10 +75,17 @@ class RedactingJsonFormatter(logging.Formatter):
             "message": redact_secrets(record.getMessage()),
         }
 
+        extra_fields: dict[str, Any] = {}
         if hasattr(record, "extra") and isinstance(record.extra, dict):
+            extra_fields.update(record.extra)
+        for key, val in record.__dict__.items():
+            if key not in STANDARD_LOG_ATTRS and not key.startswith("_"):
+                extra_fields[key] = val
+
+        if extra_fields:
             log_data["extra"] = {
                 k: redact_secrets(str(v)) if isinstance(v, str) else v
-                for k, v in record.extra.items()
+                for k, v in extra_fields.items()
             }
 
         if record.exc_info:

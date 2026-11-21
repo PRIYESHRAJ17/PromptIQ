@@ -103,7 +103,7 @@ class ConstitutionService:
         new_goals = update_in.goals if update_in.goals is not None else current.goals
         new_reqs = [r.model_dump() for r in update_in.requirements] if update_in.requirements is not None else current.requirements
 
-        new_scope = current.scope.copy()
+        new_scope = (current.scope or {}).copy()
         if update_in.scope_in is not None:
             new_scope["in_scope"] = update_in.scope_in
         if update_in.scope_out is not None:

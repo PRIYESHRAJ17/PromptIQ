@@ -55,6 +55,10 @@ async def test_prohibited_byok_rejection():
     with pytest.raises(BYOKViolationError):
         check_and_reject_byok({"settings": {"user_api_key": "custom_key_123"}})
 
+    # Nested list of dicts with prohibited key MUST raise BYOKViolationError
+    with pytest.raises(BYOKViolationError):
+        check_and_reject_byok({"pipeline": [{"step": 1}, {"config": [{"api_key": "stolen_key"}]}]})
+
 
 @pytest.mark.asyncio
 async def test_deterministic_mock_inference():

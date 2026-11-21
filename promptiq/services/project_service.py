@@ -144,6 +144,8 @@ class ProjectService:
             ws_stmt = select(WorkspaceMembership.workspace_id).where(WorkspaceMembership.user_id == user_id)
             res_ws = await db.execute(ws_stmt)
             allowed_ws_ids = res_ws.scalars().all()
+            if not allowed_ws_ids:
+                return []
             stmt = select(Project).where(Project.workspace_id.in_(allowed_ws_ids)).order_by(Project.created_at.desc())
 
         res = await db.execute(stmt)

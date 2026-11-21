@@ -3,7 +3,7 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from promptiq.core.exceptions import AuthenticationError, ConflictError
+from promptiq.core.exceptions import AuthenticationError, PromptIQException
 from promptiq.core.security import get_password_hash, verify_password
 from promptiq.models.user import User, Workspace, WorkspaceMembership
 from promptiq.schemas.auth import UserCreate
@@ -19,7 +19,11 @@ class AuthService:
         stmt = select(User).where(User.email == user_in.email)
         res = await db.execute(stmt)
         if res.scalar_one_or_none() is not None:
-            raise ConflictError(expected_version=0, actual_version=1)  # Or raise PromptIQException with 409
+            raise PromptIQException(
+                message=f"User with email '{user_in.email}' already exists",
+                error_code="USER_ALREADY_EXISTS",
+                status_code=409,
+            )
 
         hashed_pw = get_password_hash(user_in.password)
         user = User(

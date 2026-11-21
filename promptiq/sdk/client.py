@@ -22,6 +22,12 @@ class PromptIQClient:
     async def close(self):
         await self._client.aclose()
 
+    async def __aenter__(self):
+        return self
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        await self.close()
+
     async def register(self, email: str, password: str, full_name: str | None = None) -> dict[str, Any]:
         resp = await self._client.post(
             "/api/v1/auth/register",

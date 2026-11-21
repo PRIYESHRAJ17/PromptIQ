@@ -42,7 +42,7 @@ async def submit_discovery_answers(
     """Submit answers to discovery questions, updating requirements and calculating next steps."""
     try:
         session_resp = await AdaptiveDiscoveryEngine.submit_answers(
-            db, session_id, user.id, answers_in.answers
+            db, session_id, user.id, answers_in.answers, project_id=project_id
         )
         return session_resp
     except (NotFoundError, TenantIsolationError) as e:

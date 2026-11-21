@@ -23,12 +23,19 @@ class CapacityGovernor:
         self._paused_until: dict[str, float] = {}
         self._pause_reasons: dict[str, str] = {}
 
-        # Concurrency semaphore
-        self._concurrency_semaphore = asyncio.Semaphore(settings.RATE_LIMIT_GLOBAL_CONCURRENCY)
+        # Concurrency semaphore (lazily initialized on active event loop)
+        self._concurrency_semaphore: asyncio.Semaphore | None = None
 
         # De-duplication cache: hash -> (timestamp, response)
         self._dedup_cache: dict[str, tuple[float, Any]] = {}
         self._dedup_window_seconds = 5.0
+
+    @property
+    def concurrency_semaphore(self) -> asyncio.Semaphore:
+        """Lazily binds concurrency semaphore to the running asyncio event loop."""
+        if self._concurrency_semaphore is None:
+            self._concurrency_semaphore = asyncio.Semaphore(settings.RATE_LIMIT_GLOBAL_CONCURRENCY)
+        return self._concurrency_semaphore
 
     def check_user_fair_use(self, user_id: str) -> None:
         """Enforces sliding-window rate limit per user."""

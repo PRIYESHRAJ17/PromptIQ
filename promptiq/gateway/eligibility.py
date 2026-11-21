@@ -48,16 +48,18 @@ def verify_zero_price_route(provider: str, model_id: str, price_per_token: float
             )
 
 
-def check_and_reject_byok(data: dict[str, Any] | None) -> None:
-    """Detects and strictly rejects any user-supplied API key payload."""
-    if not data or not isinstance(data, dict):
+def check_and_reject_byok(data: Any) -> None:
+    """Detects and strictly rejects any user-supplied API key payload (dictionaries, lists, nested structures)."""
+    if not data:
         return
 
-    for key in data.keys():
-        if key.lower() in PROHIBITED_KEY_FIELDS:
-            raise BYOKViolationError(
-                f"Prohibited field '{key}' detected. PromptIQ is 100% free; user API keys are strictly forbidden."
-            )
-        # Check nested dictionaries
-        if isinstance(data[key], dict):
-            check_and_reject_byok(data[key])
+    if isinstance(data, dict):
+        for key, value in data.items():
+            if isinstance(key, str) and key.lower() in PROHIBITED_KEY_FIELDS:
+                raise BYOKViolationError(
+                    f"Prohibited field '{key}' detected. PromptIQ is 100% free; user API keys are strictly forbidden."
+                )
+            check_and_reject_byok(value)
+    elif isinstance(data, list):
+        for item in data:
+            check_and_reject_byok(item)
