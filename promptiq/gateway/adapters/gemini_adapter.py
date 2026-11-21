@@ -36,11 +36,14 @@ class GeminiInferenceAdapter(BaseInferenceAdapter):
                 return await mock.generate(request)
             raise CapacityExhaustedError("Gemini operator route is unconfigured.")
 
+        model_to_use = request.target_model_id or self.model_id
+        verify_zero_price_route(self.provider_name, model_to_use, price_per_token=0.0)
+
         governor.check_circuit_breaker(self.provider_name)
-        governor.check_model_quota(self.model_id)
+        governor.check_model_quota(model_to_use)
 
         start_time = time.perf_counter()
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model_id}:generateContent?key={api_key}"
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_to_use}:generateContent?key={api_key}"
 
         # Construct Gemini contents payload
         contents = []
@@ -74,12 +77,12 @@ class GeminiInferenceAdapter(BaseInferenceAdapter):
                         logger.debug("Failed to deserialize response schema into structured JSON.")
 
                 tokens_used = len(candidate) // 4
-                governor.record_model_usage(self.model_id, tokens_used)
+                governor.record_model_usage(model_to_use, tokens_used)
 
                 return InferenceResponse(
                     text=candidate,
                     structured_data=structured_data,
-                    model_id=self.model_id,
+                    model_id=model_to_use,
                     provider=self.provider_name,
                     latency_ms=round(latency_ms, 2),
                     tokens_used=tokens_used,

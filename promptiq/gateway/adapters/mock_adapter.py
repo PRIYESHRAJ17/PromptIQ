@@ -110,7 +110,7 @@ class MockInferenceAdapter(BaseInferenceAdapter):
         return InferenceResponse(
             text=response_text,
             structured_data=structured_data,
-            model_id=self.model_id,
+            model_id=request.target_model_id or self.model_id,
             provider=self.provider_name,
             latency_ms=round(latency_ms, 2),
             tokens_used=len(response_text) // 4,

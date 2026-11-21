@@ -55,8 +55,8 @@ class PPSBuilder:
                 "No bypass of tenant isolation",
                 "No embedding of credentials or secrets",
             ],
-            "technical": constitution.technical_direction,
-            "out_of_scope": constitution.scope.get("out_of_scope", []),
+            "technical": constitution.technical_direction or {},
+            "out_of_scope": (constitution.scope or {}).get("out_of_scope", []),
         }
 
         tools_and_perms = {

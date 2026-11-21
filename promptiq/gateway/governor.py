@@ -266,3 +266,5 @@ class CapacityGovernor:
 
 
 governor = CapacityGovernor()
+capacity_governor = governor
+

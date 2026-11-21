@@ -36,9 +36,10 @@ flowchart TD
     end
 
     subgraph InferenceProviders["External Hosted Free-Tier Inference"]
-        GEMINI["Google Gemini API\n(Primary: gemini-2.0-flash)"]
-        GROQ["GroqCloud\n(Secondary: llama-3.3-70b)"]
+        GEMINI["Google Gemini API\n(gemini-3.8-flash / 3.5-flash-lite)"]
+        GROQ["GroqCloud\n(llama-3.3-70b / qwen-2.5-coder)"]
         OPENROUTER["OpenRouter\n(:free Variants)"]
+        MOCK["Internal Deterministic Engine\n(promptiq-mock-v1)"]
     end
 
     TG -->|HTTPS Webhook| HTTPS

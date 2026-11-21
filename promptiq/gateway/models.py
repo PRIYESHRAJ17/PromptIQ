@@ -19,6 +19,7 @@ class InferenceRequest(BaseModel):
     max_tokens: int = 4096
     temperature: float = 0.2
     task_context: str = "general"
+    target_model_id: str | None = None
 
     # User identification for capacity governance
     user_id: str = "system"

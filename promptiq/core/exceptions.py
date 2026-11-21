@@ -113,4 +113,18 @@ class VersionConflictError(PromptIQException):
         )
 
 
-ConflictError = VersionConflictError
+class ConflictError(VersionConflictError):
+    pass
+
+
+class PrivacyPolicyViolationError(PromptIQException):
+    """Raised when data sensitivity exceeds provider's allowed privacy tier."""
+
+    def __init__(self, provider: str, model_id: str, sensitivity: str, reason: str):
+        super().__init__(
+            message=f"Privacy Policy Violation: Data sensitivity '{sensitivity}' cannot be routed to '{provider}/{model_id}'. Reason: {reason}",
+            error_code="PRIVACY_POLICY_VIOLATION",
+            details={"provider": provider, "model_id": model_id, "sensitivity": sensitivity, "reason": reason},
+            status_code=403,
+        )
+

@@ -30,6 +30,9 @@ class InferenceGateway:
         """Resolves the configured zero-price provider adapter with fail-closed rejection for unknown routes."""
         target_provider = provider or settings.MANAGED_INFERENCE_PRIMARY_ROUTE
         route = target_provider.lower()
+        # Handle provider aliases (e.g. google -> gemini)
+        if route == "google":
+            route = "gemini"
 
         if route not in self._adapters:
             raise ZeroPriceViolationError(

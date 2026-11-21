@@ -7,6 +7,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.3.2] - 2026-11-21
+
+### Phase 3.2: Master Correction, Multi-Model Intelligence and Production Readiness
+
+### Added
+- **Multi-Model Intelligence Pool Architecture (`promptiq/gateway/model_pool.py`)**:
+  - Rebuilt model intelligence away from single-primary monopoly to a provider-independent multi-model pool.
+  - Implemented 9 formal eligibility states: `VERIFIED_ELIGIBLE`, `CONDITIONALLY_ELIGIBLE`, `UNVERIFIED`, `REVIEW_REQUIRED`, `INELIGIBLE_TERMS`, `INELIGIBLE_PRIVACY`, `INELIGIBLE_PAID`, `RETIRED`, `UNAVAILABLE`.
+  - Enforced $0/token guaranteed pricing, capability flags, model-specific quota ceilings, and dated verification records across Google, Groq, OpenRouter, and Internal engines.
+- **Seven Logical Model Roles (`promptiq/orchestrator/roles.py`)**:
+  - Defined explicit system directives and contracts for: `ORCHESTRATOR`, `REASONING`, `FAST`, `RESEARCH`, `PROMPT_ENGINEER`, `CRITIC`, and `VERIFIER`.
+- **Dynamic Model Router (`promptiq/orchestrator/router.py`)**:
+  - Capability, privacy, and quota-aware dynamic model routing.
+  - Enforced structural model family independence for the Critic role: $\text{Family}(\text{Critic}) \neq \text{Family}(\text{Generator})$.
+  - Fail-closed zero-price enforcement: pauses safely with `CapacityExhaustedError` when all free quotas are reached, strictly forbidding paid fallbacks.
+- **Multi-Model Collaboration Pipeline (`promptiq/orchestrator/collaboration.py`)**:
+  - Six-step workflow: Planning $\rightarrow$ Generation $\rightarrow$ Independent Critique $\rightarrow$ Deterministic Verification $\rightarrow$ Disagreement Resolution $\rightarrow$ Audit.
+  - Four collaboration profiles: `QUICK`, `STANDARD`, `DEEP`, and `HIGH_RISK` (with parallel independent generators).
+  - Immutable audit logging via `MultiModelExecutionAuditRecord`.
+- **Provider Data Governance & Privacy-Aware Routing (`promptiq/gateway/privacy_governance.py`)**:
+  - Enforced 4 data sensitivity tiers: `PUBLIC`, `GENERAL`, `CONFIDENTIAL`, `RESTRICTED`.
+  - Blocked `CONFIDENTIAL` tasks from Google free tier due to human review and training terms.
+  - Enforced zero-egress internal execution for `RESTRICTED` compliance workloads.
+- **Versioned 20-Category Benchmark Suite (`data/model_benchmarks_v2/benchmark_cases.json`)**:
+  - Expanded benchmark coverage across all 20 required product engineering categories.
+- **Model Combination Quality Evaluation (`promptiq/eval/tournament.py`)**:
+  - Empirically benchmarked trade-offs across 4 configurations: Config A (Single Model), Config B (Generator + Critic), Config C (Generator + Critic + Deterministic Checks), and Config D (Specialist Models + Independent Evaluation).
+- **Comprehensive 16-Step End-to-End Workflow Test (`tests/test_end_to_end_multimodel_workflow.py`)**:
+  - Verified full product lifecycle from initial idea intake to session resume across persistent memory.
+- **Cloudflare Python Workers Feasibility Study (`docs/CLOUDFLARE_WORKERS_EVALUATION.md`)**:
+  - Detailed Pyodide Wasm socket limitations, 10ms CPU ceiling, and hybrid topology recommendation.
+
+### Changed
+- Expanded automated test suite from 60 to **75 passed tests (100% pass rate)**.
+- Increased statement coverage from 75% to **77%** across 3,893 statements.
+- Upgraded Model Tournament Runner to load versioned v2 benchmarks by default.
+
+---
+
 ## [0.3.1] - 2026-11-21
 
 ### Phase 3.1: Critical Corrections, Model Re-Evaluation & Production Readiness Gate
