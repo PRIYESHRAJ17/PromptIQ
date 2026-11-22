@@ -1,0 +1,22 @@
+{
+  "name": "promptiq",
+  "version": "1.0.0",
+  "displayName": "PromptIQ Intelligence & Orchestration",
+  "description": "Unified prompt intelligence, task-family compilation, Project Constitution memory, and adversarial autopsy review for Antigravity agents.",
+  "author": "PromptIQ Core Systems",
+  "homepage": "https://promptiq.internal",
+  "repository": "https://github.com/promptiq/promptiq",
+  "license": "Apache-2.0",
+  "keywords": ["prompt-engineering", "intelligence", "constitution", "autopsy", "evaluation", "mcp"],
+  "skills": ["skills/promptiq/SKILL.md"],
+  "rules": ["rules/promptiq.md"],
+  "mcpServers": {
+    "promptiq": {
+      "command": "python",
+      "args": ["-m", "promptiq.mcp.server"],
+      "env": {
+        "PROMPTIQ_ZERO_PRICE_ENFORCEMENT": "true"
+      }
+    }
+  }
+}

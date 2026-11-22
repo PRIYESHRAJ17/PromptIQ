@@ -1,0 +1,9 @@
+{
+  "name": "promptiq-codex",
+  "version": "1.0.0",
+  "description": "OpenAI Codex & GPT developer tooling plugin for PromptIQ prompt compilation and memory synchronization.",
+  "author": "PromptIQ Core Systems",
+  "config": "codex.json",
+  "mcp": "mcp.json",
+  "homepage": "https://promptiq.internal"
+}

@@ -1,0 +1,13 @@
+{
+  "name": "promptiq-claude-code",
+  "version": "1.0.0",
+  "description": "PromptIQ Intelligence, Project Constitution, and Forensic Autopsy for Anthropic Claude Code CLI.",
+  "author": "PromptIQ Core Systems",
+  "entrypoint": "skills/promptiq/SKILL.md",
+  "mcp": "mcp.json",
+  "commands": {
+    "/autopsy": "Run forensic dissection against current prompt or code instruction",
+    "/constitution": "Query or update active Project Constitution",
+    "/compile": "Compile intent into target-optimized prompt specification"
+  }
+}

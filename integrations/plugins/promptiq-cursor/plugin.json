@@ -1,0 +1,9 @@
+{
+  "name": "promptiq-cursor",
+  "version": "1.0.0",
+  "description": "Cursor IDE intelligence plugin: .cursorrules integration, Project Constitution memory, and MCP tool suite.",
+  "author": "PromptIQ Core Systems",
+  "rulesFile": ".cursorrules",
+  "mcp": "mcp.json",
+  "homepage": "https://promptiq.internal"
+}

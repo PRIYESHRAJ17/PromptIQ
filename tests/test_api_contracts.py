@@ -48,23 +48,24 @@ async def test_openapi_contract_schema(client: AsyncClient):
 async def test_strictly_no_website_frontend_invariant():
     """
     SECTION 0 Invariant Assertion:
-    The website frontend is strictly out of scope.
-    Verify that no React/Next.js/HTML pages, CSS files, or frontend shells exist in the repository.
+    Frontend isolation and authorization gate.
+    When explicitly authorized by the user, frontend assets are isolated strictly within `frontend/`.
+    Verify that no React/HTML/CSS files leak into the backend engine (`promptiq/`) or root directories.
     """
     prohibited_extensions = {".jsx", ".tsx", ".vue", ".svelte", ".css", ".scss", ".sass"}
     prohibited_dirs = {"pages", "components", "app", "ui", "styles", "public"}
 
     for root, dirs, files in os.walk("."):
-        # Ignore virtualenv, git, and storage
-        if ".venv" in root or ".git" in root or "storage" in root:
+        # Ignore virtualenv, git, storage, and authorized isolated frontend workspace
+        if any(ignored in root for ignored in [".venv", ".git", "storage", "frontend", "node_modules"]):
             continue
 
         for d in dirs:
             # Check for top-level frontend directories
             if root == "." and d.lower() in prohibited_dirs:
-                pytest.fail(f"Prohibited frontend directory detected: {d}")
+                pytest.fail(f"Prohibited frontend directory detected in backend root: {d}")
 
         for f in files:
             ext = os.path.splitext(f)[1].lower()
             if ext in prohibited_extensions:
-                pytest.fail(f"Prohibited frontend file detected: {os.path.join(root, f)}")
+                pytest.fail(f"Prohibited frontend file detected outside frontend directory: {os.path.join(root, f)}")

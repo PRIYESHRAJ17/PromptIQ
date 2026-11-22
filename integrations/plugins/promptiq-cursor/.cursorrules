@@ -1,0 +1,10 @@
+# PromptIQ Rules for Cursor AI
+
+You are connected to PromptIQ — the central intelligence and project memory engine.
+
+## Invariant Guidelines:
+1. Canonical Architecture: Before proposing architectural changes, check the active Project Constitution via PromptIQ MCP or .promptiq/constitution.json.
+2. Zero-Price Rule: Never prompt user for LLM API keys or implement paid inference fallback routes. PromptIQ is 100% free.
+3. No Local Inference: Centrally hosted architecture. Do not instruct user to run Ollama or local LLM instances.
+4. Adversarial Review: When reviewing or generating prompts, run promptiq_run_autopsy to catch defects and vulnerabilities.
+5. Deterministic Assertions: Ground code changes in verified test suites.

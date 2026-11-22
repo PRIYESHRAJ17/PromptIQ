@@ -1,0 +1,9 @@
+{
+  "name": "promptiq-gemini-cli",
+  "version": "1.0.0",
+  "description": "Google Gemini CLI extension for PromptIQ prompt intelligence, Project Constitution, and autopsy.",
+  "author": "PromptIQ Core Systems",
+  "rulesFile": "GEMINI.md",
+  "mcp": "mcp.json",
+  "homepage": "https://promptiq.internal"
+}

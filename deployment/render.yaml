@@ -1,0 +1,29 @@
+services:
+  # PromptIQ FastAPI Backend Web Service
+  - type: web
+    name: promptiq-backend
+    runtime: python
+    buildCommand: pip install -U pip && pip install .
+    startCommand: uvicorn promptiq.api.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PROMPTIQ_ENV
+        value: production
+      - key: PROMPTIQ_ZERO_PRICE_ENFORCEMENT
+        value: "true"
+      - key: PYTHON_VERSION
+        value: "3.11.9"
+    healthCheckPath: /health
+    autoDeploy: true
+
+  # PromptIQ Frontend Static Site
+  - type: static
+    name: promptiq-frontend
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: frontend/dist
+    routes:
+      - type: rewrite
+        source: /api/*
+        destination: https://promptiq-backend.onrender.com/api/*
+      - type: rewrite
+        source: /*
+        destination: /index.html

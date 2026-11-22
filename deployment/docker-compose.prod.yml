@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: promptiq-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: promptiq
+      POSTGRES_USER: promptiq
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-promptiq_secure_prod_2026}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U promptiq -d promptiq"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - promptiq-net
+
+  backend:
+    build:
+      context: ..
+      dockerfile: deployment/docker/Dockerfile
+    container_name: promptiq-backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PROMPTIQ_ENV: production
+      PROMPTIQ_DATABASE_URL: postgresql://promptiq:${POSTGRES_PASSWORD:-promptiq_secure_prod_2026}@db:5432/promptiq
+      PROMPTIQ_ZERO_PRICE_ENFORCEMENT: "true"
+      PROMPTIQ_API_HOST: 0.0.0.0
+      PROMPTIQ_API_PORT: 8000
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+    networks:
+      - promptiq-net
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: promptiq-proxy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ../frontend/dist:/srv/frontend:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - promptiq-net
+
+volumes:
+  pgdata:
+  caddy_data:
+  caddy_config:
+
+networks:
+  promptiq-net:
+    driver: bridge

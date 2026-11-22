@@ -1,0 +1,86 @@
+{
+  "tools": [
+    {
+      "name": "promptiq_get_constitution",
+      "description": "Retrieve canonical Project Constitution, active requirements, decisions, and supersession chains.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": { "type": "string", "description": "Unique identifier of the project workspace." }
+        },
+        "required": ["project_id"]
+      }
+    },
+    {
+      "name": "promptiq_propose_constitution_change",
+      "description": "Propose atomic updates to Project Constitution requirements, goals, or decisions.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": { "type": "string" },
+          "updates": { "type": "object" }
+        },
+        "required": ["project_id", "updates"]
+      }
+    },
+    {
+      "name": "promptiq_compile_prompt",
+      "description": "Compile a Prompt Specification into native target instruction packages.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "specification": { "type": "object" },
+          "target_format": {
+            "type": "string",
+            "enum": ["antigravity", "claude_code", "cursor", "openai_codex", "gemini_cli", "generic_mcp"]
+          }
+        },
+        "required": ["specification", "target_format"]
+      }
+    },
+    {
+      "name": "promptiq_run_autopsy",
+      "description": "Run adversarial 21-category forensic defect analysis against any prompt.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "prompt_text": { "type": "string" },
+          "target_environment": { "type": "string", "default": "google-antigravity" }
+        },
+        "required": ["prompt_text"]
+      }
+    },
+    {
+      "name": "promptiq_search_evidence",
+      "description": "Query the verified evidence graph for character-offset anchored citations.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": { "type": "string" },
+          "project_id": { "type": "string" }
+        },
+        "required": ["query", "project_id"]
+      }
+    },
+    {
+      "name": "promptiq_execute_workflow",
+      "description": "Launch a distributed, database-backed workflow execution job.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "task_type": { "type": "string" },
+          "parameters": { "type": "object" }
+        },
+        "required": ["task_type", "parameters"]
+      }
+    },
+    {
+      "name": "promptiq_get_quota_status",
+      "description": "Check workspace zero-price quota and rate limits.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
+}

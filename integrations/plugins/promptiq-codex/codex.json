@@ -1,0 +1,8 @@
+{
+  "system_instructions": "You are connected to PromptIQ. Always adhere to Project Constitution invariants. Never request user API keys or switch to paid inference routes.",
+  "promptiq_integration": {
+    "zero_price_policy": "strict_enforcement",
+    "compiler_target": "openai_codex",
+    "mcp_server": "promptiq"
+  }
+}

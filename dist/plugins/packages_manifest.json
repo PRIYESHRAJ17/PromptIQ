@@ -1,0 +1,56 @@
+[
+  {
+    "id": "promptiq-antigravity",
+    "name": "Google Antigravity",
+    "zip_file": "promptiq-antigravity.zip",
+    "size_bytes": 3104,
+    "sha256": "a123d2c66756ceda770a3449622fb350ee1c3f286dc82a1e6b188096736ee4a6",
+    "required_files_count": 5,
+    "status": "VALIDATED"
+  },
+  {
+    "id": "promptiq-claude-code",
+    "name": "Claude Code",
+    "zip_file": "promptiq-claude-code.zip",
+    "size_bytes": 1563,
+    "sha256": "591eb030402a9ae71fe85633a9e07a53b381997146d6e61b29dc4a731ee242d9",
+    "required_files_count": 4,
+    "status": "VALIDATED"
+  },
+  {
+    "id": "promptiq-cursor",
+    "name": "Cursor IDE",
+    "zip_file": "promptiq-cursor.zip",
+    "size_bytes": 1711,
+    "sha256": "996f01967dedc7935c2d6f42bac1d22d2ba4c1142ada758c06f0ad528798cc05",
+    "required_files_count": 5,
+    "status": "VALIDATED"
+  },
+  {
+    "id": "promptiq-codex",
+    "name": "OpenAI Codex",
+    "zip_file": "promptiq-codex.zip",
+    "size_bytes": 1392,
+    "sha256": "a95b381d8c9e5ad819ff1fb319e838c73d0d8a8798ba444bd289f5948cf00ef0",
+    "required_files_count": 5,
+    "status": "VALIDATED"
+  },
+  {
+    "id": "promptiq-gemini-cli",
+    "name": "Gemini CLI",
+    "zip_file": "promptiq-gemini-cli.zip",
+    "size_bytes": 1416,
+    "sha256": "bfa2f4292a5ac30d2efe23c2daf99bdf15afe4f932750fa0e6a02ab60be4ed1a",
+    "required_files_count": 5,
+    "status": "VALIDATED"
+  },
+  {
+    "id": "promptiq-mcp",
+    "name": "Universal MCP",
+    "zip_file": "promptiq-mcp.zip",
+    "size_bytes": 1459,
+    "sha256": "0609c9a37bb60d182a3b9457aaaf02d1aade6a514995637073e40846f0406f0e",
+    "required_files_count": 3,
+    "status": "VALIDATED"
+  }
+]
