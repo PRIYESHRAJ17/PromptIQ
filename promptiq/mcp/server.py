@@ -292,7 +292,7 @@ async def run_stdio_mcp_server():
             user, _ = await AuthService.register_user(
                 db,
                 UserCreate(
-                    email="mcp_agent@promptiq.local",
+                    email="mcp_agent@promptiq.org",
                     password=secrets.token_urlsafe(32),
                     full_name="MCP Agent",
                 ),
