@@ -254,3 +254,45 @@ async def test_job_api_endpoints(client: AsyncClient) -> None:
     assert cancel_res.status_code == 200
     assert cancel_res.json()["status"] == "CANCELLED"
 
+
+@pytest.mark.asyncio
+async def test_job_fencing_token_rejects_stale_worker(db_session: AsyncSession) -> None:
+    user_id = str(uuid.uuid4())
+    ws_id = str(uuid.uuid4())
+
+    job = await WorkflowJobService.create_job(
+        db=db_session,
+        user_id=user_id,
+        workspace_id=ws_id,
+        operation_type="FENCING_TEST",
+    )
+
+    # Worker 1 acquires lease (fencing_token becomes 1)
+    await WorkflowJobService.acquire_lease(db=db_session, job_id=job.id, worker_id="worker-1", lease_duration_seconds=1)
+    assert job.fencing_token == 1
+
+    # Worker 1 times out, Worker 2 acquires lease (fencing_token becomes 2)
+    job.lease_expires_at = datetime.now(UTC) - timedelta(seconds=10)
+    await WorkflowJobService.acquire_lease(db=db_session, job_id=job.id, worker_id="worker-2", lease_duration_seconds=30)
+    assert job.fencing_token == 2
+
+    # Stale Worker 1 attempts to update progress with obsolete fencing_token=1 -> ConflictError
+    with pytest.raises(ConflictError):
+        await WorkflowJobService.update_progress(
+            db=db_session,
+            job_id=job.id,
+            stage="stale_step",
+            progress_percent=80,
+            fencing_token=1,
+        )
+
+    # Valid Worker 2 updates progress with current fencing_token=2 -> Success
+    updated = await WorkflowJobService.update_progress(
+        db=db_session,
+        job_id=job.id,
+        stage="valid_step",
+        progress_percent=90,
+        fencing_token=2,
+    )
+    assert updated.current_stage == "valid_step"
+

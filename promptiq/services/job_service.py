@@ -98,6 +98,7 @@ class WorkflowJobService:
 
         job.lease_owner = worker_id
         job.lease_expires_at = now + timedelta(seconds=lease_duration_seconds)
+        job.fencing_token = (getattr(job, "fencing_token", 0) or 0) + 1
         job.status = "RUNNING"
         await db.flush()
         return True
@@ -111,6 +112,7 @@ class WorkflowJobService:
         checkpoint: dict[str, Any] | None = None,
         provenance_update: dict[str, Any] | None = None,
         lease_worker_id: str | None = None,
+        fencing_token: int | None = None,
     ) -> WorkflowJob:
         """Updates job stage, progress, and checkpoint data while extending lease."""
         stmt = select(WorkflowJob).where(WorkflowJob.id == job_id)
@@ -118,6 +120,13 @@ class WorkflowJobService:
         job = res.scalar_one_or_none()
         if not job:
             raise NotFoundError("WorkflowJob", job_id)
+
+        # Fencing token verification to reject stale workers
+        if fencing_token is not None and getattr(job, "fencing_token", 0) != fencing_token:
+            raise ConflictError(
+                expected_version=fencing_token,
+                actual_version=getattr(job, "fencing_token", 0),
+            )
 
         now = datetime.now(UTC)
         job.current_stage = stage
@@ -265,6 +274,7 @@ class WorkflowJobService:
         job_id: str,
         result_data: dict[str, Any],
         has_warnings: bool = False,
+        fencing_token: int | None = None,
     ) -> WorkflowJob:
         """Marks a job as completed or completed with warnings."""
         stmt = select(WorkflowJob).where(WorkflowJob.id == job_id)
@@ -272,6 +282,13 @@ class WorkflowJobService:
         job = res.scalar_one_or_none()
         if not job:
             raise NotFoundError("WorkflowJob", job_id)
+
+        # Fencing token verification to reject stale workers
+        if fencing_token is not None and getattr(job, "fencing_token", 0) != fencing_token:
+            raise ConflictError(
+                expected_version=fencing_token,
+                actual_version=getattr(job, "fencing_token", 0),
+            )
 
         job.status = "COMPLETED_WITH_WARNINGS" if has_warnings else "COMPLETED"
         job.progress_percent = 100
@@ -296,7 +313,7 @@ class WorkflowJobService:
         job_id: str,
         error_message: str,
     ) -> WorkflowJob:
-        """Marks a job as failed, or re-queues if retries remain."""
+        """Marks a job as failed, or transitions to DEAD_LETTER if retries exhausted."""
         stmt = select(WorkflowJob).where(WorkflowJob.id == job_id)
         res = await db.execute(stmt)
         job = res.scalar_one_or_none()
@@ -314,7 +331,7 @@ class WorkflowJobService:
         else:
             job.status = "FAILED"
             job.completed_at = datetime.now(UTC)
-            hist_status = "FAILED"
+            hist_status = "DEAD_LETTER"
 
         hist = list(job.stage_history or [])
         hist.append({

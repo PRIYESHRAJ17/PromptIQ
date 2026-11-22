@@ -30,6 +30,7 @@ class DeliverableItem(BaseModel):
     path: str
     format: str = "text/markdown"
     description: str
+    originating_requirement_ids: list[str] = Field(default_factory=list)
 
 
 class OutputContractSchema(BaseModel):
@@ -90,9 +91,9 @@ class AcceptanceCriteriaSchema(BaseModel):
 
 
 class PromptSpecSchema(BaseModel):
-    """The canonical, strongly-typed intermediate representation (PPS v2.0.0)."""
+    """The canonical, strongly-typed intermediate representation (PPS v2.1.0)."""
 
-    spec_version: str = "2.0.0"
+    spec_version: str = "2.1.0"
     project_id: str
     constitution_version: int
     intent: IntentSchema

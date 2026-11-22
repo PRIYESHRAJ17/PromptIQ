@@ -132,11 +132,13 @@ class PPSBuilder:
             },
         ]
 
+        all_req_ids = [r.get("id") for r in requirements_payload if r.get("id")]
         deliverables = [
             DeliverableItem(
                 path="README.md",
                 format="text/markdown",
                 description="Project documentation, setup instructions, and architecture overview",
+                originating_requirement_ids=all_req_ids,
             )
         ]
 

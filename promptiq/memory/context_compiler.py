@@ -1,5 +1,7 @@
 """Context Compiler for target-aware packing, token budgeting, and relevance filtering."""
 
+from typing import Any
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -18,6 +20,38 @@ class ContextCompiler:
     def estimate_tokens(cls, text: str) -> int:
         """Approximates token count (standard ~4 characters per token heuristic)."""
         return max(1, len(text) // 4)
+
+    @classmethod
+    def detect_memory_conflicts(
+        cls, decisions: list[dict[str, Any]], requirements: list[dict[str, Any]]
+    ) -> list[str]:
+        """Detects contradictions between architectural decisions and requirement statements."""
+        conflicts = []
+        for d in decisions:
+            d_text = (
+                str(d.get("decision", "") if isinstance(d, dict) else getattr(d, "decision", ""))
+                + " "
+                + str(d.get("rationale", "") if isinstance(d, dict) else getattr(d, "rationale", ""))
+            ).lower()
+            d_id = str(d.get("id", "DEC") if isinstance(d, dict) else getattr(d, "id", "DEC"))
+
+            for r in requirements:
+                r_text = str(
+                    r.get("text", "") if isinstance(r, dict) else getattr(r, "text", "")
+                ).lower()
+                r_id = str(r.get("id", "REQ") if isinstance(r, dict) else getattr(r, "id", "REQ"))
+
+                if "no frontend" in d_text and any(
+                    w in r_text for w in ["react", "web interface", "dashboard", "navbar"]
+                ):
+                    conflicts.append(
+                        f"Decision '{d_id}' specifies no-frontend, but Requirement '{r_id}' requests UI components."
+                    )
+                if "sqlite" in d_text and "distributed postgres" in r_text:
+                    conflicts.append(
+                        f"Decision '{d_id}' specifies SQLite, but Requirement '{r_id}' requests distributed PostgreSQL."
+                    )
+        return conflicts
 
     @classmethod
     async def compile_context(
@@ -120,6 +154,31 @@ class ContextCompiler:
                 dec_lines.append(f"- [{d_id}] **{d_dec}**: {d_rat}")
             sections.append("## ARCHITECTURAL DECISIONS\n" + "\n".join(dec_lines))
             items_included.append("decisions")
+
+        # 5.5 Accepted Risks & Open Questions
+        risks = getattr(constitution, "risks", []) or []
+        if risks:
+            risk_lines = [
+                f"- [{r.get('id', 'RSK')}] ({r.get('severity', 'medium')}): {r.get('description', '')}"
+                for r in risks
+            ]
+            sections.append("## ACCEPTED RISKS\n" + "\n".join(risk_lines))
+            items_included.append("risks")
+
+        open_questions = getattr(constitution, "open_questions", []) or []
+        if open_questions:
+            q_lines = [
+                f"- [{q.get('id', 'Q')}] {q.get('question', '')} (Impact: {q.get('impact', 'medium')})"
+                for q in open_questions
+            ]
+            sections.append("## OPEN QUESTIONS\n" + "\n".join(q_lines))
+            items_included.append("open_questions")
+
+        # Memory Conflict Detection
+        conflicts = cls.detect_memory_conflicts(decisions, raw_reqs)
+        if conflicts:
+            sections.append("## DETECTED MEMORY CONFLICTS\n" + "\n".join([f"- WARNING: {c}" for c in conflicts]))
+            items_included.append("conflicts")
 
         # 6. Latest Checkpoint Snapshot
         stmt_cp = (

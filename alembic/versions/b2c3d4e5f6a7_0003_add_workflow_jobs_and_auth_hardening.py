@@ -42,6 +42,7 @@ def upgrade() -> None:
         sa.Column("failure_reason", sa.Text(), nullable=True),
         sa.Column("lease_owner", sa.String(length=64), nullable=True),
         sa.Column("lease_expires_at", sa.DateTime(timezone=True), nullable=True),
+        sa.Column("fencing_token", sa.Integer(), nullable=False, server_default="0"),
         sa.Column("completed_at", sa.DateTime(timezone=True), nullable=True),
         sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False),

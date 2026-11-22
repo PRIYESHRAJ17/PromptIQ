@@ -9,6 +9,7 @@ from promptiq.core.exceptions import NotFoundError
 from promptiq.models.audit import AuditEvent
 from promptiq.models.constitution import ConstitutionVersion, ProjectConstitution
 from promptiq.schemas.constitution import ConstitutionApprovalRequest, ConstitutionUpdate
+from promptiq.services.impact_analyzer import ConstitutionChangeImpactAnalyzer
 from promptiq.services.project_service import ProjectService
 
 
@@ -170,7 +171,15 @@ class ConstitutionService:
             "conflicts": new_conflicts,
         }
 
+        # Validate requirement DAG (circular dependencies and missing prerequisites)
+        dep_errors = ConstitutionChangeImpactAnalyzer.validate_requirement_dependencies(new_reqs)
+        if dep_errors:
+            raise ValueError(f"Requirement dependency validation failed: {'; '.join(dep_errors)}")
+
+        impact_report = ConstitutionChangeImpactAnalyzer.analyze_change_impact(old_state, new_state)
+
         diff = cls.calculate_diff(old_state, new_state)
+        diff["impact_report"] = impact_report.model_dump()
 
         new_version_num = current.version + 1
 
@@ -331,7 +340,15 @@ class ConstitutionService:
             "open_questions": new_questions,
         }
 
+        # Validate requirement DAG (circular dependencies and missing prerequisites)
+        dep_errors = ConstitutionChangeImpactAnalyzer.validate_requirement_dependencies(new_reqs)
+        if dep_errors:
+            raise ValueError(f"Requirement dependency validation failed: {'; '.join(dep_errors)}")
+
+        impact_report = ConstitutionChangeImpactAnalyzer.analyze_change_impact(old_state, new_state)
+
         diff = cls.calculate_diff(old_state, new_state)
+        diff["impact_report"] = impact_report.model_dump()
         new_version_num = current.version + 1
 
         new_constitution = ProjectConstitution(

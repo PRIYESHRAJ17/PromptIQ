@@ -319,11 +319,29 @@ class PromptAutopsyEngine:
             "print password" in text_lower
             or "reveal secret" in text_lower
             or "output api key" in text_lower
+            or (
+                any(verb in text_lower for verb in ["print", "log", "dump", "store", "save", "write"])
+                and any(
+                    token in text_lower
+                    for token in [
+                        "password",
+                        "ssn",
+                        "credit card",
+                        "api key",
+                        "secret key",
+                        "top-secret",
+                        "clearance records",
+                    ]
+                )
+            )
+            or "public pastebin" in text_lower
         )
         if has_leak_term and not (
             cls._is_prohibitive_context("password", text)
             or cls._is_prohibitive_context("secret", text)
             or cls._is_prohibitive_context("key", text)
+            or cls._is_prohibitive_context("ssn", text)
+            or cls._is_prohibitive_context("credit card", text)
         ):
             findings.append(
                 CriticFindingSchema(
@@ -459,15 +477,36 @@ class PromptAutopsyEngine:
             )
 
         # Check for contradiction
-        if ("always include" in text_lower and "never include" in text_lower) or (
-            "enable strict auth" in text_lower and "disable auth" in text_lower
-        ):
+        has_contradiction = (
+            ("always include" in text_lower and "never include" in text_lower)
+            or ("enable strict auth" in text_lower and "disable auth" in text_lower)
+            or (
+                ("no frontend" in text_lower or "backend only" in text_lower)
+                and any(
+                    w in text_lower
+                    for w in ["react", "render a navbar", "<div>", "html interface", "frontend ui"]
+                )
+            )
+            or (
+                ("zero price" in text_lower or "zero-cost" in text_lower or "₹0" in text_lower)
+                and any(w in text_lower for w in ["paid tier", "aws fargate", "billable"])
+            )
+        )
+        if has_contradiction:
+            evidence = "logical contradiction in instructions"
+            if "no frontend" in text_lower and ("react" in text_lower or "navbar" in text_lower):
+                evidence = "no frontend vs react/navbar"
+            elif "enable strict auth" in text_lower:
+                evidence = "enable strict auth vs disable auth"
+            elif "always include" in text_lower:
+                evidence = "always include vs never include"
+
             findings.append(
                 CriticFindingSchema(
                     category="contradiction",
                     severity="critical",
                     finding="Direct logical contradiction detected in prompt directives.",
-                    evidence_passage="enable strict auth vs disable auth",
+                    evidence_passage=evidence,
                     consequence="Model cannot satisfy mutually exclusive constraints simultaneously.",
                     recommendation="Resolve contradictory instructions into a single coherent policy.",
                     blocks_release=True,
@@ -564,6 +603,24 @@ class PromptAutopsyEngine:
                         blocks_release=sev in ("critical", "high"),
                     )
                 )
+
+        # 1.5 Context-Aware Task Filtering
+        if request.task_type:
+            from promptiq.registry.task_families import TaskFamilyRegistry
+
+            family = TaskFamilyRegistry.get_family(request.task_type)
+            findings = [f for f in findings if f.category not in family.autopsy_ignored_categories]
+
+        # Enrich diagnostic metadata on findings
+        for f in findings:
+            if not f.why_it_matters:
+                f.why_it_matters = f.consequence
+            if not f.suggested_correction:
+                f.suggested_correction = f.recommendation
+            if not f.expected_improvement:
+                f.expected_improvement = "Eliminates ambiguity, prevents runtime failure, and ensures target compliance."
+            if not f.confidence_basis:
+                f.confidence_basis = "deterministic_pattern_and_boundary_match"
 
         # Determine Verdict
         has_critical = any(f.severity == "critical" for f in findings)

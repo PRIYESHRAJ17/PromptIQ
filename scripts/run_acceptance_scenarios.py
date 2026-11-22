@@ -32,6 +32,7 @@ TRACE_V2_OUTPUT_PATH = Path("docs/ACCEPTANCE_SCENARIOS_TRACE_V2.json")
 TRACE_V3_OUTPUT_PATH = Path("docs/ACCEPTANCE_SCENARIOS_TRACE_V3.json")
 TRACE_V4_OUTPUT_PATH = Path("docs/ACCEPTANCE_SCENARIOS_TRACE_V4.json")
 TRACE_V5_OUTPUT_PATH = Path("docs/ACCEPTANCE_SCENARIOS_TRACE_V5.json")
+TRACE_V6_OUTPUT_PATH = Path("docs/ACCEPTANCE_SCENARIOS_TRACE_V6.json")
 
 
 async def main():
@@ -51,7 +52,7 @@ async def main():
         summary_dict = summary.model_dump(mode="json")
 
         TRACE_OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
-        for p in (TRACE_OUTPUT_PATH, TRACE_V2_OUTPUT_PATH, TRACE_V3_OUTPUT_PATH, TRACE_V4_OUTPUT_PATH, TRACE_V5_OUTPUT_PATH):
+        for p in (TRACE_OUTPUT_PATH, TRACE_V2_OUTPUT_PATH, TRACE_V3_OUTPUT_PATH, TRACE_V4_OUTPUT_PATH, TRACE_V5_OUTPUT_PATH, TRACE_V6_OUTPUT_PATH):
             with open(p, "w", encoding="utf-8") as f:
                 json.dump(summary_dict, f, indent=2)
 
@@ -88,7 +89,7 @@ async def main():
         )
 
     print(
-        f"\nAudit traces successfully persisted to:\n - {TRACE_OUTPUT_PATH}\n - {TRACE_V2_OUTPUT_PATH}\n - {TRACE_V3_OUTPUT_PATH}\n - {TRACE_V4_OUTPUT_PATH}\n - {TRACE_V5_OUTPUT_PATH}"
+        f"\nAudit traces successfully persisted to:\n - {TRACE_OUTPUT_PATH}\n - {TRACE_V2_OUTPUT_PATH}\n - {TRACE_V3_OUTPUT_PATH}\n - {TRACE_V4_OUTPUT_PATH}\n - {TRACE_V5_OUTPUT_PATH}\n - {TRACE_V6_OUTPUT_PATH}"
     )
 
 

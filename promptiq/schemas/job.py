@@ -45,6 +45,7 @@ class JobResponse(BaseModel):
     retry_count: int = 0
     max_retries: int = 3
     failure_reason: str | None = None
+    fencing_token: int = 0
     created_at: datetime
     updated_at: datetime
     completed_at: datetime | None = None

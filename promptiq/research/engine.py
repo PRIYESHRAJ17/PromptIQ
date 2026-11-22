@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from promptiq.models.research import EvidenceClaim, ResearchJob, SourceRecord
 from promptiq.research.connectors.base import BaseSearchConnector
 from promptiq.research.connectors.live_search import LiveWebSearchConnector
+from promptiq.research.evidence_graph import EvidenceGraphBuilder
 from promptiq.schemas.research import (
     EvidenceClaimSchema,
     ResearchRequest,
@@ -68,7 +69,9 @@ class ResearchEngine:
 
         for s in raw_sources:
             url = s.get("url", "")
-            content = s.get("content", "")
+            raw_content = s.get("content", "")
+            content = EvidenceGraphBuilder.sanitize_untrusted_content(raw_content)
+            s["content"] = content
             c_hash = s.get("content_hash") or hashlib.sha256(content.encode("utf-8")).hexdigest()
             s["content_hash"] = c_hash
 
@@ -148,13 +151,17 @@ class ResearchEngine:
 
         await db.flush()
 
-        # 5. Synthesis Report
+        # 5. Synthesis Report & Contradiction Analysis
+        claim_dicts = [{"text": c[0].claim_text, "publisher": c[0].excerpt} for c in claims]
+        contradictions = EvidenceGraphBuilder.detect_contradictions(claim_dicts)
+
         summary = {
             "synthesis": f"Research completed for '{request.query}'. Analyzed {len(source_records)} authoritative sources.",
             "key_takeaways": [
                 f"Documented specifications verified across {len(source_records)} independent sources.",
                 f"Recorded {len(claims)} evidence claims in the persistent Evidence Ledger.",
             ],
+            "detected_contradictions": contradictions,
             "remaining_uncertainties": [
                 "Upstream rate limits may be revised dynamically by provider."
             ],

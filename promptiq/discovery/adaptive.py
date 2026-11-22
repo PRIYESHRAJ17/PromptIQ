@@ -9,10 +9,12 @@ from promptiq.core.exceptions import NotFoundError
 from promptiq.core.security import validate_and_sanitize_url
 from promptiq.discovery.extractor import ContextExtractor
 from promptiq.discovery.software_stages import SOFTWARE_STAGES, get_software_stage_questions
+from promptiq.discovery.sufficiency import InformationSufficiencyEvaluator
 from promptiq.discovery.task_paths import get_task_questions
 from promptiq.discovery.task_registry import TaskCategoryRegistry
 from promptiq.gateway.gateway import inference_gateway
 from promptiq.gateway.models import GatewayMessage, InferenceRequest
+from promptiq.intelligence.intent import IntentReasoningEngine
 from promptiq.models.discovery import DiscoverySession
 from promptiq.schemas.discovery import (
     DiscoveryQuestion,
@@ -198,10 +200,61 @@ class AdaptiveDiscoveryEngine:
                 "acceptance_criteria": "Observable delivery of stated goal",
             }
         )
+
+        # Run advanced intent reasoning
+        intent_profile = IntentReasoningEngine.analyze_intent(
+            goal=intake.goal,
+            context_text=intake.context_text,
+            constraints=intake.constraints,
+            task_type=intake.task_type,
+        )
+
+        # Seed implied requirements from intent reasoning with provenance='strongly_implied'
+        for imp in intent_profile.implied_requirements:
+            initial_reqs.append(
+                {
+                    "id": f"REQ-IMP-{len(initial_reqs) + 1:03d}",
+                    "text": imp.description,
+                    "category": "architecture",
+                    "priority": "P1" if imp.impact == "critical" else "P2",
+                    "status": "proposed",
+                    "provenance": "strongly_implied",
+                    "source_reference": imp.id,
+                    "acceptance_criteria": f"Verification of {imp.description}",
+                }
+            )
+
+        # Seed assumptions with provenance='reasonable_assumption'
+        for asm in intent_profile.assumptions:
+            initial_reqs.append(
+                {
+                    "id": f"REQ-ASM-{len(initial_reqs) + 1:03d}",
+                    "text": asm.description,
+                    "category": "technical",
+                    "priority": "P2",
+                    "status": "proposed",
+                    "provenance": "reasonable_assumption",
+                    "source_reference": asm.id,
+                    "acceptance_criteria": None,
+                }
+            )
+
         constitution.requirements = initial_reqs
         await db.flush()
 
         next_questions = cls.get_next_questions(session)
+
+        # Merge intent high-impact unknowns with missing info
+        missing_info = cls.detect_missing_high_impact_info(session)
+        for unk in intent_profile.high_impact_unknowns:
+            if unk.description not in missing_info:
+                missing_info.append(unk.description)
+
+        # Merge intent contradictions with identified contradictions
+        contradictions = cls.detect_contradictions(session)
+        for conflict in intent_profile.conflicting_instructions:
+            if conflict not in contradictions:
+                contradictions.append(conflict)
 
         return DiscoverySessionResponse(
             id=session.id,
@@ -213,27 +266,40 @@ class AdaptiveDiscoveryEngine:
             initial_intake=session.initial_intake,
             answers=session.answers,
             extracted_facts=session.extracted_facts,
-            identified_contradictions=cls.detect_contradictions(session),
-            missing_high_impact_info=cls.detect_missing_high_impact_info(session),
+            identified_contradictions=contradictions,
+            missing_high_impact_info=missing_info,
             next_questions=next_questions,
         )
 
     @classmethod
     def get_next_questions(cls, session: DiscoverySession) -> list[DiscoveryQuestion]:
-        """Calculates next questions based on depth, task type, and answered history."""
+        """Calculates next questions based on depth, sufficiency, task type, and decision value."""
         if session.is_completed:
             return []
 
         answered_keys = set(session.answers.keys())
+        candidate_questions = get_task_questions(session.task_type, answered_keys)
+
+        # Run decision-value ranking and information sufficiency evaluation
+        assessment = InformationSufficiencyEvaluator.evaluate_sufficiency(
+            task_type=session.task_type,
+            profile_name=session.depth,
+            intake=session.initial_intake or {},
+            answers=session.answers or {},
+            candidate_questions=candidate_questions,
+        )
 
         if session.depth == "quick":
-            # Quick mode: ask at most 1-2 high-priority questions
-            all_questions = get_task_questions(session.task_type, answered_keys)
-            return all_questions[:1]
+            # Quick mode: ask at most 1 highest decision-value question
+            return assessment.decision_value_ranked_questions[:1]
 
         elif session.depth == "guided":
-            # Guided mode: present standard task questions
-            return get_task_questions(session.task_type, answered_keys)[:3]
+            # Guided mode: present top 3 decision-value ranked questions
+            return assessment.decision_value_ranked_questions[:3]
+
+        elif session.depth in ("technical", "research", "business", "creative", "agentic"):
+            # Specialized profile questioning
+            return assessment.decision_value_ranked_questions[:4]
 
         else:
             # Deep mode: full multi-stage interview
@@ -245,7 +311,7 @@ class AdaptiveDiscoveryEngine:
                     return get_software_stage_questions(session.current_stage, answered_keys)
                 return stage_questions
             else:
-                return get_task_questions(session.task_type, answered_keys)
+                return assessment.decision_value_ranked_questions
 
     @classmethod
     def _advance_software_stage(cls, session: DiscoverySession) -> None:
