@@ -1,7 +1,9 @@
 """Telegram Bot companion client interfacing with PromptIQ backend."""
 
+import json
 import secrets
 import time
+from pathlib import Path
 from typing import Any
 
 import httpx
@@ -31,11 +33,35 @@ class TelegramBotClient:
     project discovery continuity.
     """
 
-    def __init__(self, token: str | None = None):
+    def __init__(self, token: str | None = None, dedup_path: str = "data/telegram_updates.json"):
         self.token = token or settings.TELEGRAM_BOT_TOKEN
         self.api_base = f"https://api.telegram.org/bot{self.token}" if self.token else ""
         self._processed_update_ids: dict[int, float] = {}
         self._dedup_window_seconds: float = 600.0  # 10 minute deduplication window
+        self._dedup_path = Path(dedup_path)
+        self._load_persisted_updates()
+
+    def _load_persisted_updates(self) -> None:
+        """Loads processed update IDs from durable persistence if available."""
+        try:
+            if self._dedup_path.exists():
+                with open(self._dedup_path, encoding="utf-8") as f:
+                    raw = json.load(f)
+                    now = time.time()
+                    self._processed_update_ids = {
+                        int(k): float(v) for k, v in raw.items() if now - float(v) <= self._dedup_window_seconds
+                    }
+        except Exception as exc:
+            logger.warning(f"Failed to load telegram deduplication ledger: {exc}")
+
+    def _save_persisted_updates(self) -> None:
+        """Saves processed update IDs to durable persistence."""
+        try:
+            self._dedup_path.parent.mkdir(parents=True, exist_ok=True)
+            with open(self._dedup_path, "w", encoding="utf-8") as f:
+                json.dump(self._processed_update_ids, f)
+        except Exception as exc:
+            logger.warning(f"Failed to persist telegram deduplication ledger: {exc}")
 
     def _is_duplicate_update(self, update_id: int | None) -> bool:
         if update_id is None:
@@ -53,7 +79,17 @@ class TelegramBotClient:
         if update_id in self._processed_update_ids:
             return True
         self._processed_update_ids[update_id] = now
+        self._save_persisted_updates()
         return False
+
+    def clear_deduplication_ledger(self) -> None:
+        """Clears in-memory and persisted deduplication ledger (for testing and maintenance)."""
+        self._processed_update_ids.clear()
+        try:
+            if self._dedup_path.exists():
+                self._dedup_path.unlink()
+        except OSError as exc:
+            logger.debug(f"Could not remove deduplication ledger: {exc}")
 
     async def send_message(
         self, chat_id: str | int, text: str, reply_markup: dict[str, Any] | None = None

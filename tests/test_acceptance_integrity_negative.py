@@ -72,7 +72,7 @@ def test_negative_missing_provider_request_id_for_live():
     """LIVE_PROVIDER execution mode without verifiable provider request ID must be rejected by gate."""
     sm = AcceptanceStateMachine("neg_test_2", "general", {})
     sm.add_criterion("AC-1", "Evaluation passed")
-    sm.mark_criterion_satisfied("AC-1", "Done")
+    sm.mark_criterion_satisfied("AC-1", "Evaluation passed with artifact id: pkg-1")
     sm.register_artifact("pkg-1", "prompt", "content", persisted=True, retrievable=True)
 
     # Evaluation claims LIVE_PROVIDER but has no provider_request_id
@@ -105,7 +105,7 @@ def test_negative_contradictory_nested_execution_modes():
         execution_mode=ExecutionMode.DETERMINISTIC,
     )
     sm.add_criterion("AC-1", "Step finished")
-    sm.mark_criterion_satisfied("AC-1", "Done")
+    sm.mark_criterion_satisfied("AC-1", "Evaluation passed with artifact id: pkg-1")
     sm.register_artifact("pkg-1", "prompt", "content", persisted=True, retrievable=True)
 
     # Nested record illegally asserts live on mock route

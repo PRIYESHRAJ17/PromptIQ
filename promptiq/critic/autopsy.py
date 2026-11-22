@@ -28,6 +28,22 @@ class PromptAutopsyEngine:
     INJECTION_RISK = re.compile(
         r"\b(ignore previous instructions|system prompt override)\b", re.IGNORECASE
     )
+    SYSTEM_EXTRACTION_RISK = re.compile(
+        r"\b(output your system prompt|repeat instructions above|reveal system prompt|show developer instructions)\b",
+        re.IGNORECASE,
+    )
+    UNSAFE_PERMISSIONS = re.compile(
+        r"\b(chmod 777|disable security|bypass auth|run as root|sudo|disable ssl)\b",
+        re.IGNORECASE,
+    )
+    TOOL_MISUSE = re.compile(
+        r"\b(rm -rf|delete database|format disk|drop database)\b",
+        re.IGNORECASE,
+    )
+    UNSUPPORTED_CLAIMS = re.compile(
+        r"\b(100% bug-free|completely unhackable|zero latency|guaranteed 100%)\b",
+        re.IGNORECASE,
+    )
 
     @classmethod
     def _is_prohibitive_context(cls, passage: str, full_text: str) -> bool:
@@ -129,6 +145,66 @@ class PromptAutopsyEngine:
                     consequence="System instructions can be bypassed or hijacked.",
                     recommendation="Remove instructions attempting to override foundational boundaries.",
                     blocks_release=True,
+                )
+            )
+
+        # Check for system instruction extraction
+        extraction_matches = cls.SYSTEM_EXTRACTION_RISK.findall(text)
+        if extraction_matches:
+            findings.append(
+                CriticFindingSchema(
+                    category="system_instruction_extraction",
+                    severity="critical",
+                    finding="Prompt contains directives attempting to extract or disclose system instructions.",
+                    evidence_passage=extraction_matches[0],
+                    consequence="Internal system boundaries and operator prompts may be exfiltrated.",
+                    recommendation="Strictly prohibit disclosure of system instructions or hidden developer prompts.",
+                    blocks_release=True,
+                )
+            )
+
+        # Check for unsafe permissions
+        unsafe_matches = [m for m in cls.UNSAFE_PERMISSIONS.findall(text) if not cls._is_prohibitive_context(m, text)]
+        if unsafe_matches:
+            findings.append(
+                CriticFindingSchema(
+                    category="unsafe_permissions",
+                    severity="high",
+                    finding=f"Unsafe permission granted: '{unsafe_matches[0]}'",
+                    evidence_passage=unsafe_matches[0],
+                    consequence="Target agent may violate principle of least privilege.",
+                    recommendation="Restrict execution privileges to non-root and safe access boundaries.",
+                    blocks_release=True,
+                )
+            )
+
+        # Check for tool misuse
+        misuse_matches = [m for m in cls.TOOL_MISUSE.findall(text) if not cls._is_prohibitive_context(m, text)]
+        if misuse_matches:
+            findings.append(
+                CriticFindingSchema(
+                    category="tool_misuse",
+                    severity="critical",
+                    finding=f"Destructive tool directive detected: '{misuse_matches[0]}'",
+                    evidence_passage=misuse_matches[0],
+                    consequence="Risk of unrecoverable data loss or destructive filesystem operations.",
+                    recommendation="Prohibit destructive filesystem/database operations without operator confirmation.",
+                    blocks_release=True,
+                )
+            )
+
+        # Check for unsupported claims
+        unsupported_matches = cls.UNSUPPORTED_CLAIMS.findall(text)
+        if unsupported_matches:
+            findings.append(
+                CriticFindingSchema(
+                    category="unsupported_claims",
+                    severity="medium",
+                    finding=f"Unverifiable absolute claim: '{unsupported_matches[0]}'",
+                    evidence_passage=unsupported_matches[0],
+                    consequence="Prompts with ungrounded perfection guarantees set unrealistic behavioral expectations.",
+                    recommendation="Replace absolute claims with empirical metrics and measurable acceptance tests.",
+                    blocks_release=False,
                 )
             )
 

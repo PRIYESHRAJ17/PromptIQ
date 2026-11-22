@@ -10,6 +10,7 @@ SupportStatus = Literal[
     "SUPPORTED",
     "PARTIALLY_SUPPORTED",
     "CONTRADICTED",
+    "UNSUPPORTED",
     "UNVERIFIED",
     "INSUFFICIENT_EVIDENCE",
     # Legacy aliases

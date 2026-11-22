@@ -322,13 +322,16 @@ async def run_scenario_1_software(
         )
         for f, r in zip(autopsy.findings, verify_resp.resolutions, strict=False):
             sm.record_finding_resolution(
-                f.id,
-                f.category,
-                f.severity,
-                binding_revised.content_hash,
-                r.status,
-                r.evidence or r.reason,
-                r.reason,
+                finding_id=f.id,
+                original_category=f.category,
+                original_severity=f.severity,
+                revised_artifact_hash=binding_revised.content_hash,
+                status=r.status,
+                resolution_evidence=r.evidence or r.reason,
+                verification_reason=r.reason,
+                original_artifact_id=pkg.id,
+                revised_artifact_id=revised_pkg.id,
+                verification_method="deterministic_static_analysis",
             )
         sm.derive_unresolved_findings_and_warnings()
 
@@ -592,8 +595,12 @@ async def run_scenario_2_research(
     )
 
     if is_any_simulated:
-        sm.warnings.append(
-            "Research sources retrieved via simulated knowledge base (offline environment; live network endpoint not reached)."
+        sm.add_warning(
+            warning_text="Research sources retrieved via simulated knowledge base (offline environment; live network endpoint not reached).",
+            category="simulated_research",
+            severity="medium",
+            consequence="External web claims are grounded in local knowledge bases rather than live public search indexes.",
+            recommendation="Execute in an environment with unconstrained public internet DNS to verify live retrieval.",
         )
 
     # 4. Claim Extraction & SHA-256 Fingerprinting
@@ -887,13 +894,16 @@ async def run_scenario_3_agent(db: AsyncSession, user: User, ws: Workspace) -> S
         )
         for f, r in zip(autopsy.findings, verify_resp.resolutions, strict=False):
             sm.record_finding_resolution(
-                f.id,
-                f.category,
-                f.severity,
-                binding_revised.content_hash,
-                r.status,
-                r.evidence or r.reason,
-                r.reason,
+                finding_id=f.id,
+                original_category=f.category,
+                original_severity=f.severity,
+                revised_artifact_hash=binding_revised.content_hash,
+                status=r.status,
+                resolution_evidence=r.evidence or r.reason,
+                verification_reason=r.reason,
+                original_artifact_id=pkg.id,
+                revised_artifact_id=revised_id,
+                verification_method="deterministic_static_analysis",
             )
         sm.derive_unresolved_findings_and_warnings()
 
@@ -1216,13 +1226,16 @@ async def run_scenario_4_business(
         )
         for f, r in zip(autopsy.findings, verify_resp.resolutions, strict=False):
             sm.record_finding_resolution(
-                f.id,
-                f.category,
-                f.severity,
-                binding_revised.content_hash,
-                r.status,
-                r.evidence or r.reason,
-                r.reason,
+                finding_id=f.id,
+                original_category=f.category,
+                original_severity=f.severity,
+                revised_artifact_hash=binding_revised.content_hash,
+                status=r.status,
+                resolution_evidence=r.evidence or r.reason,
+                verification_reason=r.reason,
+                original_artifact_id=pkg.id,
+                revised_artifact_id=revised_id,
+                verification_method="deterministic_static_analysis",
             )
         sm.derive_unresolved_findings_and_warnings()
 
@@ -1441,13 +1454,16 @@ async def run_scenario_5_prompt_improvement(
     )
     for f, r in zip(resp_initial.findings, verify_resp.resolutions, strict=False):
         sm.record_finding_resolution(
-            f.id,
-            f.category,
-            f.severity,
-            binding.content_hash,
-            r.status,
-            r.evidence or r.reason,
-            r.reason,
+            finding_id=f.id,
+            original_category=f.category,
+            original_severity=f.severity,
+            revised_artifact_hash=binding.content_hash,
+            status=r.status,
+            resolution_evidence=r.evidence or r.reason,
+            verification_reason=r.reason,
+            original_artifact_id="flawed-cache-prompt",
+            revised_artifact_id=art_id,
+            verification_method="deterministic_static_analysis",
         )
     sm.derive_unresolved_findings_and_warnings()
 
@@ -2214,7 +2230,7 @@ async def run_all_acceptance_scenarios(
         overall_verdict = "PASS"
 
     summary = AcceptanceSuiteSummary(
-        runner_version="3.0.0",
+        runner_version="4.0.0",
         execution_timestamp=datetime.now(UTC),
         total_scenarios=len(scenarios),
         fully_verified_count=fully_verified,
@@ -2225,16 +2241,21 @@ async def run_all_acceptance_scenarios(
         scenarios=scenarios,
     )
 
-    # Persist V3 trace
+    # Persist V4, V3, and canonical traces
     try:
         import json
         from pathlib import Path
 
-        v3_path = Path("docs/ACCEPTANCE_SCENARIOS_TRACE_V3.json")
-        v3_path.parent.mkdir(parents=True, exist_ok=True)
-        with open(v3_path, "w", encoding="utf-8") as f:
-            json.dump(summary.model_dump(mode="json"), f, indent=2)
+        for trace_name in [
+            "ACCEPTANCE_SCENARIOS_TRACE_V4.json",
+            "ACCEPTANCE_SCENARIOS_TRACE_V3.json",
+            "ACCEPTANCE_SCENARIOS_TRACE.json",
+        ]:
+            trace_path = Path(f"docs/{trace_name}")
+            trace_path.parent.mkdir(parents=True, exist_ok=True)
+            with open(trace_path, "w", encoding="utf-8") as f:
+                json.dump(summary.model_dump(mode="json"), f, indent=2)
     except Exception as exc:
-        logger.warning("Failed to persist acceptance trace V3: %s", exc)
+        logger.warning("Failed to persist acceptance trace: %s", exc)
 
     return summary

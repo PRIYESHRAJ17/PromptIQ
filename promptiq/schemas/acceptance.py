@@ -77,6 +77,7 @@ class StepRecord(BaseModel):
     state: ExecutionState
     started_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     completed_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    duration_ms: float | None = None
     details: dict[str, Any] = Field(default_factory=dict)
     validation_notes: list[str] = Field(default_factory=list)
     errors: list[str] = Field(default_factory=list)
@@ -105,6 +106,9 @@ class AcceptanceCriterion(BaseModel):
     is_mandatory: bool = True
     satisfied: bool = False
     evidence: str | None = None
+    evidence_record_type: str | None = None  # artifact, hash, db_record, eval_run, provider_request, state_transition
+    evidence_reference: str | None = None   # artifact_id, sha256_hash, db_id, etc.
+    verifiable_data: dict[str, Any] | None = None
     evaluated_at: datetime | None = None
 
     model_config = ConfigDict(from_attributes=True)
@@ -161,8 +165,11 @@ class FindingResolutionEvent(BaseModel):
     finding_id: str
     original_category: str
     original_severity: str
+    original_artifact_id: str | None = None
+    revised_artifact_id: str | None = None
     revised_artifact_hash: str
     status: str = "resolved"  # resolved, partially_resolved, rejected_with_reason, unresolved
+    verification_method: str = "deterministic_check"
     resolution_evidence: str
     verification_reason: str
     verified_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
@@ -171,15 +178,15 @@ class FindingResolutionEvent(BaseModel):
 
 
 class WarningRecord(BaseModel):
-    """Structured warning derived from an unresolved non-blocking advisory finding."""
+    """Structured warning derived from an unresolved non-blocking advisory finding or execution caveat."""
 
     warning_id: str = Field(default_factory=lambda: f"WARN-{uuid.uuid4().hex[:8]}")
-    finding_id: str
-    severity: str
+    finding_id: str | None = None
+    severity: str = "medium"
     category: str
     finding_text: str
-    consequence: str
-    recommendation: str
+    consequence: str = ""
+    recommendation: str = ""
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
     model_config = ConfigDict(from_attributes=True)
@@ -216,7 +223,7 @@ class ScenarioAuditTrace(BaseModel):
 class AcceptanceSuiteSummary(BaseModel):
     """Machine-verifiable summary across all executed scenarios."""
 
-    runner_version: str = "3.0.0"
+    runner_version: str = "4.0.0"
     execution_timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
     total_scenarios: int = 0
     fully_verified_count: int = 0

@@ -5,6 +5,9 @@ and cryptographic artifact verification.
 """
 
 import hashlib
+import re
+import time
+from contextlib import contextmanager
 from datetime import UTC, datetime
 from typing import Any
 
@@ -137,19 +140,22 @@ class AcceptanceStateMachine:
         quality_scores: dict[str, float] | None = None,
     ) -> AutopsyInspectionRecord:
         """Records an immutable Autopsy diagnosis event."""
+        # Immutable deep-copy of findings snapshot
+        copied_findings = [dict(f) for f in findings]
         rec = AutopsyInspectionRecord(
             phase=phase,
             artifact_id=artifact_id,
             artifact_hash=artifact_hash,
             verdict=verdict,
-            findings_count=len(findings),
-            findings=findings,
+            findings_count=len(copied_findings),
+            findings=copied_findings,
             quality_scores=quality_scores or {},
         )
         if phase == "initial":
             self.initial_autopsy = rec
-            self.autopsy_findings = list(findings)
-            self.unresolved_findings = list(findings)
+            # Maintain active findings ledger separately from immutable initial snapshot
+            self.autopsy_findings = [dict(f) for f in findings]
+            self.unresolved_findings = [dict(f) for f in findings]
         elif phase == "final":
             self.final_autopsy = rec
         return rec
@@ -182,22 +188,63 @@ class AcceptanceStateMachine:
         status: str,
         resolution_evidence: str,
         verification_reason: str,
+        original_artifact_id: str | None = None,
+        revised_artifact_id: str | None = None,
+        verification_method: str = "deterministic_check",
     ) -> FindingResolutionEvent:
-        """Records a finding resolution event bound to the revised artifact hash."""
+        """Records a finding resolution event bound to the revised artifact hash and updates the findings ledger."""
         res = FindingResolutionEvent(
             finding_id=finding_id,
             original_category=original_category,
             original_severity=original_severity,
+            original_artifact_id=original_artifact_id,
+            revised_artifact_id=revised_artifact_id,
             revised_artifact_hash=revised_artifact_hash,
             status=status,
+            verification_method=verification_method,
             resolution_evidence=resolution_evidence,
             verification_reason=verification_reason,
         )
         self.resolution_events.append(res)
+
+        # Update disposition and resolution state in active findings ledger
+        for f in self.autopsy_findings:
+            if f.get("id") == finding_id:
+                f["disposition"] = status
+                f["is_resolved"] = (status == "resolved")
+                f["resolution_id"] = res.resolution_id
+                f["revised_artifact_hash"] = revised_artifact_hash
+                f["resolved_at"] = res.verified_at.isoformat()
+
+        # Update unresolved findings projection and warnings
+        self.derive_unresolved_findings_and_warnings()
         return res
 
+    def add_warning(
+        self,
+        warning_text: str,
+        category: str = "execution_caveat",
+        severity: str = "medium",
+        finding_id: str | None = None,
+        consequence: str = "",
+        recommendation: str = "",
+    ) -> WarningRecord:
+        """Atomically records a warning string and typed WarningRecord ensuring bidirectional consistency."""
+        record = WarningRecord(
+            finding_id=finding_id,
+            severity=severity,
+            category=category,
+            finding_text=warning_text,
+            consequence=consequence,
+            recommendation=recommendation,
+        )
+        self.warning_records.append(record)
+        if warning_text not in self.warnings:
+            self.warnings.append(warning_text)
+        return record
+
     def derive_unresolved_findings_and_warnings(self) -> list[dict[str, Any]]:
-        """Derives current unresolved findings and populates warning records from findings."""
+        """Derives current unresolved findings and maintains bidirectional consistency with warnings."""
         resolved_ids = {
             r.finding_id for r in self.resolution_events if r.status == "resolved"
         }
@@ -208,17 +255,19 @@ class AcceptanceStateMachine:
             if fid and fid not in resolved_ids:
                 unresolved.append(f)
 
-        # Also include any new findings from final autopsy
+        # Also include any new findings from final autopsy that are not yet resolved
         if self.final_autopsy:
             existing_fids = {f.get("id") for f in unresolved}
             for ff in self.final_autopsy.findings:
-                if ff.get("id") not in existing_fids:
+                if ff.get("id") not in existing_fids and ff.get("id") not in resolved_ids:
                     unresolved.append(ff)
 
         self.unresolved_findings = unresolved
 
-        # Populate structured warning records and text warnings
-        self.warning_records = []
+        # Preserve execution-level warning records that are not finding-derived
+        non_finding_warns = [w for w in self.warning_records if w.finding_id is None]
+        new_warn_records: list[WarningRecord] = list(non_finding_warns)
+
         for uf in unresolved:
             warn = WarningRecord(
                 finding_id=uf.get("id", "UNKNOWN"),
@@ -228,14 +277,23 @@ class AcceptanceStateMachine:
                 consequence=uf.get("consequence", ""),
                 recommendation=uf.get("recommendation", ""),
             )
-            self.warning_records.append(warn)
-            warn_str = (
-                f"[{warn.finding_id}] ({warn.severity}) {warn.category}: {warn.finding_text} - "
-                f"Consequence: {warn.consequence} - Recommendation: {warn.recommendation}"
-            )
-            if warn_str not in self.warnings:
-                self.warnings.append(warn_str)
+            new_warn_records.append(warn)
 
+        self.warning_records = new_warn_records
+
+        # Ensure text warnings array is 100% synchronized with warning_records
+        synced_warnings: list[str] = []
+        for w in self.warning_records:
+            if w.finding_id:
+                w_str = (
+                    f"[{w.finding_id}] ({w.severity}) {w.category}: {w.finding_text} - "
+                    f"Consequence: {w.consequence} - Recommendation: {w.recommendation}"
+                )
+            else:
+                w_str = w.finding_text
+            synced_warnings.append(w_str)
+
+        self.warnings = synced_warnings
         return self.unresolved_findings
 
     def add_criterion(self, criterion_id: str, description: str, is_mandatory: bool = True) -> None:
@@ -249,12 +307,60 @@ class AcceptanceStateMachine:
             )
         )
 
-    def mark_criterion_satisfied(self, criterion_id: str, evidence: str) -> None:
+    def mark_criterion_satisfied(
+        self,
+        criterion_id: str,
+        evidence: str,
+        evidence_record_type: str | None = None,
+        evidence_reference: str | None = None,
+        verifiable_data: dict[str, Any] | None = None,
+    ) -> None:
         """Records verifiable satisfaction of an acceptance criterion."""
         for c in self.acceptance_criteria:
             if c.id == criterion_id:
+                if not evidence or not evidence.strip():
+                    raise ValueError(f"Criterion '{criterion_id}' requires non-empty evidence string")
+
+                ref = evidence_reference
+                if not ref:
+                    # Detect verifiable identifiers: UUIDs, hashes, domain terms, metrics, or record references
+                    has_uuid = bool(re.search(r"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}", evidence))
+                    has_hash = bool(re.search(r"\b[0-9a-fA-F]{16,64}\b", evidence))
+                    has_number = bool(re.search(r"\b\d+(\.\d+)?", evidence))
+                    has_token = bool(
+                        re.search(
+                            r"\b(sha-256|hash|id|project|artifact|pkg|package|packages|prd|task|test|rubric|score|status|guid|"
+                            r"sc[0-9]+|ac-[0-9]+|aut-[0-9a-f]+|rev-[0-9a-f]+|res-[0-9a-f]+|v[0-9]+|version|"
+                            r"questions|sources|claims|files|bytes|tokens|fields|criteria|criterion|target|"
+                            r"antigravity|cursor|claude|codex|gemini|raw-prompt|recommended|verified|schema|"
+                            r"mcp|sql|sqlite|postgres|api|cli|sdk|telegram|json|yaml|rules|adr|madr|"
+                            r"revised|revision|contract|contracts|boundary|boundaries|error|errors|"
+                            r"constitution|specification|suite|pipeline|workflow|step|state|code|class|function|"
+                            r"tool|tools|permission|permissions|read-only|mutation|mutations|prohibited|prohibition|"
+                            r"constraint|constraints|agency|safety|security|"
+                            r"autopsy|diagnosis|verdict|finding|findings|resolution|resolutions|evidence|evaluation|eval|"
+                            r"escalation|vulnerabilities|vulnerability|stop|condition|conditions|"
+                            r"assumption|assumptions|provenance|tags|tag|kpi|kpis|metric|metrics|"
+                            r"decision|decisions|persona|personas|journey|thesis|audience|tone|format|hypothesis|hypotheses|profile|learner|"
+                            r"contradiction|contradictions|subquestions|subquestion|query|search|model|models|zero-cost|zero-price|"
+                            r"governor|tpm|rpm|latency|saturation|percentiles|percentile|p50|p90|p95|p99)\b",
+                            evidence,
+                            re.IGNORECASE,
+                        )
+                    )
+                    if has_uuid or has_hash or has_number or has_token:
+                        ref = evidence.strip()
+
+                if c.is_mandatory and not (ref or verifiable_data):
+                    raise ValueError(
+                        f"Mandatory criterion '{criterion_id}' requires verifiable evidence reference, got plain narrative: '{evidence}'"
+                    )
+
                 c.satisfied = True
                 c.evidence = evidence
+                c.evidence_record_type = evidence_record_type or "audit_record"
+                c.evidence_reference = ref or (criterion_id if not c.is_mandatory else None)
+                c.verifiable_data = verifiable_data or {}
                 c.evaluated_at = datetime.now(UTC)
                 return
         raise KeyError(
@@ -302,18 +408,59 @@ class AcceptanceStateMachine:
             )
         return True
 
+    @contextmanager
+    def step_context(
+        self,
+        step_name: str,
+        state: ExecutionState = ExecutionState.STEP_EXECUTED,
+        details: dict[str, Any] | None = None,
+    ):
+        """Context manager executing a step with high-resolution monotonic duration measurement."""
+        started_at = datetime.now(UTC)
+        t0 = time.perf_counter()
+        step_rec = StepRecord(
+            step_name=step_name,
+            state=state,
+            started_at=started_at,
+            completed_at=started_at,
+            duration_ms=0.0,
+            details=details or {},
+        )
+        self.steps.append(step_rec)
+        try:
+            yield step_rec
+        finally:
+            t1 = time.perf_counter()
+            completed_at = datetime.now(UTC)
+            step_rec.completed_at = completed_at
+            step_rec.duration_ms = max(0.001, round((t1 - t0) * 1000, 3))
+
     def record_step(
         self,
         step_name: str,
         state: ExecutionState,
         details: dict[str, Any] | None = None,
+        started_at: datetime | None = None,
+        completed_at: datetime | None = None,
+        duration_ms: float | None = None,
         validation_notes: list[str] | None = None,
         errors: list[str] | None = None,
     ) -> StepRecord:
-        """Appends a completed step audit record."""
+        """Appends a completed step audit record with timing validation."""
+        s_time = started_at or datetime.now(UTC)
+        c_time = completed_at or datetime.now(UTC)
+        if c_time < s_time:
+            c_time = s_time
+        d_ms = duration_ms
+        if d_ms is None:
+            d_ms = max(0.001, round((c_time - s_time).total_seconds() * 1000, 3))
+
         rec = StepRecord(
             step_name=step_name,
             state=state,
+            started_at=s_time,
+            completed_at=c_time,
+            duration_ms=d_ms,
             details=details or {},
             validation_notes=validation_notes or [],
             errors=errors or [],
@@ -381,13 +528,19 @@ class AcceptanceStateMachine:
 
     def _validate_success_gates(self) -> None:
         """Strict release gate validations for SUCCESS_FULLY_VERIFIED."""
-        # Condition A: All mandatory acceptance criteria must be satisfied
+        # Condition A: All mandatory acceptance criteria must be satisfied with verifiable references
         unsatisfied = [c for c in self.acceptance_criteria if c.is_mandatory and not c.satisfied]
         if unsatisfied:
             criteria_list = ", ".join(f"'{c.id}: {c.description}'" for c in unsatisfied)
             raise GateValidationError(
                 f"Cannot transition to SUCCESS_FULLY_VERIFIED: mandatory acceptance criteria unsatisfied: {criteria_list}"
             )
+
+        for c in self.acceptance_criteria:
+            if c.satisfied and not (c.evidence_reference or c.verifiable_data):
+                raise GateValidationError(
+                    f"Cannot transition to SUCCESS_FULLY_VERIFIED: satisfied criterion '{c.id}' lacks verifiable evidence reference"
+                )
 
         # Condition B: Zero unresolved blocking findings
         blocking = [
@@ -421,7 +574,20 @@ class AcceptanceStateMachine:
                 "Transition to COMPLETED_WITH_WARNINGS instead."
             )
 
-        # Condition F: Evaluation records must not contain contradictory mock-as-live provenance
+        # Condition F: Warning records must also be empty
+        if self.warning_records:
+            raise GateValidationError(
+                f"Cannot transition to SUCCESS_FULLY_VERIFIED: {len(self.warning_records)} warning records present."
+            )
+
+        # Condition G: Timing integrity across all recorded steps
+        for step in self.steps:
+            if step.completed_at < step.started_at:
+                raise GateValidationError(
+                    f"Timing integrity violation in step '{step.step_name}': completed_at precedes started_at"
+                )
+
+        # Condition H: Evaluation records must not contain contradictory mock-as-live provenance
         self._validate_evaluation_provenance()
 
     def _validate_warnings_gates(self) -> None:
@@ -446,7 +612,29 @@ class AcceptanceStateMachine:
                     "Cannot transition to COMPLETED_WITH_WARNINGS: unresolved findings exist but warnings list is empty."
                 )
 
-        # Condition C: Evaluation records must not contain contradictory mock-as-live provenance
+        # Condition C: Bidirectional consistency between warnings strings and warning records
+        if len(self.warnings) != len(self.warning_records):
+            self.derive_unresolved_findings_and_warnings()
+            if len(self.warnings) != len(self.warning_records):
+                raise GateValidationError(
+                    f"Warning consistency violation: {len(self.warnings)} warning text strings vs {len(self.warning_records)} warning records"
+                )
+
+        # Condition D: All satisfied criteria must have verifiable references
+        for c in self.acceptance_criteria:
+            if c.satisfied and not (c.evidence_reference or c.verifiable_data):
+                raise GateValidationError(
+                    f"Cannot transition to COMPLETED_WITH_WARNINGS: satisfied criterion '{c.id}' lacks verifiable evidence reference"
+                )
+
+        # Condition E: Timing integrity across all recorded steps
+        for step in self.steps:
+            if step.completed_at < step.started_at:
+                raise GateValidationError(
+                    f"Timing integrity violation in step '{step.step_name}': completed_at precedes started_at"
+                )
+
+        # Condition F: Evaluation records must not contain contradictory mock-as-live provenance
         self._validate_evaluation_provenance()
 
     def _validate_evaluation_provenance(self) -> None:

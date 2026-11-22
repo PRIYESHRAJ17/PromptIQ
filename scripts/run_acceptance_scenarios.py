@@ -29,6 +29,7 @@ from promptiq.core.database import async_session_factory, init_db
 TRACE_OUTPUT_PATH = Path("docs/ACCEPTANCE_SCENARIOS_TRACE.json")
 TRACE_V2_OUTPUT_PATH = Path("docs/ACCEPTANCE_SCENARIOS_TRACE_V2.json")
 TRACE_V3_OUTPUT_PATH = Path("docs/ACCEPTANCE_SCENARIOS_TRACE_V3.json")
+TRACE_V4_OUTPUT_PATH = Path("docs/ACCEPTANCE_SCENARIOS_TRACE_V4.json")
 
 
 async def main():
@@ -72,8 +73,11 @@ async def main():
     with open(TRACE_V3_OUTPUT_PATH, "w", encoding="utf-8") as f:
         json.dump(summary_dict, f, indent=2)
 
+    with open(TRACE_V4_OUTPUT_PATH, "w", encoding="utf-8") as f:
+        json.dump(summary_dict, f, indent=2)
+
     print(
-        f"\nAudit traces successfully persisted to:\n - {TRACE_OUTPUT_PATH}\n - {TRACE_V2_OUTPUT_PATH}\n - {TRACE_V3_OUTPUT_PATH}"
+        f"\nAudit traces successfully persisted to:\n - {TRACE_OUTPUT_PATH}\n - {TRACE_V2_OUTPUT_PATH}\n - {TRACE_V3_OUTPUT_PATH}\n - {TRACE_V4_OUTPUT_PATH}"
     )
 
 

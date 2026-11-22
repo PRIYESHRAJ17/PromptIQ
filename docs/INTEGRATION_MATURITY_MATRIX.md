@@ -36,7 +36,7 @@ All surfaces share the same underlying database schema, Project Constitution, Pr
 | **REST API** | **Level 5 (Production-Grade)** | HTTP/1.1 & HTTP/2 (FastAPI) | JWT Bearer Tokens | Row-level `user_id` / `workspace_id` | `tests/test_api_contracts.py` | Fully operational, 32 endpoints, OpenAPI 3.1.0 schema generated |
 | **MCP Server** | **Level 4 (Near Production)** | stdio, SSE, Streamable HTTP | Local STDIO / Bearer Token | Workspace-scoped session | `tests/test_mcp_server.py`, `tests/test_remote_mcp.py` | Standard MCP 1.0 tools (`start_discovery`, `get_constitution`, `compile_package`, `run_autopsy`) |
 | **Terminal CLI** | **Level 4 (Near Production)** | Native Terminal (Click / Rich) | Config file / Stored JWT | Local user profile binding | `tests/test_cli.py` | Interactive terminal UI, colored tables, progress indicators, full workflow commands |
-| **Telegram Bot**| **Level 3 (Functional)** | Telegram Bot API (Webhook + Polling) | Signed HMAC Linking Tokens | Telegram Chat ID mapped to PromptIQ User | `tests/test_telegram_bot.py` | Account linking, project status, quick prompts, webhook replay deduplication |
+| **Telegram Bot**| **Level 4 (Near Production)** | Telegram Bot API (Webhook + Polling) | Signed HMAC Linking Tokens | Telegram Chat ID mapped to PromptIQ User | `tests/test_telegram_bot.py` | Account linking, project status, conversational discovery continuation, durable persistent webhook replay deduplication |
 | **Python SDK** | **Level 3 (Functional)** | Async HTTP (`httpx`) | API Token / Bearer Token | User session client context | `tests/test_surface_integration_maturity.py` | Typed client, discovery builder, package compiler, evaluation runner |
 
 ---
@@ -74,15 +74,15 @@ All surfaces share the same underlying database schema, Project Constitution, Pr
   - `promptiq collaborate --task <task>` (with `--resume` support for rate-limited workflows)
   - `promptiq serve` (starts local FastAPI and MCP daemon)
 
-### 4.4 Telegram Companion Bot (Level 3 — Functional)
+### 4.4 Telegram Companion Bot (Level 4 — Near Production)
 - **Integration Flow**:
   1. User issues `/link` in CLI or Web API, receiving a time-limited cryptographically signed HMAC token.
   2. In Telegram, user sends `/start <token>`.
   3. The backend validates the HMAC token using constant-time comparison and links `telegram_chat_id` to `user_id`.
-- **Webhook Hardening**:
+- **Webhook Hardening & Durability**:
   - `X-Telegram-Bot-Api-Secret-Token` validation rejects unauthorized HTTP requests.
-  - In-memory sliding-window deduplication cache prevents repeated processing of retried webhook updates.
-- **Commands**: `/start`, `/projects`, `/status`, `/help`.
+  - Durable JSON-persisted sliding-window deduplication (`data/telegram_updates.json`) prevents duplicate processing of retried webhook updates across process restarts.
+- **Commands**: `/start`, `/projects`, `/status`, `/review`, `/build`, conversational discovery continuation, `/help`.
 
 ### 4.5 Python Async SDK (Level 3 — Functional)
 - **Class**: `promptiq.sdk.client.PromptIQClient`.

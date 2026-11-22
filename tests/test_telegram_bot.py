@@ -7,6 +7,13 @@ from promptiq.core.security import generate_telegram_link_token
 from promptiq.telegram.bot import telegram_bot
 
 
+@pytest.fixture(autouse=True)
+def reset_telegram_dedup():
+    telegram_bot.clear_deduplication_ledger()
+    yield
+    telegram_bot.clear_deduplication_ledger()
+
+
 @pytest.mark.asyncio
 async def test_telegram_start_and_account_linking(db_session: AsyncSession, test_user):
     """Tests /start onboarding and account linking via HMAC token."""
