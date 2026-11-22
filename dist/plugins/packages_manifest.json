@@ -30,8 +30,8 @@
     "id": "promptiq-codex",
     "name": "OpenAI Codex",
     "zip_file": "promptiq-codex.zip",
-    "size_bytes": 1392,
-    "sha256": "a95b381d8c9e5ad819ff1fb319e838c73d0d8a8798ba444bd289f5948cf00ef0",
+    "size_bytes": 2112,
+    "sha256": "8fde7ec00a4a4b5f6f9d3b3ef6d56e0d88823027894a598fd2faa73028772523",
     "required_files_count": 5,
     "status": "VALIDATED"
   },

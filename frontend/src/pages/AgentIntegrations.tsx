@@ -95,7 +95,7 @@ const INTEGRATIONS: Integration[] = [
     category: 'CLI & Environment Spec',
     description: 'Structured instruction packages and agent runtime configurations for OpenAI Codex and GPT developer tooling.',
     iconBg: 'bg-stone-500/10 text-stone-700 dark:text-stone-300',
-    installCommand: 'npm install -g @promptiq/codex-plugin',
+    installCommand: 'npm install -g ./integrations/plugins/promptiq-codex',
     configPath: 'codex.json',
     zipUrl: '/dist/plugins/promptiq-codex.zip',
     zipName: 'promptiq-codex.zip',

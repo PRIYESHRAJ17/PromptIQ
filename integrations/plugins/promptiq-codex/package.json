@@ -1,0 +1,12 @@
+{
+  "name": "promptiq-codex-plugin",
+  "version": "1.0.0",
+  "description": "PromptIQ Codex & GPT developer tooling plugin",
+  "main": "index.js",
+  "bin": {
+    "promptiq-codex": "./bin/promptiq-codex.js"
+  },
+  "keywords": ["promptiq", "codex", "mcp"],
+  "author": "PromptIQ Core Systems",
+  "license": "Apache-2.0"
+}
