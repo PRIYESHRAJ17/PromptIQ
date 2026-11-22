@@ -29,6 +29,7 @@ interface ShellProps {
 export function Shell({ currentRoute, onRouteChange, children }: ShellProps) {
   const [darkMode, setDarkMode] = useState(false)
   const [workspaceMenuOpen, setWorkspaceMenuOpen] = useState(false)
+  const [activeWorkspaceName, setActiveWorkspaceName] = useState('Priyesh Workspace')
 
   useEffect(() => {
     if (darkMode) {
@@ -86,11 +87,36 @@ export function Shell({ currentRoute, onRouteChange, children }: ShellProps) {
                 P
               </div>
               <span className="text-xs font-medium truncate text-[#1E2229] dark:text-[#F2EFE9]">
-                Priyesh Workspace
+                {activeWorkspaceName}
               </span>
             </div>
             <ChevronDown className="w-3.5 h-3.5 text-[#6A6E78] dark:text-[#9EA3B0]" />
           </div>
+
+          {workspaceMenuOpen && (
+            <div className="mt-2 p-1.5 rounded-lg bg-white dark:bg-[#1E222A] border border-[#E8E2D8] dark:border-[#2C313E] shadow-sm space-y-1">
+              {[
+                'Priyesh Workspace',
+                'Adversarial Security Lab',
+                'Enterprise Multi-Agent Staging',
+              ].map((ws) => (
+                <div
+                  key={ws}
+                  onClick={() => {
+                    setActiveWorkspaceName(ws)
+                    setWorkspaceMenuOpen(false)
+                  }}
+                  className={`px-2.5 py-1.5 text-xs rounded cursor-pointer transition-colors ${
+                    activeWorkspaceName === ws
+                      ? 'bg-[#C85A32] text-white font-medium'
+                      : 'hover:bg-[#FAF7F0] dark:hover:bg-[#252A35] text-[#1E2229] dark:text-[#F2EFE9]'
+                  }`}
+                >
+                  {ws}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Navigation List */}

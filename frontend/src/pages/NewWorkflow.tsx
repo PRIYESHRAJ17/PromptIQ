@@ -45,14 +45,15 @@ export function NewWorkflow({ onWorkflowCreated }: NewWorkflowProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleLaunch = async () => {
-    if (!objective.trim()) return
+    const finalObjective = objective.trim() || 'Implement distributed idempotency key middleware for FastAPI with zero paid API keys'
+    setObjective(finalObjective)
     setIsSubmitting(true)
 
     // Simulate creation or call API
     setTimeout(() => {
       setIsSubmitting(false)
       onWorkflowCreated('WF-8922')
-    }, 800)
+    }, 600)
   }
 
   return (
@@ -223,8 +224,8 @@ export function NewWorkflow({ onWorkflowCreated }: NewWorkflowProps) {
       <div className="pt-4 flex items-center justify-end gap-4">
         <button
           onClick={handleLaunch}
-          disabled={!objective.trim() || isSubmitting}
-          className="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg bg-[#C85A32] hover:bg-[#B54E29] disabled:opacity-50 text-white text-xs font-bold shadow-xs transition-all"
+          disabled={isSubmitting}
+          className="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg bg-[#C85A32] hover:bg-[#B54E29] disabled:opacity-50 text-white text-xs font-bold shadow-xs transition-all cursor-pointer"
         >
           {isSubmitting ? (
             <span>Decomposing DAG & Planning...</span>

@@ -95,6 +95,19 @@ export default function Artifacts() {
     setTimeout(() => setCopiedId(null), 2000);
   };
 
+  const handleDownloadFile = (art: CompiledArtifact) => {
+    const content = MOCK_CONTENT[art.id] || `// Compiled Target Package for ${art.target_format.toUpperCase()}\n// Checksum: ${art.content_hash}`;
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = art.file_path.split('/').pop() || `${art.id}.txt`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -169,14 +182,16 @@ export default function Artifacts() {
                       {copiedId === art.id ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
                     </button>
                   </div>
-                  <a
-                    href={art.download_url}
-                    onClick={(e) => e.stopPropagation()}
-                    className="inline-flex items-center gap-1 text-[#C85A32] hover:underline font-medium text-xs"
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDownloadFile(art);
+                    }}
+                    className="inline-flex items-center gap-1 text-[#C85A32] hover:underline font-semibold text-xs cursor-pointer"
                   >
                     <Download className="w-3.5 h-3.5" />
                     <span>Download</span>
-                  </a>
+                  </button>
                 </div>
               </div>
             );

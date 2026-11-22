@@ -11,6 +11,7 @@ import {
   Database,
   Layers,
   Sparkles,
+  X,
 } from 'lucide-react'
 import { Badge } from '@/components/ui/Badge'
 import { formatDate } from '@/lib/utils'
@@ -20,7 +21,17 @@ export function Projects() {
   const [activeTab, setActiveTab] = useState<'constitution' | 'decisions' | 'requirements' | 'memory'>('constitution')
   const [searchQuery, setSearchQuery] = useState('')
 
-  const projects = [
+  // Modals
+  const [showNewProjectModal, setShowNewProjectModal] = useState(false)
+  const [newProjectName, setNewProjectName] = useState('')
+  const [newProjectDesc, setNewProjectDesc] = useState('')
+
+  const [showNewDecisionModal, setShowNewDecisionModal] = useState(false)
+  const [newDecisionTitle, setNewDecisionTitle] = useState('')
+  const [newDecisionRationale, setNewDecisionRationale] = useState('')
+  const [newDecisionSupersedes, setNewDecisionSupersedes] = useState('')
+
+  const [projects, setProjects] = useState([
     {
       id: 'proj-001',
       name: 'Continuous Memory System',
@@ -51,11 +62,9 @@ export function Projects() {
       requirementsCount: 6,
       decisionsCount: 2,
     },
-  ]
+  ])
 
-  const currentProject = projects.find((p) => p.id === selectedProjectId) || projects[0]
-
-  const decisions = [
+  const [decisions, setDecisions] = useState([
     {
       id: 'DEC-002',
       decision: 'Use NATS JetStream for distributed event streaming',
@@ -80,9 +89,9 @@ export function Projects() {
       date: '2026-11-22',
       supersedes: null,
     },
-  ]
+  ])
 
-  const requirements = [
+  const [requirements] = useState([
     {
       id: 'REQ-CORE-001',
       text: 'Pipeline must process at least 1,000 events per second with sub-50ms p95 latency',
@@ -101,7 +110,7 @@ export function Projects() {
     },
     {
       id: 'REQ-MEM-001',
-      text: 'Cross-session decision memory must supersede outdated directives deterministically',
+      text: 'Cross-session decision memory with explicit supersession tracking',
       priority: 'P1',
       category: 'architecture',
       provenance: 'inferred',
@@ -109,18 +118,58 @@ export function Projects() {
     },
     {
       id: 'REQ-UI-001',
-      text: 'Lovable Product Analytics design foundation with warm cream and terracotta styling',
+      text: 'Lovable Product Analytics warm aesthetic with terracotta and sage highlights',
       priority: 'P1',
-      category: 'ux_direction',
+      category: 'user_experience',
       provenance: 'user_provided',
       status: 'confirmed',
     },
-  ]
+  ])
+
+  const currentProject = projects.find((p) => p.id === selectedProjectId) || projects[0]
+
+  const handleCreateProject = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!newProjectName.trim()) return
+    const newProj = {
+      id: `proj-00${projects.length + 1}`,
+      name: newProjectName.trim(),
+      description: newProjectDesc.trim() || 'New user initialized project workspace',
+      version: 1,
+      status: 'approved',
+      updated_at: new Date().toISOString(),
+      requirementsCount: 4,
+      decisionsCount: 1,
+    }
+    setProjects([newProj, ...projects])
+    setSelectedProjectId(newProj.id)
+    setNewProjectName('')
+    setNewProjectDesc('')
+    setShowNewProjectModal(false)
+  }
+
+  const handleCreateDecision = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!newDecisionTitle.trim()) return
+    const newDec = {
+      id: `DEC-00${decisions.length + 1}`,
+      decision: newDecisionTitle.trim(),
+      rationale: newDecisionRationale.trim() || 'Adopted to maintain architectural integrity.',
+      status: 'active',
+      date: new Date().toISOString().split('T')[0],
+      supersedes: newDecisionSupersedes.trim() || null,
+    }
+    setDecisions([newDec, ...decisions])
+    setNewDecisionTitle('')
+    setNewDecisionRationale('')
+    setNewDecisionSupersedes('')
+    setShowNewDecisionModal(false)
+  }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-6xl">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#E8E2D8] dark:border-[#2C313E]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-xl font-bold font-serif-title text-[#1E2229] dark:text-[#F2EFE9]">
             Projects & Persistent Memory
@@ -129,11 +178,128 @@ export function Projects() {
             Immutable Project Constitutions, versioned decision logs, and continuous cross-session memory
           </p>
         </div>
-        <button className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#C85A32] hover:bg-[#B54E29] text-white text-xs font-semibold shadow-xs transition-colors self-start">
+        <button
+          onClick={() => setShowNewProjectModal(true)}
+          className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#C85A32] hover:bg-[#B54E29] text-white text-xs font-semibold shadow-xs transition-colors self-start"
+        >
           <Plus className="w-3.5 h-3.5" />
           <span>New Project</span>
         </button>
       </div>
+
+      {/* New Project Modal */}
+      {showNewProjectModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4">
+          <div className="bg-white dark:bg-[#1A1D24] border border-[#E8E2D8] dark:border-[#2C313E] rounded-xl p-6 max-w-md w-full shadow-lg space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-bold text-[#1E2229] dark:text-[#F2EFE9]">Create New Project</h3>
+              <button onClick={() => setShowNewProjectModal(false)} className="text-[#6A6E78] hover:text-[#1E2229]">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <form onSubmit={handleCreateProject} className="space-y-3">
+              <div>
+                <label className="block text-xs font-medium text-[#6A6E78] mb-1">Project Name</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g., Financial Ledger Engine"
+                  value={newProjectName}
+                  onChange={(e) => setNewProjectName(e.target.value)}
+                  className="w-full px-3 py-2 text-xs rounded-lg border border-[#E8E2D8] dark:border-[#2C313E] bg-[#FAF7F0] dark:bg-[#15181E] text-[#1E2229] dark:text-[#F2EFE9] focus:outline-none focus:ring-1 focus:ring-[#C85A32]"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-[#6A6E78] mb-1">Description</label>
+                <textarea
+                  rows={3}
+                  placeholder="Purpose, core architectural boundaries..."
+                  value={newProjectDesc}
+                  onChange={(e) => setNewProjectDesc(e.target.value)}
+                  className="w-full px-3 py-2 text-xs rounded-lg border border-[#E8E2D8] dark:border-[#2C313E] bg-[#FAF7F0] dark:bg-[#15181E] text-[#1E2229] dark:text-[#F2EFE9] focus:outline-none focus:ring-1 focus:ring-[#C85A32]"
+                />
+              </div>
+              <div className="flex justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowNewProjectModal(false)}
+                  className="px-3 py-1.5 text-xs text-[#6A6E78] hover:text-[#1E2229]"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-1.5 text-xs font-bold rounded-lg bg-[#C85A32] text-white hover:bg-[#B54E29]"
+                >
+                  Create Project
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* New Decision Modal */}
+      {showNewDecisionModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4">
+          <div className="bg-white dark:bg-[#1A1D24] border border-[#E8E2D8] dark:border-[#2C313E] rounded-xl p-6 max-w-md w-full shadow-lg space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-bold text-[#1E2229] dark:text-[#F2EFE9]">Record Architectural Decision</h3>
+              <button onClick={() => setShowNewDecisionModal(false)} className="text-[#6A6E78] hover:text-[#1E2229]">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <form onSubmit={handleCreateDecision} className="space-y-3">
+              <div>
+                <label className="block text-xs font-medium text-[#6A6E78] mb-1">Decision Summary</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g., Use SQLite WAL mode for local zero-dependency storage"
+                  value={newDecisionTitle}
+                  onChange={(e) => setNewDecisionTitle(e.target.value)}
+                  className="w-full px-3 py-2 text-xs rounded-lg border border-[#E8E2D8] dark:border-[#2C313E] bg-[#FAF7F0] dark:bg-[#15181E] text-[#1E2229] dark:text-[#F2EFE9] focus:outline-none focus:ring-1 focus:ring-[#C85A32]"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-[#6A6E78] mb-1">Rationale</label>
+                <textarea
+                  rows={2}
+                  placeholder="Why this was chosen and what alternatives were rejected..."
+                  value={newDecisionRationale}
+                  onChange={(e) => setNewDecisionRationale(e.target.value)}
+                  className="w-full px-3 py-2 text-xs rounded-lg border border-[#E8E2D8] dark:border-[#2C313E] bg-[#FAF7F0] dark:bg-[#15181E] text-[#1E2229] dark:text-[#F2EFE9] focus:outline-none focus:ring-1 focus:ring-[#C85A32]"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-[#6A6E78] mb-1">Supersedes Existing Decision (Optional)</label>
+                <input
+                  type="text"
+                  placeholder="e.g., DEC-001"
+                  value={newDecisionSupersedes}
+                  onChange={(e) => setNewDecisionSupersedes(e.target.value)}
+                  className="w-full px-3 py-2 text-xs rounded-lg border border-[#E8E2D8] dark:border-[#2C313E] bg-[#FAF7F0] dark:bg-[#15181E] text-[#1E2229] dark:text-[#F2EFE9] focus:outline-none focus:ring-1 focus:ring-[#C85A32]"
+                />
+              </div>
+              <div className="flex justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowNewDecisionModal(false)}
+                  className="px-3 py-1.5 text-xs text-[#6A6E78] hover:text-[#1E2229]"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-1.5 text-xs font-bold rounded-lg bg-[#C85A32] text-white hover:bg-[#B54E29]"
+                >
+                  Record Decision
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Project Selector List */}
@@ -153,7 +319,7 @@ export function Projects() {
             {projects
               .filter((p) => p.name.toLowerCase().includes(searchQuery.toLowerCase()))
               .map((proj) => {
-                const isSelected = proj.id === selectedProjectId
+                const isSelected = selectedProjectId === proj.id
                 return (
                   <div
                     key={proj.id}
@@ -204,25 +370,35 @@ export function Projects() {
             </div>
 
             {/* Sub-Tabs */}
-            <div className="flex gap-2 mt-6">
-              {[
-                { id: 'constitution', label: 'Constitution Overview' },
-                { id: 'requirements', label: 'Requirements (4)' },
-                { id: 'decisions', label: 'Decision Log (3)' },
-                { id: 'memory', label: 'Context Pack' },
-              ].map((tab) => (
+            <div className="flex flex-wrap items-center justify-between gap-2 mt-6">
+              <div className="flex gap-2">
+                {[
+                  { id: 'constitution', label: 'Constitution Overview' },
+                  { id: 'requirements', label: `Requirements (${requirements.length})` },
+                  { id: 'decisions', label: `Decision Log (${decisions.length})` },
+                  { id: 'memory', label: 'Context Pack' },
+                ].map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id as any)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                      activeTab === tab.id
+                        ? 'bg-white dark:bg-[#1A1D23] text-[#C85A32] shadow-xs font-semibold'
+                        : 'text-[#6A6E78] dark:text-[#9EA3B0] hover:text-[#1E2229]'
+                    }`}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+              {activeTab === 'decisions' && (
                 <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id as any)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                    activeTab === tab.id
-                      ? 'bg-white dark:bg-[#1A1D23] text-[#C85A32] shadow-xs font-semibold'
-                      : 'text-[#6A6E78] dark:text-[#9EA3B0] hover:text-[#1E2229]'
-                  }`}
+                  onClick={() => setShowNewDecisionModal(true)}
+                  className="px-2.5 py-1 text-xs font-semibold rounded-lg bg-[#C85A32] text-white hover:bg-[#B54E29] transition-colors"
                 >
-                  {tab.label}
+                  + Add Decision
                 </button>
-              ))}
+              )}
             </div>
           </div>
 
@@ -233,7 +409,7 @@ export function Projects() {
                 <div>
                   <h4 className="text-xs font-bold uppercase tracking-wider text-[#6A6E78] mb-2">Core Objective</h4>
                   <div className="p-3.5 rounded-lg bg-[#FAF7F0] dark:bg-[#20242E] text-xs font-medium text-[#1E2229] dark:text-[#F2EFE9] border border-[#E8E2D8] dark:border-[#2C313E]">
-                    Build durable event-driven processing pipeline with cross-session decision tracking and native AI agent packaging.
+                    {currentProject.description}
                   </div>
                 </div>
 
@@ -243,8 +419,8 @@ export function Projects() {
                       In Scope
                     </span>
                     <ul className="mt-2 text-xs space-y-1.5 text-[#4A4E58] dark:text-[#A0A5B2]">
-                      <li>• High throughput async queueing</li>
-                      <li>• Dynamic DAG task replanning</li>
+                      <li>• High throughput async processing</li>
+                      <li>• Dynamic DAG task execution</li>
                       <li>• Universal MCP agent plugins</li>
                       <li>• Zero-price hosted inference</li>
                     </ul>
@@ -311,24 +487,22 @@ export function Projects() {
 
             {activeTab === 'memory' && (
               <div className="space-y-3">
-                <div className="flex items-center justify-between text-xs text-[#6A6E78]">
-                  <span>Estimated token budget: 2,450 / 8,000 tokens</span>
-                  <Badge variant="sage">Continuous Memory Ready</Badge>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-[#6A6E78]">
+                    Compiled Markdown Instruction Pack
+                  </span>
+                  <Badge variant="terracotta">Ready for Compilation</Badge>
                 </div>
-                <div className="p-4 rounded-lg bg-[#FAF7F0] dark:bg-[#14161C] border border-[#E8E2D8] dark:border-[#2C313E] font-mono text-xs text-[#1E2229] dark:text-[#A0A5B2] overflow-x-auto leading-relaxed">
-                  <pre>
-{`# Project Constitution: Continuous Memory System
-## Version: 2 (Approved)
+                <div className="p-4 rounded-lg bg-[#FAF7F0] dark:bg-[#15181E] border border-[#E8E2D8] dark:border-[#2C313E] font-mono text-xs text-[#1E2229] dark:text-[#F2EFE9] overflow-x-auto">
+                  <pre className="whitespace-pre-wrap leading-relaxed">
+{`# Project Constitution: ${currentProject.name}
+## Version: ${currentProject.version} (Approved)
 
 ### Active Decisions:
-- DEC-002: Use NATS JetStream for distributed event streaming (Supersedes DEC-001)
-- DEC-003: Strict 5-Tier Tool Permission Hierarchy
+${decisions.map(d => `- ${d.id}: ${d.decision}${d.supersedes ? ` (Supersedes ${d.supersedes})` : ''}`).join('\n')}
 
 ### Requirements:
-- [P0] REQ-CORE-001: 1,000 events/sec sub-50ms latency (user_provided)
-- [P0] REQ-SEC-001: Zero-price ₹0 anti-BYOK enforcement (user_provided)
-- [P1] REQ-MEM-001: Cross-session decision memory (inferred)
-- [P1] REQ-UI-001: Lovable Product Analytics warm aesthetic (user_provided)`}
+${requirements.map(r => `- [${r.priority}] ${r.id}: ${r.text} (${r.provenance})`).join('\n')}`}
                   </pre>
                 </div>
               </div>
@@ -341,4 +515,3 @@ export function Projects() {
 }
 
 export default Projects
-
