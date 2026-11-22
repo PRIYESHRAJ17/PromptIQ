@@ -13,6 +13,7 @@ from promptiq.models.project import Project, ProjectMembership
 from promptiq.models.registry import EnvironmentRecord, ModelRegistryEntry
 from promptiq.models.research import EvidenceClaim, ResearchJob, SourceRecord
 from promptiq.models.spec import PromptSpecification
+from promptiq.models.telegram import TelegramProcessedUpdate
 from promptiq.models.user import User, Workspace, WorkspaceMembership
 
 __all__ = [
@@ -45,4 +46,5 @@ __all__ = [
     "ProviderQuotaRecord",
     "QuotaReservationRecord",
     "UsageRecord",
+    "TelegramProcessedUpdate",
 ]

@@ -11,6 +11,8 @@ os.environ["PROMPTIQ_ENV"] = "test"
 os.environ["DATABASE_URL"] = "sqlite+aiosqlite:///:memory:"
 os.environ["MANAGED_INFERENCE_PRIMARY_ROUTE"] = "mock"
 
+from sqlalchemy.pool import StaticPool
+
 from promptiq.api.main import app
 from promptiq.core.database import Base, get_db
 from promptiq.core.security import create_access_token
@@ -21,6 +23,7 @@ from promptiq.services.auth_service import AuthService
 test_engine = create_async_engine(
     "sqlite+aiosqlite:///:memory:",
     connect_args={"check_same_thread": False},
+    poolclass=StaticPool,
 )
 
 TestSessionLocal = async_sessionmaker(

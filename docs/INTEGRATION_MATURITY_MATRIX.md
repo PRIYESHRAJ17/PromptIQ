@@ -36,7 +36,7 @@ All surfaces share the same underlying database schema, Project Constitution, Pr
 | **REST API** | **Level 5 (Production-Grade)** | HTTP/1.1 & HTTP/2 (FastAPI) | JWT Bearer Tokens | Row-level `user_id` / `workspace_id` | `tests/test_api_contracts.py` | Fully operational, 32 endpoints, OpenAPI 3.1.0 schema generated |
 | **MCP Server** | **Level 4 (Near Production)** | stdio, SSE, Streamable HTTP | Local STDIO / Bearer Token | Workspace-scoped session | `tests/test_mcp_server.py`, `tests/test_remote_mcp.py` | Standard MCP 1.0 tools (`start_discovery`, `get_constitution`, `compile_package`, `run_autopsy`) |
 | **Terminal CLI** | **Level 4 (Near Production)** | Native Terminal (Click / Rich) | Config file / Stored JWT | Local user profile binding | `tests/test_cli.py` | Interactive terminal UI, colored tables, progress indicators, full workflow commands |
-| **Telegram Bot**| **Level 4 (Near Production)** | Telegram Bot API (Webhook + Polling) | Signed HMAC Linking Tokens | Telegram Chat ID mapped to PromptIQ User | `tests/test_telegram_bot.py` | Account linking, project status, conversational discovery continuation, durable persistent webhook replay deduplication |
+| **Telegram Bot**| **Level 4 (Near Production)** | Telegram Bot API (Webhook + Polling) | Signed HMAC Linking Tokens | Telegram Chat ID mapped to PromptIQ User | `tests/test_telegram_bot.py`, `tests/test_telegram_dedup_concurrency.py` | Account linking, project status, conversational discovery continuation, database-backed persistent webhook replay deduplication (`TelegramProcessedUpdate`, migration `0002`) |
 | **Python SDK** | **Level 3 (Functional)** | Async HTTP (`httpx`) | API Token / Bearer Token | User session client context | `tests/test_surface_integration_maturity.py` | Typed client, discovery builder, package compiler, evaluation runner |
 
 ---
@@ -81,7 +81,7 @@ All surfaces share the same underlying database schema, Project Constitution, Pr
   3. The backend validates the HMAC token using constant-time comparison and links `telegram_chat_id` to `user_id`.
 - **Webhook Hardening & Durability**:
   - `X-Telegram-Bot-Api-Secret-Token` validation rejects unauthorized HTTP requests.
-  - Durable JSON-persisted sliding-window deduplication (`data/telegram_updates.json`) prevents duplicate processing of retried webhook updates across process restarts.
+  - Database-backed deduplication (`TelegramProcessedUpdate` table + Alembic migration `0002_add_telegram_processed_updates.py`) with nested transaction savepoints catching race-condition `IntegrityError`s and high-speed L1 cache, preventing duplicate processing across concurrent workers, processes, and restarts.
 - **Commands**: `/start`, `/projects`, `/status`, `/review`, `/build`, conversational discovery continuation, `/help`.
 
 ### 4.5 Python Async SDK (Level 3 — Functional)

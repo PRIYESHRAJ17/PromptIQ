@@ -8,10 +8,12 @@ from promptiq.telegram.bot import telegram_bot
 
 
 @pytest.fixture(autouse=True)
-def reset_telegram_dedup():
+async def reset_telegram_dedup(db_session: AsyncSession):
     telegram_bot.clear_deduplication_ledger()
+    await telegram_bot.clear_deduplication_ledger_db(db_session)
     yield
     telegram_bot.clear_deduplication_ledger()
+    await telegram_bot.clear_deduplication_ledger_db(db_session)
 
 
 @pytest.mark.asyncio

@@ -75,3 +75,6 @@ storage/uploads/*
 storage/exports/*
 !storage/uploads/.gitkeep
 !storage/exports/.gitkeep
+
+# Runtime state ledgers
+data/telegram_updates.json

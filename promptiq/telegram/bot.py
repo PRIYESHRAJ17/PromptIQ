@@ -1,13 +1,14 @@
 """Telegram Bot companion client interfacing with PromptIQ backend."""
 
-import json
 import secrets
 import time
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
 import httpx
-from sqlalchemy import select
+from sqlalchemy import delete, select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from promptiq.core.config import settings
@@ -17,6 +18,7 @@ from promptiq.core.security import verify_telegram_link_token
 from promptiq.critic.autopsy import PromptAutopsyEngine
 from promptiq.discovery.adaptive import AdaptiveDiscoveryEngine
 from promptiq.models.discovery import DiscoverySession
+from promptiq.models.telegram import TelegramProcessedUpdate
 from promptiq.research.engine import research_engine
 from promptiq.schemas.critic import AutopsyRequest
 from promptiq.schemas.discovery import InitialIntakeRequest
@@ -39,35 +41,55 @@ class TelegramBotClient:
         self._processed_update_ids: dict[int, float] = {}
         self._dedup_window_seconds: float = 600.0  # 10 minute deduplication window
         self._dedup_path = Path(dedup_path)
-        self._load_persisted_updates()
 
-    def _load_persisted_updates(self) -> None:
-        """Loads processed update IDs from durable persistence if available."""
-        try:
-            if self._dedup_path.exists():
-                with open(self._dedup_path, encoding="utf-8") as f:
-                    raw = json.load(f)
-                    now = time.time()
-                    self._processed_update_ids = {
-                        int(k): float(v) for k, v in raw.items() if now - float(v) <= self._dedup_window_seconds
-                    }
-        except Exception as exc:
-            logger.warning(f"Failed to load telegram deduplication ledger: {exc}")
+    async def is_duplicate_update(
+        self, db: AsyncSession | None, update_id: int | None
+    ) -> bool:
+        """Determines if an update_id has already been processed.
 
-    def _save_persisted_updates(self) -> None:
-        """Saves processed update IDs to durable persistence."""
-        try:
-            self._dedup_path.parent.mkdir(parents=True, exist_ok=True)
-            with open(self._dedup_path, "w", encoding="utf-8") as f:
-                json.dump(self._processed_update_ids, f)
-        except Exception as exc:
-            logger.warning(f"Failed to persist telegram deduplication ledger: {exc}")
-
-    def _is_duplicate_update(self, update_id: int | None) -> bool:
+        Uses atomic database transactions and in-memory cache to guarantee
+        deduplication across multiple worker processes, process restarts,
+        and container instances with zero file corruption risk.
+        """
         if update_id is None:
             return False
+
         now = time.time()
-        # Expire older update IDs
+        # Fast in-memory check
+        if update_id in self._processed_update_ids:
+            return True
+
+        if db is not None:
+            try:
+                # 1. Check existing in database
+                stmt = select(TelegramProcessedUpdate).where(
+                    TelegramProcessedUpdate.update_id == update_id
+                )
+                res = await db.execute(stmt)
+                existing = res.scalar_one_or_none()
+                if existing is not None:
+                    self._processed_update_ids[update_id] = now
+                    return True
+
+                # 2. Atomic insert using savepoint to avoid failing outer transaction
+                async with db.begin_nested():
+                    rec = TelegramProcessedUpdate(
+                        update_id=update_id,
+                        processed_at=datetime.now(UTC),
+                    )
+                    db.add(rec)
+                    await db.flush()
+
+                self._processed_update_ids[update_id] = now
+                return False
+            except IntegrityError:
+                # Another concurrent process or worker inserted this exact update_id
+                self._processed_update_ids[update_id] = now
+                return True
+            except Exception as exc:
+                logger.warning(f"Database deduplication check error: {exc}")
+
+        # Fallback: in-memory cache with expiration window
         expired = [
             uid
             for uid, ts in self._processed_update_ids.items()
@@ -79,17 +101,35 @@ class TelegramBotClient:
         if update_id in self._processed_update_ids:
             return True
         self._processed_update_ids[update_id] = now
-        self._save_persisted_updates()
+        return False
+
+    def _is_duplicate_update(self, update_id: int | None) -> bool:
+        """Synchronous in-memory deduplication check (fallback / backward compatibility)."""
+        if update_id is None:
+            return False
+        now = time.time()
+        if update_id in self._processed_update_ids:
+            return True
+        self._processed_update_ids[update_id] = now
         return False
 
     def clear_deduplication_ledger(self) -> None:
-        """Clears in-memory and persisted deduplication ledger (for testing and maintenance)."""
+        """Clears in-memory and legacy persisted deduplication ledger (for testing and maintenance)."""
         self._processed_update_ids.clear()
         try:
             if self._dedup_path.exists():
                 self._dedup_path.unlink()
         except OSError as exc:
             logger.debug(f"Could not remove deduplication ledger: {exc}")
+
+    async def clear_deduplication_ledger_db(self, db: AsyncSession) -> None:
+        """Clears database deduplication records."""
+        self._processed_update_ids.clear()
+        try:
+            await db.execute(delete(TelegramProcessedUpdate))
+            await db.flush()
+        except Exception as exc:
+            logger.debug(f"Could not clear DB telegram deduplication: {exc}")
 
     async def send_message(
         self, chat_id: str | int, text: str, reply_markup: dict[str, Any] | None = None
@@ -116,7 +156,7 @@ class TelegramBotClient:
     async def handle_update(self, db: AsyncSession, update: dict[str, Any]) -> dict[str, Any]:
         """Processes an incoming Telegram webhook or polled update with duplicate deduplication."""
         update_id = update.get("update_id")
-        if self._is_duplicate_update(update_id):
+        if await self.is_duplicate_update(db, update_id):
             logger.warning(f"Telegram duplicate webhook rejected for update_id={update_id}")
             return {"status": "duplicate_ignored", "update_id": update_id}
 

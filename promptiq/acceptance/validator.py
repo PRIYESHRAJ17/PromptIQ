@@ -6,6 +6,7 @@ and provenance rules. Completely decoupled from the trace generation pipeline.
 """
 
 import json
+import re
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -240,11 +241,16 @@ class AcceptanceTraceValidator:
                 )
 
     def validate_acceptance_criteria(self, scenario: dict[str, Any]) -> None:
-        """Validates that all mandatory criteria are satisfied with verifiable references."""
+        """Validates that all mandatory criteria are satisfied with verifiable, resolvable references."""
         self.checks_count += 1
         sid = scenario.get("scenario_id", "UNKNOWN")
         criteria = scenario.get("acceptance_criteria", [])
         term_state = scenario.get("terminal_state")
+
+        # Collect bound artifacts and hashes for reference resolution
+        bindings = scenario.get("artifact_bindings", [])
+        bound_ids = {b.get("artifact_id") for b in bindings if b.get("artifact_id")}
+        bound_hashes = {b.get("content_hash") for b in bindings if b.get("content_hash")}
 
         for c in criteria:
             cid = c.get("id", "UNKNOWN")
@@ -253,6 +259,7 @@ class AcceptanceTraceValidator:
             evidence = c.get("evidence")
             ref = c.get("evidence_reference")
             data = c.get("verifiable_data")
+            rtype = c.get("evidence_record_type")
 
             # In terminal success or completed_with_warnings, mandatory criteria must be satisfied
             if term_state in ("SUCCESS_FULLY_VERIFIED", "COMPLETED_WITH_WARNINGS") and is_mand and not satisfied:
@@ -280,6 +287,48 @@ class AcceptanceTraceValidator:
                         scenario_id=sid,
                         entity_id=cid,
                     )
+
+                # Grounding & Resolution verification:
+                # 1. Any 64-character SHA-256 hash mentioned in evidence or ref MUST resolve to actual scenario artifact bindings
+                ev_str = f"{evidence} {ref or ''}"
+                claimed_hashes = re.findall(r"\b[0-9a-fA-F]{64}\b", ev_str)
+                for h in claimed_hashes:
+                    if h not in bound_hashes:
+                        self._record_error(
+                            "unresolved_evidence_reference",
+                            f"Mandatory criterion '{cid}' references artifact hash '{h}' which is not in scenario artifact_bindings",
+                            scenario_id=sid,
+                            entity_id=cid,
+                        )
+
+                # 2. If evidence_record_type is 'artifact', the reference MUST exist in scenario artifact bindings
+                if rtype == "artifact" and ref:
+                    if ref not in bound_ids:
+                        self._record_error(
+                            "unresolved_evidence_reference",
+                            f"Mandatory criterion '{cid}' claims artifact reference '{ref}' which is not in scenario artifact_bindings",
+                            scenario_id=sid,
+                            entity_id=cid,
+                        )
+
+                # 3. If verifiable_data specifies an artifact_id or hash, it must resolve
+                if isinstance(data, dict):
+                    v_art_id = data.get("artifact_id")
+                    if v_art_id and v_art_id not in bound_ids:
+                        self._record_error(
+                            "unresolved_evidence_reference",
+                            f"Mandatory criterion '{cid}' verifiable_data artifact_id '{v_art_id}' is not in scenario artifact_bindings",
+                            scenario_id=sid,
+                            entity_id=cid,
+                        )
+                    v_hash = data.get("content_hash")
+                    if v_hash and v_hash not in bound_hashes:
+                        self._record_error(
+                            "unresolved_evidence_reference",
+                            f"Mandatory criterion '{cid}' verifiable_data content_hash '{v_hash}' is not in scenario artifact_bindings",
+                            scenario_id=sid,
+                            entity_id=cid,
+                        )
 
     def validate_autopsy_and_resolution_lifecycle(self, scenario: dict[str, Any]) -> None:
         """Validates lifecycle consistency: immutable initial autopsy, current ledger, and resolution events."""

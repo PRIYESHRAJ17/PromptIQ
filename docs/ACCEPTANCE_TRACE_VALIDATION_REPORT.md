@@ -18,30 +18,35 @@ In strict adherence to the **PromptIQ Acceptance Integrity Invariants**, validat
 | Metric | Result | Status |
 | :--- | :--- | :--- |
 | **Total Scenarios Evaluated** | 10 | Complete (All 10 Task Families) |
-| **Total Rules Evaluated** | 11 Suites (111 Checks) | 100% Executed |
+| **Total Validation Suites** | 12 Suites (1 Root Suite + 11 Scenario Suites) | 100% Executed |
+| **Total Checks Evaluated** | 111 Checks (1 root check + 110 scenario checks) | 100% Executed |
 | **Passed Checks** | 111 | 100% Passed |
 | **Failed Checks / Rule Violations** | 0 | Clean |
 | **Trace Validity Status** | **VALID** | Fully Defensible |
-| **Negative Test Suite Coverage** | 22 Tests (All 21 Failure Modes + 1 Positive) | 100% Passing |
+| **Negative Test Suite Coverage** | 24 Tests (All 23 Failure Modes + 1 Positive) | 100% Passing |
 
 ---
 
-## 2. Independent Verification Methodology
+## 2. Independent Verification Methodology & Reconciliation
 
-The `AcceptanceTraceValidator` executes 11 distinct verification suites across every scenario in the trace file:
+The `AcceptanceTraceValidator` (`promptiq/acceptance/validator.py`) contains **12 distinct validation suites/methods**:
+- **Suite 1 (Root Suite)**: `validate_structure_and_ids` (evaluates top-level trace schema, uniqueness of scenario IDs, runner semantic version).
+- **Suites 2–12 (11 Scenario-Level Suites)**: Evaluated across all 10 task families (11 suites × 10 scenarios = 110 scenario-level checks).
 
-1. **Structure and Schema Integrity**: Verifies valid JSON root, non-empty scenario arrays, semantic runner version (`4.0.0`), and strict uniqueness of all scenario identifiers.
-2. **State Transition Integrity**: Reconstructs the complete state lifecycle against the directed graph `VALID_TRANSITIONS`. Rejects illegal hops, bypassed review gates, or illegal jumps from terminal states.
-3. **Monotonic Step Duration and Chronology**: Verifies ISO 8601 timestamps, validates that `started_at <= completed_at` for every step, and verifies that `duration_ms >= 0`.
-4. **Acceptance Criteria Verification**: Validates that all mandatory criteria are satisfied with verifiable references (content hashes, UUIDs, domain artifact tokens, database records). Rejects ungrounded narrative or empty strings.
-5. **Autopsy and Resolution Lifecycle Integrity**: Enforces strict separation between the immutable historical snapshot (`initial_autopsy`), the active findings ledger (`autopsy_findings`), and the resolution event log (`resolution_events`). Verifies that resolved findings update disposition to `resolved` and `is_resolved=True` while keeping `initial_autopsy` unmodified.
-6. **Bidirectional Warning Consistency**: Enforces exact count and semantic agreement between `warnings: list[str]` and structured `warning_records: list[WarningRecord]`. In `SUCCESS_FULLY_VERIFIED`, enforces zero warnings and zero warning records. In `COMPLETED_WITH_WARNINGS`, enforces non-empty warnings matching open findings.
-7. **Artifact Fingerprint and Storage Integrity**: Re-evaluates all cryptographic artifact bindings. Enforces 64-character SHA-256 hex hashes, strictly positive `byte_size > 0`, and verified `persisted=True` / `retrievable=True` flags.
-8. **Execution Mode Provenance**: Ensures mock models (`promptiq-mock-v1`) or mock routes are never classified as `LIVE` or `LIVE_PROVIDER`.
-9. **Research Source Grounding & Provenance**: Checks that simulated, synthetic, or mock research claims are never classified as `LIVE_SEARCH` or `LIVE_EXTERNAL`.
-10. **Replay & Idempotency Integrity**: Enforces that replayed or cached provider calls cannot be labeled fresh live executions without valid replay provenance identifiers.
-11. **Tenant Isolation & Boundary Enforcement**: Verifies that all registered artifacts, steps, and execution records belong exclusively to the designated scenario tenant and workspace.
-12. **Autopsy Version Targeting**: Verifies that final autopsy evaluations inspect the revised deliverable hash rather than obsolete pre-revision artifact hashes.
+Together, Suite 1 (1 check) and Suites 2–12 (110 checks) execute **111 total evaluated checks**:
+
+1. **Structure and Schema Integrity** (`validate_structure_and_ids`): Verifies valid JSON root, non-empty scenario arrays, semantic runner version (`4.0.0`), and strict uniqueness of all scenario identifiers.
+2. **State Transition Integrity** (`validate_state_transitions`): Reconstructs the complete state lifecycle against the directed graph `VALID_TRANSITIONS`. Rejects illegal hops, bypassed review gates, or illegal jumps from terminal states.
+3. **Monotonic Step Duration and Chronology** (`validate_step_timings`): Verifies ISO 8601 timestamps, validates that `started_at <= completed_at` for every step, and verifies that `duration_ms >= 0`.
+4. **Acceptance Criteria & Evidence Resolution** (`validate_acceptance_criteria`): Validates that all mandatory criteria are satisfied with verifiable references. Enforces that any referenced artifact ID, database ID, or 64-character SHA-256 hash resolves to actual `artifact_bindings` or persisted records; rejects ungrounded narrative, empty strings, and unresolvable phantom hashes.
+5. **Autopsy and Resolution Lifecycle Integrity** (`validate_autopsy_and_resolution_lifecycle`): Enforces strict separation between the immutable historical snapshot (`initial_autopsy`), the active findings ledger (`autopsy_findings`), and the resolution event log (`resolution_events`). Verifies that resolved findings update disposition to `resolved` and `is_resolved=True` while keeping `initial_autopsy` unmodified.
+6. **Bidirectional Warning Consistency** (`validate_warning_consistency`): Enforces exact count and semantic agreement between `warnings: list[str]` and structured `warning_records: list[WarningRecord]`. In `SUCCESS_FULLY_VERIFIED`, enforces zero warnings and zero warning records. In `COMPLETED_WITH_WARNINGS`, enforces non-empty warnings matching open findings.
+7. **Artifact Fingerprint and Storage Integrity** (`validate_artifact_bindings`): Re-evaluates all cryptographic artifact bindings. Enforces 64-character SHA-256 hex hashes, strictly positive `byte_size > 0`, and verified `persisted=True` / `retrievable=True` flags.
+8. **Execution Mode Provenance** (`validate_execution_provenance`): Ensures mock models (`promptiq-mock-v1`) or mock routes are never classified as `LIVE` or `LIVE_PROVIDER`.
+9. **Research Source Grounding & Provenance** (`validate_research_provenance`): Checks that simulated, synthetic, or mock research claims are never classified as `LIVE_SEARCH` or `LIVE_EXTERNAL`.
+10. **Replay & Idempotency Integrity** (`validate_replay_integrity`): Enforces that replayed or cached provider calls cannot be labeled fresh live executions without valid replay provenance identifiers.
+11. **Tenant Isolation & Boundary Enforcement** (`validate_tenant_isolation`): Verifies that all registered artifacts, steps, and execution records belong exclusively to the designated scenario tenant and workspace.
+12. **Autopsy Version Targeting** (`validate_autopsy_version_targeting`): Verifies that final autopsy evaluations inspect the revised deliverable hash rather than obsolete pre-revision artifact hashes.
 
 ---
 
@@ -98,6 +103,8 @@ All 21 failure modes were verified rejected:
 | **19** | Simulated research claim labeled `LIVE_SEARCH` | `test_negative_19_simulated_research_labeled_live` | `validate_research_provenance` | **PASSED** |
 | **20** | Unauthorized cross-tenant artifact access | `test_negative_20_unauthorized_cross_tenant_artifact_access` | `validate_tenant_isolation` | **PASSED** |
 | **21** | Final autopsy evaluated on obsolete pre-revision hash | `test_negative_21_autopsy_on_incorrect_artifact_version` | `validate_autopsy_version_targeting` | **PASSED** |
+| **22** | Unresolvable artifact SHA-256 hash mentioned in criterion evidence | `test_negative_22_unresolvable_artifact_hash_in_evidence` | `validate_acceptance_criteria` | **PASSED** |
+| **23** | Unresolvable artifact ID referenced in criterion evidence | `test_negative_23_unresolvable_artifact_id_in_evidence` | `validate_acceptance_criteria` | **PASSED** |
 
 ---
 

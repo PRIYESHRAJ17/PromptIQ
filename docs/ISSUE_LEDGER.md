@@ -18,6 +18,7 @@
 | **ISSUE-006** | **MEDIUM** | `promptiq/schemas/research.py`, `engine.py` | Research claim support taxonomy incomplete (missing `PARTIALLY_SUPPORTED`, `UNSUPPORTED`, `UNVERIFIED`) | Expand `support_status` literal and update claim evaluation logic | Phase I | **RESOLVED** |
 | **ISSUE-007** | **HIGH** | `promptiq/acceptance/validator.py` (New) | No independent trace validator existed separate from the trace runner generator | Implement `AcceptanceTraceValidator` verifying hashes, persisted DB records, timings, and tenant boundaries | Phase P | **RESOLVED** |
 | **ISSUE-008** | **MEDIUM** | `promptiq/telegram/bot.py` | Telegram webhook deduplication was in-memory only, vulnerable to multi-worker restarts | Implement persistent database-backed or durable storage deduplication for Telegram update IDs | Phase K | **RESOLVED** |
+| **ISSUE-009** | **HIGH** | `promptiq/telegram/`, `models/telegram.py`, `validator.py` | File-backed Telegram deduplication unsafe for multi-worker concurrency; trace criteria allowed unresolvable artifact IDs/hashes | Implement database-backed `TelegramProcessedUpdate` with Alembic migration `0002`, transaction savepoints, and stress tests; add strict evidence reference resolution to validator | Post-Commit Audit | **RESOLVED** |
 
 ---
 
@@ -115,3 +116,21 @@
 - **Root Cause**: Deduplication was stored in an in-memory set.
 - **Required Correction**: Add persistent storage for processed Telegram `update_id`s in the database (or durable SQLite table `telegram_processed_updates`).
 - **Regression Test**: Test verifying that update IDs survive client re-instantiation.
+
+---
+
+### ISSUE-009: File-Backed Telegram Deduplication Concurrency Risk & Unresolvable Trace Evidence
+- **Severity**: HIGH
+- **Impacted Modules**: `promptiq/telegram/bot.py`, `promptiq/models/telegram.py`, `promptiq/acceptance/validator.py`, `alembic/versions/`
+- **Reproduction**: 
+  1. A raw JSON file (`data/telegram_updates.json`) lacks atomic row-level locks, leading to race conditions under concurrent webhook deliveries, file corruption on interrupted writes, and failure across multi-process workers or containerized instances without shared storage.
+  2. Acceptance criteria evidence containing unresolvable artifact IDs or hashes could pass if the validator only performed syntactic regex matching.
+- **Root Cause**:
+  - File-based deduplication is unsuitable for distributed or multi-worker production environments.
+  - Trace validator checked pattern formats (e.g. 64-char hex) but did not cross-reference against actual `artifact_bindings`.
+- **Required Correction**:
+  1. Created SQLAlchemy model `TelegramProcessedUpdate` and Alembic migration `a1b2c3d4e5f6_0002_add_telegram_processed_updates.py`.
+  2. Upgraded `TelegramBotClient.is_duplicate_update` with an atomic nested transaction (`begin_nested()`) catching `IntegrityError` on unique constraint conflict, backed by a high-speed L1 cache.
+  3. Added `tests/test_telegram_dedup_concurrency.py` with 6 stress tests: concurrent duplicate updates, concurrent independent updates, multi-session worker sync, process restart resilience, corrupted file tolerance, and multi-instance shared database synchronization.
+  4. Enhanced `AcceptanceTraceValidator.validate_acceptance_criteria` to resolve all referenced artifact IDs and 64-char hashes against `scenario["artifact_bindings"]`, rejecting unresolvable references. Added negative tests #22 and #23.
+- **Verification Evidence**: 6 concurrency stress tests passing in 0.53s; 24 negative validator tests passing; Alembic migration upgrade/downgrade cycle tested and passing.
