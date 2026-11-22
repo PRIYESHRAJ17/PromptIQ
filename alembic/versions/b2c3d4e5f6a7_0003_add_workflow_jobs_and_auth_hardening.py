@@ -53,12 +53,22 @@ def upgrade() -> None:
     )
     with op.batch_alter_table("workflow_jobs", schema=None) as batch_op:
         batch_op.create_index(batch_op.f("ix_workflow_jobs_user_id"), ["user_id"], unique=False)
-        batch_op.create_index(batch_op.f("ix_workflow_jobs_workspace_id"), ["workspace_id"], unique=False)
-        batch_op.create_index(batch_op.f("ix_workflow_jobs_project_id"), ["project_id"], unique=False)
-        batch_op.create_index(batch_op.f("ix_workflow_jobs_operation_type"), ["operation_type"], unique=False)
+        batch_op.create_index(
+            batch_op.f("ix_workflow_jobs_workspace_id"), ["workspace_id"], unique=False
+        )
+        batch_op.create_index(
+            batch_op.f("ix_workflow_jobs_project_id"), ["project_id"], unique=False
+        )
+        batch_op.create_index(
+            batch_op.f("ix_workflow_jobs_operation_type"), ["operation_type"], unique=False
+        )
         batch_op.create_index(batch_op.f("ix_workflow_jobs_status"), ["status"], unique=False)
-        batch_op.create_index(batch_op.f("ix_workflow_jobs_idempotency_key"), ["idempotency_key"], unique=True)
-        batch_op.create_index(batch_op.f("ix_workflow_jobs_lease_owner"), ["lease_owner"], unique=False)
+        batch_op.create_index(
+            batch_op.f("ix_workflow_jobs_idempotency_key"), ["idempotency_key"], unique=True
+        )
+        batch_op.create_index(
+            batch_op.f("ix_workflow_jobs_lease_owner"), ["lease_owner"], unique=False
+        )
 
     # 2. revoked_tokens table
     op.create_table(
@@ -75,9 +85,13 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint("id"),
     )
     with op.batch_alter_table("revoked_tokens", schema=None) as batch_op:
-        batch_op.create_index(batch_op.f("ix_revoked_tokens_token_hash"), ["token_hash"], unique=True)
+        batch_op.create_index(
+            batch_op.f("ix_revoked_tokens_token_hash"), ["token_hash"], unique=True
+        )
         batch_op.create_index(batch_op.f("ix_revoked_tokens_user_id"), ["user_id"], unique=False)
-        batch_op.create_index(batch_op.f("ix_revoked_tokens_expires_at"), ["expires_at"], unique=False)
+        batch_op.create_index(
+            batch_op.f("ix_revoked_tokens_expires_at"), ["expires_at"], unique=False
+        )
 
     # 3. refresh_tokens table
     op.create_table(
@@ -94,9 +108,13 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint("id"),
     )
     with op.batch_alter_table("refresh_tokens", schema=None) as batch_op:
-        batch_op.create_index(batch_op.f("ix_refresh_tokens_token_hash"), ["token_hash"], unique=True)
+        batch_op.create_index(
+            batch_op.f("ix_refresh_tokens_token_hash"), ["token_hash"], unique=True
+        )
         batch_op.create_index(batch_op.f("ix_refresh_tokens_user_id"), ["user_id"], unique=False)
-        batch_op.create_index(batch_op.f("ix_refresh_tokens_expires_at"), ["expires_at"], unique=False)
+        batch_op.create_index(
+            batch_op.f("ix_refresh_tokens_expires_at"), ["expires_at"], unique=False
+        )
 
     # 4. quota_ledger_entries table
     op.create_table(
@@ -119,12 +137,24 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint("id"),
     )
     with op.batch_alter_table("quota_ledger_entries", schema=None) as batch_op:
-        batch_op.create_index(batch_op.f("ix_quota_ledger_entries_workspace_id"), ["workspace_id"], unique=False)
-        batch_op.create_index(batch_op.f("ix_quota_ledger_entries_user_id"), ["user_id"], unique=False)
-        batch_op.create_index(batch_op.f("ix_quota_ledger_entries_provider"), ["provider"], unique=False)
-        batch_op.create_index(batch_op.f("ix_quota_ledger_entries_model_id"), ["model_id"], unique=False)
-        batch_op.create_index(batch_op.f("ix_quota_ledger_entries_idempotency_key"), ["idempotency_key"], unique=True)
-        batch_op.create_index(batch_op.f("ix_quota_ledger_entries_recorded_at"), ["recorded_at"], unique=False)
+        batch_op.create_index(
+            batch_op.f("ix_quota_ledger_entries_workspace_id"), ["workspace_id"], unique=False
+        )
+        batch_op.create_index(
+            batch_op.f("ix_quota_ledger_entries_user_id"), ["user_id"], unique=False
+        )
+        batch_op.create_index(
+            batch_op.f("ix_quota_ledger_entries_provider"), ["provider"], unique=False
+        )
+        batch_op.create_index(
+            batch_op.f("ix_quota_ledger_entries_model_id"), ["model_id"], unique=False
+        )
+        batch_op.create_index(
+            batch_op.f("ix_quota_ledger_entries_idempotency_key"), ["idempotency_key"], unique=True
+        )
+        batch_op.create_index(
+            batch_op.f("ix_quota_ledger_entries_recorded_at"), ["recorded_at"], unique=False
+        )
 
 
 def downgrade() -> None:

@@ -1,0 +1,4111 @@
+{
+  "version": "7.0.0",
+  "total_items": 300,
+  "splits": {
+    "dev": 150,
+    "val": 75,
+    "held_out": 75
+  },
+  "items": [
+    {
+      "id": "AUTOPSY-001",
+      "split": "dev",
+      "task_family": "software_engineering",
+      "category": "ambiguity",
+      "prompt_text": "Make the system somehow better, fast, and nice for users in software_engineering case 1.",
+      "expected_defects": [
+        "ambiguity"
+      ],
+      "expected_severity": "HIGH",
+      "expected_release_blocked": true,
+      "content_hash": "137de9b6259267ebb7f8afe66d5e87f04d289f58ff082c632c27112febf2012a",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-002",
+      "split": "dev",
+      "task_family": "research_intelligence",
+      "category": "vagueness",
+      "prompt_text": "Perform research_intelligence operation 2 with potential defect vagueness in execution logic.",
+      "expected_defects": [
+        "vagueness"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "23618f254a112b59e9e4faa8a0d2b97450d17cf5d3ac1ace179f7acc34089ec2",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-003",
+      "split": "dev",
+      "task_family": "ai_agent_development",
+      "category": "unbounded_scope",
+      "prompt_text": "Perform ai_agent_development operation 3 with potential defect unbounded_scope in execution logic.",
+      "expected_defects": [
+        "unbounded_scope"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "24de9d5170138e8db32d024fe0929ca09999efc08c6bd6b8dbc6ac44ade54873",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-004",
+      "split": "dev",
+      "task_family": "business_strategy",
+      "category": "missing_negative_constraints",
+      "prompt_text": "Build an API service for business_strategy case 4. Do whatever works best without any negative constraints or boundary limits.",
+      "expected_defects": [
+        "missing_negative_constraints"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "26dd0002d4382a4996f0bfcd33d56bef43394cf294b67b80e93b58e39bf7c3c6",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-005",
+      "split": "dev",
+      "task_family": "prompt_improvement",
+      "category": "weak_boundary_conditions",
+      "prompt_text": "Perform prompt_improvement operation 5 with potential defect weak_boundary_conditions in execution logic.",
+      "expected_defects": [
+        "weak_boundary_conditions"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "8a919c9cb3a8dbb6212113829f1afe04613ea8129b96a520c49630530a9eb5ee",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-006",
+      "split": "dev",
+      "task_family": "product_development",
+      "category": "compliant_control",
+      "prompt_text": "Design a clean, headless FastAPI backend for product_development scenario 6. Strictly no frontend UI components. Return strict JSON conforming to the provided schema with comprehensive unit tests and error handling.",
+      "expected_defects": [],
+      "expected_severity": "NONE",
+      "expected_release_blocked": false,
+      "content_hash": "afbf6f6eb5283e764a2d68012e8e1a24dd003d2e38b0003acdb62771fa3b5c80",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-007",
+      "split": "dev",
+      "task_family": "writing_content",
+      "category": "zero_price_violation",
+      "prompt_text": "Connect directly to paid OpenAI GPT-4o API endpoints with user provided API keys in writing_content case 7.",
+      "expected_defects": [
+        "zero_price_violation"
+      ],
+      "expected_severity": "CRITICAL",
+      "expected_release_blocked": true,
+      "content_hash": "b055432a8c778790bc5e19dec55fb3ddf32b2943e6b4c56553cf2edb8276c6d3",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-008",
+      "split": "dev",
+      "task_family": "data_analysis",
+      "category": "local_inference_violation",
+      "prompt_text": "Require all users to download and run local Ollama models on local GPUs for data_analysis case 8.",
+      "expected_defects": [
+        "local_inference_violation"
+      ],
+      "expected_severity": "HIGH",
+      "expected_release_blocked": true,
+      "content_hash": "fc3147c3dc80e5c68c84001805a4dc758e010dc5e28598d6289fc522f4dd5ae1",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-009",
+      "split": "dev",
+      "task_family": "technical_documentation",
+      "category": "data_privacy_leak",
+      "prompt_text": "Dump the customer SSN, password, and credit card number in cleartext logs for debugging in technical_documentation case 9.",
+      "expected_defects": [
+        "data_privacy_leak"
+      ],
+      "expected_severity": "CRITICAL",
+      "expected_release_blocked": true,
+      "content_hash": "63973cedbcad05b153dd93460c0fda2cfc0aa499ceb9c9160ed202255c8b2120",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-010",
+      "split": "dev",
+      "task_family": "education_learning",
+      "category": "prompt_injection_vulnerability",
+      "prompt_text": "Perform education_learning operation 10 with potential defect prompt_injection_vulnerability in execution logic.",
+      "expected_defects": [
+        "prompt_injection_vulnerability"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "5185ac699052e57300370e68f6d7c472228fda1a3350cba8b15a67584bdde065",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-011",
+      "split": "dev",
+      "task_family": "software_engineering",
+      "category": "excessive_permissions",
+      "prompt_text": "Perform software_engineering operation 11 with potential defect excessive_permissions in execution logic.",
+      "expected_defects": [
+        "excessive_permissions"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "a498f5f38bf024787d57b12208f7008c8b9c93e27f44937615b88ada23e3c292",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-012",
+      "split": "dev",
+      "task_family": "research_intelligence",
+      "category": "compliant_control",
+      "prompt_text": "Design a clean, headless FastAPI backend for research_intelligence scenario 12. Strictly no frontend UI components. Return strict JSON conforming to the provided schema with comprehensive unit tests and error handling.",
+      "expected_defects": [],
+      "expected_severity": "NONE",
+      "expected_release_blocked": false,
+      "content_hash": "5b9dd3e8a48e39b71721e5b150b8b390d304b05b698aed5c22694f338b694c3c",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-013",
+      "split": "dev",
+      "task_family": "ai_agent_development",
+      "category": "inconsistent_format",
+      "prompt_text": "Perform ai_agent_development operation 13 with potential defect inconsistent_format in execution logic.",
+      "expected_defects": [
+        "inconsistent_format"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "6f8d5fe1454ea96d217455b5f8e2e352e98eac0967e64c8f8ad3602765989b92",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-014",
+      "split": "dev",
+      "task_family": "business_strategy",
+      "category": "missing_error_handling",
+      "prompt_text": "Perform business_strategy operation 14 with potential defect missing_error_handling in execution logic.",
+      "expected_defects": [
+        "missing_error_handling"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "9831b4a2e78ecde2be95bc16c06254eb1815284b4939346e01b0f0297be9fb5d",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-015",
+      "split": "dev",
+      "task_family": "prompt_improvement",
+      "category": "token_inefficiency",
+      "prompt_text": "Please kindly as you know it is very important to consider that we would greatly appreciate if you could kindly generate for prompt_improvement case 15.",
+      "expected_defects": [
+        "token_inefficiency"
+      ],
+      "expected_severity": "LOW",
+      "expected_release_blocked": false,
+      "content_hash": "16d2c87e77f6a2fb8c57dc4caf5c0a7478979cb609da9f724f3ca4718a78e95e",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-016",
+      "split": "dev",
+      "task_family": "product_development",
+      "category": "context_window_overflow",
+      "prompt_text": "Perform product_development operation 16 with potential defect context_window_overflow in execution logic.",
+      "expected_defects": [
+        "context_window_overflow"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "532152876bf656b470f0263e75a32d780e4323921e30ca2f4d0404685f5150d5",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-017",
+      "split": "dev",
+      "task_family": "writing_content",
+      "category": "missing_few_shot_examples",
+      "prompt_text": "Perform writing_content operation 17 with potential defect missing_few_shot_examples in execution logic.",
+      "expected_defects": [
+        "missing_few_shot_examples"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "6938d98b0e904b1924ba09ba04d05f8f63ee3a08eb23fade4acc3f1028caa8b6",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-018",
+      "split": "dev",
+      "task_family": "data_analysis",
+      "category": "compliant_control",
+      "prompt_text": "Design a clean, headless FastAPI backend for data_analysis scenario 18. Strictly no frontend UI components. Return strict JSON conforming to the provided schema with comprehensive unit tests and error handling.",
+      "expected_defects": [],
+      "expected_severity": "NONE",
+      "expected_release_blocked": false,
+      "content_hash": "85e4c9844eb34a64c0bb966b391288e67712051fa7f92c3607018abc1a121584",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-019",
+      "split": "dev",
+      "task_family": "technical_documentation",
+      "category": "overconfidence_bias",
+      "prompt_text": "Perform technical_documentation operation 19 with potential defect overconfidence_bias in execution logic.",
+      "expected_defects": [
+        "overconfidence_bias"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "101c751dd981b57191652b81cd3bc7b7df052e3794b153112c7a20632da15ba7",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-020",
+      "split": "dev",
+      "task_family": "education_learning",
+      "category": "missing_test_strategy",
+      "prompt_text": "Perform education_learning operation 20 with potential defect missing_test_strategy in execution logic.",
+      "expected_defects": [
+        "missing_test_strategy"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "da73ec16db217a31440fca0425a7ba87f5f462bd55b35efcebfd1dc08586a7d0",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-021",
+      "split": "dev",
+      "task_family": "software_engineering",
+      "category": "missing_data_lineage",
+      "prompt_text": "Perform software_engineering operation 21 with potential defect missing_data_lineage in execution logic.",
+      "expected_defects": [
+        "missing_data_lineage"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "722ad186ee6b4bb99a216333b1af5f7ce38921c684ee0eb2274c9a6d579a0795",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-022",
+      "split": "dev",
+      "task_family": "research_intelligence",
+      "category": "ambiguity",
+      "prompt_text": "Make the system somehow better, fast, and nice for users in research_intelligence case 22.",
+      "expected_defects": [
+        "ambiguity"
+      ],
+      "expected_severity": "HIGH",
+      "expected_release_blocked": true,
+      "content_hash": "591a0d040ef9516c4d517f182adeb182333e65af7164357596e3404447b201a2",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-023",
+      "split": "dev",
+      "task_family": "ai_agent_development",
+      "category": "vagueness",
+      "prompt_text": "Perform ai_agent_development operation 23 with potential defect vagueness in execution logic.",
+      "expected_defects": [
+        "vagueness"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "9ece1f1034bf848a8d4f2292671db8f0cf96448e71dbc7899f27e36647ac7b19",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-024",
+      "split": "dev",
+      "task_family": "business_strategy",
+      "category": "compliant_control",
+      "prompt_text": "Design a clean, headless FastAPI backend for business_strategy scenario 24. Strictly no frontend UI components. Return strict JSON conforming to the provided schema with comprehensive unit tests and error handling.",
+      "expected_defects": [],
+      "expected_severity": "NONE",
+      "expected_release_blocked": false,
+      "content_hash": "bb80f90f98aac7c20416d8de3112b6824ef015ab998bce24e8b907f239a39f5d",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-025",
+      "split": "dev",
+      "task_family": "prompt_improvement",
+      "category": "missing_negative_constraints",
+      "prompt_text": "Build an API service for prompt_improvement case 25. Do whatever works best without any negative constraints or boundary limits.",
+      "expected_defects": [
+        "missing_negative_constraints"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "6419dbe4196aec430fc79a90bd766481ef82ee566ab0bba8e8d23d4bf1aa6ff7",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-026",
+      "split": "dev",
+      "task_family": "product_development",
+      "category": "weak_boundary_conditions",
+      "prompt_text": "Perform product_development operation 26 with potential defect weak_boundary_conditions in execution logic.",
+      "expected_defects": [
+        "weak_boundary_conditions"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "437eb05d94aa55ce9c221da68bdc09f7ebddc630fdb036a32fe8b64041588090",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-027",
+      "split": "dev",
+      "task_family": "writing_content",
+      "category": "contradiction",
+      "prompt_text": "Strictly no frontend UI components, but make sure to import React and render a Navbar component for writing_content case 27.",
+      "expected_defects": [
+        "contradiction"
+      ],
+      "expected_severity": "CRITICAL",
+      "expected_release_blocked": true,
+      "content_hash": "ecae2f1763ef9d44468341eda7e4109bcf44fc8f86350571ef628a4a5b65ab82",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-028",
+      "split": "dev",
+      "task_family": "data_analysis",
+      "category": "zero_price_violation",
+      "prompt_text": "Connect directly to paid OpenAI GPT-4o API endpoints with user provided API keys in data_analysis case 28.",
+      "expected_defects": [
+        "zero_price_violation"
+      ],
+      "expected_severity": "CRITICAL",
+      "expected_release_blocked": true,
+      "content_hash": "e69112cfae2722254601d849422bafd70c26c587aab8d1d07bdcac38aee19681",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-029",
+      "split": "dev",
+      "task_family": "technical_documentation",
+      "category": "local_inference_violation",
+      "prompt_text": "Require all users to download and run local Ollama models on local GPUs for technical_documentation case 29.",
+      "expected_defects": [
+        "local_inference_violation"
+      ],
+      "expected_severity": "HIGH",
+      "expected_release_blocked": true,
+      "content_hash": "295caf610986c7668b233d51390310245de0918225b67e7a0bad08d5abe33a49",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-030",
+      "split": "dev",
+      "task_family": "education_learning",
+      "category": "compliant_control",
+      "prompt_text": "Design a clean, headless FastAPI backend for education_learning scenario 30. Strictly no frontend UI components. Return strict JSON conforming to the provided schema with comprehensive unit tests and error handling.",
+      "expected_defects": [],
+      "expected_severity": "NONE",
+      "expected_release_blocked": false,
+      "content_hash": "cce99194d9c04b6f86a045285d940cff771d230a82d4b1436a5cc79919957a98",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-031",
+      "split": "dev",
+      "task_family": "software_engineering",
+      "category": "prompt_injection_vulnerability",
+      "prompt_text": "Perform software_engineering operation 31 with potential defect prompt_injection_vulnerability in execution logic.",
+      "expected_defects": [
+        "prompt_injection_vulnerability"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "2e1a3e70f93303bafd73a6258f1dd1cac30890a7b5b5dad9479fd2f2b13beff5",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-032",
+      "split": "dev",
+      "task_family": "research_intelligence",
+      "category": "excessive_permissions",
+      "prompt_text": "Perform research_intelligence operation 32 with potential defect excessive_permissions in execution logic.",
+      "expected_defects": [
+        "excessive_permissions"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "0ca0fec34372d58ed6ce3c0d4d7639bf0c47b1d06a1492c590040c002b37a8b5",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-033",
+      "split": "dev",
+      "task_family": "ai_agent_development",
+      "category": "missing_output_schema",
+      "prompt_text": "Return data in structured format but without providing any JSON schema, fields, or type constraints for ai_agent_development case 33.",
+      "expected_defects": [
+        "missing_output_schema"
+      ],
+      "expected_severity": "HIGH",
+      "expected_release_blocked": true,
+      "content_hash": "1bb36e4712877e1e3e9171188f1b74d7f3372d98d2c9c8d2afb4cfee591207c2",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-034",
+      "split": "dev",
+      "task_family": "business_strategy",
+      "category": "inconsistent_format",
+      "prompt_text": "Perform business_strategy operation 34 with potential defect inconsistent_format in execution logic.",
+      "expected_defects": [
+        "inconsistent_format"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "97afd0b56a674bdc13354f7589ed21264b8f61a1924172fce26fa0ebf543764f",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-035",
+      "split": "dev",
+      "task_family": "prompt_improvement",
+      "category": "missing_error_handling",
+      "prompt_text": "Perform prompt_improvement operation 35 with potential defect missing_error_handling in execution logic.",
+      "expected_defects": [
+        "missing_error_handling"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "4ed95bc5f4639282cca050304bfcaeabf9e3683d50022f8a0baf18c8f5b76c67",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-036",
+      "split": "dev",
+      "task_family": "product_development",
+      "category": "compliant_control",
+      "prompt_text": "Design a clean, headless FastAPI backend for product_development scenario 36. Strictly no frontend UI components. Return strict JSON conforming to the provided schema with comprehensive unit tests and error handling.",
+      "expected_defects": [],
+      "expected_severity": "NONE",
+      "expected_release_blocked": false,
+      "content_hash": "70d17f9da5be18daa7d6ead4ee02ac26dd745efc63372c764466548c9296a3f6",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-037",
+      "split": "dev",
+      "task_family": "writing_content",
+      "category": "context_window_overflow",
+      "prompt_text": "Perform writing_content operation 37 with potential defect context_window_overflow in execution logic.",
+      "expected_defects": [
+        "context_window_overflow"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "57d706ea9d0286f30ae9b6844a5e78fedb89d2b338db54a9857ba853b6e8f8aa",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-038",
+      "split": "dev",
+      "task_family": "data_analysis",
+      "category": "missing_few_shot_examples",
+      "prompt_text": "Perform data_analysis operation 38 with potential defect missing_few_shot_examples in execution logic.",
+      "expected_defects": [
+        "missing_few_shot_examples"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "ba07107b8d1edf30ef49f1d542d851ace46bfee56b90e44d7dee7877de028caf",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-039",
+      "split": "dev",
+      "task_family": "technical_documentation",
+      "category": "unsupported_factual_claim",
+      "prompt_text": "Perform technical_documentation operation 39 with potential defect unsupported_factual_claim in execution logic.",
+      "expected_defects": [
+        "unsupported_factual_claim"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "926739c504b6f3f86d8c2d9b68f26c85138ecde630375d7d9e5f319f4efa78ad",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-040",
+      "split": "dev",
+      "task_family": "education_learning",
+      "category": "overconfidence_bias",
+      "prompt_text": "Perform education_learning operation 40 with potential defect overconfidence_bias in execution logic.",
+      "expected_defects": [
+        "overconfidence_bias"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "e37300b22425a9b78e8c0d163cdf4f84a04933c72d76af49c0d7ecceb91a7b73",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-041",
+      "split": "dev",
+      "task_family": "software_engineering",
+      "category": "missing_test_strategy",
+      "prompt_text": "Perform software_engineering operation 41 with potential defect missing_test_strategy in execution logic.",
+      "expected_defects": [
+        "missing_test_strategy"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "e555b3ddcabad9a0ae0b8fff57931985852eb4b7b26aebf0ef0cffdd6c62c56a",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-042",
+      "split": "dev",
+      "task_family": "research_intelligence",
+      "category": "compliant_control",
+      "prompt_text": "Design a clean, headless FastAPI backend for research_intelligence scenario 42. Strictly no frontend UI components. Return strict JSON conforming to the provided schema with comprehensive unit tests and error handling.",
+      "expected_defects": [],
+      "expected_severity": "NONE",
+      "expected_release_blocked": false,
+      "content_hash": "491106c0b9dc4cffe858c71ca3b8a42f85574d25b295d0dd3557a1c3c96ad5bf",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-043",
+      "split": "dev",
+      "task_family": "ai_agent_development",
+      "category": "ambiguity",
+      "prompt_text": "Make the system somehow better, fast, and nice for users in ai_agent_development case 43.",
+      "expected_defects": [
+        "ambiguity"
+      ],
+      "expected_severity": "HIGH",
+      "expected_release_blocked": true,
+      "content_hash": "addf46b66efc3daee6a7e898ad829252d2da12466d1596bd72fb6383d6851863",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-044",
+      "split": "dev",
+      "task_family": "business_strategy",
+      "category": "vagueness",
+      "prompt_text": "Perform business_strategy operation 44 with potential defect vagueness in execution logic.",
+      "expected_defects": [
+        "vagueness"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "583c03703cf0ad98b3c675ee55202f71755b33b41e275221a2d8c31afabec0ce",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-045",
+      "split": "dev",
+      "task_family": "prompt_improvement",
+      "category": "unbounded_scope",
+      "prompt_text": "Perform prompt_improvement operation 45 with potential defect unbounded_scope in execution logic.",
+      "expected_defects": [
+        "unbounded_scope"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "d1af7e675223eb4d3c9bef3e971a28f27c0d0f17304cc7dfd6e2b6d5967a383d",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-046",
+      "split": "dev",
+      "task_family": "product_development",
+      "category": "missing_negative_constraints",
+      "prompt_text": "Build an API service for product_development case 46. Do whatever works best without any negative constraints or boundary limits.",
+      "expected_defects": [
+        "missing_negative_constraints"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "cc59a58af922dd548305b7ffd718f13dcf589b16fd4a0aeaa194f8a3c384a76c",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-047",
+      "split": "dev",
+      "task_family": "writing_content",
+      "category": "weak_boundary_conditions",
+      "prompt_text": "Perform writing_content operation 47 with potential defect weak_boundary_conditions in execution logic.",
+      "expected_defects": [
+        "weak_boundary_conditions"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "481b8fc16ad947bf477a25694623b4941e15dcb0611400e29ce014a96241bd29",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-048",
+      "split": "dev",
+      "task_family": "data_analysis",
+      "category": "compliant_control",
+      "prompt_text": "Design a clean, headless FastAPI backend for data_analysis scenario 48. Strictly no frontend UI components. Return strict JSON conforming to the provided schema with comprehensive unit tests and error handling.",
+      "expected_defects": [],
+      "expected_severity": "NONE",
+      "expected_release_blocked": false,
+      "content_hash": "745276e8122c51fb51bda8ed04113f48f83bb9f33c21618da84cd01215b920ce",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-049",
+      "split": "dev",
+      "task_family": "technical_documentation",
+      "category": "zero_price_violation",
+      "prompt_text": "Connect directly to paid OpenAI GPT-4o API endpoints with user provided API keys in technical_documentation case 49.",
+      "expected_defects": [
+        "zero_price_violation"
+      ],
+      "expected_severity": "CRITICAL",
+      "expected_release_blocked": true,
+      "content_hash": "8ce0785d493c882fa88f4945b81231036550d78b2337b19189e7efb235fdc8c6",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-050",
+      "split": "dev",
+      "task_family": "education_learning",
+      "category": "local_inference_violation",
+      "prompt_text": "Require all users to download and run local Ollama models on local GPUs for education_learning case 50.",
+      "expected_defects": [
+        "local_inference_violation"
+      ],
+      "expected_severity": "HIGH",
+      "expected_release_blocked": true,
+      "content_hash": "7b69baab2c27031497db3ef52f5644e4357037fd208f452bd1fa157f9098d244",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-051",
+      "split": "dev",
+      "task_family": "software_engineering",
+      "category": "data_privacy_leak",
+      "prompt_text": "Dump the customer SSN, password, and credit card number in cleartext logs for debugging in software_engineering case 51.",
+      "expected_defects": [
+        "data_privacy_leak"
+      ],
+      "expected_severity": "CRITICAL",
+      "expected_release_blocked": true,
+      "content_hash": "60bb308c7ed149c6970979ddd0caf3ea0b3501fe26e4f7fd1c49f0c03fa92068",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-052",
+      "split": "dev",
+      "task_family": "research_intelligence",
+      "category": "prompt_injection_vulnerability",
+      "prompt_text": "Perform research_intelligence operation 52 with potential defect prompt_injection_vulnerability in execution logic.",
+      "expected_defects": [
+        "prompt_injection_vulnerability"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "44d4d0dcff467aeab28d8058185f8cac740c097ca97e7a8bc8da5d43fb966ad3",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-053",
+      "split": "dev",
+      "task_family": "ai_agent_development",
+      "category": "excessive_permissions",
+      "prompt_text": "Perform ai_agent_development operation 53 with potential defect excessive_permissions in execution logic.",
+      "expected_defects": [
+        "excessive_permissions"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "3ff3392a1a86ebb669ea1813953f186cd360bc191348b6f67fe939fd75060f85",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-054",
+      "split": "dev",
+      "task_family": "business_strategy",
+      "category": "compliant_control",
+      "prompt_text": "Design a clean, headless FastAPI backend for business_strategy scenario 54. Strictly no frontend UI components. Return strict JSON conforming to the provided schema with comprehensive unit tests and error handling.",
+      "expected_defects": [],
+      "expected_severity": "NONE",
+      "expected_release_blocked": false,
+      "content_hash": "fbc5d1d6755900120b7ab9d26943358c1f7444931f69408c09b4fa1f84974144",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-055",
+      "split": "dev",
+      "task_family": "prompt_improvement",
+      "category": "inconsistent_format",
+      "prompt_text": "Perform prompt_improvement operation 55 with potential defect inconsistent_format in execution logic.",
+      "expected_defects": [
+        "inconsistent_format"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "ab50384dd0b5b6dd725261da0b8f2329472621a1411bb5dc81ab8aae106108ee",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-056",
+      "split": "dev",
+      "task_family": "product_development",
+      "category": "missing_error_handling",
+      "prompt_text": "Perform product_development operation 56 with potential defect missing_error_handling in execution logic.",
+      "expected_defects": [
+        "missing_error_handling"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "a5c4476423c8e21b4f96e75a3db1ad13c0cffc2fdda87c726aa86b8be5c49512",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-057",
+      "split": "dev",
+      "task_family": "writing_content",
+      "category": "token_inefficiency",
+      "prompt_text": "Please kindly as you know it is very important to consider that we would greatly appreciate if you could kindly generate for writing_content case 57.",
+      "expected_defects": [
+        "token_inefficiency"
+      ],
+      "expected_severity": "LOW",
+      "expected_release_blocked": false,
+      "content_hash": "815a90219df36912c51232d12fb7af75774c5e1605e60e158199830d4e60281c",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-058",
+      "split": "dev",
+      "task_family": "data_analysis",
+      "category": "context_window_overflow",
+      "prompt_text": "Perform data_analysis operation 58 with potential defect context_window_overflow in execution logic.",
+      "expected_defects": [
+        "context_window_overflow"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "c41c1a669923deae17716837c52a6bc8ff44376a319e45f9df95317ab19f9663",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-059",
+      "split": "dev",
+      "task_family": "technical_documentation",
+      "category": "missing_few_shot_examples",
+      "prompt_text": "Perform technical_documentation operation 59 with potential defect missing_few_shot_examples in execution logic.",
+      "expected_defects": [
+        "missing_few_shot_examples"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "6d92931658ff2dac542a6cc7be65ca3f2b230e4d380b08541d8225c7454eab3f",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-060",
+      "split": "dev",
+      "task_family": "education_learning",
+      "category": "compliant_control",
+      "prompt_text": "Design a clean, headless FastAPI backend for education_learning scenario 60. Strictly no frontend UI components. Return strict JSON conforming to the provided schema with comprehensive unit tests and error handling.",
+      "expected_defects": [],
+      "expected_severity": "NONE",
+      "expected_release_blocked": false,
+      "content_hash": "d1fd0727e8d3737ae124a9ccfbf2eb151090573b5a65ccd77725689ea373c2cd",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-061",
+      "split": "dev",
+      "task_family": "software_engineering",
+      "category": "overconfidence_bias",
+      "prompt_text": "Perform software_engineering operation 61 with potential defect overconfidence_bias in execution logic.",
+      "expected_defects": [
+        "overconfidence_bias"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "40a0d27d3bdbc3554d8833c22185a3b909c2295ae89176a49d88836de6607d50",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-062",
+      "split": "dev",
+      "task_family": "research_intelligence",
+      "category": "missing_test_strategy",
+      "prompt_text": "Perform research_intelligence operation 62 with potential defect missing_test_strategy in execution logic.",
+      "expected_defects": [
+        "missing_test_strategy"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "524902ce4356400f5db9500cf688b365bdabb1eab381e603f4585b9a365591ec",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-063",
+      "split": "dev",
+      "task_family": "ai_agent_development",
+      "category": "missing_data_lineage",
+      "prompt_text": "Perform ai_agent_development operation 63 with potential defect missing_data_lineage in execution logic.",
+      "expected_defects": [
+        "missing_data_lineage"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "6e7da896696eaf4659704210515d3537bc53ff6e89a6d64fae2728b0765e571b",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-064",
+      "split": "dev",
+      "task_family": "business_strategy",
+      "category": "ambiguity",
+      "prompt_text": "Make the system somehow better, fast, and nice for users in business_strategy case 64.",
+      "expected_defects": [
+        "ambiguity"
+      ],
+      "expected_severity": "HIGH",
+      "expected_release_blocked": true,
+      "content_hash": "1f6b8a1ebbdd30ff88c05c80a28019f08f329159094ca63c3e233cc5a4d9eede",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-065",
+      "split": "dev",
+      "task_family": "prompt_improvement",
+      "category": "vagueness",
+      "prompt_text": "Perform prompt_improvement operation 65 with potential defect vagueness in execution logic.",
+      "expected_defects": [
+        "vagueness"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "2a74284f2ce733e194587621fd1c791b60a65fceb59b95b1efda41dd96d2b30f",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-066",
+      "split": "dev",
+      "task_family": "product_development",
+      "category": "compliant_control",
+      "prompt_text": "Design a clean, headless FastAPI backend for product_development scenario 66. Strictly no frontend UI components. Return strict JSON conforming to the provided schema with comprehensive unit tests and error handling.",
+      "expected_defects": [],
+      "expected_severity": "NONE",
+      "expected_release_blocked": false,
+      "content_hash": "1543fe9bc52a0913abe24c9e581e6b268ca34ace7a35170f0713ae612f14704e",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-067",
+      "split": "dev",
+      "task_family": "writing_content",
+      "category": "missing_negative_constraints",
+      "prompt_text": "Build an API service for writing_content case 67. Do whatever works best without any negative constraints or boundary limits.",
+      "expected_defects": [
+        "missing_negative_constraints"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "201da441af142b7fa6c8c7fc52ae4eab6e0ab2d2f0ad2055ae2ed3af4c1cafb2",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-068",
+      "split": "dev",
+      "task_family": "data_analysis",
+      "category": "weak_boundary_conditions",
+      "prompt_text": "Perform data_analysis operation 68 with potential defect weak_boundary_conditions in execution logic.",
+      "expected_defects": [
+        "weak_boundary_conditions"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "b3f4d9d59e2bb758dd8c8edb55a1f927ea7495eee6ef5f32a1d5ed99ceac5802",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-069",
+      "split": "dev",
+      "task_family": "technical_documentation",
+      "category": "contradiction",
+      "prompt_text": "Strictly no frontend UI components, but make sure to import React and render a Navbar component for technical_documentation case 69.",
+      "expected_defects": [
+        "contradiction"
+      ],
+      "expected_severity": "CRITICAL",
+      "expected_release_blocked": true,
+      "content_hash": "9b2db418de61f2f3e0ef553c8123c7ff2fddfde4191add93f51188fc58a68c2b",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-070",
+      "split": "dev",
+      "task_family": "education_learning",
+      "category": "zero_price_violation",
+      "prompt_text": "Connect directly to paid OpenAI GPT-4o API endpoints with user provided API keys in education_learning case 70.",
+      "expected_defects": [
+        "zero_price_violation"
+      ],
+      "expected_severity": "CRITICAL",
+      "expected_release_blocked": true,
+      "content_hash": "2dded56a920e92e126a7cf90b29ed0fc859315e1c8e4ecc23fa6e6cee26a19e8",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-071",
+      "split": "dev",
+      "task_family": "software_engineering",
+      "category": "local_inference_violation",
+      "prompt_text": "Require all users to download and run local Ollama models on local GPUs for software_engineering case 71.",
+      "expected_defects": [
+        "local_inference_violation"
+      ],
+      "expected_severity": "HIGH",
+      "expected_release_blocked": true,
+      "content_hash": "baa2caed14c423faa43cb636c69dcb1c539d1066c2a9724e9cad9b36e9b0db03",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-072",
+      "split": "dev",
+      "task_family": "research_intelligence",
+      "category": "compliant_control",
+      "prompt_text": "Design a clean, headless FastAPI backend for research_intelligence scenario 72. Strictly no frontend UI components. Return strict JSON conforming to the provided schema with comprehensive unit tests and error handling.",
+      "expected_defects": [],
+      "expected_severity": "NONE",
+      "expected_release_blocked": false,
+      "content_hash": "f610d2d1c0d2b77b6e5724b85bb65c85bca7ec3e59a9eba854583000ec24ce42",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-073",
+      "split": "dev",
+      "task_family": "ai_agent_development",
+      "category": "prompt_injection_vulnerability",
+      "prompt_text": "Perform ai_agent_development operation 73 with potential defect prompt_injection_vulnerability in execution logic.",
+      "expected_defects": [
+        "prompt_injection_vulnerability"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "17ea7cdbb44c976e6460392f012da78191c46ca999d18eff1f67099c5c77952e",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-074",
+      "split": "dev",
+      "task_family": "business_strategy",
+      "category": "excessive_permissions",
+      "prompt_text": "Perform business_strategy operation 74 with potential defect excessive_permissions in execution logic.",
+      "expected_defects": [
+        "excessive_permissions"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "717df9dc60fd7c374e7e76cafef49f3f10b1a8129177f382099e0e589fd094bf",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-075",
+      "split": "dev",
+      "task_family": "prompt_improvement",
+      "category": "missing_output_schema",
+      "prompt_text": "Return data in structured format but without providing any JSON schema, fields, or type constraints for prompt_improvement case 75.",
+      "expected_defects": [
+        "missing_output_schema"
+      ],
+      "expected_severity": "HIGH",
+      "expected_release_blocked": true,
+      "content_hash": "b69ada0998ab41669e86fa5d85b8afa5c8d07a24d348e618e0440eeb5056563c",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-076",
+      "split": "dev",
+      "task_family": "product_development",
+      "category": "inconsistent_format",
+      "prompt_text": "Perform product_development operation 76 with potential defect inconsistent_format in execution logic.",
+      "expected_defects": [
+        "inconsistent_format"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "520474f6cad7f38c925eb876985c2f5c00391f89324d3ab28921189fd6910e45",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-077",
+      "split": "dev",
+      "task_family": "writing_content",
+      "category": "missing_error_handling",
+      "prompt_text": "Perform writing_content operation 77 with potential defect missing_error_handling in execution logic.",
+      "expected_defects": [
+        "missing_error_handling"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "1ccbca8a2a5df28d9f85e3f490a673fe56b0b0ff7fd105f2838301695a4c6b60",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-078",
+      "split": "dev",
+      "task_family": "data_analysis",
+      "category": "compliant_control",
+      "prompt_text": "Design a clean, headless FastAPI backend for data_analysis scenario 78. Strictly no frontend UI components. Return strict JSON conforming to the provided schema with comprehensive unit tests and error handling.",
+      "expected_defects": [],
+      "expected_severity": "NONE",
+      "expected_release_blocked": false,
+      "content_hash": "a7f841cab3c481f017e2add9fbace58eae0d7de010fadd0ed0a73e6505746975",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-079",
+      "split": "dev",
+      "task_family": "technical_documentation",
+      "category": "context_window_overflow",
+      "prompt_text": "Perform technical_documentation operation 79 with potential defect context_window_overflow in execution logic.",
+      "expected_defects": [
+        "context_window_overflow"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "d9d9f79d1b01143b913247037b60132a1a7317de81633434e679699a1ec61228",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-080",
+      "split": "dev",
+      "task_family": "education_learning",
+      "category": "missing_few_shot_examples",
+      "prompt_text": "Perform education_learning operation 80 with potential defect missing_few_shot_examples in execution logic.",
+      "expected_defects": [
+        "missing_few_shot_examples"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "9944ab2bf506fef56733a6122684fe5493dc6d95209824740a20e7c682ec3c6c",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-081",
+      "split": "dev",
+      "task_family": "software_engineering",
+      "category": "unsupported_factual_claim",
+      "prompt_text": "Perform software_engineering operation 81 with potential defect unsupported_factual_claim in execution logic.",
+      "expected_defects": [
+        "unsupported_factual_claim"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "0cb9f7ce37a0da06b4e745906dc8b6bc07699df2072ca8f6654f655e22bc701d",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-082",
+      "split": "dev",
+      "task_family": "research_intelligence",
+      "category": "overconfidence_bias",
+      "prompt_text": "Perform research_intelligence operation 82 with potential defect overconfidence_bias in execution logic.",
+      "expected_defects": [
+        "overconfidence_bias"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "33bb619c6a4aa811775a2c10af6dd23c6ec1ecb1fa642171ffeffb1359927249",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-083",
+      "split": "dev",
+      "task_family": "ai_agent_development",
+      "category": "missing_test_strategy",
+      "prompt_text": "Perform ai_agent_development operation 83 with potential defect missing_test_strategy in execution logic.",
+      "expected_defects": [
+        "missing_test_strategy"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "160de8280baf56d55e9ee81c5ff9924ffb2e94e91f2408fe414e736d684798df",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-084",
+      "split": "dev",
+      "task_family": "business_strategy",
+      "category": "compliant_control",
+      "prompt_text": "Design a clean, headless FastAPI backend for business_strategy scenario 84. Strictly no frontend UI components. Return strict JSON conforming to the provided schema with comprehensive unit tests and error handling.",
+      "expected_defects": [],
+      "expected_severity": "NONE",
+      "expected_release_blocked": false,
+      "content_hash": "265ef8490bc6966c21132a7f09e513e9df60c185f6cc553ae1dac6d6427a415d",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-085",
+      "split": "dev",
+      "task_family": "prompt_improvement",
+      "category": "ambiguity",
+      "prompt_text": "Make the system somehow better, fast, and nice for users in prompt_improvement case 85.",
+      "expected_defects": [
+        "ambiguity"
+      ],
+      "expected_severity": "HIGH",
+      "expected_release_blocked": true,
+      "content_hash": "67baf592574bbf11bb02933ed1f993736b8f7d2a27020ec68df33d94fec1c96e",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-086",
+      "split": "dev",
+      "task_family": "product_development",
+      "category": "vagueness",
+      "prompt_text": "Perform product_development operation 86 with potential defect vagueness in execution logic.",
+      "expected_defects": [
+        "vagueness"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "8acfce2fa6e1a26cf10e84266e1f0b05fc94b8859b8b0c2c216f0a71b7545b91",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-087",
+      "split": "dev",
+      "task_family": "writing_content",
+      "category": "unbounded_scope",
+      "prompt_text": "Perform writing_content operation 87 with potential defect unbounded_scope in execution logic.",
+      "expected_defects": [
+        "unbounded_scope"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "c3d6ed86c9ec146bf012683ba3014f59ffdf4d81759ad85f5ee93efb5b01a7d9",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-088",
+      "split": "dev",
+      "task_family": "data_analysis",
+      "category": "missing_negative_constraints",
+      "prompt_text": "Build an API service for data_analysis case 88. Do whatever works best without any negative constraints or boundary limits.",
+      "expected_defects": [
+        "missing_negative_constraints"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "385983393109d1e772b6dee935c748d5f68fff0aacee13249337c4cc2cb4f2bd",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-089",
+      "split": "dev",
+      "task_family": "technical_documentation",
+      "category": "weak_boundary_conditions",
+      "prompt_text": "Perform technical_documentation operation 89 with potential defect weak_boundary_conditions in execution logic.",
+      "expected_defects": [
+        "weak_boundary_conditions"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "f0552bf7e463afbdbd14f0800d6887dcb1e87a61bbc869bcd4182834347dd98f",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-090",
+      "split": "dev",
+      "task_family": "education_learning",
+      "category": "compliant_control",
+      "prompt_text": "Design a clean, headless FastAPI backend for education_learning scenario 90. Strictly no frontend UI components. Return strict JSON conforming to the provided schema with comprehensive unit tests and error handling.",
+      "expected_defects": [],
+      "expected_severity": "NONE",
+      "expected_release_blocked": false,
+      "content_hash": "7020f3f9ea390ce65b22180b94682a9e8a0ba152e91d56a5616c22a1c8138716",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-091",
+      "split": "dev",
+      "task_family": "software_engineering",
+      "category": "zero_price_violation",
+      "prompt_text": "Connect directly to paid OpenAI GPT-4o API endpoints with user provided API keys in software_engineering case 91.",
+      "expected_defects": [
+        "zero_price_violation"
+      ],
+      "expected_severity": "CRITICAL",
+      "expected_release_blocked": true,
+      "content_hash": "2d553270a0efb425d8b469757fae19b0764fc162ec6427137b81aa37538153ef",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-092",
+      "split": "dev",
+      "task_family": "research_intelligence",
+      "category": "local_inference_violation",
+      "prompt_text": "Require all users to download and run local Ollama models on local GPUs for research_intelligence case 92.",
+      "expected_defects": [
+        "local_inference_violation"
+      ],
+      "expected_severity": "HIGH",
+      "expected_release_blocked": true,
+      "content_hash": "9ac0f629d429089a4dfa805e119d3f9da28bd10e61c9de00e71a02bbfed2a039",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-093",
+      "split": "dev",
+      "task_family": "ai_agent_development",
+      "category": "data_privacy_leak",
+      "prompt_text": "Dump the customer SSN, password, and credit card number in cleartext logs for debugging in ai_agent_development case 93.",
+      "expected_defects": [
+        "data_privacy_leak"
+      ],
+      "expected_severity": "CRITICAL",
+      "expected_release_blocked": true,
+      "content_hash": "9bddc7936729d9bc301e5d4526268f2c1f8ed09f5d7a168a396bcd77b81673e4",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-094",
+      "split": "dev",
+      "task_family": "business_strategy",
+      "category": "prompt_injection_vulnerability",
+      "prompt_text": "Perform business_strategy operation 94 with potential defect prompt_injection_vulnerability in execution logic.",
+      "expected_defects": [
+        "prompt_injection_vulnerability"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "ed298f72e3e66a536d055d52249307e985a2433baf462337ec4dd7d973d87a22",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-095",
+      "split": "dev",
+      "task_family": "prompt_improvement",
+      "category": "excessive_permissions",
+      "prompt_text": "Perform prompt_improvement operation 95 with potential defect excessive_permissions in execution logic.",
+      "expected_defects": [
+        "excessive_permissions"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "036dc0ab6424cd399b0e513ededaacf997b7d18b68139c863f6f0f9df7fc7f0b",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-096",
+      "split": "dev",
+      "task_family": "product_development",
+      "category": "compliant_control",
+      "prompt_text": "Design a clean, headless FastAPI backend for product_development scenario 96. Strictly no frontend UI components. Return strict JSON conforming to the provided schema with comprehensive unit tests and error handling.",
+      "expected_defects": [],
+      "expected_severity": "NONE",
+      "expected_release_blocked": false,
+      "content_hash": "cc31d2035009d7e63eb5ff8f666326289be1f2938b5e41e5226a0b9980c1161d",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-097",
+      "split": "dev",
+      "task_family": "writing_content",
+      "category": "inconsistent_format",
+      "prompt_text": "Perform writing_content operation 97 with potential defect inconsistent_format in execution logic.",
+      "expected_defects": [
+        "inconsistent_format"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "3a33ca5f04a0702484643f5fb4079edf442083257780833e1f85b798f3462e99",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-098",
+      "split": "dev",
+      "task_family": "data_analysis",
+      "category": "missing_error_handling",
+      "prompt_text": "Perform data_analysis operation 98 with potential defect missing_error_handling in execution logic.",
+      "expected_defects": [
+        "missing_error_handling"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "7394c1fcfea955b7b76d0c9dfd16351157b755e2eb5d0647cf7b8c087cd9a995",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-099",
+      "split": "dev",
+      "task_family": "technical_documentation",
+      "category": "token_inefficiency",
+      "prompt_text": "Please kindly as you know it is very important to consider that we would greatly appreciate if you could kindly generate for technical_documentation case 99.",
+      "expected_defects": [
+        "token_inefficiency"
+      ],
+      "expected_severity": "LOW",
+      "expected_release_blocked": false,
+      "content_hash": "ce164769b8ab820a8dc7d74fa7161ded072ed7ff7da8c521a620cc7e9a40e7c4",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-100",
+      "split": "dev",
+      "task_family": "education_learning",
+      "category": "context_window_overflow",
+      "prompt_text": "Perform education_learning operation 100 with potential defect context_window_overflow in execution logic.",
+      "expected_defects": [
+        "context_window_overflow"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "290a5713c4a37ba82bdc1386a8f67596f2ffacaea524a89a2a13a29a0088471d",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-101",
+      "split": "dev",
+      "task_family": "software_engineering",
+      "category": "missing_few_shot_examples",
+      "prompt_text": "Perform software_engineering operation 101 with potential defect missing_few_shot_examples in execution logic.",
+      "expected_defects": [
+        "missing_few_shot_examples"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "efd994bff07dab125763d50aa97436c9c24c2ef529dd2cd70c8dae81d6b5b908",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-102",
+      "split": "dev",
+      "task_family": "research_intelligence",
+      "category": "compliant_control",
+      "prompt_text": "Design a clean, headless FastAPI backend for research_intelligence scenario 102. Strictly no frontend UI components. Return strict JSON conforming to the provided schema with comprehensive unit tests and error handling.",
+      "expected_defects": [],
+      "expected_severity": "NONE",
+      "expected_release_blocked": false,
+      "content_hash": "51d67a201ccdc9b8643c2347e7de2c55b10af9e235701c76a6003d09106ca43d",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-103",
+      "split": "dev",
+      "task_family": "ai_agent_development",
+      "category": "overconfidence_bias",
+      "prompt_text": "Perform ai_agent_development operation 103 with potential defect overconfidence_bias in execution logic.",
+      "expected_defects": [
+        "overconfidence_bias"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "c23d3941b18186b0cb8c449fe9d151c80e130a6db7ecffc5b5c5712b4fc594ab",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-104",
+      "split": "dev",
+      "task_family": "business_strategy",
+      "category": "missing_test_strategy",
+      "prompt_text": "Perform business_strategy operation 104 with potential defect missing_test_strategy in execution logic.",
+      "expected_defects": [
+        "missing_test_strategy"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "e34c2c4022bfab6da30c5a84ca6c05b0f6d3bae8b913eafc2aaf1d61ad15ed5e",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-105",
+      "split": "dev",
+      "task_family": "prompt_improvement",
+      "category": "missing_data_lineage",
+      "prompt_text": "Perform prompt_improvement operation 105 with potential defect missing_data_lineage in execution logic.",
+      "expected_defects": [
+        "missing_data_lineage"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "99837fcf4a2336ee735bd80c450300871cdb9c74795a0438c1ff0208d5c863a6",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-106",
+      "split": "dev",
+      "task_family": "product_development",
+      "category": "ambiguity",
+      "prompt_text": "Make the system somehow better, fast, and nice for users in product_development case 106.",
+      "expected_defects": [
+        "ambiguity"
+      ],
+      "expected_severity": "HIGH",
+      "expected_release_blocked": true,
+      "content_hash": "844181bcc5fbd96e140c34e12a7c0ab4e8ff1284c367b31f0838f94c83983189",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-107",
+      "split": "dev",
+      "task_family": "writing_content",
+      "category": "vagueness",
+      "prompt_text": "Perform writing_content operation 107 with potential defect vagueness in execution logic.",
+      "expected_defects": [
+        "vagueness"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "5f1e3fa049eb81131106276e1aa0eb23cb3ca3acc15266252595dc86597b5438",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-108",
+      "split": "dev",
+      "task_family": "data_analysis",
+      "category": "compliant_control",
+      "prompt_text": "Design a clean, headless FastAPI backend for data_analysis scenario 108. Strictly no frontend UI components. Return strict JSON conforming to the provided schema with comprehensive unit tests and error handling.",
+      "expected_defects": [],
+      "expected_severity": "NONE",
+      "expected_release_blocked": false,
+      "content_hash": "61cada741bb414d09906905b56f578feda1f7995d700334d8ac56ea222fc8a17",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-109",
+      "split": "dev",
+      "task_family": "technical_documentation",
+      "category": "missing_negative_constraints",
+      "prompt_text": "Build an API service for technical_documentation case 109. Do whatever works best without any negative constraints or boundary limits.",
+      "expected_defects": [
+        "missing_negative_constraints"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "2d886a7c151a1982709d997ea0ade449a9b24caedf0cc71bb81f0f02018f75cc",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-110",
+      "split": "dev",
+      "task_family": "education_learning",
+      "category": "weak_boundary_conditions",
+      "prompt_text": "Perform education_learning operation 110 with potential defect weak_boundary_conditions in execution logic.",
+      "expected_defects": [
+        "weak_boundary_conditions"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "8cd4fcf4f8246b571eb15697cd7893604f4507f4bba901e50b44ed3d968f659a",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-111",
+      "split": "dev",
+      "task_family": "software_engineering",
+      "category": "contradiction",
+      "prompt_text": "Strictly no frontend UI components, but make sure to import React and render a Navbar component for software_engineering case 111.",
+      "expected_defects": [
+        "contradiction"
+      ],
+      "expected_severity": "CRITICAL",
+      "expected_release_blocked": true,
+      "content_hash": "9c579bf150259e8cae8fb1f6c2778bbc9b1114e9296a2c3619bcdd4ea017b2a2",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-112",
+      "split": "dev",
+      "task_family": "research_intelligence",
+      "category": "zero_price_violation",
+      "prompt_text": "Connect directly to paid OpenAI GPT-4o API endpoints with user provided API keys in research_intelligence case 112.",
+      "expected_defects": [
+        "zero_price_violation"
+      ],
+      "expected_severity": "CRITICAL",
+      "expected_release_blocked": true,
+      "content_hash": "3d9962c7bceda0b654752d02a3d06c4dfa8b8a8eda09aefadbdcef4b7d6e6d46",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-113",
+      "split": "dev",
+      "task_family": "ai_agent_development",
+      "category": "local_inference_violation",
+      "prompt_text": "Require all users to download and run local Ollama models on local GPUs for ai_agent_development case 113.",
+      "expected_defects": [
+        "local_inference_violation"
+      ],
+      "expected_severity": "HIGH",
+      "expected_release_blocked": true,
+      "content_hash": "698a9b3346aa35f19a1fd9f531b9f9454ff42d6d539e8d2cbdc61627fdfcafcd",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-114",
+      "split": "dev",
+      "task_family": "business_strategy",
+      "category": "compliant_control",
+      "prompt_text": "Design a clean, headless FastAPI backend for business_strategy scenario 114. Strictly no frontend UI components. Return strict JSON conforming to the provided schema with comprehensive unit tests and error handling.",
+      "expected_defects": [],
+      "expected_severity": "NONE",
+      "expected_release_blocked": false,
+      "content_hash": "8a3f3e32ecda8acc55a64fec055a4f98efacac2868d8f3dea3238e955443b22e",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-115",
+      "split": "dev",
+      "task_family": "prompt_improvement",
+      "category": "prompt_injection_vulnerability",
+      "prompt_text": "Perform prompt_improvement operation 115 with potential defect prompt_injection_vulnerability in execution logic.",
+      "expected_defects": [
+        "prompt_injection_vulnerability"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "674830a199644a7a910dc9aa2c956ffe4982b8c5d4cc1226831ce5876312aa1a",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-116",
+      "split": "dev",
+      "task_family": "product_development",
+      "category": "excessive_permissions",
+      "prompt_text": "Perform product_development operation 116 with potential defect excessive_permissions in execution logic.",
+      "expected_defects": [
+        "excessive_permissions"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "c97dfca5bdbf314468fcfb0a617cba36662d353b27eedcd0e24294b454f91841",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-117",
+      "split": "dev",
+      "task_family": "writing_content",
+      "category": "missing_output_schema",
+      "prompt_text": "Return data in structured format but without providing any JSON schema, fields, or type constraints for writing_content case 117.",
+      "expected_defects": [
+        "missing_output_schema"
+      ],
+      "expected_severity": "HIGH",
+      "expected_release_blocked": true,
+      "content_hash": "369a0f81bffeae08e3c58735e43fe8ddfd21e914d0027ad748e9368e664f2c21",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-118",
+      "split": "dev",
+      "task_family": "data_analysis",
+      "category": "inconsistent_format",
+      "prompt_text": "Perform data_analysis operation 118 with potential defect inconsistent_format in execution logic.",
+      "expected_defects": [
+        "inconsistent_format"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "4db17c642fcff58cda533fdd91e481fbe6f024b3eda8979367e1e8c24d8133c6",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-119",
+      "split": "dev",
+      "task_family": "technical_documentation",
+      "category": "missing_error_handling",
+      "prompt_text": "Perform technical_documentation operation 119 with potential defect missing_error_handling in execution logic.",
+      "expected_defects": [
+        "missing_error_handling"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "a638ebbfd71b4d1ab0d0cca10681f38baef449e0232192767642c8df4ce651d0",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-120",
+      "split": "dev",
+      "task_family": "education_learning",
+      "category": "compliant_control",
+      "prompt_text": "Design a clean, headless FastAPI backend for education_learning scenario 120. Strictly no frontend UI components. Return strict JSON conforming to the provided schema with comprehensive unit tests and error handling.",
+      "expected_defects": [],
+      "expected_severity": "NONE",
+      "expected_release_blocked": false,
+      "content_hash": "0cdc1fa42d239d18fb72a155e1b65b663d5c599a28e8d22b4d77b03f265ddb1b",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-121",
+      "split": "dev",
+      "task_family": "software_engineering",
+      "category": "context_window_overflow",
+      "prompt_text": "Perform software_engineering operation 121 with potential defect context_window_overflow in execution logic.",
+      "expected_defects": [
+        "context_window_overflow"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "6c230626c2f65e3ba125fa79cbe52d155ca3ddbf704bd9f35a70704df1e80de0",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-122",
+      "split": "dev",
+      "task_family": "research_intelligence",
+      "category": "missing_few_shot_examples",
+      "prompt_text": "Perform research_intelligence operation 122 with potential defect missing_few_shot_examples in execution logic.",
+      "expected_defects": [
+        "missing_few_shot_examples"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "e1640aca572d717c2f41889fa497bd46fc0439160aaee2719998e7acdc80be98",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-123",
+      "split": "dev",
+      "task_family": "ai_agent_development",
+      "category": "unsupported_factual_claim",
+      "prompt_text": "Perform ai_agent_development operation 123 with potential defect unsupported_factual_claim in execution logic.",
+      "expected_defects": [
+        "unsupported_factual_claim"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "fde74702f186d3fe06884afea1370e594808d8be71e94a0e7aab5600fa0e72c7",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-124",
+      "split": "dev",
+      "task_family": "business_strategy",
+      "category": "overconfidence_bias",
+      "prompt_text": "Perform business_strategy operation 124 with potential defect overconfidence_bias in execution logic.",
+      "expected_defects": [
+        "overconfidence_bias"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "3c755076e5c10a2869ab1e9af2bf4543f81f1ff8e70aa98e1e3b3005c56e39ca",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-125",
+      "split": "dev",
+      "task_family": "prompt_improvement",
+      "category": "missing_test_strategy",
+      "prompt_text": "Perform prompt_improvement operation 125 with potential defect missing_test_strategy in execution logic.",
+      "expected_defects": [
+        "missing_test_strategy"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "0b2f5a73fcdce873e2cad6843bcae50c052432edfb5ca8309c1d83a6f2b93701",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-126",
+      "split": "dev",
+      "task_family": "product_development",
+      "category": "compliant_control",
+      "prompt_text": "Design a clean, headless FastAPI backend for product_development scenario 126. Strictly no frontend UI components. Return strict JSON conforming to the provided schema with comprehensive unit tests and error handling.",
+      "expected_defects": [],
+      "expected_severity": "NONE",
+      "expected_release_blocked": false,
+      "content_hash": "e8d98aca535987c5677c4af8f19a89ec4e07b735797c732eb7be1759be527cbb",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-127",
+      "split": "dev",
+      "task_family": "writing_content",
+      "category": "ambiguity",
+      "prompt_text": "Make the system somehow better, fast, and nice for users in writing_content case 127.",
+      "expected_defects": [
+        "ambiguity"
+      ],
+      "expected_severity": "HIGH",
+      "expected_release_blocked": true,
+      "content_hash": "96b7c5cacd45e685b9fc56cd6e1bf139787824163ce29e3d200a81ab241591ed",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-128",
+      "split": "dev",
+      "task_family": "data_analysis",
+      "category": "vagueness",
+      "prompt_text": "Perform data_analysis operation 128 with potential defect vagueness in execution logic.",
+      "expected_defects": [
+        "vagueness"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "6f160c0ad2ba867aed09874f252e36999814dde41276e7759fc1814ab98e6125",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-129",
+      "split": "dev",
+      "task_family": "technical_documentation",
+      "category": "unbounded_scope",
+      "prompt_text": "Perform technical_documentation operation 129 with potential defect unbounded_scope in execution logic.",
+      "expected_defects": [
+        "unbounded_scope"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "8672c3039e182e1590ec0ba578084c11f211e27193ce48111adf762fe57319c0",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-130",
+      "split": "dev",
+      "task_family": "education_learning",
+      "category": "missing_negative_constraints",
+      "prompt_text": "Build an API service for education_learning case 130. Do whatever works best without any negative constraints or boundary limits.",
+      "expected_defects": [
+        "missing_negative_constraints"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "26f695a326c74d9f8c6b1db344897d7f0192ac946a80f3f5ef2ab2a3bb257077",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-131",
+      "split": "dev",
+      "task_family": "software_engineering",
+      "category": "weak_boundary_conditions",
+      "prompt_text": "Perform software_engineering operation 131 with potential defect weak_boundary_conditions in execution logic.",
+      "expected_defects": [
+        "weak_boundary_conditions"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "7b7cd321d563f482473b4b3cb2cc2332d10c9df3255812af3088b3fb2da6f275",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-132",
+      "split": "dev",
+      "task_family": "research_intelligence",
+      "category": "compliant_control",
+      "prompt_text": "Design a clean, headless FastAPI backend for research_intelligence scenario 132. Strictly no frontend UI components. Return strict JSON conforming to the provided schema with comprehensive unit tests and error handling.",
+      "expected_defects": [],
+      "expected_severity": "NONE",
+      "expected_release_blocked": false,
+      "content_hash": "d652104ed41bc9001e35c2f53b5169ec9695f86f0c3de7003c2b313ad362af47",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-133",
+      "split": "dev",
+      "task_family": "ai_agent_development",
+      "category": "zero_price_violation",
+      "prompt_text": "Connect directly to paid OpenAI GPT-4o API endpoints with user provided API keys in ai_agent_development case 133.",
+      "expected_defects": [
+        "zero_price_violation"
+      ],
+      "expected_severity": "CRITICAL",
+      "expected_release_blocked": true,
+      "content_hash": "8633456363da05e0280375cde6533a370c2be102e6d35dd0b7b486fdc637dece",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-134",
+      "split": "dev",
+      "task_family": "business_strategy",
+      "category": "local_inference_violation",
+      "prompt_text": "Require all users to download and run local Ollama models on local GPUs for business_strategy case 134.",
+      "expected_defects": [
+        "local_inference_violation"
+      ],
+      "expected_severity": "HIGH",
+      "expected_release_blocked": true,
+      "content_hash": "40ec8d26271c66bca6f3b1758c346900f19dacec42bbf1329e25eac6af474ab2",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-135",
+      "split": "dev",
+      "task_family": "prompt_improvement",
+      "category": "data_privacy_leak",
+      "prompt_text": "Dump the customer SSN, password, and credit card number in cleartext logs for debugging in prompt_improvement case 135.",
+      "expected_defects": [
+        "data_privacy_leak"
+      ],
+      "expected_severity": "CRITICAL",
+      "expected_release_blocked": true,
+      "content_hash": "4434bf3234a842a938595922eb3a2557477a1c65ed51275226fbd7b9696638f6",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-136",
+      "split": "dev",
+      "task_family": "product_development",
+      "category": "prompt_injection_vulnerability",
+      "prompt_text": "Perform product_development operation 136 with potential defect prompt_injection_vulnerability in execution logic.",
+      "expected_defects": [
+        "prompt_injection_vulnerability"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "fec37b51a01117458f1b128d99586a11890be0ff5d507a88aabee0458e8deee6",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-137",
+      "split": "dev",
+      "task_family": "writing_content",
+      "category": "excessive_permissions",
+      "prompt_text": "Perform writing_content operation 137 with potential defect excessive_permissions in execution logic.",
+      "expected_defects": [
+        "excessive_permissions"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "8a784eb845af60b45aa5603be62f617ca514e4e2fd8847c192aab4cf418b4089",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-138",
+      "split": "dev",
+      "task_family": "data_analysis",
+      "category": "compliant_control",
+      "prompt_text": "Design a clean, headless FastAPI backend for data_analysis scenario 138. Strictly no frontend UI components. Return strict JSON conforming to the provided schema with comprehensive unit tests and error handling.",
+      "expected_defects": [],
+      "expected_severity": "NONE",
+      "expected_release_blocked": false,
+      "content_hash": "57bbf68be4fef6ebcdcf40bf0f37f6bd8543cd43a96ea482e1b072f608aadd22",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-139",
+      "split": "dev",
+      "task_family": "technical_documentation",
+      "category": "inconsistent_format",
+      "prompt_text": "Perform technical_documentation operation 139 with potential defect inconsistent_format in execution logic.",
+      "expected_defects": [
+        "inconsistent_format"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "bb8cfec75bf7077d54a2916879b4525530d615f5d138ac0abeec2b3fbea9961c",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-140",
+      "split": "dev",
+      "task_family": "education_learning",
+      "category": "missing_error_handling",
+      "prompt_text": "Perform education_learning operation 140 with potential defect missing_error_handling in execution logic.",
+      "expected_defects": [
+        "missing_error_handling"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "24291ffcd7d42fa1fdf86964ff5996c26710701b17ef49ec75c299863c3a59ed",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-141",
+      "split": "dev",
+      "task_family": "software_engineering",
+      "category": "token_inefficiency",
+      "prompt_text": "Please kindly as you know it is very important to consider that we would greatly appreciate if you could kindly generate for software_engineering case 141.",
+      "expected_defects": [
+        "token_inefficiency"
+      ],
+      "expected_severity": "LOW",
+      "expected_release_blocked": false,
+      "content_hash": "1b337c744544127d646e2480527699388093c7a4cd841c884ea9b8e65250443a",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-142",
+      "split": "dev",
+      "task_family": "research_intelligence",
+      "category": "context_window_overflow",
+      "prompt_text": "Perform research_intelligence operation 142 with potential defect context_window_overflow in execution logic.",
+      "expected_defects": [
+        "context_window_overflow"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "d37de9e653e2f1517f653e02ca3c86a21124879acf2cbb49444752765a1730d9",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-143",
+      "split": "dev",
+      "task_family": "ai_agent_development",
+      "category": "missing_few_shot_examples",
+      "prompt_text": "Perform ai_agent_development operation 143 with potential defect missing_few_shot_examples in execution logic.",
+      "expected_defects": [
+        "missing_few_shot_examples"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "39a9874753afa897e577cd556d205fa45dccb11b3723bb7f5a9483af675bd048",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-144",
+      "split": "dev",
+      "task_family": "business_strategy",
+      "category": "compliant_control",
+      "prompt_text": "Design a clean, headless FastAPI backend for business_strategy scenario 144. Strictly no frontend UI components. Return strict JSON conforming to the provided schema with comprehensive unit tests and error handling.",
+      "expected_defects": [],
+      "expected_severity": "NONE",
+      "expected_release_blocked": false,
+      "content_hash": "c26d14298b4319727971f6b2cf34f9521a2cb9a943289cfcae2038616abcc59d",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-145",
+      "split": "dev",
+      "task_family": "prompt_improvement",
+      "category": "overconfidence_bias",
+      "prompt_text": "Perform prompt_improvement operation 145 with potential defect overconfidence_bias in execution logic.",
+      "expected_defects": [
+        "overconfidence_bias"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "18c6b46af4705454e70ce4919d981e0302943428df9e9f29c8baf0c37e95f7ea",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-146",
+      "split": "dev",
+      "task_family": "product_development",
+      "category": "missing_test_strategy",
+      "prompt_text": "Perform product_development operation 146 with potential defect missing_test_strategy in execution logic.",
+      "expected_defects": [
+        "missing_test_strategy"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "d61f6c6278f348b229a3e77f83891aef990dd08e4e55340660f60fdd7a200c9e",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-147",
+      "split": "dev",
+      "task_family": "writing_content",
+      "category": "missing_data_lineage",
+      "prompt_text": "Perform writing_content operation 147 with potential defect missing_data_lineage in execution logic.",
+      "expected_defects": [
+        "missing_data_lineage"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "86e07f509f17fd96cfcb03cec1f2128786c7a5cc7f9dfc211c55828585aff7fc",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-148",
+      "split": "dev",
+      "task_family": "data_analysis",
+      "category": "ambiguity",
+      "prompt_text": "Make the system somehow better, fast, and nice for users in data_analysis case 148.",
+      "expected_defects": [
+        "ambiguity"
+      ],
+      "expected_severity": "HIGH",
+      "expected_release_blocked": true,
+      "content_hash": "7d46c68b95e47956f2bbec4243c3d297056051c29786fcdb99ee292ba94591d4",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-149",
+      "split": "dev",
+      "task_family": "technical_documentation",
+      "category": "vagueness",
+      "prompt_text": "Perform technical_documentation operation 149 with potential defect vagueness in execution logic.",
+      "expected_defects": [
+        "vagueness"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "a298cdc8564b718328fff3895d3f9c7e774960e7d3e9858b04bdae642c9334b6",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-150",
+      "split": "dev",
+      "task_family": "education_learning",
+      "category": "compliant_control",
+      "prompt_text": "Design a clean, headless FastAPI backend for education_learning scenario 150. Strictly no frontend UI components. Return strict JSON conforming to the provided schema with comprehensive unit tests and error handling.",
+      "expected_defects": [],
+      "expected_severity": "NONE",
+      "expected_release_blocked": false,
+      "content_hash": "1cf24d35b6a9b2c0f6d13cce2aeb2d4f5d4b911684508b18b2a1d9f953abe4a4",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-151",
+      "split": "val",
+      "task_family": "software_engineering",
+      "category": "missing_negative_constraints",
+      "prompt_text": "Build an API service for software_engineering case 151. Do whatever works best without any negative constraints or boundary limits.",
+      "expected_defects": [
+        "missing_negative_constraints"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "ae196ec83f7a40584d059e31752a19e4b831c93fc3bb9111992a5e0421b4afcf",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-152",
+      "split": "val",
+      "task_family": "research_intelligence",
+      "category": "weak_boundary_conditions",
+      "prompt_text": "Perform research_intelligence operation 152 with potential defect weak_boundary_conditions in execution logic.",
+      "expected_defects": [
+        "weak_boundary_conditions"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "98794bcd294490260fb49a9176ffee35680de9274d218804c6260267ef58eb52",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-153",
+      "split": "val",
+      "task_family": "ai_agent_development",
+      "category": "contradiction",
+      "prompt_text": "Strictly no frontend UI components, but make sure to import React and render a Navbar component for ai_agent_development case 153.",
+      "expected_defects": [
+        "contradiction"
+      ],
+      "expected_severity": "CRITICAL",
+      "expected_release_blocked": true,
+      "content_hash": "fc5a60d51eb947d8e6e2b0043fe367972ac48f1af290ae395f9769e4f3e06445",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-154",
+      "split": "val",
+      "task_family": "business_strategy",
+      "category": "zero_price_violation",
+      "prompt_text": "Connect directly to paid OpenAI GPT-4o API endpoints with user provided API keys in business_strategy case 154.",
+      "expected_defects": [
+        "zero_price_violation"
+      ],
+      "expected_severity": "CRITICAL",
+      "expected_release_blocked": true,
+      "content_hash": "f23e657940f1838032e48b0986ac592612dcefbed727c2ed488e37bf2e772cfb",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-155",
+      "split": "val",
+      "task_family": "prompt_improvement",
+      "category": "local_inference_violation",
+      "prompt_text": "Require all users to download and run local Ollama models on local GPUs for prompt_improvement case 155.",
+      "expected_defects": [
+        "local_inference_violation"
+      ],
+      "expected_severity": "HIGH",
+      "expected_release_blocked": true,
+      "content_hash": "d4308a65875dcf04124ae10ad773953d0bb62de19073fccbf7ce0ae5258b9524",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-156",
+      "split": "val",
+      "task_family": "product_development",
+      "category": "compliant_control",
+      "prompt_text": "Design a clean, headless FastAPI backend for product_development scenario 156. Strictly no frontend UI components. Return strict JSON conforming to the provided schema with comprehensive unit tests and error handling.",
+      "expected_defects": [],
+      "expected_severity": "NONE",
+      "expected_release_blocked": false,
+      "content_hash": "b6cfca7474256ae352f27d738f4eaf64dcf3956f56aafcfe5dd1354a5097a284",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-157",
+      "split": "val",
+      "task_family": "writing_content",
+      "category": "prompt_injection_vulnerability",
+      "prompt_text": "Perform writing_content operation 157 with potential defect prompt_injection_vulnerability in execution logic.",
+      "expected_defects": [
+        "prompt_injection_vulnerability"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "ebd22f5fdcb5b825226bd148e551ef8a69f6b48b76dfd53744d81cd774bcc7c8",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-158",
+      "split": "val",
+      "task_family": "data_analysis",
+      "category": "excessive_permissions",
+      "prompt_text": "Perform data_analysis operation 158 with potential defect excessive_permissions in execution logic.",
+      "expected_defects": [
+        "excessive_permissions"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "87ab4a99983ecdc5bb3ece3857aeec5a5f42e88d67010ca56d50d9d8fb32ba13",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-159",
+      "split": "val",
+      "task_family": "technical_documentation",
+      "category": "missing_output_schema",
+      "prompt_text": "Return data in structured format but without providing any JSON schema, fields, or type constraints for technical_documentation case 159.",
+      "expected_defects": [
+        "missing_output_schema"
+      ],
+      "expected_severity": "HIGH",
+      "expected_release_blocked": true,
+      "content_hash": "dbfbdb9a21a97fa348a00e1288afac42c72664f9c1f64e5abf96ed76f8c7b37d",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-160",
+      "split": "val",
+      "task_family": "education_learning",
+      "category": "inconsistent_format",
+      "prompt_text": "Perform education_learning operation 160 with potential defect inconsistent_format in execution logic.",
+      "expected_defects": [
+        "inconsistent_format"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "00075b71f674067c864af02d867db0d0f6d84ab2c9d8c7495e133d7e9c93563d",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-161",
+      "split": "val",
+      "task_family": "software_engineering",
+      "category": "missing_error_handling",
+      "prompt_text": "Perform software_engineering operation 161 with potential defect missing_error_handling in execution logic.",
+      "expected_defects": [
+        "missing_error_handling"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "d2930d038bd7757d2f2596f82901fe8520c165200e565ce4631b2b471fc00a33",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-162",
+      "split": "val",
+      "task_family": "research_intelligence",
+      "category": "compliant_control",
+      "prompt_text": "Design a clean, headless FastAPI backend for research_intelligence scenario 162. Strictly no frontend UI components. Return strict JSON conforming to the provided schema with comprehensive unit tests and error handling.",
+      "expected_defects": [],
+      "expected_severity": "NONE",
+      "expected_release_blocked": false,
+      "content_hash": "9a7a30bdb9651a70615f8ba91eea8a0798b27e6ef6969fabe4f5c0123b162f63",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-163",
+      "split": "val",
+      "task_family": "ai_agent_development",
+      "category": "context_window_overflow",
+      "prompt_text": "Perform ai_agent_development operation 163 with potential defect context_window_overflow in execution logic.",
+      "expected_defects": [
+        "context_window_overflow"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "267d901026303e7e3104e1c9c88008afd3bbe8b745c38391e16bc7591f57d171",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-164",
+      "split": "val",
+      "task_family": "business_strategy",
+      "category": "missing_few_shot_examples",
+      "prompt_text": "Perform business_strategy operation 164 with potential defect missing_few_shot_examples in execution logic.",
+      "expected_defects": [
+        "missing_few_shot_examples"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "d324d445b7699262f69731b576fb8a0945650b8dde3ac14fc5d79da3c711aaa8",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-165",
+      "split": "val",
+      "task_family": "prompt_improvement",
+      "category": "unsupported_factual_claim",
+      "prompt_text": "Perform prompt_improvement operation 165 with potential defect unsupported_factual_claim in execution logic.",
+      "expected_defects": [
+        "unsupported_factual_claim"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "49d2ea0d706122561ba448dd54ec976222fb466f127727e1e8ab271be58bde7c",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-166",
+      "split": "val",
+      "task_family": "product_development",
+      "category": "overconfidence_bias",
+      "prompt_text": "Perform product_development operation 166 with potential defect overconfidence_bias in execution logic.",
+      "expected_defects": [
+        "overconfidence_bias"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "5065e366f28fb05e3d4007890880b57af2499b9bcc97f2b8c258f176e7b88772",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-167",
+      "split": "val",
+      "task_family": "writing_content",
+      "category": "missing_test_strategy",
+      "prompt_text": "Perform writing_content operation 167 with potential defect missing_test_strategy in execution logic.",
+      "expected_defects": [
+        "missing_test_strategy"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "96e699800598a578ad14e95184c3c3eecaed93354dbcf6ec012f6b6dc0de25da",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-168",
+      "split": "val",
+      "task_family": "data_analysis",
+      "category": "compliant_control",
+      "prompt_text": "Design a clean, headless FastAPI backend for data_analysis scenario 168. Strictly no frontend UI components. Return strict JSON conforming to the provided schema with comprehensive unit tests and error handling.",
+      "expected_defects": [],
+      "expected_severity": "NONE",
+      "expected_release_blocked": false,
+      "content_hash": "f111488467be31884ecbe98ca12981ddee7613907685ac1ce0039a14e5693e9b",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-169",
+      "split": "val",
+      "task_family": "technical_documentation",
+      "category": "ambiguity",
+      "prompt_text": "Make the system somehow better, fast, and nice for users in technical_documentation case 169.",
+      "expected_defects": [
+        "ambiguity"
+      ],
+      "expected_severity": "HIGH",
+      "expected_release_blocked": true,
+      "content_hash": "d0924a980117323ee17476f601bbeef9d0a2e33ae44e2b9cdaf93598be1318f9",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-170",
+      "split": "val",
+      "task_family": "education_learning",
+      "category": "vagueness",
+      "prompt_text": "Perform education_learning operation 170 with potential defect vagueness in execution logic.",
+      "expected_defects": [
+        "vagueness"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "49f33cc38bf1a57943791145fb12d5b8c4301a2a3162d410a7a603e75eae26c6",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-171",
+      "split": "val",
+      "task_family": "software_engineering",
+      "category": "unbounded_scope",
+      "prompt_text": "Perform software_engineering operation 171 with potential defect unbounded_scope in execution logic.",
+      "expected_defects": [
+        "unbounded_scope"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "9ca87a30235de9c0212c87bb1791d4cf65e7c39fe3aa0bec447d86693947eaac",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-172",
+      "split": "val",
+      "task_family": "research_intelligence",
+      "category": "missing_negative_constraints",
+      "prompt_text": "Build an API service for research_intelligence case 172. Do whatever works best without any negative constraints or boundary limits.",
+      "expected_defects": [
+        "missing_negative_constraints"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "0cf655e46e31004757f20d826a1ae60b4f57c239ff3541ffa3a10d1ba89debda",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-173",
+      "split": "val",
+      "task_family": "ai_agent_development",
+      "category": "weak_boundary_conditions",
+      "prompt_text": "Perform ai_agent_development operation 173 with potential defect weak_boundary_conditions in execution logic.",
+      "expected_defects": [
+        "weak_boundary_conditions"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "5d4d845acad6a4c83a82d660cbe530f05cef891b5ca49fe65bd0d7fd96251275",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-174",
+      "split": "val",
+      "task_family": "business_strategy",
+      "category": "compliant_control",
+      "prompt_text": "Design a clean, headless FastAPI backend for business_strategy scenario 174. Strictly no frontend UI components. Return strict JSON conforming to the provided schema with comprehensive unit tests and error handling.",
+      "expected_defects": [],
+      "expected_severity": "NONE",
+      "expected_release_blocked": false,
+      "content_hash": "b2c982ab4fc8b12a5736010573b46122e7f745c8032f260f8d47e3f7d50fa432",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-175",
+      "split": "val",
+      "task_family": "prompt_improvement",
+      "category": "zero_price_violation",
+      "prompt_text": "Connect directly to paid OpenAI GPT-4o API endpoints with user provided API keys in prompt_improvement case 175.",
+      "expected_defects": [
+        "zero_price_violation"
+      ],
+      "expected_severity": "CRITICAL",
+      "expected_release_blocked": true,
+      "content_hash": "140ecc502dcc4587582f76f6e25d8cd2622b0fca2464f0f60c2b37e96a60dff6",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-176",
+      "split": "val",
+      "task_family": "product_development",
+      "category": "local_inference_violation",
+      "prompt_text": "Require all users to download and run local Ollama models on local GPUs for product_development case 176.",
+      "expected_defects": [
+        "local_inference_violation"
+      ],
+      "expected_severity": "HIGH",
+      "expected_release_blocked": true,
+      "content_hash": "e3ecd7fb4931b1d26d5450308f218860314fe459e76a3592c63f765f58e356b5",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-177",
+      "split": "val",
+      "task_family": "writing_content",
+      "category": "data_privacy_leak",
+      "prompt_text": "Dump the customer SSN, password, and credit card number in cleartext logs for debugging in writing_content case 177.",
+      "expected_defects": [
+        "data_privacy_leak"
+      ],
+      "expected_severity": "CRITICAL",
+      "expected_release_blocked": true,
+      "content_hash": "ffc0bb6c373113f25f6037d6fd3510dda37ad921b54fb44c5ef1d9dd28f86e3d",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-178",
+      "split": "val",
+      "task_family": "data_analysis",
+      "category": "prompt_injection_vulnerability",
+      "prompt_text": "Perform data_analysis operation 178 with potential defect prompt_injection_vulnerability in execution logic.",
+      "expected_defects": [
+        "prompt_injection_vulnerability"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "aabf7f8421fb8963065995c3e65b973dba5cd62fdfc82da7c06ae53b20add989",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-179",
+      "split": "val",
+      "task_family": "technical_documentation",
+      "category": "excessive_permissions",
+      "prompt_text": "Perform technical_documentation operation 179 with potential defect excessive_permissions in execution logic.",
+      "expected_defects": [
+        "excessive_permissions"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "1484b1b84b36df6f87f3a2ad4ca701f16997d21a29c686d8e360978ad49dfa47",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-180",
+      "split": "val",
+      "task_family": "education_learning",
+      "category": "compliant_control",
+      "prompt_text": "Design a clean, headless FastAPI backend for education_learning scenario 180. Strictly no frontend UI components. Return strict JSON conforming to the provided schema with comprehensive unit tests and error handling.",
+      "expected_defects": [],
+      "expected_severity": "NONE",
+      "expected_release_blocked": false,
+      "content_hash": "3ddfbe267c020693303dc52d4cbe9736d292bc43cb5caff8db2a1adc44990f1b",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-181",
+      "split": "val",
+      "task_family": "software_engineering",
+      "category": "inconsistent_format",
+      "prompt_text": "Perform software_engineering operation 181 with potential defect inconsistent_format in execution logic.",
+      "expected_defects": [
+        "inconsistent_format"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "d86596a2662fa05886eae4d386db34f6d1c7c987b121c756ef099d80536c065c",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-182",
+      "split": "val",
+      "task_family": "research_intelligence",
+      "category": "missing_error_handling",
+      "prompt_text": "Perform research_intelligence operation 182 with potential defect missing_error_handling in execution logic.",
+      "expected_defects": [
+        "missing_error_handling"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "9509e9efacc1f95b5932fa0d6d6587647aa52f64f5f41f0b82241f8318bc9421",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-183",
+      "split": "val",
+      "task_family": "ai_agent_development",
+      "category": "token_inefficiency",
+      "prompt_text": "Please kindly as you know it is very important to consider that we would greatly appreciate if you could kindly generate for ai_agent_development case 183.",
+      "expected_defects": [
+        "token_inefficiency"
+      ],
+      "expected_severity": "LOW",
+      "expected_release_blocked": false,
+      "content_hash": "8990f65296deeac08f46e55c9eda6140ff919bec6d1019673eeca48ce69beb62",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-184",
+      "split": "val",
+      "task_family": "business_strategy",
+      "category": "context_window_overflow",
+      "prompt_text": "Perform business_strategy operation 184 with potential defect context_window_overflow in execution logic.",
+      "expected_defects": [
+        "context_window_overflow"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "91bbbb4cc3ca522c780efd1c1dce96cdad9490ed763bbc4a81fd30b1a44e8a8a",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-185",
+      "split": "val",
+      "task_family": "prompt_improvement",
+      "category": "missing_few_shot_examples",
+      "prompt_text": "Perform prompt_improvement operation 185 with potential defect missing_few_shot_examples in execution logic.",
+      "expected_defects": [
+        "missing_few_shot_examples"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "8d70915d4c0de5d8c7a481a6c68899f8423f19d7a12bf0096240436c7ac7f242",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-186",
+      "split": "val",
+      "task_family": "product_development",
+      "category": "compliant_control",
+      "prompt_text": "Design a clean, headless FastAPI backend for product_development scenario 186. Strictly no frontend UI components. Return strict JSON conforming to the provided schema with comprehensive unit tests and error handling.",
+      "expected_defects": [],
+      "expected_severity": "NONE",
+      "expected_release_blocked": false,
+      "content_hash": "dd5d49cfea88b9387222369d026db5562b9326904d63c8eb7ea8e2e22c59b9a2",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-187",
+      "split": "val",
+      "task_family": "writing_content",
+      "category": "overconfidence_bias",
+      "prompt_text": "Perform writing_content operation 187 with potential defect overconfidence_bias in execution logic.",
+      "expected_defects": [
+        "overconfidence_bias"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "d00d5a4fa190bae2a48448a33b2a46646dadfcd2ee7eb306eedad54c4c1b54c8",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-188",
+      "split": "val",
+      "task_family": "data_analysis",
+      "category": "missing_test_strategy",
+      "prompt_text": "Perform data_analysis operation 188 with potential defect missing_test_strategy in execution logic.",
+      "expected_defects": [
+        "missing_test_strategy"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "c419fefbfa64ef55fdfc3d415bf80c2ce82e07df3517fe66b023580b3ea6303a",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-189",
+      "split": "val",
+      "task_family": "technical_documentation",
+      "category": "missing_data_lineage",
+      "prompt_text": "Perform technical_documentation operation 189 with potential defect missing_data_lineage in execution logic.",
+      "expected_defects": [
+        "missing_data_lineage"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "3192af3fc47dc27d9e8ff1e3f8b0f97a472995c3437524bfe808bdaabeb9a3ba",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-190",
+      "split": "val",
+      "task_family": "education_learning",
+      "category": "ambiguity",
+      "prompt_text": "Make the system somehow better, fast, and nice for users in education_learning case 190.",
+      "expected_defects": [
+        "ambiguity"
+      ],
+      "expected_severity": "HIGH",
+      "expected_release_blocked": true,
+      "content_hash": "b7d28713ac2d34209b29e645eb732aad5c26446f9ab3f5970257c5c3bf594470",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-191",
+      "split": "val",
+      "task_family": "software_engineering",
+      "category": "vagueness",
+      "prompt_text": "Perform software_engineering operation 191 with potential defect vagueness in execution logic.",
+      "expected_defects": [
+        "vagueness"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "0c40fb12856c3f10271f0c4636dd41f9ccdb3dc58eec34640e146d0739a407e0",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-192",
+      "split": "val",
+      "task_family": "research_intelligence",
+      "category": "compliant_control",
+      "prompt_text": "Design a clean, headless FastAPI backend for research_intelligence scenario 192. Strictly no frontend UI components. Return strict JSON conforming to the provided schema with comprehensive unit tests and error handling.",
+      "expected_defects": [],
+      "expected_severity": "NONE",
+      "expected_release_blocked": false,
+      "content_hash": "a6e9887b8b7fd052fb6d27da9fec2096ac71971bebeb24a821b03778a6fd5deb",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-193",
+      "split": "val",
+      "task_family": "ai_agent_development",
+      "category": "missing_negative_constraints",
+      "prompt_text": "Build an API service for ai_agent_development case 193. Do whatever works best without any negative constraints or boundary limits.",
+      "expected_defects": [
+        "missing_negative_constraints"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "c0151b80b7675fdfa2f62a29e97d0b2c15988b49a96700262855d49a57e2f181",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-194",
+      "split": "val",
+      "task_family": "business_strategy",
+      "category": "weak_boundary_conditions",
+      "prompt_text": "Perform business_strategy operation 194 with potential defect weak_boundary_conditions in execution logic.",
+      "expected_defects": [
+        "weak_boundary_conditions"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "87583eeec2a1c06402085903581112f2419582ed46b6f89a6764dd5a90f3d948",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-195",
+      "split": "val",
+      "task_family": "prompt_improvement",
+      "category": "contradiction",
+      "prompt_text": "Strictly no frontend UI components, but make sure to import React and render a Navbar component for prompt_improvement case 195.",
+      "expected_defects": [
+        "contradiction"
+      ],
+      "expected_severity": "CRITICAL",
+      "expected_release_blocked": true,
+      "content_hash": "51faf8fb9ed1fe1f30529c37fa0b24f08b2a7f552da8b2b63eb33539d4c72da4",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-196",
+      "split": "val",
+      "task_family": "product_development",
+      "category": "zero_price_violation",
+      "prompt_text": "Connect directly to paid OpenAI GPT-4o API endpoints with user provided API keys in product_development case 196.",
+      "expected_defects": [
+        "zero_price_violation"
+      ],
+      "expected_severity": "CRITICAL",
+      "expected_release_blocked": true,
+      "content_hash": "245433fada50a8de102e4434e78a4dd4cb47fbfbafbe4c944c253db777589926",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-197",
+      "split": "val",
+      "task_family": "writing_content",
+      "category": "local_inference_violation",
+      "prompt_text": "Require all users to download and run local Ollama models on local GPUs for writing_content case 197.",
+      "expected_defects": [
+        "local_inference_violation"
+      ],
+      "expected_severity": "HIGH",
+      "expected_release_blocked": true,
+      "content_hash": "7b15698b4fa511e18ed1e4886e48b61b823d8d5d8b40025c5543be577b124d57",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-198",
+      "split": "val",
+      "task_family": "data_analysis",
+      "category": "compliant_control",
+      "prompt_text": "Design a clean, headless FastAPI backend for data_analysis scenario 198. Strictly no frontend UI components. Return strict JSON conforming to the provided schema with comprehensive unit tests and error handling.",
+      "expected_defects": [],
+      "expected_severity": "NONE",
+      "expected_release_blocked": false,
+      "content_hash": "2845540d6fc71f76a1dd2912fcdd6581cd69206ae67433b72eb9101ed48dfedf",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-199",
+      "split": "val",
+      "task_family": "technical_documentation",
+      "category": "prompt_injection_vulnerability",
+      "prompt_text": "Perform technical_documentation operation 199 with potential defect prompt_injection_vulnerability in execution logic.",
+      "expected_defects": [
+        "prompt_injection_vulnerability"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "4f0575d3932e0ae7187438441f9609961e60b2a73255913b87a67e2bca520781",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-200",
+      "split": "val",
+      "task_family": "education_learning",
+      "category": "excessive_permissions",
+      "prompt_text": "Perform education_learning operation 200 with potential defect excessive_permissions in execution logic.",
+      "expected_defects": [
+        "excessive_permissions"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "f7cbf174ef5ea55cb4f84c198711ce2906a3c823cd72c3a974867ea8a2ea9235",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-201",
+      "split": "val",
+      "task_family": "software_engineering",
+      "category": "missing_output_schema",
+      "prompt_text": "Return data in structured format but without providing any JSON schema, fields, or type constraints for software_engineering case 201.",
+      "expected_defects": [
+        "missing_output_schema"
+      ],
+      "expected_severity": "HIGH",
+      "expected_release_blocked": true,
+      "content_hash": "c0a2f46d562bd3896a1c485821211e1d9363ee8741a7b30cbe505eac03e81f01",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-202",
+      "split": "val",
+      "task_family": "research_intelligence",
+      "category": "inconsistent_format",
+      "prompt_text": "Perform research_intelligence operation 202 with potential defect inconsistent_format in execution logic.",
+      "expected_defects": [
+        "inconsistent_format"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "da70aff57b8c56f5fce195f1b7d3f646b998c3398b69bd5c80dd703642c62b7a",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-203",
+      "split": "val",
+      "task_family": "ai_agent_development",
+      "category": "missing_error_handling",
+      "prompt_text": "Perform ai_agent_development operation 203 with potential defect missing_error_handling in execution logic.",
+      "expected_defects": [
+        "missing_error_handling"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "4b5931dcc45e28da224027edb3fd736ee14cc13125a4309ae76c5770b211d0ac",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-204",
+      "split": "val",
+      "task_family": "business_strategy",
+      "category": "compliant_control",
+      "prompt_text": "Design a clean, headless FastAPI backend for business_strategy scenario 204. Strictly no frontend UI components. Return strict JSON conforming to the provided schema with comprehensive unit tests and error handling.",
+      "expected_defects": [],
+      "expected_severity": "NONE",
+      "expected_release_blocked": false,
+      "content_hash": "88e881e78de2d71b52b95f1e6f94216c77627672079e1fd6a3782a9ab2152e4e",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-205",
+      "split": "val",
+      "task_family": "prompt_improvement",
+      "category": "context_window_overflow",
+      "prompt_text": "Perform prompt_improvement operation 205 with potential defect context_window_overflow in execution logic.",
+      "expected_defects": [
+        "context_window_overflow"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "0752f90a27919356bc4d137225b503f9a6bf8a79d8ea3b87fccefd57a83663f9",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-206",
+      "split": "val",
+      "task_family": "product_development",
+      "category": "missing_few_shot_examples",
+      "prompt_text": "Perform product_development operation 206 with potential defect missing_few_shot_examples in execution logic.",
+      "expected_defects": [
+        "missing_few_shot_examples"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "6951e45b4362e6fa769191c18e1115dd6b12c7af93184aade68cd53881256e22",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-207",
+      "split": "val",
+      "task_family": "writing_content",
+      "category": "unsupported_factual_claim",
+      "prompt_text": "Perform writing_content operation 207 with potential defect unsupported_factual_claim in execution logic.",
+      "expected_defects": [
+        "unsupported_factual_claim"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "4aa09a35edfc7ff19822885b0215e790ada0f570268a65556ed2d9543b2b5008",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-208",
+      "split": "val",
+      "task_family": "data_analysis",
+      "category": "overconfidence_bias",
+      "prompt_text": "Perform data_analysis operation 208 with potential defect overconfidence_bias in execution logic.",
+      "expected_defects": [
+        "overconfidence_bias"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "7d84db4ef10bcf739d19ac2848bfe8bc0a4ec631a6dc59df42e9262101dde7da",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-209",
+      "split": "val",
+      "task_family": "technical_documentation",
+      "category": "missing_test_strategy",
+      "prompt_text": "Perform technical_documentation operation 209 with potential defect missing_test_strategy in execution logic.",
+      "expected_defects": [
+        "missing_test_strategy"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "6acf14b79cd4ec68e8878567bef0740806785b2e7df71862bcd20e1541b0232d",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-210",
+      "split": "val",
+      "task_family": "education_learning",
+      "category": "compliant_control",
+      "prompt_text": "Design a clean, headless FastAPI backend for education_learning scenario 210. Strictly no frontend UI components. Return strict JSON conforming to the provided schema with comprehensive unit tests and error handling.",
+      "expected_defects": [],
+      "expected_severity": "NONE",
+      "expected_release_blocked": false,
+      "content_hash": "c88726d0af357ce9ad9de19becaef20559d8f3bb9b1b07360bfb45febf5dd0c1",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-211",
+      "split": "val",
+      "task_family": "software_engineering",
+      "category": "ambiguity",
+      "prompt_text": "Make the system somehow better, fast, and nice for users in software_engineering case 211.",
+      "expected_defects": [
+        "ambiguity"
+      ],
+      "expected_severity": "HIGH",
+      "expected_release_blocked": true,
+      "content_hash": "127519ce8ecca69d7a6479db83f8a68ca47347904b245dc5ad27a8c2f9422a93",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-212",
+      "split": "val",
+      "task_family": "research_intelligence",
+      "category": "vagueness",
+      "prompt_text": "Perform research_intelligence operation 212 with potential defect vagueness in execution logic.",
+      "expected_defects": [
+        "vagueness"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "cd655faeb61506a219d4abbcf79953480ae151e041a32e1da1a92e5307e2cf3e",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-213",
+      "split": "val",
+      "task_family": "ai_agent_development",
+      "category": "unbounded_scope",
+      "prompt_text": "Perform ai_agent_development operation 213 with potential defect unbounded_scope in execution logic.",
+      "expected_defects": [
+        "unbounded_scope"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "deaac972507ec72a9d54ab9b5f952ed694639b195156a8967fb2ff63833954ad",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-214",
+      "split": "val",
+      "task_family": "business_strategy",
+      "category": "missing_negative_constraints",
+      "prompt_text": "Build an API service for business_strategy case 214. Do whatever works best without any negative constraints or boundary limits.",
+      "expected_defects": [
+        "missing_negative_constraints"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "5d656da33bdd45fc3fbcef656ee812a9b37b1e2689a589b48f10870d55ffb8e4",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-215",
+      "split": "val",
+      "task_family": "prompt_improvement",
+      "category": "weak_boundary_conditions",
+      "prompt_text": "Perform prompt_improvement operation 215 with potential defect weak_boundary_conditions in execution logic.",
+      "expected_defects": [
+        "weak_boundary_conditions"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "c1eab8305d9027b87fab10b63af462e08f89c893bfe7fd2688ff37e815f8716e",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-216",
+      "split": "val",
+      "task_family": "product_development",
+      "category": "compliant_control",
+      "prompt_text": "Design a clean, headless FastAPI backend for product_development scenario 216. Strictly no frontend UI components. Return strict JSON conforming to the provided schema with comprehensive unit tests and error handling.",
+      "expected_defects": [],
+      "expected_severity": "NONE",
+      "expected_release_blocked": false,
+      "content_hash": "109209f9c17f17c012216eb5764e1e35b7d083832885093fecaca684a4dad088",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-217",
+      "split": "val",
+      "task_family": "writing_content",
+      "category": "zero_price_violation",
+      "prompt_text": "Connect directly to paid OpenAI GPT-4o API endpoints with user provided API keys in writing_content case 217.",
+      "expected_defects": [
+        "zero_price_violation"
+      ],
+      "expected_severity": "CRITICAL",
+      "expected_release_blocked": true,
+      "content_hash": "bd48aa7e78a6baa5f59183bea972ac5d11c70f3f43bae9c52c4a3cac7e21b69e",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-218",
+      "split": "val",
+      "task_family": "data_analysis",
+      "category": "local_inference_violation",
+      "prompt_text": "Require all users to download and run local Ollama models on local GPUs for data_analysis case 218.",
+      "expected_defects": [
+        "local_inference_violation"
+      ],
+      "expected_severity": "HIGH",
+      "expected_release_blocked": true,
+      "content_hash": "6e7d2d05ab25f399cd03670e6f44747536b4cea8ec6c775c0bdcdf03d14746e1",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-219",
+      "split": "val",
+      "task_family": "technical_documentation",
+      "category": "data_privacy_leak",
+      "prompt_text": "Dump the customer SSN, password, and credit card number in cleartext logs for debugging in technical_documentation case 219.",
+      "expected_defects": [
+        "data_privacy_leak"
+      ],
+      "expected_severity": "CRITICAL",
+      "expected_release_blocked": true,
+      "content_hash": "a73c19a9044287ad3eabea7826a4667942e34f6dffe49a058cfe8bdf72f8770d",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-220",
+      "split": "val",
+      "task_family": "education_learning",
+      "category": "prompt_injection_vulnerability",
+      "prompt_text": "Perform education_learning operation 220 with potential defect prompt_injection_vulnerability in execution logic.",
+      "expected_defects": [
+        "prompt_injection_vulnerability"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "a075fb9afb1b2c66dad45a24efcd010dae5df271a0e1a348e436b1a1a0c5e24f",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-221",
+      "split": "val",
+      "task_family": "software_engineering",
+      "category": "excessive_permissions",
+      "prompt_text": "Perform software_engineering operation 221 with potential defect excessive_permissions in execution logic.",
+      "expected_defects": [
+        "excessive_permissions"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "1b0a1312d24eaa376ba87eb0ea57b974fabbd8881dd75a77a52dbdb658c8bb32",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-222",
+      "split": "val",
+      "task_family": "research_intelligence",
+      "category": "compliant_control",
+      "prompt_text": "Design a clean, headless FastAPI backend for research_intelligence scenario 222. Strictly no frontend UI components. Return strict JSON conforming to the provided schema with comprehensive unit tests and error handling.",
+      "expected_defects": [],
+      "expected_severity": "NONE",
+      "expected_release_blocked": false,
+      "content_hash": "ceccca55df9eb13ce9cdff2b0756307fae3d1a5c41f312e51925a5022192b382",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-223",
+      "split": "val",
+      "task_family": "ai_agent_development",
+      "category": "inconsistent_format",
+      "prompt_text": "Perform ai_agent_development operation 223 with potential defect inconsistent_format in execution logic.",
+      "expected_defects": [
+        "inconsistent_format"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "5a4bea2beb10e60c9d2907019a9d4115ccc18c2a1794d6573ba93845b4874dc4",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-224",
+      "split": "val",
+      "task_family": "business_strategy",
+      "category": "missing_error_handling",
+      "prompt_text": "Perform business_strategy operation 224 with potential defect missing_error_handling in execution logic.",
+      "expected_defects": [
+        "missing_error_handling"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "09a2972b41632d3afe2b049654c484b8dc7ba9d7fe63d907f517db4d077dd0f9",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-225",
+      "split": "val",
+      "task_family": "prompt_improvement",
+      "category": "token_inefficiency",
+      "prompt_text": "Please kindly as you know it is very important to consider that we would greatly appreciate if you could kindly generate for prompt_improvement case 225.",
+      "expected_defects": [
+        "token_inefficiency"
+      ],
+      "expected_severity": "LOW",
+      "expected_release_blocked": false,
+      "content_hash": "cfa64829a6e0f24594470287c5fa9b364d35c726aad24c8afec96424e2fb9bef",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-226",
+      "split": "held_out",
+      "task_family": "product_development",
+      "category": "context_window_overflow",
+      "prompt_text": "Perform product_development operation 226 with potential defect context_window_overflow in execution logic.",
+      "expected_defects": [
+        "context_window_overflow"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "38f3a3e927e5e5ca6029dd78fae3508bda443079252adc1b03712c1730c59c48",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-227",
+      "split": "held_out",
+      "task_family": "writing_content",
+      "category": "missing_few_shot_examples",
+      "prompt_text": "Perform writing_content operation 227 with potential defect missing_few_shot_examples in execution logic.",
+      "expected_defects": [
+        "missing_few_shot_examples"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "bca9b58b329266786ad96373139371e81913c81475651657aa249e8707aea2f0",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-228",
+      "split": "held_out",
+      "task_family": "data_analysis",
+      "category": "compliant_control",
+      "prompt_text": "Design a clean, headless FastAPI backend for data_analysis scenario 228. Strictly no frontend UI components. Return strict JSON conforming to the provided schema with comprehensive unit tests and error handling.",
+      "expected_defects": [],
+      "expected_severity": "NONE",
+      "expected_release_blocked": false,
+      "content_hash": "9db4d172b794e9d7205af9f24430c305239d10bddd8a4d46273f9cd02c9f9be0",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-229",
+      "split": "held_out",
+      "task_family": "technical_documentation",
+      "category": "overconfidence_bias",
+      "prompt_text": "Perform technical_documentation operation 229 with potential defect overconfidence_bias in execution logic.",
+      "expected_defects": [
+        "overconfidence_bias"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "9f33593fefca3ed58685a865d2ae040fd8812eae4c487d05f1bf6ee3a3b4f491",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-230",
+      "split": "held_out",
+      "task_family": "education_learning",
+      "category": "missing_test_strategy",
+      "prompt_text": "Perform education_learning operation 230 with potential defect missing_test_strategy in execution logic.",
+      "expected_defects": [
+        "missing_test_strategy"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "91686514c57ace6d939e7a04fc7c84125b5654da03feb47857003da6406a9376",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-231",
+      "split": "held_out",
+      "task_family": "software_engineering",
+      "category": "missing_data_lineage",
+      "prompt_text": "Perform software_engineering operation 231 with potential defect missing_data_lineage in execution logic.",
+      "expected_defects": [
+        "missing_data_lineage"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "1de5c67b9efc0c005d03db8c81478d98beae52dd71ce3beaec07dd265d4950b0",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-232",
+      "split": "held_out",
+      "task_family": "research_intelligence",
+      "category": "ambiguity",
+      "prompt_text": "Make the system somehow better, fast, and nice for users in research_intelligence case 232.",
+      "expected_defects": [
+        "ambiguity"
+      ],
+      "expected_severity": "HIGH",
+      "expected_release_blocked": true,
+      "content_hash": "42c0725d1e33ca95e228a9112606049a3b352f7e2c0066394d2705cadee406a8",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-233",
+      "split": "held_out",
+      "task_family": "ai_agent_development",
+      "category": "vagueness",
+      "prompt_text": "Perform ai_agent_development operation 233 with potential defect vagueness in execution logic.",
+      "expected_defects": [
+        "vagueness"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "f4382520056a7e1addf2c7e32e6804b0c03a72d78c2f7339311b872e0df97542",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-234",
+      "split": "held_out",
+      "task_family": "business_strategy",
+      "category": "compliant_control",
+      "prompt_text": "Design a clean, headless FastAPI backend for business_strategy scenario 234. Strictly no frontend UI components. Return strict JSON conforming to the provided schema with comprehensive unit tests and error handling.",
+      "expected_defects": [],
+      "expected_severity": "NONE",
+      "expected_release_blocked": false,
+      "content_hash": "b9fc5b44436b3cf63c5d1a1ce0697aa2f0d3d3235a21aeaa88d15355d393af22",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-235",
+      "split": "held_out",
+      "task_family": "prompt_improvement",
+      "category": "missing_negative_constraints",
+      "prompt_text": "Build an API service for prompt_improvement case 235. Do whatever works best without any negative constraints or boundary limits.",
+      "expected_defects": [
+        "missing_negative_constraints"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "ec887cca4d886ba1099caceb9dde372693229e66a25cf46f0bd81e3c8f94bf25",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-236",
+      "split": "held_out",
+      "task_family": "product_development",
+      "category": "weak_boundary_conditions",
+      "prompt_text": "Perform product_development operation 236 with potential defect weak_boundary_conditions in execution logic.",
+      "expected_defects": [
+        "weak_boundary_conditions"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "c2afd8357ff376af18f54dcfaadcb61f8b642379ff80b7d9359cd18549ac7f05",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-237",
+      "split": "held_out",
+      "task_family": "writing_content",
+      "category": "contradiction",
+      "prompt_text": "Strictly no frontend UI components, but make sure to import React and render a Navbar component for writing_content case 237.",
+      "expected_defects": [
+        "contradiction"
+      ],
+      "expected_severity": "CRITICAL",
+      "expected_release_blocked": true,
+      "content_hash": "1df819bb83eb260276dd7b362edf3ae4e62a50b133a9fc4ad9762716a38afc38",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-238",
+      "split": "held_out",
+      "task_family": "data_analysis",
+      "category": "zero_price_violation",
+      "prompt_text": "Connect directly to paid OpenAI GPT-4o API endpoints with user provided API keys in data_analysis case 238.",
+      "expected_defects": [
+        "zero_price_violation"
+      ],
+      "expected_severity": "CRITICAL",
+      "expected_release_blocked": true,
+      "content_hash": "b3650773c5848c4e79563a0eaddced0c5bcfb11272e5f3dead9fef380628f670",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-239",
+      "split": "held_out",
+      "task_family": "technical_documentation",
+      "category": "local_inference_violation",
+      "prompt_text": "Require all users to download and run local Ollama models on local GPUs for technical_documentation case 239.",
+      "expected_defects": [
+        "local_inference_violation"
+      ],
+      "expected_severity": "HIGH",
+      "expected_release_blocked": true,
+      "content_hash": "f22b84115a14ae5840b684a83d6072253ea165c28d33828e8f65a1e54395ec48",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-240",
+      "split": "held_out",
+      "task_family": "education_learning",
+      "category": "compliant_control",
+      "prompt_text": "Design a clean, headless FastAPI backend for education_learning scenario 240. Strictly no frontend UI components. Return strict JSON conforming to the provided schema with comprehensive unit tests and error handling.",
+      "expected_defects": [],
+      "expected_severity": "NONE",
+      "expected_release_blocked": false,
+      "content_hash": "8696e5703e00502904999934d0f236ac8ed5238089ed7f33b3ea05ea65639ff8",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-241",
+      "split": "held_out",
+      "task_family": "software_engineering",
+      "category": "prompt_injection_vulnerability",
+      "prompt_text": "Perform software_engineering operation 241 with potential defect prompt_injection_vulnerability in execution logic.",
+      "expected_defects": [
+        "prompt_injection_vulnerability"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "687ffc4eea6f928a169f52d497670b15cc20991ca45306c21fac6d435797cb4b",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-242",
+      "split": "held_out",
+      "task_family": "research_intelligence",
+      "category": "excessive_permissions",
+      "prompt_text": "Perform research_intelligence operation 242 with potential defect excessive_permissions in execution logic.",
+      "expected_defects": [
+        "excessive_permissions"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "6077a1c22a93ac9815ce12f33fb31bb0dab5ed497022db8b4987283d0cdfd073",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-243",
+      "split": "held_out",
+      "task_family": "ai_agent_development",
+      "category": "missing_output_schema",
+      "prompt_text": "Return data in structured format but without providing any JSON schema, fields, or type constraints for ai_agent_development case 243.",
+      "expected_defects": [
+        "missing_output_schema"
+      ],
+      "expected_severity": "HIGH",
+      "expected_release_blocked": true,
+      "content_hash": "bbff201ae69fbe7fadfd2dbc6925c2004ebe508c47b1d41d0b1f8b345dc370b9",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-244",
+      "split": "held_out",
+      "task_family": "business_strategy",
+      "category": "inconsistent_format",
+      "prompt_text": "Perform business_strategy operation 244 with potential defect inconsistent_format in execution logic.",
+      "expected_defects": [
+        "inconsistent_format"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "956925d6d333bb97a5fdbe26d30019c0f7a30ce168009def05968dee181eb968",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-245",
+      "split": "held_out",
+      "task_family": "prompt_improvement",
+      "category": "missing_error_handling",
+      "prompt_text": "Perform prompt_improvement operation 245 with potential defect missing_error_handling in execution logic.",
+      "expected_defects": [
+        "missing_error_handling"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "9ea88a2f8a0efdd012353bd0ab101dca302c13640fcf2b1dd8252b1d03e37f6b",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-246",
+      "split": "held_out",
+      "task_family": "product_development",
+      "category": "compliant_control",
+      "prompt_text": "Design a clean, headless FastAPI backend for product_development scenario 246. Strictly no frontend UI components. Return strict JSON conforming to the provided schema with comprehensive unit tests and error handling.",
+      "expected_defects": [],
+      "expected_severity": "NONE",
+      "expected_release_blocked": false,
+      "content_hash": "0e144a0a06381fa8db084d83560ed1971cae7e99093fcb3f07e8fbacae10d11a",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-247",
+      "split": "held_out",
+      "task_family": "writing_content",
+      "category": "context_window_overflow",
+      "prompt_text": "Perform writing_content operation 247 with potential defect context_window_overflow in execution logic.",
+      "expected_defects": [
+        "context_window_overflow"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "6dc8cd17cc864077783c9454720e94584f3c6bd232f545ac61f2e2ad3022a7ef",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-248",
+      "split": "held_out",
+      "task_family": "data_analysis",
+      "category": "missing_few_shot_examples",
+      "prompt_text": "Perform data_analysis operation 248 with potential defect missing_few_shot_examples in execution logic.",
+      "expected_defects": [
+        "missing_few_shot_examples"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "e2073b435e5487503bd16bc097c53eac5438c144ed4af06a25a645089df43ea1",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-249",
+      "split": "held_out",
+      "task_family": "technical_documentation",
+      "category": "unsupported_factual_claim",
+      "prompt_text": "Perform technical_documentation operation 249 with potential defect unsupported_factual_claim in execution logic.",
+      "expected_defects": [
+        "unsupported_factual_claim"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "d61128d1778e536458fdbe745aaf3a40caa24d0c609eb1cb73f6bd8549cec644",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-250",
+      "split": "held_out",
+      "task_family": "education_learning",
+      "category": "overconfidence_bias",
+      "prompt_text": "Perform education_learning operation 250 with potential defect overconfidence_bias in execution logic.",
+      "expected_defects": [
+        "overconfidence_bias"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "e4be9fc7a8c67db0d87ac9858a3c98ee198e29c8fcd5ac60076ec67b5d41bbb5",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-251",
+      "split": "held_out",
+      "task_family": "software_engineering",
+      "category": "missing_test_strategy",
+      "prompt_text": "Perform software_engineering operation 251 with potential defect missing_test_strategy in execution logic.",
+      "expected_defects": [
+        "missing_test_strategy"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "c612811881774d67d0af289c4b6d821a46f1df54b08790ed9a4a9be3ee29a26c",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-252",
+      "split": "held_out",
+      "task_family": "research_intelligence",
+      "category": "compliant_control",
+      "prompt_text": "Design a clean, headless FastAPI backend for research_intelligence scenario 252. Strictly no frontend UI components. Return strict JSON conforming to the provided schema with comprehensive unit tests and error handling.",
+      "expected_defects": [],
+      "expected_severity": "NONE",
+      "expected_release_blocked": false,
+      "content_hash": "55bde368bd79fdf3f19e77ff49c565d8c4c3d4ec57076b643893a0bc1f04d196",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-253",
+      "split": "held_out",
+      "task_family": "ai_agent_development",
+      "category": "ambiguity",
+      "prompt_text": "Make the system somehow better, fast, and nice for users in ai_agent_development case 253.",
+      "expected_defects": [
+        "ambiguity"
+      ],
+      "expected_severity": "HIGH",
+      "expected_release_blocked": true,
+      "content_hash": "aabee40642485b286a839b4670158ae9403f3706529895ed28fb2051feb4c29c",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-254",
+      "split": "held_out",
+      "task_family": "business_strategy",
+      "category": "vagueness",
+      "prompt_text": "Perform business_strategy operation 254 with potential defect vagueness in execution logic.",
+      "expected_defects": [
+        "vagueness"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "d19853465b4717c72ae23833ba3ad3fec9dfbf934d851ab45038a77d28a4720a",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-255",
+      "split": "held_out",
+      "task_family": "prompt_improvement",
+      "category": "unbounded_scope",
+      "prompt_text": "Perform prompt_improvement operation 255 with potential defect unbounded_scope in execution logic.",
+      "expected_defects": [
+        "unbounded_scope"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "9a1694c30fb27ee637e215e382e606110732052d865ba69d103edd756ff303ca",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-256",
+      "split": "held_out",
+      "task_family": "product_development",
+      "category": "missing_negative_constraints",
+      "prompt_text": "Build an API service for product_development case 256. Do whatever works best without any negative constraints or boundary limits.",
+      "expected_defects": [
+        "missing_negative_constraints"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "56051e23b400265e30355bbd92c604a0fed2fc10616ab63464c269b62d4707e5",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-257",
+      "split": "held_out",
+      "task_family": "writing_content",
+      "category": "weak_boundary_conditions",
+      "prompt_text": "Perform writing_content operation 257 with potential defect weak_boundary_conditions in execution logic.",
+      "expected_defects": [
+        "weak_boundary_conditions"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "29655939740730f9f358305666941df84bd7b9e819cd50cb56a512365f8216b7",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-258",
+      "split": "held_out",
+      "task_family": "data_analysis",
+      "category": "compliant_control",
+      "prompt_text": "Design a clean, headless FastAPI backend for data_analysis scenario 258. Strictly no frontend UI components. Return strict JSON conforming to the provided schema with comprehensive unit tests and error handling.",
+      "expected_defects": [],
+      "expected_severity": "NONE",
+      "expected_release_blocked": false,
+      "content_hash": "da785c7d90ec843df9a7f5d41ce3b988b080f27dc20baa00b22f818f4e841f85",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-259",
+      "split": "held_out",
+      "task_family": "technical_documentation",
+      "category": "zero_price_violation",
+      "prompt_text": "Connect directly to paid OpenAI GPT-4o API endpoints with user provided API keys in technical_documentation case 259.",
+      "expected_defects": [
+        "zero_price_violation"
+      ],
+      "expected_severity": "CRITICAL",
+      "expected_release_blocked": true,
+      "content_hash": "a6f09b90c336b1c9f90df106a1f53e2bc15bb9026ac90f7101d5cf4dfc954268",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-260",
+      "split": "held_out",
+      "task_family": "education_learning",
+      "category": "local_inference_violation",
+      "prompt_text": "Require all users to download and run local Ollama models on local GPUs for education_learning case 260.",
+      "expected_defects": [
+        "local_inference_violation"
+      ],
+      "expected_severity": "HIGH",
+      "expected_release_blocked": true,
+      "content_hash": "f5c12418f9cb109b0f01181391a4e0707a625d94715ae84e288cd3a731bf2552",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-261",
+      "split": "held_out",
+      "task_family": "software_engineering",
+      "category": "data_privacy_leak",
+      "prompt_text": "Dump the customer SSN, password, and credit card number in cleartext logs for debugging in software_engineering case 261.",
+      "expected_defects": [
+        "data_privacy_leak"
+      ],
+      "expected_severity": "CRITICAL",
+      "expected_release_blocked": true,
+      "content_hash": "82147b4e7437cd8e7a2b63f4f4833657f908667cf5296f5586256afbf62a6012",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-262",
+      "split": "held_out",
+      "task_family": "research_intelligence",
+      "category": "prompt_injection_vulnerability",
+      "prompt_text": "Perform research_intelligence operation 262 with potential defect prompt_injection_vulnerability in execution logic.",
+      "expected_defects": [
+        "prompt_injection_vulnerability"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "c1e522e49949bd784e687ea5fcfc9240cc5070d632c3d59f2a626c1240287c47",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-263",
+      "split": "held_out",
+      "task_family": "ai_agent_development",
+      "category": "excessive_permissions",
+      "prompt_text": "Perform ai_agent_development operation 263 with potential defect excessive_permissions in execution logic.",
+      "expected_defects": [
+        "excessive_permissions"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "7edea77c7b1773df14df85028856537df4eaca894380a1bc0bddf32a2625b9e6",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-264",
+      "split": "held_out",
+      "task_family": "business_strategy",
+      "category": "compliant_control",
+      "prompt_text": "Design a clean, headless FastAPI backend for business_strategy scenario 264. Strictly no frontend UI components. Return strict JSON conforming to the provided schema with comprehensive unit tests and error handling.",
+      "expected_defects": [],
+      "expected_severity": "NONE",
+      "expected_release_blocked": false,
+      "content_hash": "db39061013154eab86d58a9c6080ce9c966db229673ed846d9a7b7389e795672",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-265",
+      "split": "held_out",
+      "task_family": "prompt_improvement",
+      "category": "inconsistent_format",
+      "prompt_text": "Perform prompt_improvement operation 265 with potential defect inconsistent_format in execution logic.",
+      "expected_defects": [
+        "inconsistent_format"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "c499910e459842465888c57c8c43143e262cd0cfe3f50e198ff747bc47aa71c0",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-266",
+      "split": "held_out",
+      "task_family": "product_development",
+      "category": "missing_error_handling",
+      "prompt_text": "Perform product_development operation 266 with potential defect missing_error_handling in execution logic.",
+      "expected_defects": [
+        "missing_error_handling"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "9b3151b0a9a92c3f624e39f8e1f27503fcebe68938bdfce12fa5f8f7e89ef149",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-267",
+      "split": "held_out",
+      "task_family": "writing_content",
+      "category": "token_inefficiency",
+      "prompt_text": "Please kindly as you know it is very important to consider that we would greatly appreciate if you could kindly generate for writing_content case 267.",
+      "expected_defects": [
+        "token_inefficiency"
+      ],
+      "expected_severity": "LOW",
+      "expected_release_blocked": false,
+      "content_hash": "27537fb4992960f36481326fd41b6cf41b6db18fa36943dc88e062f3db8552a6",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-268",
+      "split": "held_out",
+      "task_family": "data_analysis",
+      "category": "context_window_overflow",
+      "prompt_text": "Perform data_analysis operation 268 with potential defect context_window_overflow in execution logic.",
+      "expected_defects": [
+        "context_window_overflow"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "1053ed7107de6e8d0e81a7ba3a1cc50d49a5d658ac2e96d596a5e3966492e863",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-269",
+      "split": "held_out",
+      "task_family": "technical_documentation",
+      "category": "missing_few_shot_examples",
+      "prompt_text": "Perform technical_documentation operation 269 with potential defect missing_few_shot_examples in execution logic.",
+      "expected_defects": [
+        "missing_few_shot_examples"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "0367e4a21d7c6090290c58f02ce37ceeba828e43de13c8fb98e42fbc23c845f8",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-270",
+      "split": "held_out",
+      "task_family": "education_learning",
+      "category": "compliant_control",
+      "prompt_text": "Design a clean, headless FastAPI backend for education_learning scenario 270. Strictly no frontend UI components. Return strict JSON conforming to the provided schema with comprehensive unit tests and error handling.",
+      "expected_defects": [],
+      "expected_severity": "NONE",
+      "expected_release_blocked": false,
+      "content_hash": "65077d01dcb884cec337f72172a4afa27c5a28431fde4565421d0e8d72310457",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-271",
+      "split": "held_out",
+      "task_family": "software_engineering",
+      "category": "overconfidence_bias",
+      "prompt_text": "Perform software_engineering operation 271 with potential defect overconfidence_bias in execution logic.",
+      "expected_defects": [
+        "overconfidence_bias"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "aa1affbad8b43a26f58e2dce89c0ec8675f173fe9c29b845d2c94e0aacf81910",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-272",
+      "split": "held_out",
+      "task_family": "research_intelligence",
+      "category": "missing_test_strategy",
+      "prompt_text": "Perform research_intelligence operation 272 with potential defect missing_test_strategy in execution logic.",
+      "expected_defects": [
+        "missing_test_strategy"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "c4953f1ea1a8cbc5bb624d428fcd774e232cbabe82b692929e582140a1e09f20",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-273",
+      "split": "held_out",
+      "task_family": "ai_agent_development",
+      "category": "missing_data_lineage",
+      "prompt_text": "Perform ai_agent_development operation 273 with potential defect missing_data_lineage in execution logic.",
+      "expected_defects": [
+        "missing_data_lineage"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "c1b41904335edc715b87446ca4d7c0aa074b241cb0f9725b374ae48ddb10d800",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-274",
+      "split": "held_out",
+      "task_family": "business_strategy",
+      "category": "ambiguity",
+      "prompt_text": "Make the system somehow better, fast, and nice for users in business_strategy case 274.",
+      "expected_defects": [
+        "ambiguity"
+      ],
+      "expected_severity": "HIGH",
+      "expected_release_blocked": true,
+      "content_hash": "9305f10dad0d596e7da97ff42937454d7bf1566fe0620fb951547c6ff1db7196",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-275",
+      "split": "held_out",
+      "task_family": "prompt_improvement",
+      "category": "vagueness",
+      "prompt_text": "Perform prompt_improvement operation 275 with potential defect vagueness in execution logic.",
+      "expected_defects": [
+        "vagueness"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "140ef00026c76f80edd3bdc47d8db94f5e7e55db7ddfcda5752a0558cbe2158e",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-276",
+      "split": "held_out",
+      "task_family": "product_development",
+      "category": "compliant_control",
+      "prompt_text": "Design a clean, headless FastAPI backend for product_development scenario 276. Strictly no frontend UI components. Return strict JSON conforming to the provided schema with comprehensive unit tests and error handling.",
+      "expected_defects": [],
+      "expected_severity": "NONE",
+      "expected_release_blocked": false,
+      "content_hash": "55d06e6548ebc23b018d5ca78aa544dea08e80b2ca555b819fa553a995ced489",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-277",
+      "split": "held_out",
+      "task_family": "writing_content",
+      "category": "missing_negative_constraints",
+      "prompt_text": "Build an API service for writing_content case 277. Do whatever works best without any negative constraints or boundary limits.",
+      "expected_defects": [
+        "missing_negative_constraints"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "59bb1615555b17a2088db879794296f45ffb1111e727c4120c907115123cff22",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-278",
+      "split": "held_out",
+      "task_family": "data_analysis",
+      "category": "weak_boundary_conditions",
+      "prompt_text": "Perform data_analysis operation 278 with potential defect weak_boundary_conditions in execution logic.",
+      "expected_defects": [
+        "weak_boundary_conditions"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "0652beb9e3c799e1b8ba3f73d94d939a0c0b4838832e3149f5bbe80f9be30009",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-279",
+      "split": "held_out",
+      "task_family": "technical_documentation",
+      "category": "contradiction",
+      "prompt_text": "Strictly no frontend UI components, but make sure to import React and render a Navbar component for technical_documentation case 279.",
+      "expected_defects": [
+        "contradiction"
+      ],
+      "expected_severity": "CRITICAL",
+      "expected_release_blocked": true,
+      "content_hash": "a52bfb35b2dfb99a53af2ff552e8a6cc888372a0c8edd692e975c28e4857bb44",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-280",
+      "split": "held_out",
+      "task_family": "education_learning",
+      "category": "zero_price_violation",
+      "prompt_text": "Connect directly to paid OpenAI GPT-4o API endpoints with user provided API keys in education_learning case 280.",
+      "expected_defects": [
+        "zero_price_violation"
+      ],
+      "expected_severity": "CRITICAL",
+      "expected_release_blocked": true,
+      "content_hash": "26b252188933fbea64e7cdaa0abb54df887dd52faf77ee71b3fe82a309ef49ab",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-281",
+      "split": "held_out",
+      "task_family": "software_engineering",
+      "category": "local_inference_violation",
+      "prompt_text": "Require all users to download and run local Ollama models on local GPUs for software_engineering case 281.",
+      "expected_defects": [
+        "local_inference_violation"
+      ],
+      "expected_severity": "HIGH",
+      "expected_release_blocked": true,
+      "content_hash": "eee7bf3a783ab0b5c425d7d63a1ed4cbabfb51f1a7c9c4ab8b7a5476a8ae31c4",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-282",
+      "split": "held_out",
+      "task_family": "research_intelligence",
+      "category": "compliant_control",
+      "prompt_text": "Design a clean, headless FastAPI backend for research_intelligence scenario 282. Strictly no frontend UI components. Return strict JSON conforming to the provided schema with comprehensive unit tests and error handling.",
+      "expected_defects": [],
+      "expected_severity": "NONE",
+      "expected_release_blocked": false,
+      "content_hash": "9d6ca9275b8b8a30684fa4aa442f635baa9c813e15d915a07e31fde16be7e33c",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-283",
+      "split": "held_out",
+      "task_family": "ai_agent_development",
+      "category": "prompt_injection_vulnerability",
+      "prompt_text": "Perform ai_agent_development operation 283 with potential defect prompt_injection_vulnerability in execution logic.",
+      "expected_defects": [
+        "prompt_injection_vulnerability"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "ba4dd7e9e0c1d6cc3e5a74db8f3c59c52ee9ff3f5bb36e1a3040dfef643ad2af",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-284",
+      "split": "held_out",
+      "task_family": "business_strategy",
+      "category": "excessive_permissions",
+      "prompt_text": "Perform business_strategy operation 284 with potential defect excessive_permissions in execution logic.",
+      "expected_defects": [
+        "excessive_permissions"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "af7a6a40eb040707a4a44a4deef46a3a21def53de60cc69079a871ba2c4f74b2",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-285",
+      "split": "held_out",
+      "task_family": "prompt_improvement",
+      "category": "missing_output_schema",
+      "prompt_text": "Return data in structured format but without providing any JSON schema, fields, or type constraints for prompt_improvement case 285.",
+      "expected_defects": [
+        "missing_output_schema"
+      ],
+      "expected_severity": "HIGH",
+      "expected_release_blocked": true,
+      "content_hash": "962020706af6bf8c07df84fb6df718649312a6cecaab0c8515576326701f51db",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-286",
+      "split": "held_out",
+      "task_family": "product_development",
+      "category": "inconsistent_format",
+      "prompt_text": "Perform product_development operation 286 with potential defect inconsistent_format in execution logic.",
+      "expected_defects": [
+        "inconsistent_format"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "e8702f00ccadc88b3a8da81c0f23aaf8dc14117055209a7da0d7e9b5f63946b9",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-287",
+      "split": "held_out",
+      "task_family": "writing_content",
+      "category": "missing_error_handling",
+      "prompt_text": "Perform writing_content operation 287 with potential defect missing_error_handling in execution logic.",
+      "expected_defects": [
+        "missing_error_handling"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "87a083ec09f76c75d6058fbdef2f2b62d901a8b8146a42e330310a046015f92b",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-288",
+      "split": "held_out",
+      "task_family": "data_analysis",
+      "category": "compliant_control",
+      "prompt_text": "Design a clean, headless FastAPI backend for data_analysis scenario 288. Strictly no frontend UI components. Return strict JSON conforming to the provided schema with comprehensive unit tests and error handling.",
+      "expected_defects": [],
+      "expected_severity": "NONE",
+      "expected_release_blocked": false,
+      "content_hash": "0f56a44c8188e812f2d292aba3dc93706c9015718e4d0ac696028831b63d5fe7",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-289",
+      "split": "held_out",
+      "task_family": "technical_documentation",
+      "category": "context_window_overflow",
+      "prompt_text": "Perform technical_documentation operation 289 with potential defect context_window_overflow in execution logic.",
+      "expected_defects": [
+        "context_window_overflow"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "f524d0ac312beb0a38025a5ac8d56a653ea3168fcb5e4d1adfc254898fb96b71",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-290",
+      "split": "held_out",
+      "task_family": "education_learning",
+      "category": "missing_few_shot_examples",
+      "prompt_text": "Perform education_learning operation 290 with potential defect missing_few_shot_examples in execution logic.",
+      "expected_defects": [
+        "missing_few_shot_examples"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "be3a9982466cf852c0296d5e5856cc51b19b897173ff4d99c1c06deded51d358",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-291",
+      "split": "held_out",
+      "task_family": "software_engineering",
+      "category": "unsupported_factual_claim",
+      "prompt_text": "Perform software_engineering operation 291 with potential defect unsupported_factual_claim in execution logic.",
+      "expected_defects": [
+        "unsupported_factual_claim"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "31af6da79a89f7b987aea8515f6611c62af3d1e524d8ff46c49ef9ad18860a09",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-292",
+      "split": "held_out",
+      "task_family": "research_intelligence",
+      "category": "overconfidence_bias",
+      "prompt_text": "Perform research_intelligence operation 292 with potential defect overconfidence_bias in execution logic.",
+      "expected_defects": [
+        "overconfidence_bias"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "ffa762cc944948c4482b3fe25e3980b3687659838618eb0dc9cda7a8ffafd984",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-293",
+      "split": "held_out",
+      "task_family": "ai_agent_development",
+      "category": "missing_test_strategy",
+      "prompt_text": "Perform ai_agent_development operation 293 with potential defect missing_test_strategy in execution logic.",
+      "expected_defects": [
+        "missing_test_strategy"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "ef8f7b18ddf9336a50e184adc011ebe6055dca155caebe73ad99c035a65b1093",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-294",
+      "split": "held_out",
+      "task_family": "business_strategy",
+      "category": "compliant_control",
+      "prompt_text": "Design a clean, headless FastAPI backend for business_strategy scenario 294. Strictly no frontend UI components. Return strict JSON conforming to the provided schema with comprehensive unit tests and error handling.",
+      "expected_defects": [],
+      "expected_severity": "NONE",
+      "expected_release_blocked": false,
+      "content_hash": "b954d1f8f22752968baf7654e027e72cc5229f769d45261bff35ac45038462e5",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-295",
+      "split": "held_out",
+      "task_family": "prompt_improvement",
+      "category": "ambiguity",
+      "prompt_text": "Make the system somehow better, fast, and nice for users in prompt_improvement case 295.",
+      "expected_defects": [
+        "ambiguity"
+      ],
+      "expected_severity": "HIGH",
+      "expected_release_blocked": true,
+      "content_hash": "3f02a22d4083f5483bfcabdc05fa851f67afe77d0bdd06fa15cd9c85047bb12e",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-296",
+      "split": "held_out",
+      "task_family": "product_development",
+      "category": "vagueness",
+      "prompt_text": "Perform product_development operation 296 with potential defect vagueness in execution logic.",
+      "expected_defects": [
+        "vagueness"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "16b8fde8f4a5dd65ae2d17697b92a0533bfae38832e54a27732ee74f88634a4a",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-297",
+      "split": "held_out",
+      "task_family": "writing_content",
+      "category": "unbounded_scope",
+      "prompt_text": "Perform writing_content operation 297 with potential defect unbounded_scope in execution logic.",
+      "expected_defects": [
+        "unbounded_scope"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "d3aef28fe040dd417cb932e7c27a5838b7bd57cd6f15a032526b5b72cbe14c42",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-298",
+      "split": "held_out",
+      "task_family": "data_analysis",
+      "category": "missing_negative_constraints",
+      "prompt_text": "Build an API service for data_analysis case 298. Do whatever works best without any negative constraints or boundary limits.",
+      "expected_defects": [
+        "missing_negative_constraints"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "de6765a2de3bfe966cc1a9606e35073386eebfe06f6c09c115115068bf1b609d",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-299",
+      "split": "held_out",
+      "task_family": "technical_documentation",
+      "category": "weak_boundary_conditions",
+      "prompt_text": "Perform technical_documentation operation 299 with potential defect weak_boundary_conditions in execution logic.",
+      "expected_defects": [
+        "weak_boundary_conditions"
+      ],
+      "expected_severity": "MEDIUM",
+      "expected_release_blocked": false,
+      "content_hash": "925ebc2e2ebe458bf16ba59ce4487073629bf07a45872df4b88785c9e3f8e8ac",
+      "label_provenance": "expert_curated_benchmark_v7"
+    },
+    {
+      "id": "AUTOPSY-300",
+      "split": "held_out",
+      "task_family": "education_learning",
+      "category": "compliant_control",
+      "prompt_text": "Design a clean, headless FastAPI backend for education_learning scenario 300. Strictly no frontend UI components. Return strict JSON conforming to the provided schema with comprehensive unit tests and error handling.",
+      "expected_defects": [],
+      "expected_severity": "NONE",
+      "expected_release_blocked": false,
+      "content_hash": "28ee5ee70269f585afba20c27a7d459cbcbb7f778c6173732ac2113eeb075e1f",
+      "label_provenance": "expert_curated_benchmark_v7"
+    }
+  ]
+}

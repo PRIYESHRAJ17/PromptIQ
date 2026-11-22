@@ -138,6 +138,19 @@ TOOLS = [
             "required": ["project_id"],
         },
     },
+    {
+        "name": "forge.execute_agent_task",
+        "description": "Execute an objective through the PromptIQ autonomous observe-decide-act agent loop with tool permissions.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "objective": {"type": "string", "description": "High-level goal or task objective"},
+                "task_type": {"type": "string", "default": "software_engineering"},
+                "max_iterations": {"type": "integer", "default": 10},
+            },
+            "required": ["objective"],
+        },
+    },
 ]
 
 
@@ -229,6 +242,25 @@ async def _dispatch_tool(
         req = ContextPackRequest(max_token_budget=arguments.get("max_token_budget", 8000))
         res = await ContextCompiler.compile_context(db, arguments["project_id"], user_id, req)
         return res.model_dump()
+
+    elif tool_name == "forge.execute_agent_task":
+        from promptiq.orchestrator.agent_loop import AutonomousAgentLoop
+
+        agent = AutonomousAgentLoop()
+        summary = await agent.run(
+            objective=arguments["objective"],
+            task_name=f"MCP-Agent-{arguments['objective'][:30]}",
+            task_type=arguments.get("task_type", "software_engineering"),
+            max_iterations=arguments.get("max_iterations", 10),
+        )
+        return {
+            "status": summary.status,
+            "plan_id": summary.plan_id,
+            "total_iterations": summary.total_iterations,
+            "total_tokens_used": summary.total_tokens_used,
+            "deliverable": summary.deliverable,
+            "replan_count": summary.replan_count,
+        }
 
     else:
         raise ValueError(f"Unknown MCP tool '{tool_name}'")

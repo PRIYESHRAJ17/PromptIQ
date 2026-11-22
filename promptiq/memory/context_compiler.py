@@ -31,7 +31,9 @@ class ContextCompiler:
             d_text = (
                 str(d.get("decision", "") if isinstance(d, dict) else getattr(d, "decision", ""))
                 + " "
-                + str(d.get("rationale", "") if isinstance(d, dict) else getattr(d, "rationale", ""))
+                + str(
+                    d.get("rationale", "") if isinstance(d, dict) else getattr(d, "rationale", "")
+                )
             ).lower()
             d_id = str(d.get("id", "DEC") if isinstance(d, dict) else getattr(d, "id", "DEC"))
 
@@ -177,7 +179,9 @@ class ContextCompiler:
         # Memory Conflict Detection
         conflicts = cls.detect_memory_conflicts(decisions, raw_reqs)
         if conflicts:
-            sections.append("## DETECTED MEMORY CONFLICTS\n" + "\n".join([f"- WARNING: {c}" for c in conflicts]))
+            sections.append(
+                "## DETECTED MEMORY CONFLICTS\n" + "\n".join([f"- WARNING: {c}" for c in conflicts])
+            )
             items_included.append("conflicts")
 
         # 6. Latest Checkpoint Snapshot

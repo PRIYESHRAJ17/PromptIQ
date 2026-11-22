@@ -6,6 +6,8 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 
+from promptiq.core.logging import logger
+
 
 class TaskExecutionMethod(StrEnum):
     DETERMINISTIC_CODE = "deterministic_code"
@@ -49,10 +51,12 @@ class ExecutionPlan(BaseModel):
     task_name: str
     task_type: str
     complexity: str
+    plan_version: int = 1
     critical_path: list[str] = Field(default_factory=list)
     subtasks: list[SubtaskNode] = Field(default_factory=list)
     created_at: float = Field(default_factory=time.time)
     status: str = "initialized"  # initialized, in_progress, completed, failed
+    replan_history: list[dict[str, Any]] = Field(default_factory=list)
 
 
 class ExecutionLoopStage(StrEnum):
@@ -99,7 +103,11 @@ class TaskPlanningEngine:
         )
 
         # 2. Research & Grounding (if research or complex engineering)
-        if task_type in ("research_intelligence", "software_engineering", "ai_agent_development") or complexity in ("high", "extreme"):
+        if task_type in (
+            "research_intelligence",
+            "software_engineering",
+            "ai_agent_development",
+        ) or complexity in ("high", "extreme"):
             subtasks.append(
                 SubtaskNode(
                     id="task-02-research",
@@ -112,7 +120,11 @@ class TaskPlanningEngine:
             )
 
         # 3. Specification & Constitution Alignment
-        deps_for_spec = ["task-02-research"] if any(t.id == "task-02-research" for t in subtasks) else ["task-01-intent"]
+        deps_for_spec = (
+            ["task-02-research"]
+            if any(t.id == "task-02-research" for t in subtasks)
+            else ["task-01-intent"]
+        )
         subtasks.append(
             SubtaskNode(
                 id="task-03-specification",
@@ -210,3 +222,116 @@ class TaskPlanningEngine:
                     executable.append(subtask)
 
         return executable
+
+    @classmethod
+    def mark_subtask_completed(
+        cls,
+        plan: ExecutionPlan,
+        subtask_id: str,
+        output: Any,
+        duration_ms: float = 0.0,
+    ) -> bool:
+        """Marks a subtask as COMPLETED with output and execution duration."""
+        for t in plan.subtasks:
+            if t.id == subtask_id:
+                t.status = SubtaskStatus.COMPLETED
+                t.output = output
+                t.execution_duration_ms = duration_ms
+                t.error_message = None
+                return True
+        return False
+
+    @classmethod
+    def mark_subtask_failed(
+        cls,
+        plan: ExecutionPlan,
+        subtask_id: str,
+        error_message: str,
+    ) -> bool:
+        """Marks a subtask as FAILED and records the error message."""
+        for t in plan.subtasks:
+            if t.id == subtask_id:
+                t.status = SubtaskStatus.FAILED
+                t.error_message = error_message
+                return True
+        return False
+
+    @classmethod
+    def replan_on_failure(
+        cls,
+        plan: ExecutionPlan,
+        failed_subtask_id: str,
+        error_message: str,
+        recovery_strategy: str = "fallback",
+    ) -> ExecutionPlan:
+        """Dynamically adapts the execution plan when an action or subtask fails."""
+        target_subtask: SubtaskNode | None = None
+        for t in plan.subtasks:
+            if t.id == failed_subtask_id:
+                target_subtask = t
+                break
+
+        if not target_subtask:
+            return plan
+
+        plan.plan_version += 1
+        history_entry = {
+            "version": plan.plan_version,
+            "failed_subtask_id": failed_subtask_id,
+            "error_message": error_message,
+            "strategy": recovery_strategy,
+            "timestamp": time.time(),
+        }
+        plan.replan_history.append(history_entry)
+        logger.warning(
+            f"Replanning plan '{plan.plan_id}' to version {plan.plan_version} due to failure in '{failed_subtask_id}' (strategy: {recovery_strategy})"
+        )
+
+        if recovery_strategy == "retry" and target_subtask.retry_count < target_subtask.max_retries:
+            target_subtask.retry_count += 1
+            target_subtask.status = SubtaskStatus.PENDING
+            target_subtask.error_message = (
+                f"Retry {target_subtask.retry_count}/{target_subtask.max_retries}: {error_message}"
+            )
+        elif recovery_strategy == "skip":
+            target_subtask.status = SubtaskStatus.SKIPPED
+            target_subtask.error_message = error_message
+            # Remove this subtask from dependencies of downstream subtasks so they aren't deadlocked
+            for t in plan.subtasks:
+                if failed_subtask_id in t.dependencies:
+                    t.dependencies.remove(failed_subtask_id)
+        else:
+            # Fallback strategy: inject corrective node
+            fallback_id = f"fallback-{failed_subtask_id}-{plan.plan_version}"
+            fallback_node = SubtaskNode(
+                id=fallback_id,
+                name=f"Fallback Recovery: {target_subtask.name}",
+                objective=f"Alternative execution after '{failed_subtask_id}' failed: {error_message}",
+                dependencies=list(target_subtask.dependencies),
+                execution_method=TaskExecutionMethod.DETERMINISTIC_CODE,
+                verification_criteria="Fallback recovery state recorded",
+                failure_strategy="skip",
+            )
+            target_subtask.status = SubtaskStatus.FAILED
+            target_subtask.error_message = error_message
+
+            # Insert fallback node immediately after failed node
+            idx = plan.subtasks.index(target_subtask)
+            plan.subtasks.insert(idx + 1, fallback_node)
+
+            # Redirect dependencies that depended on failed node to depend on fallback node instead
+            for t in plan.subtasks:
+                if failed_subtask_id in t.dependencies and t.id != fallback_id:
+                    t.dependencies = [
+                        dep if dep != failed_subtask_id else fallback_id for dep in t.dependencies
+                    ]
+
+        return plan
+
+    @classmethod
+    def is_plan_completed(cls, plan: ExecutionPlan) -> bool:
+        """Returns True if all non-skipped subtasks have reached a terminal state."""
+        return all(
+            t.status in (SubtaskStatus.COMPLETED, SubtaskStatus.SKIPPED, SubtaskStatus.FAILED)
+            for t in plan.subtasks
+        ) and any(t.status == SubtaskStatus.COMPLETED for t in plan.subtasks)

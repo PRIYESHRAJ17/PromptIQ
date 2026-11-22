@@ -183,7 +183,9 @@ class AcceptanceTraceValidator:
                 self._record_error("scenario_id", "Scenario missing valid non-empty 'scenario_id'")
                 continue
             if sid in seen_ids:
-                self._record_error("duplicate_id", f"Duplicate scenario ID found: '{sid}'", scenario_id=sid)
+                self._record_error(
+                    "duplicate_id", f"Duplicate scenario ID found: '{sid}'", scenario_id=sid
+                )
             seen_ids.add(sid)
 
     def validate_state_transitions(self, scenario: dict[str, Any]) -> None:
@@ -192,14 +194,20 @@ class AcceptanceTraceValidator:
         sid = scenario.get("scenario_id", "UNKNOWN")
         transitions = scenario.get("transitions", [])
         if not transitions:
-            self._record_error("transitions", "Scenario contains zero recorded transitions", scenario_id=sid)
+            self._record_error(
+                "transitions", "Scenario contains zero recorded transitions", scenario_id=sid
+            )
             return
 
         for t in transitions:
             from_s = t.get("from_state")
             to_s = t.get("to_state")
             if not from_s or not to_s:
-                self._record_error("transition_states", "Transition missing from_state or to_state", scenario_id=sid)
+                self._record_error(
+                    "transition_states",
+                    "Transition missing from_state or to_state",
+                    scenario_id=sid,
+                )
                 continue
 
             # Idempotent re-evaluation
@@ -296,7 +304,11 @@ class AcceptanceTraceValidator:
             rtype = c.get("evidence_record_type")
 
             # In terminal success or completed_with_warnings, mandatory criteria must be satisfied
-            if term_state in ("SUCCESS_FULLY_VERIFIED", "COMPLETED_WITH_WARNINGS") and is_mand and not satisfied:
+            if (
+                term_state in ("SUCCESS_FULLY_VERIFIED", "COMPLETED_WITH_WARNINGS")
+                and is_mand
+                and not satisfied
+            ):
                 self._record_error(
                     "unsatisfied_mandatory_criterion",
                     f"Mandatory criterion '{cid}' is unsatisfied in terminal state '{term_state}'",
@@ -313,7 +325,24 @@ class AcceptanceTraceValidator:
                         entity_id=cid,
                     )
                 # Check for verifiable reference (token or field)
-                has_ref_token = any(tok in str(evidence) for tok in ["SHA-256", "hash:", "ID:", "id:", "0x", "test_", "artifact", "SC", "pkg-", "PRD-", "TASK-", "rubric", "score"])
+                has_ref_token = any(
+                    tok in str(evidence)
+                    for tok in [
+                        "SHA-256",
+                        "hash:",
+                        "ID:",
+                        "id:",
+                        "0x",
+                        "test_",
+                        "artifact",
+                        "SC",
+                        "pkg-",
+                        "PRD-",
+                        "TASK-",
+                        "rubric",
+                        "score",
+                    ]
+                )
                 if is_mand and not (ref or data or has_ref_token):
                     self._record_error(
                         "unsupported_prose_evidence",
@@ -375,7 +404,9 @@ class AcceptanceTraceValidator:
         res_events = scenario.get("resolution_events", [])
 
         # Map resolution events
-        resolved_finding_ids = {r.get("finding_id") for r in res_events if r.get("status") == "resolved"}
+        resolved_finding_ids = {
+            r.get("finding_id") for r in res_events if r.get("status") == "resolved"
+        }
 
         # Check resolution event integrity
         for rev in res_events:
@@ -383,9 +414,19 @@ class AcceptanceTraceValidator:
             fid = rev.get("finding_id")
             rev_hash = rev.get("revised_artifact_hash")
             if not fid:
-                self._record_error("orphan_resolution_event", f"Resolution event '{rid}' lacks finding_id", scenario_id=sid, entity_id=rid)
+                self._record_error(
+                    "orphan_resolution_event",
+                    f"Resolution event '{rid}' lacks finding_id",
+                    scenario_id=sid,
+                    entity_id=rid,
+                )
             if not rev_hash or len(rev_hash) < 16:
-                self._record_error("invalid_resolution_hash", f"Resolution event '{rid}' lacks valid revised_artifact_hash", scenario_id=sid, entity_id=rid)
+                self._record_error(
+                    "invalid_resolution_hash",
+                    f"Resolution event '{rid}' lacks valid revised_artifact_hash",
+                    scenario_id=sid,
+                    entity_id=rid,
+                )
 
         # In the active findings ledger (autopsy_findings):
         for f in aut_findings:
@@ -437,13 +478,25 @@ class AcceptanceTraceValidator:
 
         if term_state == "SUCCESS_FULLY_VERIFIED":
             if warnings:
-                self._record_error("warnings_in_fully_verified", f"SUCCESS_FULLY_VERIFIED has {len(warnings)} warnings", scenario_id=sid)
+                self._record_error(
+                    "warnings_in_fully_verified",
+                    f"SUCCESS_FULLY_VERIFIED has {len(warnings)} warnings",
+                    scenario_id=sid,
+                )
             if warning_records:
-                self._record_error("warning_records_in_fully_verified", f"SUCCESS_FULLY_VERIFIED has {len(warning_records)} warning_records", scenario_id=sid)
+                self._record_error(
+                    "warning_records_in_fully_verified",
+                    f"SUCCESS_FULLY_VERIFIED has {len(warning_records)} warning_records",
+                    scenario_id=sid,
+                )
 
         elif term_state == "COMPLETED_WITH_WARNINGS":
             if not warnings and not unres:
-                self._record_error("completed_with_warnings_missing_warnings", "COMPLETED_WITH_WARNINGS has empty warnings array", scenario_id=sid)
+                self._record_error(
+                    "completed_with_warnings_missing_warnings",
+                    "COMPLETED_WITH_WARNINGS has empty warnings array",
+                    scenario_id=sid,
+                )
             if len(warnings) != len(warning_records):
                 self._record_error(
                     "warning_count_mismatch",
@@ -459,7 +512,11 @@ class AcceptanceTraceValidator:
         term_state = scenario.get("terminal_state")
 
         if term_state in ("SUCCESS_FULLY_VERIFIED", "COMPLETED_WITH_WARNINGS") and not bindings:
-            self._record_error("missing_artifacts", "Completed scenario has zero artifact bindings", scenario_id=sid)
+            self._record_error(
+                "missing_artifacts",
+                "Completed scenario has zero artifact bindings",
+                scenario_id=sid,
+            )
             return
 
         for b in bindings:
@@ -470,14 +527,29 @@ class AcceptanceTraceValidator:
             retrievable = b.get("retrievable", False)
 
             if not chash or len(chash) != 64:
-                self._record_error("invalid_artifact_hash", f"Artifact '{aid}' has invalid SHA-256 hash '{chash}'", scenario_id=sid, entity_id=aid)
+                self._record_error(
+                    "invalid_artifact_hash",
+                    f"Artifact '{aid}' has invalid SHA-256 hash '{chash}'",
+                    scenario_id=sid,
+                    entity_id=aid,
+                )
 
             if bsize <= 0:
-                self._record_error("invalid_artifact_byte_size", f"Artifact '{aid}' has invalid byte size {bsize}", scenario_id=sid, entity_id=aid)
+                self._record_error(
+                    "invalid_artifact_byte_size",
+                    f"Artifact '{aid}' has invalid byte size {bsize}",
+                    scenario_id=sid,
+                    entity_id=aid,
+                )
 
             if term_state in ("SUCCESS_FULLY_VERIFIED", "COMPLETED_WITH_WARNINGS"):
                 if not persisted or not retrievable:
-                    self._record_error("artifact_not_retrievable", f"Artifact '{aid}' is not marked persisted and retrievable", scenario_id=sid, entity_id=aid)
+                    self._record_error(
+                        "artifact_not_retrievable",
+                        f"Artifact '{aid}' is not marked persisted and retrievable",
+                        scenario_id=sid,
+                        entity_id=aid,
+                    )
 
     def validate_execution_provenance(self, scenario: dict[str, Any]) -> None:
         """Validates that mock execution is never labeled live or LIVE_PROVIDER."""
@@ -509,7 +581,10 @@ class AcceptanceTraceValidator:
         for claim in research_claims:
             src_type = str(claim.get("source_type", "")).lower()
             cls_mode = str(claim.get("retrieval_classification", "")).upper()
-            if src_type in ("mock", "simulated", "synthetic") and cls_mode in ("LIVE_SEARCH", "LIVE_EXTERNAL"):
+            if src_type in ("mock", "simulated", "synthetic") and cls_mode in (
+                "LIVE_SEARCH",
+                "LIVE_EXTERNAL",
+            ):
                 self._record_error(
                     "simulated_research_labeled_live",
                     f"Simulated research claim '{claim.get('id')}' is illegally classified as '{cls_mode}'",
@@ -526,7 +601,9 @@ class AcceptanceTraceValidator:
         for ev in evals:
             is_replayed = ev.get("is_replayed", False) or ev.get("cached", False)
             emode = str(ev.get("execution_mode", "")).upper()
-            has_replay_provenance = ev.get("replay_provenance_id") or ev.get("resumed_from_request_id")
+            has_replay_provenance = ev.get("replay_provenance_id") or ev.get(
+                "resumed_from_request_id"
+            )
             if is_replayed and emode == "LIVE" and not has_replay_provenance:
                 self._record_error(
                     "replayed_provider_call_labeled_fresh",
@@ -580,7 +657,9 @@ class AcceptanceTraceValidator:
 
         self.validate_structure_and_ids()
 
-        scenarios = self.trace_data.get("scenarios", []) if isinstance(self.trace_data, dict) else []
+        scenarios = (
+            self.trace_data.get("scenarios", []) if isinstance(self.trace_data, dict) else []
+        )
         for s in scenarios:
             sid = s.get("scenario_id", "UNKNOWN")
             err_count_before = len(self.errors)
@@ -617,7 +696,9 @@ class AcceptanceTraceValidator:
         self, db: AsyncSession | None = None
     ) -> AuthoritativePersistenceReport:
         """Executes multi-layered authoritative persistence verification across all 5 layers."""
-        scenarios = self.trace_data.get("scenarios", []) if isinstance(self.trace_data, dict) else []
+        scenarios = (
+            self.trace_data.get("scenarios", []) if isinstance(self.trace_data, dict) else []
+        )
 
         # Layer A: Trace Self-Consistency
         layer_a_errors: list[str] = []
@@ -636,22 +717,30 @@ class AcceptanceTraceValidator:
                 if not aid:
                     layer_a_errors.append(f"[{sid}] Binding missing artifact_id")
                 if not chash or len(chash) != 64:
-                    layer_a_errors.append(f"[{sid}] Binding '{aid}' has invalid SHA-256 hash: {chash}")
+                    layer_a_errors.append(
+                        f"[{sid}] Binding '{aid}' has invalid SHA-256 hash: {chash}"
+                    )
                 if bsize <= 0:
-                    layer_a_errors.append(f"[{sid}] Binding '{aid}' has non-positive byte_size: {bsize}")
+                    layer_a_errors.append(
+                        f"[{sid}] Binding '{aid}' has non-positive byte_size: {bsize}"
+                    )
 
             # Check criteria reference resolution
             for c in s.get("acceptance_criteria", []):
                 ref = c.get("evidence_reference")
                 rtype = c.get("evidence_record_type")
                 if rtype == "artifact" and ref and ref not in bound_ids:
-                    layer_a_errors.append(f"[{sid}] Criterion '{c.get('id')}' references unbound artifact ID '{ref}'")
+                    layer_a_errors.append(
+                        f"[{sid}] Criterion '{c.get('id')}' references unbound artifact ID '{ref}'"
+                    )
 
             # Check resolution events resolution
             for r in s.get("resolution_events", []):
                 rev_hash = r.get("revised_artifact_hash")
                 if rev_hash and rev_hash not in bound_hashes:
-                    layer_a_errors.append(f"[{sid}] Resolution event '{r.get('resolution_id')}' references unbound hash '{rev_hash}'")
+                    layer_a_errors.append(
+                        f"[{sid}] Resolution event '{r.get('resolution_id')}' references unbound hash '{rev_hash}'"
+                    )
 
         layer_a = LayerResult(
             layer="Layer A",
@@ -696,21 +785,35 @@ class AcceptanceTraceValidator:
                             src_res = await db.execute(src_stmt)
                             src = src_res.scalar_one_or_none()
                             if src:
-                                job_stmt = select(ResearchJob).where(ResearchJob.id == src.research_job_id)
+                                job_stmt = select(ResearchJob).where(
+                                    ResearchJob.id == src.research_job_id
+                                )
                                 job_res = await db.execute(job_stmt)
                                 job = job_res.scalar_one_or_none()
-                                db_records[aid] = ("SourceRecord", src, job.project_id if job else None)
+                                db_records[aid] = (
+                                    "SourceRecord",
+                                    src,
+                                    job.project_id if job else None,
+                                )
                             else:
                                 claim_stmt = select(EvidenceClaim).where(EvidenceClaim.id == aid)
                                 claim_res = await db.execute(claim_stmt)
                                 claim = claim_res.scalar_one_or_none()
                                 if claim:
-                                    job_stmt = select(ResearchJob).where(ResearchJob.id == claim.research_job_id)
+                                    job_stmt = select(ResearchJob).where(
+                                        ResearchJob.id == claim.research_job_id
+                                    )
                                     job_res = await db.execute(job_stmt)
                                     job = job_res.scalar_one_or_none()
-                                    db_records[aid] = ("EvidenceClaim", claim, job.project_id if job else None)
+                                    db_records[aid] = (
+                                        "EvidenceClaim",
+                                        claim,
+                                        job.project_id if job else None,
+                                    )
                                 elif b.get("persisted", False):
-                                    layer_b_errors.append(f"[{sid}] Persisted artifact '{aid}' does not exist in database")
+                                    layer_b_errors.append(
+                                        f"[{sid}] Persisted artifact '{aid}' does not exist in database"
+                                    )
 
             layer_b = LayerResult(
                 layer="Layer B",
@@ -754,7 +857,9 @@ class AcceptanceTraceValidator:
                         # Check manifest, joined files text, or serialized JSON files
                         raw_files = json.dumps(rec.files, sort_keys=True).encode("utf-8")
                         calc_hash = hashlib.sha256(raw_files).hexdigest()
-                        raw_text = "\n\n".join(rec.files.values()).encode("utf-8") if rec.files else b""
+                        raw_text = (
+                            "\n\n".join(rec.files.values()).encode("utf-8") if rec.files else b""
+                        )
                         calc_text_hash = hashlib.sha256(raw_text).hexdigest() if raw_text else ""
                         pkg_hash = rec.manifest.get("package_hash") or calc_hash
                         valid_hashes = {h for h in (pkg_hash, calc_hash, calc_text_hash) if h}
@@ -814,7 +919,9 @@ class AcceptanceTraceValidator:
                     p_res = await db.execute(proj_stmt)
                     proj = p_res.scalar_one_or_none()
                     if not proj:
-                        layer_d_errors.append(f"[{sid}] Project '{proj_id}' for artifact '{aid}' not found")
+                        layer_d_errors.append(
+                            f"[{sid}] Project '{proj_id}' for artifact '{aid}' not found"
+                        )
                     elif scenario_ws and proj.workspace_id != scenario_ws:
                         layer_d_errors.append(
                             f"[{sid}] Cross-tenant violation: Artifact '{aid}' owned by workspace '{proj.workspace_id}', accessed in '{scenario_ws}'"
@@ -839,12 +946,16 @@ class AcceptanceTraceValidator:
 
             if mode == "LIVE_PROVIDER":
                 if not prov_req_id or not prov_req_id.strip():
-                    layer_e_errors.append(f"[{sid}] LIVE_PROVIDER execution missing provider_request_id")
+                    layer_e_errors.append(
+                        f"[{sid}] LIVE_PROVIDER execution missing provider_request_id"
+                    )
                 if not model_id or not model_id.strip():
                     layer_e_errors.append(f"[{sid}] LIVE_PROVIDER execution missing model_id")
             elif mode in ("MOCK", "SYNTHETIC"):
                 if prov_req_id and "live" in prov_req_id.lower():
-                    layer_e_errors.append(f"[{sid}] Mock execution falsely claims live provider_request_id '{prov_req_id}'")
+                    layer_e_errors.append(
+                        f"[{sid}] Mock execution falsely claims live provider_request_id '{prov_req_id}'"
+                    )
 
         layer_e = LayerResult(
             layer="Layer E",
@@ -868,7 +979,13 @@ class AcceptanceTraceValidator:
         tot_checked = len(all_bindings)
         ver_count = len(db_records) - len(layer_c_errors) if db else 0
         unver_count = tot_checked if db is None else 0
-        failed_count = len(layer_a_errors) + len(layer_b_errors) + len(layer_c_errors) + len(layer_d_errors) + len(layer_e_errors)
+        failed_count = (
+            len(layer_a_errors)
+            + len(layer_b_errors)
+            + len(layer_c_errors)
+            + len(layer_d_errors)
+            + len(layer_e_errors)
+        )
 
         return AuthoritativePersistenceReport(
             is_valid=is_valid,

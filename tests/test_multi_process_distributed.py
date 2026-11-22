@@ -8,7 +8,9 @@ import time
 import uuid
 
 
-def _worker_claim_job(db_path: str, job_id: str, worker_id: str, result_queue: multiprocessing.Queue):
+def _worker_claim_job(
+    db_path: str, job_id: str, worker_id: str, result_queue: multiprocessing.Queue
+):
     """Child OS process worker attempting to atomically claim a job."""
     try:
         conn = sqlite3.connect(db_path, timeout=10.0)
@@ -16,7 +18,10 @@ def _worker_claim_job(db_path: str, job_id: str, worker_id: str, result_queue: m
         cursor.execute("PRAGMA busy_timeout = 5000;")
 
         # Check current lease
-        cursor.execute("SELECT status, lease_owner, lease_expires_at, fencing_token FROM workflow_jobs WHERE id = ?", (job_id,))
+        cursor.execute(
+            "SELECT status, lease_owner, lease_expires_at, fencing_token FROM workflow_jobs WHERE id = ?",
+            (job_id,),
+        )
         row = cursor.fetchone()
         if not row:
             result_queue.put((worker_id, False, "Job not found", 0))
@@ -26,7 +31,9 @@ def _worker_claim_job(db_path: str, job_id: str, worker_id: str, result_queue: m
         status, lease_owner, lease_expires_at, fencing_token = row
         now_ts = time.time()
 
-        if status in ("QUEUED", "RUNNING") and (lease_owner is None or lease_expires_at is None or lease_expires_at < now_ts):
+        if status in ("QUEUED", "RUNNING") and (
+            lease_owner is None or lease_expires_at is None or lease_expires_at < now_ts
+        ):
             # Attempt atomic update with optimistic locking
             new_fencing = (fencing_token or 0) + 1
             new_exp = now_ts + 30
@@ -36,7 +43,7 @@ def _worker_claim_job(db_path: str, job_id: str, worker_id: str, result_queue: m
                 SET status = 'RUNNING', lease_owner = ?, lease_expires_at = ?, fencing_token = ?
                 WHERE id = ? AND (lease_owner IS ? OR lease_expires_at < ? OR status = 'QUEUED')
                 """,
-                (worker_id, new_exp, new_fencing, job_id, lease_owner, now_ts)
+                (worker_id, new_exp, new_fencing, job_id, lease_owner, now_ts),
             )
             conn.commit()
             if cursor.rowcount > 0:
@@ -44,14 +51,18 @@ def _worker_claim_job(db_path: str, job_id: str, worker_id: str, result_queue: m
             else:
                 result_queue.put((worker_id, False, "Lost race to another process", fencing_token))
         else:
-            result_queue.put((worker_id, False, f"Job already leased to {lease_owner}", fencing_token))
+            result_queue.put(
+                (worker_id, False, f"Job already leased to {lease_owner}", fencing_token)
+            )
 
         conn.close()
     except Exception as exc:
         result_queue.put((worker_id, False, str(exc), 0))
 
 
-def _worker_reserve_quota(db_path: str, model_id: str, tokens: int, worker_id: str, result_queue: multiprocessing.Queue):
+def _worker_reserve_quota(
+    db_path: str, model_id: str, tokens: int, worker_id: str, result_queue: multiprocessing.Queue
+):
     """Child OS process worker attempting to atomically reserve quota against shared ledger."""
     try:
         conn = sqlite3.connect(db_path, timeout=10.0)
@@ -61,7 +72,7 @@ def _worker_reserve_quota(db_path: str, model_id: str, tokens: int, worker_id: s
         # Read limit and current usage
         cursor.execute(
             "SELECT SUM(allocated_tokens) FROM quota_reservations WHERE model_id = ? AND status = 'HELD'",
-            (model_id,)
+            (model_id,),
         )
         row = cursor.fetchone()
         current_reserved = row[0] or 0
@@ -74,7 +85,7 @@ def _worker_reserve_quota(db_path: str, model_id: str, tokens: int, worker_id: s
                 INSERT INTO quota_reservations (id, reservation_id, model_id, allocated_tokens, status, expires_at)
                 VALUES (?, ?, ?, ?, 'HELD', ?)
                 """,
-                (res_id, res_id, model_id, tokens, time.time() + 60)
+                (res_id, res_id, model_id, tokens, time.time() + 60),
             )
             conn.commit()
             result_queue.put((worker_id, True, tokens))
@@ -107,15 +118,19 @@ def test_multiprocess_job_claim_mutual_exclusion():
         job_id = f"job-{uuid.uuid4()}"
         cursor.execute(
             "INSERT INTO workflow_jobs (id, status, lease_owner, lease_expires_at, fencing_token) VALUES (?, 'QUEUED', NULL, NULL, 0)",
-            (job_id,)
+            (job_id,),
         )
         conn.commit()
         conn.close()
 
         # Spawn 2 OS processes
         q = multiprocessing.Queue()
-        p1 = multiprocessing.Process(target=_worker_claim_job, args=(db_path, job_id, "worker-OS-1", q))
-        p2 = multiprocessing.Process(target=_worker_claim_job, args=(db_path, job_id, "worker-OS-2", q))
+        p1 = multiprocessing.Process(
+            target=_worker_claim_job, args=(db_path, job_id, "worker-OS-1", q)
+        )
+        p2 = multiprocessing.Process(
+            target=_worker_claim_job, args=(db_path, job_id, "worker-OS-2", q)
+        )
 
         p1.start()
         p2.start()
@@ -167,7 +182,9 @@ def test_multiprocess_quota_concurrency_hard_limit():
         # Each worker asks for 2000 tokens against a 5000 limit -> at most 2 can succeed
         q = multiprocessing.Queue()
         workers = [
-            multiprocessing.Process(target=_worker_reserve_quota, args=(db_path, "gpt-oss-120b", 2000, f"w-{i}", q))
+            multiprocessing.Process(
+                target=_worker_reserve_quota, args=(db_path, "gpt-oss-120b", 2000, f"w-{i}", q)
+            )
             for i in range(4)
         ]
 

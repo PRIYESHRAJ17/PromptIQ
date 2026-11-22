@@ -402,7 +402,9 @@ def test_negative_22_unresolvable_artifact_hash_in_evidence(base_valid_trace):
     """Failure Mode 22: Mandatory criterion references fabricated artifact hash not in artifact_bindings."""
     trace = copy.deepcopy(base_valid_trace)
     phantom_hash = "f" * 64
-    trace["scenarios"][0]["acceptance_criteria"][0]["evidence"] = f"Artifact bound with SHA-256 hash: {phantom_hash}"
+    trace["scenarios"][0]["acceptance_criteria"][0]["evidence"] = (
+        f"Artifact bound with SHA-256 hash: {phantom_hash}"
+    )
     validator = AcceptanceTraceValidator(trace)
     report = validator.validate_all()
     assert report.is_valid is False
@@ -413,7 +415,9 @@ def test_negative_23_unresolvable_artifact_id_in_evidence(base_valid_trace):
     """Failure Mode 23: Mandatory criterion claims artifact reference ID not in artifact_bindings."""
     trace = copy.deepcopy(base_valid_trace)
     trace["scenarios"][0]["acceptance_criteria"][0]["evidence_record_type"] = "artifact"
-    trace["scenarios"][0]["acceptance_criteria"][0]["evidence_reference"] = "phantom-artifact-uuid-999"
+    trace["scenarios"][0]["acceptance_criteria"][0]["evidence_reference"] = (
+        "phantom-artifact-uuid-999"
+    )
     validator = AcceptanceTraceValidator(trace)
     report = validator.validate_all()
     assert report.is_valid is False

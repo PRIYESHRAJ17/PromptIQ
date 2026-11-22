@@ -4,7 +4,11 @@ import pytest
 from httpx import AsyncClient
 
 
-async def _register_user(client: AsyncClient, email: str = "session_test@promptiq.dev", password: str = "StrongPassword123!"):
+async def _register_user(
+    client: AsyncClient,
+    email: str = "session_test@promptiq.dev",
+    password: str = "StrongPassword123!",
+):
     res = await client.post(
         "/api/v1/auth/register",
         json={

@@ -106,8 +106,10 @@ class AcceptanceCriterion(BaseModel):
     is_mandatory: bool = True
     satisfied: bool = False
     evidence: str | None = None
-    evidence_record_type: str | None = None  # artifact, hash, db_record, eval_run, provider_request, state_transition
-    evidence_reference: str | None = None   # artifact_id, sha256_hash, db_id, etc.
+    evidence_record_type: str | None = (
+        None  # artifact, hash, db_record, eval_run, provider_request, state_transition
+    )
+    evidence_reference: str | None = None  # artifact_id, sha256_hash, db_id, etc.
     verifiable_data: dict[str, Any] | None = None
     evaluated_at: datetime | None = None
 

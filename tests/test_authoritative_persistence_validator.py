@@ -233,7 +233,9 @@ async def test_failure_mode_8_false_resolution_unbound_hash(
     base_valid_trace_dict: dict,
 ) -> None:
     """8. Resolution event with unbound hash fails Layer A (Trace Self-Consistency)."""
-    base_valid_trace_dict["scenarios"][0]["resolution_events"][0]["revised_artifact_hash"] = "e" * 64
+    base_valid_trace_dict["scenarios"][0]["resolution_events"][0]["revised_artifact_hash"] = (
+        "e" * 64
+    )
     validator = AcceptanceTraceValidator(base_valid_trace_dict)
     report = await validator.validate_authoritative_persistence(db=None)
     assert not report.is_valid
@@ -263,7 +265,9 @@ async def test_failure_mode_10_unbound_artifact_reference_in_criteria(
     base_valid_trace_dict: dict,
 ) -> None:
     """10. Criterion referencing unbound artifact ID fails Layer A."""
-    base_valid_trace_dict["scenarios"][0]["acceptance_criteria"][0]["evidence_reference"] = "art-unbound-999"
+    base_valid_trace_dict["scenarios"][0]["acceptance_criteria"][0]["evidence_reference"] = (
+        "art-unbound-999"
+    )
     validator = AcceptanceTraceValidator(base_valid_trace_dict)
     report = await validator.validate_authoritative_persistence(db=None)
     assert not report.is_valid

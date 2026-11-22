@@ -51,6 +51,7 @@ class ExecutionProfile(StrEnum):
     STANDARD = "STANDARD"
     DEEP = "DEEP"
     HIGH_RISK = "HIGH_RISK"
+    AGENTIC = "AGENTIC"
 
 
 class ProviderPrivacyCard(BaseModel):
@@ -209,5 +210,7 @@ class MultiModelExecutionAuditRecord(BaseModel):
     critic_review: str | None = None
     revised_artifact: str | None = None
     resolution_breakdown: dict[str, list[str]] = Field(default_factory=dict)
+    plan_id: str | None = None
+    agent_plan_summary: dict[str, Any] | None = None
 
     model_config = ConfigDict(from_attributes=True)

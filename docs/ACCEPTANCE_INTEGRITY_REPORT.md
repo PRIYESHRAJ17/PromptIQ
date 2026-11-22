@@ -106,8 +106,12 @@ Direct transitions from `NEEDS_REVISION` to `SUCCESS_FULLY_VERIFIED` are strictl
 ### 3. Cryptographic Artifact Binding
 Every artifact inspected by Autopsy, evaluated by Test Lab, or persisted to database is bound by its SHA-256 digest:
 ```python
-binding = sm.register_artifact(artifact_id, artifact_type, content, version=1, persisted=True, retrievable=True)
-sm.verify_artifact_binding(artifact_id, content)  # Fails if content does not match binding.content_hash
+binding = sm.register_artifact(
+    artifact_id, artifact_type, content, version=1, persisted=True, retrievable=True
+)
+sm.verify_artifact_binding(
+    artifact_id, content
+)  # Fails if content does not match binding.content_hash
 ```
 
 ---

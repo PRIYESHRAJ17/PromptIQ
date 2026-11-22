@@ -10,6 +10,7 @@ from promptiq.core.logging import logger
 from promptiq.gateway.gateway import inference_gateway
 from promptiq.gateway.governor import governor
 from promptiq.gateway.models import GatewayMessage, InferenceRequest
+from promptiq.orchestrator.planner import TaskPlanningEngine
 from promptiq.orchestrator.roles import ModelRoleContract
 from promptiq.orchestrator.router import DynamicModelRouter
 from promptiq.schemas.model_pool import (
@@ -237,6 +238,18 @@ class MultiModelCollaborationPipeline:
         orch_latency = (time.perf_counter() - orch_step_start) * 1000.0
         total_tokens += orch_resp.tokens_used
 
+        # V7 Integration: Authoritative DAG Task Planning
+        dag_plan = TaskPlanningEngine.decompose_task(
+            task_name=f"Workflow-{workflow_id[:8]}",
+            task_type="software_engineering"
+            if any(k in prompt.lower() for k in ("backend", "api", "code", "database"))
+            else "prompt_synthesis",
+            goal=prompt[:200],
+            complexity="high"
+            if profile in (ExecutionProfile.DEEP, ExecutionProfile.AGENTIC)
+            else "medium",
+        )
+
         steps.append(
             ExecutionStepRecord(
                 step_number=step_number,
@@ -252,9 +265,16 @@ class MultiModelCollaborationPipeline:
                     "rate_limit_headers": orch_resp.rate_limit_headers,
                     "request_timestamp": orch_resp.request_timestamp,
                     "response_timestamp": orch_resp.response_timestamp,
+                    "plan_id": dag_plan.plan_id,
+                    "subtask_count": len(dag_plan.subtasks),
+                    "critical_path": dag_plan.critical_path,
                 },
                 verification_passed=True,
-                findings=["Workflow initialized", f"Profile: {profile.value}"],
+                findings=[
+                    "Workflow initialized",
+                    f"Profile: {profile.value}",
+                    f"Plan ID: {dag_plan.plan_id}",
+                ],
             )
         )
         step_number += 1
@@ -878,6 +898,8 @@ class MultiModelCollaborationPipeline:
             critic_review=crit_resp.text if crit_resp else None,
             revised_artifact=revised_text if rev_resp else None,
             resolution_breakdown=resolution_breakdown,
+            plan_id=dag_plan.plan_id,
+            agent_plan_summary=dag_plan.model_dump(mode="json"),
         )
 
         return final_text, audit_record

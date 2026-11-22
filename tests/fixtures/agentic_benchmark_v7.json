@@ -1,0 +1,636 @@
+{
+  "benchmark_version": "v7",
+  "total_tasks": 50,
+  "tasks": [
+    {
+      "task_id": "AGENT-001",
+      "task_family": "software_engineering",
+      "task_name": "Implement distributed idempotency key middleware for FastAPI",
+      "objective": "Implement distributed idempotency key middleware for FastAPI. Deliver verifiable artifacts with clear status.",
+      "complexity": "high",
+      "requires_replan": false,
+      "granted_permissions": [
+        "read_only",
+        "reversible_modification"
+      ],
+      "expected_status": "completed"
+    },
+    {
+      "task_id": "AGENT-002",
+      "task_family": "software_engineering",
+      "task_name": "Refactor legacy async database connection pooling to handle failover",
+      "objective": "Refactor legacy async database connection pooling to handle failover. Deliver verifiable artifacts with clear status.",
+      "complexity": "medium",
+      "requires_replan": true,
+      "granted_permissions": [
+        "read_only"
+      ],
+      "expected_status": "completed"
+    },
+    {
+      "task_id": "AGENT-003",
+      "task_family": "software_engineering",
+      "task_name": "Develop deterministic rate limiter using token bucket algorithm",
+      "objective": "Develop deterministic rate limiter using token bucket algorithm. Deliver verifiable artifacts with clear status.",
+      "complexity": "medium",
+      "requires_replan": false,
+      "granted_permissions": [
+        "read_only",
+        "reversible_modification"
+      ],
+      "expected_status": "completed"
+    },
+    {
+      "task_id": "AGENT-004",
+      "task_family": "software_engineering",
+      "task_name": "Patch unsafe subprocess invocation with sanitized argument list",
+      "objective": "Patch unsafe subprocess invocation with sanitized argument list. Deliver verifiable artifacts with clear status.",
+      "complexity": "high",
+      "requires_replan": true,
+      "granted_permissions": [
+        "read_only"
+      ],
+      "expected_status": "completed"
+    },
+    {
+      "task_id": "AGENT-005",
+      "task_family": "software_engineering",
+      "task_name": "Build automated database migration rollback verification suite",
+      "objective": "Build automated database migration rollback verification suite. Deliver verifiable artifacts with clear status.",
+      "complexity": "medium",
+      "requires_replan": false,
+      "granted_permissions": [
+        "read_only",
+        "reversible_modification"
+      ],
+      "expected_status": "completed"
+    },
+    {
+      "task_id": "AGENT-006",
+      "task_family": "research_intelligence",
+      "task_name": "Synthesize state-of-the-art vector indexing techniques for low-latency search",
+      "objective": "Synthesize state-of-the-art vector indexing techniques for low-latency search. Deliver verifiable artifacts with clear status.",
+      "complexity": "medium",
+      "requires_replan": false,
+      "granted_permissions": [
+        "read_only",
+        "reversible_modification"
+      ],
+      "expected_status": "completed"
+    },
+    {
+      "task_id": "AGENT-007",
+      "task_family": "research_intelligence",
+      "task_name": "Investigate zero-price inference tier stability across global cloud providers",
+      "objective": "Investigate zero-price inference tier stability across global cloud providers. Deliver verifiable artifacts with clear status.",
+      "complexity": "high",
+      "requires_replan": true,
+      "granted_permissions": [
+        "read_only"
+      ],
+      "expected_status": "completed"
+    },
+    {
+      "task_id": "AGENT-008",
+      "task_family": "research_intelligence",
+      "task_name": "Analyze trade-offs between local embedding models and remote embedding APIs",
+      "objective": "Analyze trade-offs between local embedding models and remote embedding APIs. Deliver verifiable artifacts with clear status.",
+      "complexity": "medium",
+      "requires_replan": false,
+      "granted_permissions": [
+        "read_only",
+        "reversible_modification"
+      ],
+      "expected_status": "completed"
+    },
+    {
+      "task_id": "AGENT-009",
+      "task_family": "research_intelligence",
+      "task_name": "Verify factual support for latency claims in distributed storage whitepapers",
+      "objective": "Verify factual support for latency claims in distributed storage whitepapers. Deliver verifiable artifacts with clear status.",
+      "complexity": "high",
+      "requires_replan": true,
+      "granted_permissions": [
+        "read_only"
+      ],
+      "expected_status": "completed"
+    },
+    {
+      "task_id": "AGENT-010",
+      "task_family": "research_intelligence",
+      "task_name": "Compare memory footprint of SQLite WAL mode versus PostgreSQL embedded",
+      "objective": "Compare memory footprint of SQLite WAL mode versus PostgreSQL embedded. Deliver verifiable artifacts with clear status.",
+      "complexity": "low",
+      "requires_replan": false,
+      "granted_permissions": [
+        "read_only",
+        "reversible_modification"
+      ],
+      "expected_status": "completed"
+    },
+    {
+      "task_id": "AGENT-011",
+      "task_family": "ai_agent_development",
+      "task_name": "Design an 11-stage observe-decide-act loop with bounded permission tiers",
+      "objective": "Design an 11-stage observe-decide-act loop with bounded permission tiers. Deliver verifiable artifacts with clear status.",
+      "complexity": "high",
+      "requires_replan": false,
+      "granted_permissions": [
+        "read_only",
+        "reversible_modification"
+      ],
+      "expected_status": "completed"
+    },
+    {
+      "task_id": "AGENT-012",
+      "task_family": "ai_agent_development",
+      "task_name": "Implement cyclic dependency detector for autonomous agent task DAGs",
+      "objective": "Implement cyclic dependency detector for autonomous agent task DAGs. Deliver verifiable artifacts with clear status.",
+      "complexity": "medium",
+      "requires_replan": true,
+      "granted_permissions": [
+        "read_only"
+      ],
+      "expected_status": "completed"
+    },
+    {
+      "task_id": "AGENT-013",
+      "task_family": "ai_agent_development",
+      "task_name": "Build deterministic tool call verification harness with schema assertions",
+      "objective": "Build deterministic tool call verification harness with schema assertions. Deliver verifiable artifacts with clear status.",
+      "complexity": "medium",
+      "requires_replan": false,
+      "granted_permissions": [
+        "read_only",
+        "reversible_modification"
+      ],
+      "expected_status": "completed"
+    },
+    {
+      "task_id": "AGENT-014",
+      "task_family": "ai_agent_development",
+      "task_name": "Author agent fallback protocol for degraded inference provider response",
+      "objective": "Author agent fallback protocol for degraded inference provider response. Deliver verifiable artifacts with clear status.",
+      "complexity": "high",
+      "requires_replan": true,
+      "granted_permissions": [
+        "read_only"
+      ],
+      "expected_status": "completed"
+    },
+    {
+      "task_id": "AGENT-015",
+      "task_family": "ai_agent_development",
+      "task_name": "Construct agent execution trace visualizer with millisecond precision",
+      "objective": "Construct agent execution trace visualizer with millisecond precision. Deliver verifiable artifacts with clear status.",
+      "complexity": "medium",
+      "requires_replan": false,
+      "granted_permissions": [
+        "read_only",
+        "reversible_modification"
+      ],
+      "expected_status": "completed"
+    },
+    {
+      "task_id": "AGENT-016",
+      "task_family": "business_strategy",
+      "task_name": "Formulate zero-price unit economics model for hosted developer tools",
+      "objective": "Formulate zero-price unit economics model for hosted developer tools. Deliver verifiable artifacts with clear status.",
+      "complexity": "medium",
+      "requires_replan": false,
+      "granted_permissions": [
+        "read_only",
+        "reversible_modification"
+      ],
+      "expected_status": "completed"
+    },
+    {
+      "task_id": "AGENT-017",
+      "task_family": "business_strategy",
+      "task_name": "Evaluate competitive positioning of PromptIQ versus commercial prompt suites",
+      "objective": "Evaluate competitive positioning of PromptIQ versus commercial prompt suites. Deliver verifiable artifacts with clear status.",
+      "complexity": "high",
+      "requires_replan": true,
+      "granted_permissions": [
+        "read_only"
+      ],
+      "expected_status": "completed"
+    },
+    {
+      "task_id": "AGENT-018",
+      "task_family": "business_strategy",
+      "task_name": "Develop developer adoption strategy focusing on open MCP ecosystem",
+      "objective": "Develop developer adoption strategy focusing on open MCP ecosystem. Deliver verifiable artifacts with clear status.",
+      "complexity": "medium",
+      "requires_replan": false,
+      "granted_permissions": [
+        "read_only",
+        "reversible_modification"
+      ],
+      "expected_status": "completed"
+    },
+    {
+      "task_id": "AGENT-019",
+      "task_family": "business_strategy",
+      "task_name": "Audit risk mitigation strategy for open-source AI platform compliance",
+      "objective": "Audit risk mitigation strategy for open-source AI platform compliance. Deliver verifiable artifacts with clear status.",
+      "complexity": "high",
+      "requires_replan": true,
+      "granted_permissions": [
+        "read_only"
+      ],
+      "expected_status": "completed"
+    },
+    {
+      "task_id": "AGENT-020",
+      "task_family": "business_strategy",
+      "task_name": "Create SLA framework for non-commercial community agent platforms",
+      "objective": "Create SLA framework for non-commercial community agent platforms. Deliver verifiable artifacts with clear status.",
+      "complexity": "low",
+      "requires_replan": false,
+      "granted_permissions": [
+        "read_only",
+        "reversible_modification"
+      ],
+      "expected_status": "completed"
+    },
+    {
+      "task_id": "AGENT-021",
+      "task_family": "prompt_improvement",
+      "task_name": "Optimize system instruction for structured JSON extraction without markdown fences",
+      "objective": "Optimize system instruction for structured JSON extraction without markdown fences. Deliver verifiable artifacts with clear status.",
+      "complexity": "medium",
+      "requires_replan": false,
+      "granted_permissions": [
+        "read_only",
+        "reversible_modification"
+      ],
+      "expected_status": "completed"
+    },
+    {
+      "task_id": "AGENT-022",
+      "task_family": "prompt_improvement",
+      "task_name": "Remediate severe ambiguity and missing output schemas in multi-turn prompts",
+      "objective": "Remediate severe ambiguity and missing output schemas in multi-turn prompts. Deliver verifiable artifacts with clear status.",
+      "complexity": "high",
+      "requires_replan": true,
+      "granted_permissions": [
+        "read_only"
+      ],
+      "expected_status": "completed"
+    },
+    {
+      "task_id": "AGENT-023",
+      "task_family": "prompt_improvement",
+      "task_name": "Compile multi-target prompt package for Claude Code and Google Antigravity",
+      "objective": "Compile multi-target prompt package for Claude Code and Google Antigravity. Deliver verifiable artifacts with clear status.",
+      "complexity": "medium",
+      "requires_replan": false,
+      "granted_permissions": [
+        "read_only",
+        "reversible_modification"
+      ],
+      "expected_status": "completed"
+    },
+    {
+      "task_id": "AGENT-024",
+      "task_family": "prompt_improvement",
+      "task_name": "Eliminate contradictory constraints in complex agent system instructions",
+      "objective": "Eliminate contradictory constraints in complex agent system instructions. Deliver verifiable artifacts with clear status.",
+      "complexity": "high",
+      "requires_replan": true,
+      "granted_permissions": [
+        "read_only"
+      ],
+      "expected_status": "completed"
+    },
+    {
+      "task_id": "AGENT-025",
+      "task_family": "prompt_improvement",
+      "task_name": "Refactor monolithic prompt into composable dynamic context modules",
+      "objective": "Refactor monolithic prompt into composable dynamic context modules. Deliver verifiable artifacts with clear status.",
+      "complexity": "medium",
+      "requires_replan": false,
+      "granted_permissions": [
+        "read_only",
+        "reversible_modification"
+      ],
+      "expected_status": "completed"
+    },
+    {
+      "task_id": "AGENT-026",
+      "task_family": "product_development",
+      "task_name": "Define product requirements document for cross-surface session continuity",
+      "objective": "Define product requirements document for cross-surface session continuity. Deliver verifiable artifacts with clear status.",
+      "complexity": "medium",
+      "requires_replan": false,
+      "granted_permissions": [
+        "read_only",
+        "reversible_modification"
+      ],
+      "expected_status": "completed"
+    },
+    {
+      "task_id": "AGENT-027",
+      "task_family": "product_development",
+      "task_name": "Design telemetry specification for agent execution without logging PII",
+      "objective": "Design telemetry specification for agent execution without logging PII. Deliver verifiable artifacts with clear status.",
+      "complexity": "high",
+      "requires_replan": true,
+      "granted_permissions": [
+        "read_only"
+      ],
+      "expected_status": "completed"
+    },
+    {
+      "task_id": "AGENT-028",
+      "task_family": "product_development",
+      "task_name": "Specify user-approval workflow for destructive agentic tool invocations",
+      "objective": "Specify user-approval workflow for destructive agentic tool invocations. Deliver verifiable artifacts with clear status.",
+      "complexity": "medium",
+      "requires_replan": false,
+      "granted_permissions": [
+        "read_only",
+        "reversible_modification"
+      ],
+      "expected_status": "completed"
+    },
+    {
+      "task_id": "AGENT-029",
+      "task_family": "product_development",
+      "task_name": "Map error recovery user journey when background workflow encounters rate limit",
+      "objective": "Map error recovery user journey when background workflow encounters rate limit. Deliver verifiable artifacts with clear status.",
+      "complexity": "high",
+      "requires_replan": true,
+      "granted_permissions": [
+        "read_only"
+      ],
+      "expected_status": "completed"
+    },
+    {
+      "task_id": "AGENT-030",
+      "task_family": "product_development",
+      "task_name": "Draft feature roadmap for MCP server extensions in PromptIQ",
+      "objective": "Draft feature roadmap for MCP server extensions in PromptIQ. Deliver verifiable artifacts with clear status.",
+      "complexity": "low",
+      "requires_replan": false,
+      "granted_permissions": [
+        "read_only",
+        "reversible_modification"
+      ],
+      "expected_status": "completed"
+    },
+    {
+      "task_id": "AGENT-031",
+      "task_family": "writing_content",
+      "task_name": "Draft engineering deep dive on deterministic DAG scheduling in Python",
+      "objective": "Draft engineering deep dive on deterministic DAG scheduling in Python. Deliver verifiable artifacts with clear status.",
+      "complexity": "medium",
+      "requires_replan": false,
+      "granted_permissions": [
+        "read_only",
+        "reversible_modification"
+      ],
+      "expected_status": "completed"
+    },
+    {
+      "task_id": "AGENT-032",
+      "task_family": "writing_content",
+      "task_name": "Author technical blog post on zero-price hosted AI architectures",
+      "objective": "Author technical blog post on zero-price hosted AI architectures. Deliver verifiable artifacts with clear status.",
+      "complexity": "high",
+      "requires_replan": true,
+      "granted_permissions": [
+        "read_only"
+      ],
+      "expected_status": "completed"
+    },
+    {
+      "task_id": "AGENT-033",
+      "task_family": "writing_content",
+      "task_name": "Write comprehensive release notes for PromptIQ V7 major milestone",
+      "objective": "Write comprehensive release notes for PromptIQ V7 major milestone. Deliver verifiable artifacts with clear status.",
+      "complexity": "medium",
+      "requires_replan": false,
+      "granted_permissions": [
+        "read_only",
+        "reversible_modification"
+      ],
+      "expected_status": "completed"
+    },
+    {
+      "task_id": "AGENT-034",
+      "task_family": "writing_content",
+      "task_name": "Compose developer tutorial on writing custom MCP tools with permission bounds",
+      "objective": "Compose developer tutorial on writing custom MCP tools with permission bounds. Deliver verifiable artifacts with clear status.",
+      "complexity": "high",
+      "requires_replan": true,
+      "granted_permissions": [
+        "read_only"
+      ],
+      "expected_status": "completed"
+    },
+    {
+      "task_id": "AGENT-035",
+      "task_family": "writing_content",
+      "task_name": "Draft incident post-mortem template for distributed workflow worker crashes",
+      "objective": "Draft incident post-mortem template for distributed workflow worker crashes. Deliver verifiable artifacts with clear status.",
+      "complexity": "low",
+      "requires_replan": false,
+      "granted_permissions": [
+        "read_only",
+        "reversible_modification"
+      ],
+      "expected_status": "completed"
+    },
+    {
+      "task_id": "AGENT-036",
+      "task_family": "data_analysis",
+      "task_name": "Analyze latency distribution percentiles (p50, p95, p99) of model gateway",
+      "objective": "Analyze latency distribution percentiles (p50, p95, p99) of model gateway. Deliver verifiable artifacts with clear status.",
+      "complexity": "medium",
+      "requires_replan": false,
+      "granted_permissions": [
+        "read_only",
+        "reversible_modification"
+      ],
+      "expected_status": "completed"
+    },
+    {
+      "task_id": "AGENT-037",
+      "task_family": "data_analysis",
+      "task_name": "Detect anomalous execution spikes across background worker job queues",
+      "objective": "Detect anomalous execution spikes across background worker job queues. Deliver verifiable artifacts with clear status.",
+      "complexity": "high",
+      "requires_replan": true,
+      "granted_permissions": [
+        "read_only"
+      ],
+      "expected_status": "completed"
+    },
+    {
+      "task_id": "AGENT-038",
+      "task_family": "data_analysis",
+      "task_name": "Compute token consumption efficiency across prompt compilation targets",
+      "objective": "Compute token consumption efficiency across prompt compilation targets. Deliver verifiable artifacts with clear status.",
+      "complexity": "medium",
+      "requires_replan": false,
+      "granted_permissions": [
+        "read_only",
+        "reversible_modification"
+      ],
+      "expected_status": "completed"
+    },
+    {
+      "task_id": "AGENT-039",
+      "task_family": "data_analysis",
+      "task_name": "Evaluate test coverage correlation with defect escape rates in releases",
+      "objective": "Evaluate test coverage correlation with defect escape rates in releases. Deliver verifiable artifacts with clear status.",
+      "complexity": "high",
+      "requires_replan": true,
+      "granted_permissions": [
+        "read_only"
+      ],
+      "expected_status": "completed"
+    },
+    {
+      "task_id": "AGENT-040",
+      "task_family": "data_analysis",
+      "task_name": "Profile SQLite database query execution plans for context pack compilation",
+      "objective": "Profile SQLite database query execution plans for context pack compilation. Deliver verifiable artifacts with clear status.",
+      "complexity": "low",
+      "requires_replan": false,
+      "granted_permissions": [
+        "read_only",
+        "reversible_modification"
+      ],
+      "expected_status": "completed"
+    },
+    {
+      "task_id": "AGENT-041",
+      "task_family": "technical_documentation",
+      "task_name": "Document complete OpenAPI contract for PromptIQ Project Constitution API",
+      "objective": "Document complete OpenAPI contract for PromptIQ Project Constitution API. Deliver verifiable artifacts with clear status.",
+      "complexity": "medium",
+      "requires_replan": false,
+      "granted_permissions": [
+        "read_only",
+        "reversible_modification"
+      ],
+      "expected_status": "completed"
+    },
+    {
+      "task_id": "AGENT-042",
+      "task_family": "technical_documentation",
+      "task_name": "Author comprehensive architecture guide on tenant isolation and row-level security",
+      "objective": "Author comprehensive architecture guide on tenant isolation and row-level security. Deliver verifiable artifacts with clear status.",
+      "complexity": "high",
+      "requires_replan": true,
+      "granted_permissions": [
+        "read_only"
+      ],
+      "expected_status": "completed"
+    },
+    {
+      "task_id": "AGENT-043",
+      "task_family": "technical_documentation",
+      "task_name": "Write deployment manual for air-gapped internal PromptIQ agent instances",
+      "objective": "Write deployment manual for air-gapped internal PromptIQ agent instances. Deliver verifiable artifacts with clear status.",
+      "complexity": "medium",
+      "requires_replan": false,
+      "granted_permissions": [
+        "read_only",
+        "reversible_modification"
+      ],
+      "expected_status": "completed"
+    },
+    {
+      "task_id": "AGENT-044",
+      "task_family": "technical_documentation",
+      "task_name": "Document security boundary between MCP clients and host execution environment",
+      "objective": "Document security boundary between MCP clients and host execution environment. Deliver verifiable artifacts with clear status.",
+      "complexity": "high",
+      "requires_replan": true,
+      "granted_permissions": [
+        "read_only"
+      ],
+      "expected_status": "completed"
+    },
+    {
+      "task_id": "AGENT-045",
+      "task_family": "technical_documentation",
+      "task_name": "Produce reference manual for PromptIQ Task Family Specialization Registry",
+      "objective": "Produce reference manual for PromptIQ Task Family Specialization Registry. Deliver verifiable artifacts with clear status.",
+      "complexity": "low",
+      "requires_replan": false,
+      "granted_permissions": [
+        "read_only",
+        "reversible_modification"
+      ],
+      "expected_status": "completed"
+    },
+    {
+      "task_id": "AGENT-046",
+      "task_family": "education_learning",
+      "task_name": "Design interactive curriculum on autonomous agent loop architecture",
+      "objective": "Design interactive curriculum on autonomous agent loop architecture. Deliver verifiable artifacts with clear status.",
+      "complexity": "medium",
+      "requires_replan": false,
+      "granted_permissions": [
+        "read_only",
+        "reversible_modification"
+      ],
+      "expected_status": "completed"
+    },
+    {
+      "task_id": "AGENT-047",
+      "task_family": "education_learning",
+      "task_name": "Develop hands-on coding lab for building custom SSRF-safe tool plugins",
+      "objective": "Develop hands-on coding lab for building custom SSRF-safe tool plugins. Deliver verifiable artifacts with clear status.",
+      "complexity": "high",
+      "requires_replan": true,
+      "granted_permissions": [
+        "read_only"
+      ],
+      "expected_status": "completed"
+    },
+    {
+      "task_id": "AGENT-048",
+      "task_family": "education_learning",
+      "task_name": "Create training module on identifying prompt injection attack vectors",
+      "objective": "Create training module on identifying prompt injection attack vectors. Deliver verifiable artifacts with clear status.",
+      "complexity": "medium",
+      "requires_replan": false,
+      "granted_permissions": [
+        "read_only",
+        "reversible_modification"
+      ],
+      "expected_status": "completed"
+    },
+    {
+      "task_id": "AGENT-049",
+      "task_family": "education_learning",
+      "task_name": "Author step-by-step tutorial on debugging DAG execution deadlocks",
+      "objective": "Author step-by-step tutorial on debugging DAG execution deadlocks. Deliver verifiable artifacts with clear status.",
+      "complexity": "high",
+      "requires_replan": true,
+      "granted_permissions": [
+        "read_only"
+      ],
+      "expected_status": "completed"
+    },
+    {
+      "task_id": "AGENT-050",
+      "task_family": "education_learning",
+      "task_name": "Prepare quick-reference cheat sheet for PromptIQ CLI and MCP commands",
+      "objective": "Prepare quick-reference cheat sheet for PromptIQ CLI and MCP commands. Deliver verifiable artifacts with clear status.",
+      "complexity": "low",
+      "requires_replan": false,
+      "granted_permissions": [
+        "read_only",
+        "reversible_modification"
+      ],
+      "expected_status": "completed"
+    }
+  ]
+}

@@ -297,11 +297,7 @@ def test_negative_postgresql_reported_passed_when_not_executed():
 def test_negative_external_telegram_declared_live_without_token():
     """Telegram integration without a configured bot token must be BLOCKED, not LIVE_SERVICE_VERIFIED."""
     bot_token = None
-    status = (
-        IntegrationStatus.LIVE_SERVICE_VERIFIED
-        if bot_token
-        else IntegrationStatus.BLOCKED
-    )
+    status = IntegrationStatus.LIVE_SERVICE_VERIFIED if bot_token else IntegrationStatus.BLOCKED
     assert status == IntegrationStatus.BLOCKED
     assert status != IntegrationStatus.LIVE_SERVICE_VERIFIED
 
@@ -379,8 +375,11 @@ def test_negative_duplicate_provider_execution_after_workflow_resumption():
         "criticism": "req_01m7zst8fcerebw0z1p9a48vam",
     }
     # Resumption must only execute 'revision', not re-call 'orchestration' or 'generation'
-    stages_to_run = [s for s in ["orchestration", "generation", "criticism", "revision"] if s not in completed_stages]
+    stages_to_run = [
+        s
+        for s in ["orchestration", "generation", "criticism", "revision"]
+        if s not in completed_stages
+    ]
     assert stages_to_run == ["revision"]
     assert "generation" not in stages_to_run
     assert "orchestration" not in stages_to_run
-

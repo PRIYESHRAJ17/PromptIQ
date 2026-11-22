@@ -17,10 +17,10 @@ class EpistemicStatus(StrEnum):
 
 
 class ConfidenceTier(StrEnum):
-    PROVEN = "proven"            # 0.95 - 1.00: Cryptographically or deterministically verified
-    HIGH = "high"                # 0.80 - 0.94: Supported by authoritative primary sources
-    MEDIUM = "medium"            # 0.60 - 0.79: Plausible inference or secondary source
-    LOW = "low"                  # 0.40 - 0.59: Unverified assumption or model guess
+    PROVEN = "proven"  # 0.95 - 1.00: Cryptographically or deterministically verified
+    HIGH = "high"  # 0.80 - 0.94: Supported by authoritative primary sources
+    MEDIUM = "medium"  # 0.60 - 0.79: Plausible inference or secondary source
+    LOW = "low"  # 0.40 - 0.59: Unverified assumption or model guess
     SPECULATIVE = "speculative"  # 0.00 - 0.39: Lacks evidence, needs clarification
 
 

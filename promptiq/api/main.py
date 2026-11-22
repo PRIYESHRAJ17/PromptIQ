@@ -77,7 +77,12 @@ async def promptiq_exception_handler(request: Request, exc: PromptIQException):
     req_id = request.headers.get("X-Request-ID", str(uuid.uuid4()))
     logger.warning(
         f"Domain exception: {exc.error_code} - {exc.message}",
-        extra={"error_code": exc.error_code, "details": exc.details, "path": request.url.path, "request_id": req_id},
+        extra={
+            "error_code": exc.error_code,
+            "details": exc.details,
+            "path": request.url.path,
+            "request_id": req_id,
+        },
     )
     headers = {"X-Request-ID": req_id}
     if hasattr(exc, "retry_after"):
@@ -105,7 +110,9 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     safe_errors = []
     for err in exc.errors():
         safe_err = dict(err)
-        if "input" in safe_err and not isinstance(safe_err["input"], (str, int, float, bool, list, dict, type(None))):
+        if "input" in safe_err and not isinstance(
+            safe_err["input"], (str, int, float, bool, list, dict, type(None))
+        ):
             safe_err["input"] = str(safe_err["input"])
         safe_errors.append(safe_err)
 

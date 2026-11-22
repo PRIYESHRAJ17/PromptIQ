@@ -13,7 +13,9 @@ class JobCreate(BaseModel):
     project_id: str | None = Field(default=None, description="Optional associated project ID")
     idempotency_key: str | None = Field(default=None, description="Client idempotency key")
     initial_stage: str = Field(default="initialization", description="Starting stage name")
-    checkpoint_data: dict[str, Any] = Field(default_factory=dict, description="Initial checkpoint state")
+    checkpoint_data: dict[str, Any] = Field(
+        default_factory=dict, description="Initial checkpoint state"
+    )
 
 
 class JobStageRecord(BaseModel):

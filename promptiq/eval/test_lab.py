@@ -185,7 +185,10 @@ class PromptTestLab:
         await db.flush()
 
         # Determine honest execution mode based on model identifier and provider route
-        if run.model_id in ("promptiq-mock-v1", "mock") or run.provider_route in ("mock", "synthetic"):
+        if run.model_id in ("promptiq-mock-v1", "mock") or run.provider_route in (
+            "mock",
+            "synthetic",
+        ):
             exec_mode = "MOCK"
         elif any(c.get("provider_request_id") for c in case_results):
             exec_mode = "LIVE_PROVIDER"

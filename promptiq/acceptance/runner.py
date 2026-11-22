@@ -935,12 +935,18 @@ async def run_scenario_3_agent(db: AsyncSession, user: User, ws: Workspace) -> S
             term in agent_text.lower()
             for term in ['"write_file": true', '"shell_exec": true', '"delete_file": true']
         )
-        has_negative_directives = "strictly do not execute arbitrary shell commands" in agent_text.lower()
+        has_negative_directives = (
+            "strictly do not execute arbitrary shell commands" in agent_text.lower()
+        )
         if has_prohibited_tools:
-            sm.transition_to(ExecutionState.FAILED, "Prohibited mutating tools detected in compiled package")
+            sm.transition_to(
+                ExecutionState.FAILED, "Prohibited mutating tools detected in compiled package"
+            )
             return sm.to_audit_trace()
         if not has_negative_directives:
-            sm.transition_to(ExecutionState.FAILED, "Negative escalation directives missing from package")
+            sm.transition_to(
+                ExecutionState.FAILED, "Negative escalation directives missing from package"
+            )
             return sm.to_audit_trace()
 
         sm.mark_criterion_satisfied(
@@ -1609,9 +1615,7 @@ async def run_scenario_5_prompt_improvement(
 # ---------------------------------------------------------------------------
 # SCENARIO 6: Product Development & PRD (product_development)
 # ---------------------------------------------------------------------------
-async def run_scenario_6_product(
-    db: AsyncSession, user: User, ws: Workspace
-) -> ScenarioAuditTrace:
+async def run_scenario_6_product(db: AsyncSession, user: User, ws: Workspace) -> ScenarioAuditTrace:
     """Executes Scenario 6: Product requirements, user journeys, MVP scoping, and Cursor rules."""
     sm = AcceptanceStateMachine(
         scenario_id="scenario_6_product_development",
@@ -1622,11 +1626,18 @@ async def run_scenario_6_product(
     )
 
     sm.add_criterion("SC6-AC-1", "User personas, target market, and problem space defined")
-    sm.add_criterion("SC6-AC-2", "Core user journey from tenant onboarding to metered billing mapped")
+    sm.add_criterion(
+        "SC6-AC-2", "Core user journey from tenant onboarding to metered billing mapped"
+    )
     sm.add_criterion("SC6-AC-3", "Feature prioritization establishes P0 MVP vs P1/P2 backlog")
-    sm.add_criterion("SC6-AC-4", "Release readiness criteria specified with latency and zero security regressions")
+    sm.add_criterion(
+        "SC6-AC-4",
+        "Release readiness criteria specified with latency and zero security regressions",
+    )
     sm.add_criterion("SC6-AC-5", "Project Constitution approved with full requirement traceability")
-    sm.add_criterion("SC6-AC-6", "Cursor native instruction package compiled (.cursorrules, .cursor/rules/*.mdc)")
+    sm.add_criterion(
+        "SC6-AC-6", "Cursor native instruction package compiled (.cursorrules, .cursor/rules/*.mdc)"
+    )
     sm.add_criterion("SC6-AC-7", "Prompt Autopsy diagnoses PRD instructions")
     sm.add_criterion("SC6-AC-8", "Final deliverable persisted with SHA-256 fingerprint in DB")
 
@@ -1662,10 +1673,16 @@ async def run_scenario_6_product(
         },
     )
     sm.record_step("product_discovery", ExecutionState.STEP_EXECUTED, {"session_id": disc.id})
-    sm.mark_criterion_satisfied("SC6-AC-1", "Personas: Enterprise Leads, Compliance Officers, Workspace Admins")
-    sm.mark_criterion_satisfied("SC6-AC-2", "Journey: Self-serve signup to monthly invoice reconciliation")
+    sm.mark_criterion_satisfied(
+        "SC6-AC-1", "Personas: Enterprise Leads, Compliance Officers, Workspace Admins"
+    )
+    sm.mark_criterion_satisfied(
+        "SC6-AC-2", "Journey: Self-serve signup to monthly invoice reconciliation"
+    )
     sm.mark_criterion_satisfied("SC6-AC-3", "P0 MVP vs P1 feature boundaries confirmed")
-    sm.mark_criterion_satisfied("SC6-AC-4", "Release criteria: Deterministic invoice calculations, 0 leaks")
+    sm.mark_criterion_satisfied(
+        "SC6-AC-4", "Release criteria: Deterministic invoice calculations, 0 leaks"
+    )
 
     prd_reqs = [
         RequirementItem(
@@ -1702,7 +1719,9 @@ async def run_scenario_6_product(
     await ConstitutionService.approve_constitution(
         db, proj.id, user.id, ConstitutionApprovalRequest(approve=True)
     )
-    sm.mark_criterion_satisfied("SC6-AC-5", "Constitution v1 approved with 100% requirement traceability")
+    sm.mark_criterion_satisfied(
+        "SC6-AC-5", "Constitution v1 approved with 100% requirement traceability"
+    )
 
     pkg = await target_compiler.compile_package(
         db=db,
@@ -1715,21 +1734,50 @@ async def run_scenario_6_product(
     binding = sm.register_artifact(
         pkg.id, "cursor_prd_package", pkg_text, version=1, persisted=True, retrievable=True
     )
-    sm.record_step("compile_cursor_package", ExecutionState.STEP_EXECUTED, {"package_id": pkg.id, "hash": binding.content_hash})
-    sm.mark_criterion_satisfied("SC6-AC-6", f"Compiled Cursor package with {len(pkg.files)} files (.cursorrules + mdc)")
+    sm.record_step(
+        "compile_cursor_package",
+        ExecutionState.STEP_EXECUTED,
+        {"package_id": pkg.id, "hash": binding.content_hash},
+    )
+    sm.mark_criterion_satisfied(
+        "SC6-AC-6", f"Compiled Cursor package with {len(pkg.files)} files (.cursorrules + mdc)"
+    )
 
     autopsy = await PromptAutopsyEngine.diagnose_prompt(
         AutopsyRequest(package_id=pkg.id), user_id=user.id, db=db
     )
-    sm.record_autopsy_run("initial", pkg.id, binding.content_hash, autopsy.verdict, [f.model_dump() for f in autopsy.findings], autopsy.quality_scores)
-    sm.record_step("autopsy_prd", ExecutionState.STEP_EXECUTED, {"verdict": autopsy.verdict, "findings_count": len(autopsy.findings)})
+    sm.record_autopsy_run(
+        "initial",
+        pkg.id,
+        binding.content_hash,
+        autopsy.verdict,
+        [f.model_dump() for f in autopsy.findings],
+        autopsy.quality_scores,
+    )
+    sm.record_step(
+        "autopsy_prd",
+        ExecutionState.STEP_EXECUTED,
+        {"verdict": autopsy.verdict, "findings_count": len(autopsy.findings)},
+    )
     sm.mark_criterion_satisfied("SC6-AC-7", f"Autopsy completed with verdict '{autopsy.verdict}'")
 
-    sm.record_autopsy_run("final", pkg.id, binding.content_hash, autopsy.verdict, [f.model_dump() for f in autopsy.findings], autopsy.quality_scores)
-    sm.mark_criterion_satisfied("SC6-AC-8", f"Persisted deliverable {pkg.id} verified with SHA-256 hash {binding.content_hash[:12]}")
+    sm.record_autopsy_run(
+        "final",
+        pkg.id,
+        binding.content_hash,
+        autopsy.verdict,
+        [f.model_dump() for f in autopsy.findings],
+        autopsy.quality_scores,
+    )
+    sm.mark_criterion_satisfied(
+        "SC6-AC-8",
+        f"Persisted deliverable {pkg.id} verified with SHA-256 hash {binding.content_hash[:12]}",
+    )
 
     cp = await CheckpointManager.create_checkpoint(
-        db, proj.id, user.id,
+        db,
+        proj.id,
+        user.id,
         CheckpointCreate(
             phase="prd_approved",
             summary="Enterprise SaaS PRD compiled and bound to Cursor rules.",
@@ -1738,12 +1786,18 @@ async def run_scenario_6_product(
         ),
     )
     sm.record_step("checkpoint_prd", ExecutionState.STEP_EXECUTED, {"checkpoint_id": cp.id})
-    sm.transition_to(ExecutionState.STEP_VALIDATED, "PRD scenario completed and validated", "prd_complete")
+    sm.transition_to(
+        ExecutionState.STEP_VALIDATED, "PRD scenario completed and validated", "prd_complete"
+    )
 
     if sm.unresolved_findings or sm.warnings:
-        sm.transition_to(ExecutionState.COMPLETED_WITH_WARNINGS, "Completed with non-blocking PRD advisories")
+        sm.transition_to(
+            ExecutionState.COMPLETED_WITH_WARNINGS, "Completed with non-blocking PRD advisories"
+        )
     else:
-        sm.transition_to(ExecutionState.SUCCESS_FULLY_VERIFIED, "PRD fully verified with 0 blockers")
+        sm.transition_to(
+            ExecutionState.SUCCESS_FULLY_VERIFIED, "PRD fully verified with 0 blockers"
+        )
 
     return sm.to_audit_trace()
 
@@ -1751,24 +1805,38 @@ async def run_scenario_6_product(
 # ---------------------------------------------------------------------------
 # SCENARIO 7: Writing & Long-Form Content (writing_content)
 # ---------------------------------------------------------------------------
-async def run_scenario_7_writing(
-    db: AsyncSession, user: User, ws: Workspace
-) -> ScenarioAuditTrace:
+async def run_scenario_7_writing(db: AsyncSession, user: User, ws: Workspace) -> ScenarioAuditTrace:
     """Executes Scenario 7: Long-form technical essay / whitepaper on zero-cost AI architecture."""
     sm = AcceptanceStateMachine(
         scenario_id="scenario_7_writing_content",
         category="writing_content",
-        input_summary={"target": "raw-prompt", "objective": "Zero-Cost AI Orchestration Whitepaper"},
+        input_summary={
+            "target": "raw-prompt",
+            "objective": "Zero-Cost AI Orchestration Whitepaper",
+        },
         execution_mode=ExecutionMode.DETERMINISTIC,
         workspace_id=ws.id,
     )
 
-    sm.add_criterion("SC7-AC-1", "Core thesis, communication objective, and target audience defined")
-    sm.add_criterion("SC7-AC-2", "Authoritative & technical tone and multi-section structure established")
-    sm.add_criterion("SC7-AC-3", "Constitution updated with user-confirmed constraints and scope exclusions")
-    sm.add_criterion("SC7-AC-4", "Raw prompt suite compiled (system_prompt.md, user_task.md, constraints.md)")
-    sm.add_criterion("SC7-AC-5", "Autopsy verifies absence of ungrounded hype, buzzwords, or conversational fluff")
-    sm.add_criterion("SC7-AC-6", "Artifacts cryptographically bound with SHA-256 and persisted in DB")
+    sm.add_criterion(
+        "SC7-AC-1", "Core thesis, communication objective, and target audience defined"
+    )
+    sm.add_criterion(
+        "SC7-AC-2", "Authoritative & technical tone and multi-section structure established"
+    )
+    sm.add_criterion(
+        "SC7-AC-3", "Constitution updated with user-confirmed constraints and scope exclusions"
+    )
+    sm.add_criterion(
+        "SC7-AC-4", "Raw prompt suite compiled (system_prompt.md, user_task.md, constraints.md)"
+    )
+    sm.add_criterion(
+        "SC7-AC-5",
+        "Autopsy verifies absence of ungrounded hype, buzzwords, or conversational fluff",
+    )
+    sm.add_criterion(
+        "SC7-AC-6", "Artifacts cryptographically bound with SHA-256 and persisted in DB"
+    )
 
     proj = await ProjectService.create_project(
         db,
@@ -1802,8 +1870,13 @@ async def run_scenario_7_writing(
         },
     )
     sm.record_step("writing_discovery", ExecutionState.STEP_EXECUTED, {"session_id": disc.id})
-    sm.mark_criterion_satisfied("SC7-AC-1", "Thesis: Zero-cost orchestration via multi-model queuing; Audience: Principal AI Architects")
-    sm.mark_criterion_satisfied("SC7-AC-2", "Tone: Authoritative & Technical; Format: Comprehensive Guide with Subsections")
+    sm.mark_criterion_satisfied(
+        "SC7-AC-1",
+        "Thesis: Zero-cost orchestration via multi-model queuing; Audience: Principal AI Architects",
+    )
+    sm.mark_criterion_satisfied(
+        "SC7-AC-2", "Tone: Authoritative & Technical; Format: Comprehensive Guide with Subsections"
+    )
 
     writing_reqs = [
         RequirementItem(
@@ -1831,7 +1904,9 @@ async def run_scenario_7_writing(
     await ConstitutionService.approve_constitution(
         db, proj.id, user.id, ConstitutionApprovalRequest(approve=True)
     )
-    sm.mark_criterion_satisfied("SC7-AC-3", "Constitution approved with editorial boundaries and scope exclusions")
+    sm.mark_criterion_satisfied(
+        "SC7-AC-3", "Constitution approved with editorial boundaries and scope exclusions"
+    )
 
     pkg = await target_compiler.compile_package(
         db=db,
@@ -1844,24 +1919,61 @@ async def run_scenario_7_writing(
     binding = sm.register_artifact(
         pkg.id, "whitepaper_prompt_suite", suite_text, version=1, persisted=True, retrievable=True
     )
-    sm.record_step("compile_writing_suite", ExecutionState.STEP_EXECUTED, {"package_id": pkg.id, "hash": binding.content_hash})
-    sm.mark_criterion_satisfied("SC7-AC-4", f"Compiled raw prompt suite containing {list(pkg.files.keys())}")
+    sm.record_step(
+        "compile_writing_suite",
+        ExecutionState.STEP_EXECUTED,
+        {"package_id": pkg.id, "hash": binding.content_hash},
+    )
+    sm.mark_criterion_satisfied(
+        "SC7-AC-4", f"Compiled raw prompt suite containing {list(pkg.files.keys())}"
+    )
 
     autopsy = await PromptAutopsyEngine.diagnose_prompt(
         AutopsyRequest(prompt_text=suite_text), user_id=user.id, db=db
     )
-    sm.record_autopsy_run("initial", pkg.id, binding.content_hash, autopsy.verdict, [f.model_dump() for f in autopsy.findings], autopsy.quality_scores)
-    sm.record_step("autopsy_writing", ExecutionState.STEP_EXECUTED, {"verdict": autopsy.verdict, "findings_count": len(autopsy.findings)})
-    sm.mark_criterion_satisfied("SC7-AC-5", f"Autopsy verified zero fluff: verdict '{autopsy.verdict}'")
+    sm.record_autopsy_run(
+        "initial",
+        pkg.id,
+        binding.content_hash,
+        autopsy.verdict,
+        [f.model_dump() for f in autopsy.findings],
+        autopsy.quality_scores,
+    )
+    sm.record_step(
+        "autopsy_writing",
+        ExecutionState.STEP_EXECUTED,
+        {"verdict": autopsy.verdict, "findings_count": len(autopsy.findings)},
+    )
+    sm.mark_criterion_satisfied(
+        "SC7-AC-5", f"Autopsy verified zero fluff: verdict '{autopsy.verdict}'"
+    )
 
-    sm.record_autopsy_run("final", pkg.id, binding.content_hash, autopsy.verdict, [f.model_dump() for f in autopsy.findings], autopsy.quality_scores)
-    sm.mark_criterion_satisfied("SC7-AC-6", f"Artifacts persisted and bound with SHA-256 hash {binding.content_hash[:12]}")
+    sm.record_autopsy_run(
+        "final",
+        pkg.id,
+        binding.content_hash,
+        autopsy.verdict,
+        [f.model_dump() for f in autopsy.findings],
+        autopsy.quality_scores,
+    )
+    sm.mark_criterion_satisfied(
+        "SC7-AC-6", f"Artifacts persisted and bound with SHA-256 hash {binding.content_hash[:12]}"
+    )
 
-    sm.transition_to(ExecutionState.STEP_VALIDATED, "Writing scenario completed and validated", "writing_complete")
+    sm.transition_to(
+        ExecutionState.STEP_VALIDATED,
+        "Writing scenario completed and validated",
+        "writing_complete",
+    )
     if sm.unresolved_findings or sm.warnings:
-        sm.transition_to(ExecutionState.COMPLETED_WITH_WARNINGS, "Completed with non-blocking editorial advisories")
+        sm.transition_to(
+            ExecutionState.COMPLETED_WITH_WARNINGS,
+            "Completed with non-blocking editorial advisories",
+        )
     else:
-        sm.transition_to(ExecutionState.SUCCESS_FULLY_VERIFIED, "Writing suite fully verified with 0 blockers")
+        sm.transition_to(
+            ExecutionState.SUCCESS_FULLY_VERIFIED, "Writing suite fully verified with 0 blockers"
+        )
 
     return sm.to_audit_trace()
 
@@ -1869,21 +1981,24 @@ async def run_scenario_7_writing(
 # ---------------------------------------------------------------------------
 # SCENARIO 8: Data Analytics & Pipeline Engineering (data_analysis)
 # ---------------------------------------------------------------------------
-async def run_scenario_8_data(
-    db: AsyncSession, user: User, ws: Workspace
-) -> ScenarioAuditTrace:
+async def run_scenario_8_data(db: AsyncSession, user: User, ws: Workspace) -> ScenarioAuditTrace:
     """Executes Scenario 8: Token consumption skew, quota ledger saturation, and latency analytics."""
     sm = AcceptanceStateMachine(
         scenario_id="scenario_8_data_analysis",
         category="data_analysis",
-        input_summary={"target": "openai-codex", "objective": "Quota Saturation & Provider Latency Pipeline"},
+        input_summary={
+            "target": "openai-codex",
+            "objective": "Quota Saturation & Provider Latency Pipeline",
+        },
         execution_mode=ExecutionMode.DETERMINISTIC,
         workspace_id=ws.id,
     )
 
     sm.add_criterion("SC8-AC-1", "Data sources, schema formats, and input assumptions verified")
     sm.add_criterion("SC8-AC-2", "Analytical hypotheses and performance metrics formulated")
-    sm.add_criterion("SC8-AC-3", "Output data contract defined (Markdown report + validated SQL queries)")
+    sm.add_criterion(
+        "SC8-AC-3", "Output data contract defined (Markdown report + validated SQL queries)"
+    )
     sm.add_criterion("SC8-AC-4", "Constitution approved with strict data schema constraints")
     sm.add_criterion("SC8-AC-5", "OpenAI Codex package compiled (CODEX.md and agent instructions)")
     sm.add_criterion("SC8-AC-6", "Autopsy validates statistical boundaries and error contracts")
@@ -1899,7 +2014,9 @@ async def run_scenario_8_data(
         ),
     )
     sm.record_step("create_project", ExecutionState.STEP_EXECUTED, {"project_id": proj.id})
-    sm.transition_to(ExecutionState.STEP_VALIDATED, "Project created for data analysis", "create_project")
+    sm.transition_to(
+        ExecutionState.STEP_VALIDATED, "Project created for data analysis", "create_project"
+    )
 
     intake = InitialIntakeRequest(
         goal="Develop data transformation pipeline to analyze TPM quota saturation and provider latency percentiles",
@@ -1921,9 +2038,15 @@ async def run_scenario_8_data(
         },
     )
     sm.record_step("data_discovery", ExecutionState.STEP_EXECUTED, {"session_id": disc.id})
-    sm.mark_criterion_satisfied("SC8-AC-1", "Data sources: SQLite WAL inference runs and JSON ledger verified")
-    sm.mark_criterion_satisfied("SC8-AC-2", "Hypotheses: TPM saturation per minute and latency percentiles (p50/p95/p99)")
-    sm.mark_criterion_satisfied("SC8-AC-3", "Output contract: SQL queries + explanations conforming to SQLite dialect")
+    sm.mark_criterion_satisfied(
+        "SC8-AC-1", "Data sources: SQLite WAL inference runs and JSON ledger verified"
+    )
+    sm.mark_criterion_satisfied(
+        "SC8-AC-2", "Hypotheses: TPM saturation per minute and latency percentiles (p50/p95/p99)"
+    )
+    sm.mark_criterion_satisfied(
+        "SC8-AC-3", "Output contract: SQL queries + explanations conforming to SQLite dialect"
+    )
 
     data_reqs = [
         RequirementItem(
@@ -1951,7 +2074,9 @@ async def run_scenario_8_data(
     await ConstitutionService.approve_constitution(
         db, proj.id, user.id, ConstitutionApprovalRequest(approve=True)
     )
-    sm.mark_criterion_satisfied("SC8-AC-4", "Constitution approved with data quality and statistical boundaries")
+    sm.mark_criterion_satisfied(
+        "SC8-AC-4", "Constitution approved with data quality and statistical boundaries"
+    )
 
     pkg = await target_compiler.compile_package(
         db=db,
@@ -1964,24 +2089,59 @@ async def run_scenario_8_data(
     binding = sm.register_artifact(
         pkg.id, "codex_data_pipeline", pkg_text, version=1, persisted=True, retrievable=True
     )
-    sm.record_step("compile_codex_package", ExecutionState.STEP_EXECUTED, {"package_id": pkg.id, "hash": binding.content_hash})
-    sm.mark_criterion_satisfied("SC8-AC-5", f"Compiled OpenAI Codex package containing {len(pkg.files)} files")
+    sm.record_step(
+        "compile_codex_package",
+        ExecutionState.STEP_EXECUTED,
+        {"package_id": pkg.id, "hash": binding.content_hash},
+    )
+    sm.mark_criterion_satisfied(
+        "SC8-AC-5", f"Compiled OpenAI Codex package containing {len(pkg.files)} files"
+    )
 
     autopsy = await PromptAutopsyEngine.diagnose_prompt(
         AutopsyRequest(package_id=pkg.id), user_id=user.id, db=db
     )
-    sm.record_autopsy_run("initial", pkg.id, binding.content_hash, autopsy.verdict, [f.model_dump() for f in autopsy.findings], autopsy.quality_scores)
-    sm.record_step("autopsy_data", ExecutionState.STEP_EXECUTED, {"verdict": autopsy.verdict, "findings_count": len(autopsy.findings)})
+    sm.record_autopsy_run(
+        "initial",
+        pkg.id,
+        binding.content_hash,
+        autopsy.verdict,
+        [f.model_dump() for f in autopsy.findings],
+        autopsy.quality_scores,
+    )
+    sm.record_step(
+        "autopsy_data",
+        ExecutionState.STEP_EXECUTED,
+        {"verdict": autopsy.verdict, "findings_count": len(autopsy.findings)},
+    )
     sm.mark_criterion_satisfied("SC8-AC-6", f"Autopsy completed with verdict '{autopsy.verdict}'")
 
-    sm.record_autopsy_run("final", pkg.id, binding.content_hash, autopsy.verdict, [f.model_dump() for f in autopsy.findings], autopsy.quality_scores)
-    sm.mark_criterion_satisfied("SC8-AC-7", f"Final deliverable persisted with SHA-256 hash {binding.content_hash[:12]}")
+    sm.record_autopsy_run(
+        "final",
+        pkg.id,
+        binding.content_hash,
+        autopsy.verdict,
+        [f.model_dump() for f in autopsy.findings],
+        autopsy.quality_scores,
+    )
+    sm.mark_criterion_satisfied(
+        "SC8-AC-7", f"Final deliverable persisted with SHA-256 hash {binding.content_hash[:12]}"
+    )
 
-    sm.transition_to(ExecutionState.STEP_VALIDATED, "Data analysis scenario completed and validated", "data_complete")
+    sm.transition_to(
+        ExecutionState.STEP_VALIDATED,
+        "Data analysis scenario completed and validated",
+        "data_complete",
+    )
     if sm.unresolved_findings or sm.warnings:
-        sm.transition_to(ExecutionState.COMPLETED_WITH_WARNINGS, "Completed with non-blocking analytics advisories")
+        sm.transition_to(
+            ExecutionState.COMPLETED_WITH_WARNINGS,
+            "Completed with non-blocking analytics advisories",
+        )
     else:
-        sm.transition_to(ExecutionState.SUCCESS_FULLY_VERIFIED, "Data pipeline fully verified with 0 blockers")
+        sm.transition_to(
+            ExecutionState.SUCCESS_FULLY_VERIFIED, "Data pipeline fully verified with 0 blockers"
+        )
 
     return sm.to_audit_trace()
 
@@ -2002,11 +2162,19 @@ async def run_scenario_9_documentation(
     )
 
     sm.add_criterion("SC9-AC-1", "ADR standard format, documented systems, and scope defined")
-    sm.add_criterion("SC9-AC-2", "Technical accuracy, referenced versions (Python 3.13, SQLite WAL), and schema verified")
+    sm.add_criterion(
+        "SC9-AC-2",
+        "Technical accuracy, referenced versions (Python 3.13, SQLite WAL), and schema verified",
+    )
     sm.add_criterion("SC9-AC-3", "Runnable CLI commands and API payload examples included")
     sm.add_criterion("SC9-AC-4", "Constitution approved with technical specifications")
-    sm.add_criterion("SC9-AC-5", "Gemini CLI extension package compiled (gemini-extension.json, context/instructions.md)")
-    sm.add_criterion("SC9-AC-6", "Autopsy confirms zero outdated API references or ambiguous directives")
+    sm.add_criterion(
+        "SC9-AC-5",
+        "Gemini CLI extension package compiled (gemini-extension.json, context/instructions.md)",
+    )
+    sm.add_criterion(
+        "SC9-AC-6", "Autopsy confirms zero outdated API references or ambiguous directives"
+    )
     sm.add_criterion("SC9-AC-7", "Final documentation persisted with SHA-256 fingerprint in DB")
 
     proj = await ProjectService.create_project(
@@ -2019,7 +2187,9 @@ async def run_scenario_9_documentation(
         ),
     )
     sm.record_step("create_project", ExecutionState.STEP_EXECUTED, {"project_id": proj.id})
-    sm.transition_to(ExecutionState.STEP_VALIDATED, "Project created for technical docs", "create_project")
+    sm.transition_to(
+        ExecutionState.STEP_VALIDATED, "Project created for technical docs", "create_project"
+    )
 
     intake = InitialIntakeRequest(
         goal="Produce Architecture Decision Record for Multi-Process Quota Synchronization and Distributed Lease Protocol",
@@ -2040,9 +2210,15 @@ async def run_scenario_9_documentation(
         },
     )
     sm.record_step("doc_discovery", ExecutionState.STEP_EXECUTED, {"session_id": disc.id})
-    sm.mark_criterion_satisfied("SC9-AC-1", "Standard: MADR 3.0; Scope: CapacityGovernor multiprocess lease protocol")
-    sm.mark_criterion_satisfied("SC9-AC-2", "Referenced versions: Python 3.13, SQLAlchemy async, SQLite 3.45+ WAL")
-    sm.mark_criterion_satisfied("SC9-AC-3", "Runnable examples: Python async reservation snippets and curl CLI requests")
+    sm.mark_criterion_satisfied(
+        "SC9-AC-1", "Standard: MADR 3.0; Scope: CapacityGovernor multiprocess lease protocol"
+    )
+    sm.mark_criterion_satisfied(
+        "SC9-AC-2", "Referenced versions: Python 3.13, SQLAlchemy async, SQLite 3.45+ WAL"
+    )
+    sm.mark_criterion_satisfied(
+        "SC9-AC-3", "Runnable examples: Python async reservation snippets and curl CLI requests"
+    )
 
     doc_reqs = [
         RequirementItem(
@@ -2070,7 +2246,9 @@ async def run_scenario_9_documentation(
     await ConstitutionService.approve_constitution(
         db, proj.id, user.id, ConstitutionApprovalRequest(approve=True)
     )
-    sm.mark_criterion_satisfied("SC9-AC-4", "Constitution approved with documentation standards and code validation rules")
+    sm.mark_criterion_satisfied(
+        "SC9-AC-4", "Constitution approved with documentation standards and code validation rules"
+    )
 
     pkg = await target_compiler.compile_package(
         db=db,
@@ -2083,24 +2261,62 @@ async def run_scenario_9_documentation(
     binding = sm.register_artifact(
         pkg.id, "gemini_adr_package", pkg_text, version=1, persisted=True, retrievable=True
     )
-    sm.record_step("compile_gemini_package", ExecutionState.STEP_EXECUTED, {"package_id": pkg.id, "hash": binding.content_hash})
-    sm.mark_criterion_satisfied("SC9-AC-5", f"Compiled Gemini CLI package containing {list(pkg.files.keys())}")
+    sm.record_step(
+        "compile_gemini_package",
+        ExecutionState.STEP_EXECUTED,
+        {"package_id": pkg.id, "hash": binding.content_hash},
+    )
+    sm.mark_criterion_satisfied(
+        "SC9-AC-5", f"Compiled Gemini CLI package containing {list(pkg.files.keys())}"
+    )
 
     autopsy = await PromptAutopsyEngine.diagnose_prompt(
         AutopsyRequest(package_id=pkg.id), user_id=user.id, db=db
     )
-    sm.record_autopsy_run("initial", pkg.id, binding.content_hash, autopsy.verdict, [f.model_dump() for f in autopsy.findings], autopsy.quality_scores)
-    sm.record_step("autopsy_docs", ExecutionState.STEP_EXECUTED, {"verdict": autopsy.verdict, "findings_count": len(autopsy.findings)})
-    sm.mark_criterion_satisfied("SC9-AC-6", f"Autopsy verified clean documentation: verdict '{autopsy.verdict}'")
+    sm.record_autopsy_run(
+        "initial",
+        pkg.id,
+        binding.content_hash,
+        autopsy.verdict,
+        [f.model_dump() for f in autopsy.findings],
+        autopsy.quality_scores,
+    )
+    sm.record_step(
+        "autopsy_docs",
+        ExecutionState.STEP_EXECUTED,
+        {"verdict": autopsy.verdict, "findings_count": len(autopsy.findings)},
+    )
+    sm.mark_criterion_satisfied(
+        "SC9-AC-6", f"Autopsy verified clean documentation: verdict '{autopsy.verdict}'"
+    )
 
-    sm.record_autopsy_run("final", pkg.id, binding.content_hash, autopsy.verdict, [f.model_dump() for f in autopsy.findings], autopsy.quality_scores)
-    sm.mark_criterion_satisfied("SC9-AC-7", f"Final documentation package persisted with SHA-256 hash {binding.content_hash[:12]}")
+    sm.record_autopsy_run(
+        "final",
+        pkg.id,
+        binding.content_hash,
+        autopsy.verdict,
+        [f.model_dump() for f in autopsy.findings],
+        autopsy.quality_scores,
+    )
+    sm.mark_criterion_satisfied(
+        "SC9-AC-7",
+        f"Final documentation package persisted with SHA-256 hash {binding.content_hash[:12]}",
+    )
 
-    sm.transition_to(ExecutionState.STEP_VALIDATED, "Documentation scenario completed and validated", "docs_complete")
+    sm.transition_to(
+        ExecutionState.STEP_VALIDATED,
+        "Documentation scenario completed and validated",
+        "docs_complete",
+    )
     if sm.unresolved_findings or sm.warnings:
-        sm.transition_to(ExecutionState.COMPLETED_WITH_WARNINGS, "Completed with non-blocking doc advisories")
+        sm.transition_to(
+            ExecutionState.COMPLETED_WITH_WARNINGS, "Completed with non-blocking doc advisories"
+        )
     else:
-        sm.transition_to(ExecutionState.SUCCESS_FULLY_VERIFIED, "Documentation package fully verified with 0 blockers")
+        sm.transition_to(
+            ExecutionState.SUCCESS_FULLY_VERIFIED,
+            "Documentation package fully verified with 0 blockers",
+        )
 
     return sm.to_audit_trace()
 
@@ -2115,17 +2331,28 @@ async def run_scenario_10_education(
     sm = AcceptanceStateMachine(
         scenario_id="scenario_10_education_learning",
         category="education_learning",
-        input_summary={"target": "claude-code", "objective": "MCP Tool Calling & Server Development Workshop"},
+        input_summary={
+            "target": "claude-code",
+            "objective": "MCP Tool Calling & Server Development Workshop",
+        },
         execution_mode=ExecutionMode.DETERMINISTIC,
         workspace_id=ws.id,
     )
 
     sm.add_criterion("SC10-AC-1", "Learner profile, prerequisites, and background defined")
-    sm.add_criterion("SC10-AC-2", "Measurable learning outcomes and hands-on pedagogical methodology established")
-    sm.add_criterion("SC10-AC-3", "Progressive coding exercises and test-driven comprehension checks formulated")
+    sm.add_criterion(
+        "SC10-AC-2", "Measurable learning outcomes and hands-on pedagogical methodology established"
+    )
+    sm.add_criterion(
+        "SC10-AC-3", "Progressive coding exercises and test-driven comprehension checks formulated"
+    )
     sm.add_criterion("SC10-AC-4", "Constitution approved with educational milestones")
-    sm.add_criterion("SC10-AC-5", "Claude Code instructions compiled (CLAUDE.md, .claude/rules/*.md)")
-    sm.add_criterion("SC10-AC-6", "Autopsy verifies clear exercise progression and explicit failure handling")
+    sm.add_criterion(
+        "SC10-AC-5", "Claude Code instructions compiled (CLAUDE.md, .claude/rules/*.md)"
+    )
+    sm.add_criterion(
+        "SC10-AC-6", "Autopsy verifies clear exercise progression and explicit failure handling"
+    )
     sm.add_criterion("SC10-AC-7", "Deliverable bound with SHA-256 and persisted in DB")
 
     proj = await ProjectService.create_project(
@@ -2138,7 +2365,9 @@ async def run_scenario_10_education(
         ),
     )
     sm.record_step("create_project", ExecutionState.STEP_EXECUTED, {"project_id": proj.id})
-    sm.transition_to(ExecutionState.STEP_VALIDATED, "Project created for education", "create_project")
+    sm.transition_to(
+        ExecutionState.STEP_VALIDATED, "Project created for education", "create_project"
+    )
 
     intake = InitialIntakeRequest(
         goal="Design hands-on workshop curriculum for building Model Context Protocol servers in Python",
@@ -2160,9 +2389,15 @@ async def run_scenario_10_education(
         },
     )
     sm.record_step("education_discovery", ExecutionState.STEP_EXECUTED, {"session_id": disc.id})
-    sm.mark_criterion_satisfied("SC10-AC-1", "Learner profile: Mid-level backend engineers with asyncio experience")
-    sm.mark_criterion_satisfied("SC10-AC-2", "Outcomes: Implement MCP tools, JSON-RPC handling, and graceful error recovery")
-    sm.mark_criterion_satisfied("SC10-AC-3", "Progressive challenges verified via pytest test assertions")
+    sm.mark_criterion_satisfied(
+        "SC10-AC-1", "Learner profile: Mid-level backend engineers with asyncio experience"
+    )
+    sm.mark_criterion_satisfied(
+        "SC10-AC-2", "Outcomes: Implement MCP tools, JSON-RPC handling, and graceful error recovery"
+    )
+    sm.mark_criterion_satisfied(
+        "SC10-AC-3", "Progressive challenges verified via pytest test assertions"
+    )
 
     edu_reqs = [
         RequirementItem(
@@ -2190,7 +2425,9 @@ async def run_scenario_10_education(
     await ConstitutionService.approve_constitution(
         db, proj.id, user.id, ConstitutionApprovalRequest(approve=True)
     )
-    sm.mark_criterion_satisfied("SC10-AC-4", "Constitution approved with curriculum standards and assessment contracts")
+    sm.mark_criterion_satisfied(
+        "SC10-AC-4", "Constitution approved with curriculum standards and assessment contracts"
+    )
 
     pkg = await target_compiler.compile_package(
         db=db,
@@ -2203,24 +2440,61 @@ async def run_scenario_10_education(
     binding = sm.register_artifact(
         pkg.id, "claude_education_package", pkg_text, version=1, persisted=True, retrievable=True
     )
-    sm.record_step("compile_claude_package", ExecutionState.STEP_EXECUTED, {"package_id": pkg.id, "hash": binding.content_hash})
-    sm.mark_criterion_satisfied("SC10-AC-5", f"Compiled Claude Code education bundle containing {len(pkg.files)} files")
+    sm.record_step(
+        "compile_claude_package",
+        ExecutionState.STEP_EXECUTED,
+        {"package_id": pkg.id, "hash": binding.content_hash},
+    )
+    sm.mark_criterion_satisfied(
+        "SC10-AC-5", f"Compiled Claude Code education bundle containing {len(pkg.files)} files"
+    )
 
     autopsy = await PromptAutopsyEngine.diagnose_prompt(
         AutopsyRequest(package_id=pkg.id), user_id=user.id, db=db
     )
-    sm.record_autopsy_run("initial", pkg.id, binding.content_hash, autopsy.verdict, [f.model_dump() for f in autopsy.findings], autopsy.quality_scores)
-    sm.record_step("autopsy_education", ExecutionState.STEP_EXECUTED, {"verdict": autopsy.verdict, "findings_count": len(autopsy.findings)})
-    sm.mark_criterion_satisfied("SC10-AC-6", f"Autopsy verified curriculum: verdict '{autopsy.verdict}'")
+    sm.record_autopsy_run(
+        "initial",
+        pkg.id,
+        binding.content_hash,
+        autopsy.verdict,
+        [f.model_dump() for f in autopsy.findings],
+        autopsy.quality_scores,
+    )
+    sm.record_step(
+        "autopsy_education",
+        ExecutionState.STEP_EXECUTED,
+        {"verdict": autopsy.verdict, "findings_count": len(autopsy.findings)},
+    )
+    sm.mark_criterion_satisfied(
+        "SC10-AC-6", f"Autopsy verified curriculum: verdict '{autopsy.verdict}'"
+    )
 
-    sm.record_autopsy_run("final", pkg.id, binding.content_hash, autopsy.verdict, [f.model_dump() for f in autopsy.findings], autopsy.quality_scores)
-    sm.mark_criterion_satisfied("SC10-AC-7", f"Final curriculum deliverable persisted with SHA-256 hash {binding.content_hash[:12]}")
+    sm.record_autopsy_run(
+        "final",
+        pkg.id,
+        binding.content_hash,
+        autopsy.verdict,
+        [f.model_dump() for f in autopsy.findings],
+        autopsy.quality_scores,
+    )
+    sm.mark_criterion_satisfied(
+        "SC10-AC-7",
+        f"Final curriculum deliverable persisted with SHA-256 hash {binding.content_hash[:12]}",
+    )
 
-    sm.transition_to(ExecutionState.STEP_VALIDATED, "Education scenario completed and validated", "edu_complete")
+    sm.transition_to(
+        ExecutionState.STEP_VALIDATED, "Education scenario completed and validated", "edu_complete"
+    )
     if sm.unresolved_findings or sm.warnings:
-        sm.transition_to(ExecutionState.COMPLETED_WITH_WARNINGS, "Completed with non-blocking educational advisories")
+        sm.transition_to(
+            ExecutionState.COMPLETED_WITH_WARNINGS,
+            "Completed with non-blocking educational advisories",
+        )
     else:
-        sm.transition_to(ExecutionState.SUCCESS_FULLY_VERIFIED, "Education curriculum fully verified with 0 blockers")
+        sm.transition_to(
+            ExecutionState.SUCCESS_FULLY_VERIFIED,
+            "Education curriculum fully verified with 0 blockers",
+        )
 
     return sm.to_audit_trace()
 

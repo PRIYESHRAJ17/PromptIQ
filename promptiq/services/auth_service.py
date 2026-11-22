@@ -188,7 +188,11 @@ class AuthService:
         try:
             payload = decode_access_token(raw_token)
             exp_ts = payload.get("exp")
-            expires_at = datetime.fromtimestamp(exp_ts, tz=UTC) if exp_ts else datetime.now(UTC) + timedelta(hours=24)
+            expires_at = (
+                datetime.fromtimestamp(exp_ts, tz=UTC)
+                if exp_ts
+                else datetime.now(UTC) + timedelta(hours=24)
+            )
         except Exception:
             expires_at = datetime.now(UTC) + timedelta(hours=24)
 

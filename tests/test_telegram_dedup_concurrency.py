@@ -31,7 +31,9 @@ async def cleanup_telegram_records(db_session: AsyncSession):
 
 
 @pytest.mark.asyncio
-async def test_concurrent_duplicate_updates_exactly_one_processed(db_session: AsyncSession, test_user):
+async def test_concurrent_duplicate_updates_exactly_one_processed(
+    db_session: AsyncSession, test_user
+):
     """Proves that 10 concurrent requests with the identical update_id yield exactly 1 processed."""
     user, _ = test_user
     chat_id = "concurrent_chat_1"
@@ -135,7 +137,9 @@ async def test_process_restart_resilience(db_session: AsyncSession, test_user):
 
 
 @pytest.mark.asyncio
-async def test_corrupted_file_tolerance_and_zero_disk_dependency(db_session: AsyncSession, tmp_path, test_user):
+async def test_corrupted_file_tolerance_and_zero_disk_dependency(
+    db_session: AsyncSession, tmp_path, test_user
+):
     """Proves that database-backed deduplication is completely immune to disk corruption."""
     corrupted_file = tmp_path / "corrupted_telegram_updates.json"
     corrupted_file.write_text("{ INVALID_JSON_TRUNCATED_WRITE", encoding="utf-8")

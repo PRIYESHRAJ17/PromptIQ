@@ -42,9 +42,7 @@ class TelegramBotClient:
         self._dedup_window_seconds: float = 600.0  # 10 minute deduplication window
         self._dedup_path = Path(dedup_path)
 
-    async def is_duplicate_update(
-        self, db: AsyncSession | None, update_id: int | None
-    ) -> bool:
+    async def is_duplicate_update(self, db: AsyncSession | None, update_id: int | None) -> bool:
         """Determines if an update_id has already been processed.
 
         Uses atomic database transactions and in-memory cache to guarantee

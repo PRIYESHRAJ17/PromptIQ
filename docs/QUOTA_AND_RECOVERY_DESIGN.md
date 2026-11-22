@@ -55,9 +55,11 @@ def _acquire_ledger_lock(filepath: Path):
     with open(filepath, "r+") as f:
         if os.name == "nt":
             import msvcrt
+
             msvcrt.locking(f.fileno(), msvcrt.LK_NBLCK, 1)
         else:
             import fcntl
+
             fcntl.flock(f.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
         try:
             yield f

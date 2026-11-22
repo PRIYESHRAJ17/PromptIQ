@@ -677,10 +677,14 @@ class CapacityGovernor:
 
             now_dt = datetime.now(UTC)
             if record.workspace_id and record.user_id:
-                resolved_provider = provider or (record.model_id.split("/")[0] if "/" in record.model_id else "groq")
+                resolved_provider = provider or (
+                    record.model_id.split("/")[0] if "/" in record.model_id else "groq"
+                )
                 ledger_entry = None
                 if record.idempotency_key:
-                    stmt_l = select(QuotaLedgerEntry).where(QuotaLedgerEntry.idempotency_key == record.idempotency_key)
+                    stmt_l = select(QuotaLedgerEntry).where(
+                        QuotaLedgerEntry.idempotency_key == record.idempotency_key
+                    )
                     res_l = await db.execute(stmt_l)
                     ledger_entry = res_l.scalar_one_or_none()
 
@@ -726,7 +730,9 @@ class CapacityGovernor:
             if record.workspace_id and record.user_id:
                 ledger_entry = None
                 if record.idempotency_key:
-                    stmt_l = select(QuotaLedgerEntry).where(QuotaLedgerEntry.idempotency_key == record.idempotency_key)
+                    stmt_l = select(QuotaLedgerEntry).where(
+                        QuotaLedgerEntry.idempotency_key == record.idempotency_key
+                    )
                     res_l = await db.execute(stmt_l)
                     ledger_entry = res_l.scalar_one_or_none()
 
@@ -735,7 +741,9 @@ class CapacityGovernor:
                     ledger_entry.tokens = 0
                     ledger_entry.recorded_at = now_dt
                 else:
-                    resolved_provider = record.model_id.split("/")[0] if "/" in record.model_id else "groq"
+                    resolved_provider = (
+                        record.model_id.split("/")[0] if "/" in record.model_id else "groq"
+                    )
                     ledger_entry = QuotaLedgerEntry(
                         workspace_id=record.workspace_id,
                         user_id=record.user_id,

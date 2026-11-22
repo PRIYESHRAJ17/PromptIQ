@@ -65,7 +65,9 @@ async def get_workflow_job(
 ):
     """Retrieves full status, checkpoint, and history of a workflow job."""
     workspace = await ProjectService.get_user_default_workspace(db, user.id)
-    job = await WorkflowJobService.get_job(db=db, job_id=job_id, workspace_id=workspace.workspace_id)
+    job = await WorkflowJobService.get_job(
+        db=db, job_id=job_id, workspace_id=workspace.workspace_id
+    )
     return JobResponse.model_validate(job)
 
 

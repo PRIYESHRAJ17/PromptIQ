@@ -88,12 +88,7 @@ class WorkflowJobService:
         if lease_exp and lease_exp.tzinfo is None:
             lease_exp = lease_exp.replace(tzinfo=UTC)
 
-        if (
-            job.lease_owner
-            and lease_exp
-            and lease_exp > now
-            and job.lease_owner != worker_id
-        ):
+        if job.lease_owner and lease_exp and lease_exp > now and job.lease_owner != worker_id:
             return False
 
         job.lease_owner = worker_id
@@ -183,12 +178,14 @@ class WorkflowJobService:
             job.checkpoint_data = chk
 
         hist = list(job.stage_history or [])
-        hist.append({
-            "stage": job.current_stage or "paused",
-            "status": "PAUSED",
-            "reason": reason,
-            "timestamp": datetime.now(UTC).isoformat(),
-        })
+        hist.append(
+            {
+                "stage": job.current_stage or "paused",
+                "status": "PAUSED",
+                "reason": reason,
+                "timestamp": datetime.now(UTC).isoformat(),
+            }
+        )
         job.stage_history = hist
         await db.flush()
         return job
@@ -223,12 +220,14 @@ class WorkflowJobService:
         job.lease_expires_at = None
 
         hist = list(job.stage_history or [])
-        hist.append({
-            "stage": job.current_stage or "resumed",
-            "status": "RESUMED",
-            "retry_count": job.retry_count,
-            "timestamp": datetime.now(UTC).isoformat(),
-        })
+        hist.append(
+            {
+                "stage": job.current_stage or "resumed",
+                "status": "RESUMED",
+                "retry_count": job.retry_count,
+                "timestamp": datetime.now(UTC).isoformat(),
+            }
+        )
         job.stage_history = hist
         await db.flush()
         return job
@@ -258,12 +257,14 @@ class WorkflowJobService:
         job.completed_at = datetime.now(UTC)
 
         hist = list(job.stage_history or [])
-        hist.append({
-            "stage": job.current_stage or "cancelled",
-            "status": "CANCELLED",
-            "reason": reason,
-            "timestamp": datetime.now(UTC).isoformat(),
-        })
+        hist.append(
+            {
+                "stage": job.current_stage or "cancelled",
+                "status": "CANCELLED",
+                "reason": reason,
+                "timestamp": datetime.now(UTC).isoformat(),
+            }
+        )
         job.stage_history = hist
         await db.flush()
         return job
@@ -298,11 +299,13 @@ class WorkflowJobService:
         job.completed_at = datetime.now(UTC)
 
         hist = list(job.stage_history or [])
-        hist.append({
-            "stage": job.current_stage or "completed",
-            "status": job.status,
-            "timestamp": datetime.now(UTC).isoformat(),
-        })
+        hist.append(
+            {
+                "stage": job.current_stage or "completed",
+                "status": job.status,
+                "timestamp": datetime.now(UTC).isoformat(),
+            }
+        )
         job.stage_history = hist
         await db.flush()
         return job
@@ -334,12 +337,14 @@ class WorkflowJobService:
             hist_status = "DEAD_LETTER"
 
         hist = list(job.stage_history or [])
-        hist.append({
-            "stage": job.current_stage or "failure",
-            "status": hist_status,
-            "error": error_message,
-            "timestamp": datetime.now(UTC).isoformat(),
-        })
+        hist.append(
+            {
+                "stage": job.current_stage or "failure",
+                "status": hist_status,
+                "error": error_message,
+                "timestamp": datetime.now(UTC).isoformat(),
+            }
+        )
         job.stage_history = hist
         await db.flush()
         return job
@@ -363,11 +368,13 @@ class WorkflowJobService:
             job.lease_owner = None
             job.lease_expires_at = None
             hist = list(job.stage_history or [])
-            hist.append({
-                "stage": job.current_stage or "stale_recovery",
-                "status": "LEASE_EXPIRED_REQUEUED",
-                "timestamp": datetime.now(UTC).isoformat(),
-            })
+            hist.append(
+                {
+                    "stage": job.current_stage or "stale_recovery",
+                    "status": "LEASE_EXPIRED_REQUEUED",
+                    "timestamp": datetime.now(UTC).isoformat(),
+                }
+            )
             job.stage_history = hist
             recovered_count += 1
 
@@ -408,6 +415,53 @@ class WorkflowJobService:
         if status:
             stmt = stmt.where(WorkflowJob.status == status)
 
-        stmt = stmt.order_by(desc(WorkflowJob.created_at)).limit(min(100, max(1, limit))).offset(max(0, offset))
+        stmt = (
+            stmt.order_by(desc(WorkflowJob.created_at))
+            .limit(min(100, max(1, limit)))
+            .offset(max(0, offset))
+        )
         res = await db.execute(stmt)
         return list(res.scalars().all())
+
+    @staticmethod
+    async def execute_agent_workflow_job(
+        db: AsyncSession,
+        job_id: str,
+        worker_id: str,
+    ) -> WorkflowJob:
+        """Executes an agent workflow job through the AutonomousAgentLoop runtime."""
+        from promptiq.orchestrator.agent_loop import AutonomousAgentLoop
+
+        job, fencing_token = await WorkflowJobService.claim_job(db, job_id, worker_id)
+        if not job:
+            raise ConflictError(expected_version=1, actual_version=0)
+
+        agent = AutonomousAgentLoop()
+        task_objective = (job.checkpoint_data or {}).get(
+            "objective", f"Execute background task for job {job_id}"
+        )
+        task_type = (job.checkpoint_data or {}).get("task_type", "software_engineering")
+
+        try:
+            summary = await agent.run(
+                objective=task_objective,
+                task_name=f"Job-{job_id[:8]}",
+                task_type=task_type,
+            )
+            completed_job = await WorkflowJobService.complete_job(
+                db=db,
+                job_id=job_id,
+                result_data={
+                    "status": summary.status,
+                    "plan_id": summary.plan_id,
+                    "total_iterations": summary.total_iterations,
+                    "replan_count": summary.replan_count,
+                    "deliverable": summary.deliverable,
+                },
+                has_warnings=summary.status != "completed",
+                fencing_token=fencing_token,
+            )
+            return completed_job
+        except Exception as exc:
+            logger.exception("Agent workflow job %s failed: %s", job_id, exc)
+            return await WorkflowJobService.fail_job(db, job_id, str(exc))

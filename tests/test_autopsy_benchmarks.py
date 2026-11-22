@@ -26,7 +26,9 @@ async def test_golden_dataset_structure_and_completeness(golden_dataset: dict) -
     benchmarks = golden_dataset["benchmarks"]
     assert len(benchmarks) == 21
     categories = {b["category"] for b in benchmarks}
-    assert len(categories) == 21, f"Expected 21 unique categories, got {len(categories)}: {categories}"
+    assert len(categories) == 21, (
+        f"Expected 21 unique categories, got {len(categories)}: {categories}"
+    )
 
     for b in benchmarks:
         assert b["id"].startswith("AUT-GOLD-")
@@ -79,7 +81,9 @@ async def test_autopsy_benchmark_false_positive_resistance(golden_dataset: dict)
         # Clean prompts should not be BLOCKED or have critical findings
         critical_findings = [f for f in resp.findings if f.severity == "critical"]
         if critical_findings:
-            false_blocks.append(f"{b['id']} clean prompt falsely triggered critical: {[f.category for f in critical_findings]}")
+            false_blocks.append(
+                f"{b['id']} clean prompt falsely triggered critical: {[f.category for f in critical_findings]}"
+            )
 
     assert len(false_blocks) == 0, f"False positive blocks detected: {false_blocks}"
 
@@ -99,4 +103,6 @@ async def test_autopsy_benchmark_severity_and_release_blocking(golden_dataset: d
         )
         resp = await PromptAutopsyEngine.diagnose_prompt(req)
         blocking_findings = [f for f in resp.findings if f.blocks_release]
-        assert len(blocking_findings) >= 1, f"{b['id']} ({b['category']}) was expected to block release but had no blocking findings"
+        assert len(blocking_findings) >= 1, (
+            f"{b['id']} ({b['category']}) was expected to block release but had no blocking findings"
+        )

@@ -68,12 +68,14 @@ class EvaluationRunResponse(BaseModel):
         route_str = str(self.provenance.get("route", "")).lower()
         prov_mode_str = str(self.provenance.get("mode", "")).upper()
 
-        is_mock_target = (
-            self.model_id in ("promptiq-mock-v1", "mock")
-            or route_str in ("mock", "synthetic")
+        is_mock_target = self.model_id in ("promptiq-mock-v1", "mock") or route_str in (
+            "mock",
+            "synthetic",
         )
 
-        if is_mock_target and (mode_str in ("LIVE", "LIVE_PROVIDER") or prov_mode_str in ("LIVE", "LIVE_PROVIDER")):
+        if is_mock_target and (
+            mode_str in ("LIVE", "LIVE_PROVIDER") or prov_mode_str in ("LIVE", "LIVE_PROVIDER")
+        ):
             raise ValueError(
                 f"Contradictory execution mode: model '{self.model_id}' on route '{route_str}' "
                 "cannot be classified as LIVE_PROVIDER."

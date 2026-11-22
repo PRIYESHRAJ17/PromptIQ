@@ -88,9 +88,14 @@ class InformationSufficiencyEvaluator:
             gaps.append("Primary objective lacks specificity")
 
         # Deliverables
-        if any(k in answered_keys for k in ["deliverables", "must_have_features", "expected_outputs"]):
+        if any(
+            k in answered_keys for k in ["deliverables", "must_have_features", "expected_outputs"]
+        ):
             score += cls.CORE_FACETS["deliverables"]
-        elif any(w in (goal + context_text).lower() for w in ["api", "prompt", "report", "pipeline", "schema"]):
+        elif any(
+            w in (goal + context_text).lower()
+            for w in ["api", "prompt", "report", "pipeline", "schema"]
+        ):
             score += cls.CORE_FACETS["deliverables"] * 0.75
             assumptions.append("Deliverables inferred from context keywords")
         else:
@@ -107,20 +112,31 @@ class InformationSufficiencyEvaluator:
 
         # Technical Stack
         if "tech_stack_preference" in answered_keys or any(
-            w in (goal + context_text).lower() for w in ["python", "fastapi", "postgres", "sqlite", "docker"]
+            w in (goal + context_text).lower()
+            for w in ["python", "fastapi", "postgres", "sqlite", "docker"]
         ):
             score += cls.CORE_FACETS["technical_stack"]
         else:
-            if profile in (DiscoveryProfile.TECHNICAL, DiscoveryProfile.DEEP, DiscoveryProfile.AGENTIC):
+            if profile in (
+                DiscoveryProfile.TECHNICAL,
+                DiscoveryProfile.DEEP,
+                DiscoveryProfile.AGENTIC,
+            ):
                 gaps.append("Technical runtime and database stack unspecified")
             else:
                 score += cls.CORE_FACETS["technical_stack"] * 0.5
                 assumptions.append("Defaulting to standard Python 3.13 / FastAPI stack")
 
         # Security & Permissions
-        if any(k in answered_keys for k in ["auth_requirements", "tool_permissions", "security_boundaries"]):
+        if any(
+            k in answered_keys
+            for k in ["auth_requirements", "tool_permissions", "security_boundaries"]
+        ):
             score += cls.CORE_FACETS["security_or_permissions"]
-        elif any(w in (goal + context_text).lower() for w in ["auth", "jwt", "rbac", "permission", "safe"]):
+        elif any(
+            w in (goal + context_text).lower()
+            for w in ["auth", "jwt", "rbac", "permission", "safe"]
+        ):
             score += cls.CORE_FACETS["security_or_permissions"] * 0.75
         else:
             if profile in (DiscoveryProfile.AGENTIC, DiscoveryProfile.TECHNICAL):
@@ -132,7 +148,10 @@ class InformationSufficiencyEvaluator:
         # Acceptance Criteria
         if "acceptance_criteria" in answered_keys:
             score += cls.CORE_FACETS["acceptance_criteria"]
-        elif any(w in (goal + context_text).lower() for w in ["acceptance", "test", "verify", "benchmark"]):
+        elif any(
+            w in (goal + context_text).lower()
+            for w in ["acceptance", "test", "verify", "benchmark"]
+        ):
             score += cls.CORE_FACETS["acceptance_criteria"] * 0.7
         else:
             assumptions.append("Acceptance criteria derived from stated objectives")
@@ -158,11 +177,20 @@ class InformationSufficiencyEvaluator:
 
             # Compute decision value weight
             decision_value = 0.5
-            if any(gap_word in q.question.lower() for gap_word in ["auth", "permission", "stack", "database", "security"]):
+            if any(
+                gap_word in q.question.lower()
+                for gap_word in ["auth", "permission", "stack", "database", "security"]
+            ):
                 decision_value = 0.95
-            elif any(gap_word in q.question.lower() for gap_word in ["feature", "deliverable", "output", "format"]):
+            elif any(
+                gap_word in q.question.lower()
+                for gap_word in ["feature", "deliverable", "output", "format"]
+            ):
                 decision_value = 0.85
-            elif any(gap_word in q.question.lower() for gap_word in ["performance", "latency", "scale", "volume"]):
+            elif any(
+                gap_word in q.question.lower()
+                for gap_word in ["performance", "latency", "scale", "volume"]
+            ):
                 decision_value = 0.70
             else:
                 decision_value = 0.50

@@ -168,17 +168,23 @@ async def test_job_failure_retry_and_stale_recovery(db_session: AsyncSession) ->
     job.max_retries = 2
 
     # First failure -> retry 1, status QUEUED
-    f1 = await WorkflowJobService.fail_job(db=db_session, job_id=job.id, error_message="Network glitch")
+    f1 = await WorkflowJobService.fail_job(
+        db=db_session, job_id=job.id, error_message="Network glitch"
+    )
     assert f1.status == "QUEUED"
     assert f1.retry_count == 1
 
     # Second failure -> retry 2, status QUEUED
-    f2 = await WorkflowJobService.fail_job(db=db_session, job_id=job.id, error_message="Provider timeout")
+    f2 = await WorkflowJobService.fail_job(
+        db=db_session, job_id=job.id, error_message="Provider timeout"
+    )
     assert f2.status == "QUEUED"
     assert f2.retry_count == 2
 
     # Third failure -> reaches max_retries, status FAILED
-    f3 = await WorkflowJobService.fail_job(db=db_session, job_id=job.id, error_message="Unrecoverable error")
+    f3 = await WorkflowJobService.fail_job(
+        db=db_session, job_id=job.id, error_message="Unrecoverable error"
+    )
     assert f3.status == "FAILED"
 
     # Test stale job recovery
@@ -196,7 +202,9 @@ async def test_job_failure_retry_and_stale_recovery(db_session: AsyncSession) ->
     recovered = await WorkflowJobService.recover_stale_jobs(db=db_session, timeout_seconds=60)
     assert recovered >= 1
 
-    reloaded = await WorkflowJobService.get_job(db=db_session, job_id=stale_job.id, workspace_id=ws_id)
+    reloaded = await WorkflowJobService.get_job(
+        db=db_session, job_id=stale_job.id, workspace_id=ws_id
+    )
     assert reloaded.status == "QUEUED"
     assert reloaded.lease_owner is None
 
@@ -268,12 +276,16 @@ async def test_job_fencing_token_rejects_stale_worker(db_session: AsyncSession) 
     )
 
     # Worker 1 acquires lease (fencing_token becomes 1)
-    await WorkflowJobService.acquire_lease(db=db_session, job_id=job.id, worker_id="worker-1", lease_duration_seconds=1)
+    await WorkflowJobService.acquire_lease(
+        db=db_session, job_id=job.id, worker_id="worker-1", lease_duration_seconds=1
+    )
     assert job.fencing_token == 1
 
     # Worker 1 times out, Worker 2 acquires lease (fencing_token becomes 2)
     job.lease_expires_at = datetime.now(UTC) - timedelta(seconds=10)
-    await WorkflowJobService.acquire_lease(db=db_session, job_id=job.id, worker_id="worker-2", lease_duration_seconds=30)
+    await WorkflowJobService.acquire_lease(
+        db=db_session, job_id=job.id, worker_id="worker-2", lease_duration_seconds=30
+    )
     assert job.fencing_token == 2
 
     # Stale Worker 1 attempts to update progress with obsolete fencing_token=1 -> ConflictError
@@ -295,4 +307,3 @@ async def test_job_fencing_token_rejects_stale_worker(db_session: AsyncSession) 
         fencing_token=2,
     )
     assert updated.current_stage == "valid_step"
-

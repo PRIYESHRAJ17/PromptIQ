@@ -1,0 +1,4488 @@
+{
+  "version": "7.0.0",
+  "total_scenarios": 200,
+  "task_family_count": 10,
+  "scenarios_per_family": 20,
+  "scenarios": [
+    {
+      "scenario_id": "TF-SOFT-DEV-01",
+      "task_family": "software_engineering",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Implement asynchronous token bucket rate limiting middleware in FastAPI - Scenario 1 (Development)",
+      "expected_tools": [
+        "filesystem_read",
+        "filesystem_write",
+        "subprocess_exec",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "deterministic_assertions",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-SOFT-DEV-02",
+      "task_family": "software_engineering",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Implement asynchronous token bucket rate limiting middleware in FastAPI - Scenario 2 (Development)",
+      "expected_tools": [
+        "filesystem_read",
+        "filesystem_write",
+        "subprocess_exec",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "deterministic_assertions",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-SOFT-DEV-03",
+      "task_family": "software_engineering",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Implement asynchronous token bucket rate limiting middleware in FastAPI - Scenario 3 (Development)",
+      "expected_tools": [
+        "filesystem_read",
+        "filesystem_write",
+        "subprocess_exec",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "deterministic_assertions",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-SOFT-DEV-04",
+      "task_family": "software_engineering",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Implement asynchronous token bucket rate limiting middleware in FastAPI - Scenario 4 (Development)",
+      "expected_tools": [
+        "filesystem_read",
+        "filesystem_write",
+        "subprocess_exec",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "deterministic_assertions",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-SOFT-DEV-05",
+      "task_family": "software_engineering",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Implement asynchronous token bucket rate limiting middleware in FastAPI - Scenario 5 (Development)",
+      "expected_tools": [
+        "filesystem_read",
+        "filesystem_write",
+        "subprocess_exec",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "deterministic_assertions",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-SOFT-DEV-06",
+      "task_family": "software_engineering",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Implement asynchronous token bucket rate limiting middleware in FastAPI - Scenario 6 (Development)",
+      "expected_tools": [
+        "filesystem_read",
+        "filesystem_write",
+        "subprocess_exec",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "deterministic_assertions",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-SOFT-DEV-07",
+      "task_family": "software_engineering",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Implement asynchronous token bucket rate limiting middleware in FastAPI - Scenario 7 (Development)",
+      "expected_tools": [
+        "filesystem_read",
+        "filesystem_write",
+        "subprocess_exec",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "deterministic_assertions",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-SOFT-DEV-08",
+      "task_family": "software_engineering",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Implement asynchronous token bucket rate limiting middleware in FastAPI - Scenario 8 (Development)",
+      "expected_tools": [
+        "filesystem_read",
+        "filesystem_write",
+        "subprocess_exec",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "deterministic_assertions",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-SOFT-DEV-09",
+      "task_family": "software_engineering",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Implement asynchronous token bucket rate limiting middleware in FastAPI - Scenario 9 (Development)",
+      "expected_tools": [
+        "filesystem_read",
+        "filesystem_write",
+        "subprocess_exec",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "deterministic_assertions",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-SOFT-DEV-10",
+      "task_family": "software_engineering",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Implement asynchronous token bucket rate limiting middleware in FastAPI - Scenario 10 (Development)",
+      "expected_tools": [
+        "filesystem_read",
+        "filesystem_write",
+        "subprocess_exec",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "deterministic_assertions",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-SOFT-HELD-11",
+      "task_family": "software_engineering",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Implement asynchronous token bucket rate limiting middleware in FastAPI - Scenario 11 (Held-out Test)",
+      "expected_tools": [
+        "filesystem_read",
+        "filesystem_write",
+        "subprocess_exec",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "deterministic_assertions",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-SOFT-HELD-12",
+      "task_family": "software_engineering",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Implement asynchronous token bucket rate limiting middleware in FastAPI - Scenario 12 (Held-out Test)",
+      "expected_tools": [
+        "filesystem_read",
+        "filesystem_write",
+        "subprocess_exec",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "deterministic_assertions",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-SOFT-HELD-13",
+      "task_family": "software_engineering",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Implement asynchronous token bucket rate limiting middleware in FastAPI - Scenario 13 (Held-out Test)",
+      "expected_tools": [
+        "filesystem_read",
+        "filesystem_write",
+        "subprocess_exec",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "deterministic_assertions",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-SOFT-HELD-14",
+      "task_family": "software_engineering",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Implement asynchronous token bucket rate limiting middleware in FastAPI - Scenario 14 (Held-out Test)",
+      "expected_tools": [
+        "filesystem_read",
+        "filesystem_write",
+        "subprocess_exec",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "deterministic_assertions",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-SOFT-HELD-15",
+      "task_family": "software_engineering",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Implement asynchronous token bucket rate limiting middleware in FastAPI - Scenario 15 (Held-out Test)",
+      "expected_tools": [
+        "filesystem_read",
+        "filesystem_write",
+        "subprocess_exec",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "deterministic_assertions",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-SOFT-HELD-16",
+      "task_family": "software_engineering",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Implement asynchronous token bucket rate limiting middleware in FastAPI - Scenario 16 (Held-out Test)",
+      "expected_tools": [
+        "filesystem_read",
+        "filesystem_write",
+        "subprocess_exec",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "deterministic_assertions",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-SOFT-HELD-17",
+      "task_family": "software_engineering",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Implement asynchronous token bucket rate limiting middleware in FastAPI - Scenario 17 (Held-out Test)",
+      "expected_tools": [
+        "filesystem_read",
+        "filesystem_write",
+        "subprocess_exec",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "deterministic_assertions",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-SOFT-HELD-18",
+      "task_family": "software_engineering",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Implement asynchronous token bucket rate limiting middleware in FastAPI - Scenario 18 (Held-out Test)",
+      "expected_tools": [
+        "filesystem_read",
+        "filesystem_write",
+        "subprocess_exec",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "deterministic_assertions",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-SOFT-HELD-19",
+      "task_family": "software_engineering",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Implement asynchronous token bucket rate limiting middleware in FastAPI - Scenario 19 (Held-out Test)",
+      "expected_tools": [
+        "filesystem_read",
+        "filesystem_write",
+        "subprocess_exec",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "deterministic_assertions",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-SOFT-HELD-20",
+      "task_family": "software_engineering",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Implement asynchronous token bucket rate limiting middleware in FastAPI - Scenario 20 (Held-out Test)",
+      "expected_tools": [
+        "filesystem_read",
+        "filesystem_write",
+        "subprocess_exec",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "deterministic_assertions",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-RESE-DEV-01",
+      "task_family": "research_intelligence",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Investigate consensus algorithms across Raft, Paxos, and Viewstamped Replication - Scenario 1 (Development)",
+      "expected_tools": [
+        "http_fetch",
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "source_citation_grounding",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-RESE-DEV-02",
+      "task_family": "research_intelligence",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Investigate consensus algorithms across Raft, Paxos, and Viewstamped Replication - Scenario 2 (Development)",
+      "expected_tools": [
+        "http_fetch",
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "source_citation_grounding",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-RESE-DEV-03",
+      "task_family": "research_intelligence",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Investigate consensus algorithms across Raft, Paxos, and Viewstamped Replication - Scenario 3 (Development)",
+      "expected_tools": [
+        "http_fetch",
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "source_citation_grounding",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-RESE-DEV-04",
+      "task_family": "research_intelligence",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Investigate consensus algorithms across Raft, Paxos, and Viewstamped Replication - Scenario 4 (Development)",
+      "expected_tools": [
+        "http_fetch",
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "source_citation_grounding",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-RESE-DEV-05",
+      "task_family": "research_intelligence",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Investigate consensus algorithms across Raft, Paxos, and Viewstamped Replication - Scenario 5 (Development)",
+      "expected_tools": [
+        "http_fetch",
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "source_citation_grounding",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-RESE-DEV-06",
+      "task_family": "research_intelligence",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Investigate consensus algorithms across Raft, Paxos, and Viewstamped Replication - Scenario 6 (Development)",
+      "expected_tools": [
+        "http_fetch",
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "source_citation_grounding",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-RESE-DEV-07",
+      "task_family": "research_intelligence",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Investigate consensus algorithms across Raft, Paxos, and Viewstamped Replication - Scenario 7 (Development)",
+      "expected_tools": [
+        "http_fetch",
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "source_citation_grounding",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-RESE-DEV-08",
+      "task_family": "research_intelligence",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Investigate consensus algorithms across Raft, Paxos, and Viewstamped Replication - Scenario 8 (Development)",
+      "expected_tools": [
+        "http_fetch",
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "source_citation_grounding",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-RESE-DEV-09",
+      "task_family": "research_intelligence",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Investigate consensus algorithms across Raft, Paxos, and Viewstamped Replication - Scenario 9 (Development)",
+      "expected_tools": [
+        "http_fetch",
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "source_citation_grounding",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-RESE-DEV-10",
+      "task_family": "research_intelligence",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Investigate consensus algorithms across Raft, Paxos, and Viewstamped Replication - Scenario 10 (Development)",
+      "expected_tools": [
+        "http_fetch",
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "source_citation_grounding",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-RESE-HELD-11",
+      "task_family": "research_intelligence",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Investigate consensus algorithms across Raft, Paxos, and Viewstamped Replication - Scenario 11 (Held-out Test)",
+      "expected_tools": [
+        "http_fetch",
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "source_citation_grounding",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-RESE-HELD-12",
+      "task_family": "research_intelligence",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Investigate consensus algorithms across Raft, Paxos, and Viewstamped Replication - Scenario 12 (Held-out Test)",
+      "expected_tools": [
+        "http_fetch",
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "source_citation_grounding",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-RESE-HELD-13",
+      "task_family": "research_intelligence",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Investigate consensus algorithms across Raft, Paxos, and Viewstamped Replication - Scenario 13 (Held-out Test)",
+      "expected_tools": [
+        "http_fetch",
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "source_citation_grounding",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-RESE-HELD-14",
+      "task_family": "research_intelligence",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Investigate consensus algorithms across Raft, Paxos, and Viewstamped Replication - Scenario 14 (Held-out Test)",
+      "expected_tools": [
+        "http_fetch",
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "source_citation_grounding",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-RESE-HELD-15",
+      "task_family": "research_intelligence",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Investigate consensus algorithms across Raft, Paxos, and Viewstamped Replication - Scenario 15 (Held-out Test)",
+      "expected_tools": [
+        "http_fetch",
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "source_citation_grounding",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-RESE-HELD-16",
+      "task_family": "research_intelligence",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Investigate consensus algorithms across Raft, Paxos, and Viewstamped Replication - Scenario 16 (Held-out Test)",
+      "expected_tools": [
+        "http_fetch",
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "source_citation_grounding",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-RESE-HELD-17",
+      "task_family": "research_intelligence",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Investigate consensus algorithms across Raft, Paxos, and Viewstamped Replication - Scenario 17 (Held-out Test)",
+      "expected_tools": [
+        "http_fetch",
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "source_citation_grounding",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-RESE-HELD-18",
+      "task_family": "research_intelligence",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Investigate consensus algorithms across Raft, Paxos, and Viewstamped Replication - Scenario 18 (Held-out Test)",
+      "expected_tools": [
+        "http_fetch",
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "source_citation_grounding",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-RESE-HELD-19",
+      "task_family": "research_intelligence",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Investigate consensus algorithms across Raft, Paxos, and Viewstamped Replication - Scenario 19 (Held-out Test)",
+      "expected_tools": [
+        "http_fetch",
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "source_citation_grounding",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-RESE-HELD-20",
+      "task_family": "research_intelligence",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Investigate consensus algorithms across Raft, Paxos, and Viewstamped Replication - Scenario 20 (Held-out Test)",
+      "expected_tools": [
+        "http_fetch",
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "source_citation_grounding",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-AI_A-DEV-01",
+      "task_family": "ai_agent_development",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Design autonomous multi-agent tool execution loop with permission levels - Scenario 1 (Development)",
+      "expected_tools": [
+        "filesystem_read",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "permission_boundary_validation",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-AI_A-DEV-02",
+      "task_family": "ai_agent_development",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Design autonomous multi-agent tool execution loop with permission levels - Scenario 2 (Development)",
+      "expected_tools": [
+        "filesystem_read",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "permission_boundary_validation",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-AI_A-DEV-03",
+      "task_family": "ai_agent_development",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Design autonomous multi-agent tool execution loop with permission levels - Scenario 3 (Development)",
+      "expected_tools": [
+        "filesystem_read",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "permission_boundary_validation",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-AI_A-DEV-04",
+      "task_family": "ai_agent_development",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Design autonomous multi-agent tool execution loop with permission levels - Scenario 4 (Development)",
+      "expected_tools": [
+        "filesystem_read",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "permission_boundary_validation",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-AI_A-DEV-05",
+      "task_family": "ai_agent_development",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Design autonomous multi-agent tool execution loop with permission levels - Scenario 5 (Development)",
+      "expected_tools": [
+        "filesystem_read",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "permission_boundary_validation",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-AI_A-DEV-06",
+      "task_family": "ai_agent_development",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Design autonomous multi-agent tool execution loop with permission levels - Scenario 6 (Development)",
+      "expected_tools": [
+        "filesystem_read",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "permission_boundary_validation",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-AI_A-DEV-07",
+      "task_family": "ai_agent_development",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Design autonomous multi-agent tool execution loop with permission levels - Scenario 7 (Development)",
+      "expected_tools": [
+        "filesystem_read",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "permission_boundary_validation",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-AI_A-DEV-08",
+      "task_family": "ai_agent_development",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Design autonomous multi-agent tool execution loop with permission levels - Scenario 8 (Development)",
+      "expected_tools": [
+        "filesystem_read",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "permission_boundary_validation",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-AI_A-DEV-09",
+      "task_family": "ai_agent_development",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Design autonomous multi-agent tool execution loop with permission levels - Scenario 9 (Development)",
+      "expected_tools": [
+        "filesystem_read",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "permission_boundary_validation",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-AI_A-DEV-10",
+      "task_family": "ai_agent_development",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Design autonomous multi-agent tool execution loop with permission levels - Scenario 10 (Development)",
+      "expected_tools": [
+        "filesystem_read",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "permission_boundary_validation",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-AI_A-HELD-11",
+      "task_family": "ai_agent_development",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Design autonomous multi-agent tool execution loop with permission levels - Scenario 11 (Held-out Test)",
+      "expected_tools": [
+        "filesystem_read",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "permission_boundary_validation",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-AI_A-HELD-12",
+      "task_family": "ai_agent_development",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Design autonomous multi-agent tool execution loop with permission levels - Scenario 12 (Held-out Test)",
+      "expected_tools": [
+        "filesystem_read",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "permission_boundary_validation",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-AI_A-HELD-13",
+      "task_family": "ai_agent_development",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Design autonomous multi-agent tool execution loop with permission levels - Scenario 13 (Held-out Test)",
+      "expected_tools": [
+        "filesystem_read",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "permission_boundary_validation",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-AI_A-HELD-14",
+      "task_family": "ai_agent_development",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Design autonomous multi-agent tool execution loop with permission levels - Scenario 14 (Held-out Test)",
+      "expected_tools": [
+        "filesystem_read",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "permission_boundary_validation",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-AI_A-HELD-15",
+      "task_family": "ai_agent_development",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Design autonomous multi-agent tool execution loop with permission levels - Scenario 15 (Held-out Test)",
+      "expected_tools": [
+        "filesystem_read",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "permission_boundary_validation",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-AI_A-HELD-16",
+      "task_family": "ai_agent_development",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Design autonomous multi-agent tool execution loop with permission levels - Scenario 16 (Held-out Test)",
+      "expected_tools": [
+        "filesystem_read",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "permission_boundary_validation",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-AI_A-HELD-17",
+      "task_family": "ai_agent_development",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Design autonomous multi-agent tool execution loop with permission levels - Scenario 17 (Held-out Test)",
+      "expected_tools": [
+        "filesystem_read",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "permission_boundary_validation",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-AI_A-HELD-18",
+      "task_family": "ai_agent_development",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Design autonomous multi-agent tool execution loop with permission levels - Scenario 18 (Held-out Test)",
+      "expected_tools": [
+        "filesystem_read",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "permission_boundary_validation",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-AI_A-HELD-19",
+      "task_family": "ai_agent_development",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Design autonomous multi-agent tool execution loop with permission levels - Scenario 19 (Held-out Test)",
+      "expected_tools": [
+        "filesystem_read",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "permission_boundary_validation",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-AI_A-HELD-20",
+      "task_family": "ai_agent_development",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Design autonomous multi-agent tool execution loop with permission levels - Scenario 20 (Held-out Test)",
+      "expected_tools": [
+        "filesystem_read",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-02-research",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "permission_boundary_validation",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-BUSI-DEV-01",
+      "task_family": "business_strategy",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Formulate 3-year market penetration roadmap for enterprise AI workflow platform - Scenario 1 (Development)",
+      "expected_tools": [
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "strategic_rubric_scoring",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-BUSI-DEV-02",
+      "task_family": "business_strategy",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Formulate 3-year market penetration roadmap for enterprise AI workflow platform - Scenario 2 (Development)",
+      "expected_tools": [
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "strategic_rubric_scoring",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-BUSI-DEV-03",
+      "task_family": "business_strategy",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Formulate 3-year market penetration roadmap for enterprise AI workflow platform - Scenario 3 (Development)",
+      "expected_tools": [
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "strategic_rubric_scoring",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-BUSI-DEV-04",
+      "task_family": "business_strategy",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Formulate 3-year market penetration roadmap for enterprise AI workflow platform - Scenario 4 (Development)",
+      "expected_tools": [
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "strategic_rubric_scoring",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-BUSI-DEV-05",
+      "task_family": "business_strategy",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Formulate 3-year market penetration roadmap for enterprise AI workflow platform - Scenario 5 (Development)",
+      "expected_tools": [
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "strategic_rubric_scoring",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-BUSI-DEV-06",
+      "task_family": "business_strategy",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Formulate 3-year market penetration roadmap for enterprise AI workflow platform - Scenario 6 (Development)",
+      "expected_tools": [
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "strategic_rubric_scoring",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-BUSI-DEV-07",
+      "task_family": "business_strategy",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Formulate 3-year market penetration roadmap for enterprise AI workflow platform - Scenario 7 (Development)",
+      "expected_tools": [
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "strategic_rubric_scoring",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-BUSI-DEV-08",
+      "task_family": "business_strategy",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Formulate 3-year market penetration roadmap for enterprise AI workflow platform - Scenario 8 (Development)",
+      "expected_tools": [
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "strategic_rubric_scoring",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-BUSI-DEV-09",
+      "task_family": "business_strategy",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Formulate 3-year market penetration roadmap for enterprise AI workflow platform - Scenario 9 (Development)",
+      "expected_tools": [
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "strategic_rubric_scoring",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-BUSI-DEV-10",
+      "task_family": "business_strategy",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Formulate 3-year market penetration roadmap for enterprise AI workflow platform - Scenario 10 (Development)",
+      "expected_tools": [
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "strategic_rubric_scoring",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-BUSI-HELD-11",
+      "task_family": "business_strategy",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Formulate 3-year market penetration roadmap for enterprise AI workflow platform - Scenario 11 (Held-out Test)",
+      "expected_tools": [
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "strategic_rubric_scoring",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-BUSI-HELD-12",
+      "task_family": "business_strategy",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Formulate 3-year market penetration roadmap for enterprise AI workflow platform - Scenario 12 (Held-out Test)",
+      "expected_tools": [
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "strategic_rubric_scoring",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-BUSI-HELD-13",
+      "task_family": "business_strategy",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Formulate 3-year market penetration roadmap for enterprise AI workflow platform - Scenario 13 (Held-out Test)",
+      "expected_tools": [
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "strategic_rubric_scoring",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-BUSI-HELD-14",
+      "task_family": "business_strategy",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Formulate 3-year market penetration roadmap for enterprise AI workflow platform - Scenario 14 (Held-out Test)",
+      "expected_tools": [
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "strategic_rubric_scoring",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-BUSI-HELD-15",
+      "task_family": "business_strategy",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Formulate 3-year market penetration roadmap for enterprise AI workflow platform - Scenario 15 (Held-out Test)",
+      "expected_tools": [
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "strategic_rubric_scoring",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-BUSI-HELD-16",
+      "task_family": "business_strategy",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Formulate 3-year market penetration roadmap for enterprise AI workflow platform - Scenario 16 (Held-out Test)",
+      "expected_tools": [
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "strategic_rubric_scoring",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-BUSI-HELD-17",
+      "task_family": "business_strategy",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Formulate 3-year market penetration roadmap for enterprise AI workflow platform - Scenario 17 (Held-out Test)",
+      "expected_tools": [
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "strategic_rubric_scoring",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-BUSI-HELD-18",
+      "task_family": "business_strategy",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Formulate 3-year market penetration roadmap for enterprise AI workflow platform - Scenario 18 (Held-out Test)",
+      "expected_tools": [
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "strategic_rubric_scoring",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-BUSI-HELD-19",
+      "task_family": "business_strategy",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Formulate 3-year market penetration roadmap for enterprise AI workflow platform - Scenario 19 (Held-out Test)",
+      "expected_tools": [
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "strategic_rubric_scoring",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-BUSI-HELD-20",
+      "task_family": "business_strategy",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Formulate 3-year market penetration roadmap for enterprise AI workflow platform - Scenario 20 (Held-out Test)",
+      "expected_tools": [
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "strategic_rubric_scoring",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-PROM-DEV-01",
+      "task_family": "prompt_improvement",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Refactor vague SQL generation prompt into target-native Claude Code instructions - Scenario 1 (Development)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-05-critique",
+        "task-07-verify"
+      ],
+      "eval_method": "token_density_and_autopsy",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-PROM-DEV-02",
+      "task_family": "prompt_improvement",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Refactor vague SQL generation prompt into target-native Claude Code instructions - Scenario 2 (Development)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-05-critique",
+        "task-07-verify"
+      ],
+      "eval_method": "token_density_and_autopsy",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-PROM-DEV-03",
+      "task_family": "prompt_improvement",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Refactor vague SQL generation prompt into target-native Claude Code instructions - Scenario 3 (Development)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-05-critique",
+        "task-07-verify"
+      ],
+      "eval_method": "token_density_and_autopsy",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-PROM-DEV-04",
+      "task_family": "prompt_improvement",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Refactor vague SQL generation prompt into target-native Claude Code instructions - Scenario 4 (Development)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-05-critique",
+        "task-07-verify"
+      ],
+      "eval_method": "token_density_and_autopsy",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-PROM-DEV-05",
+      "task_family": "prompt_improvement",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Refactor vague SQL generation prompt into target-native Claude Code instructions - Scenario 5 (Development)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-05-critique",
+        "task-07-verify"
+      ],
+      "eval_method": "token_density_and_autopsy",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-PROM-DEV-06",
+      "task_family": "prompt_improvement",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Refactor vague SQL generation prompt into target-native Claude Code instructions - Scenario 6 (Development)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-05-critique",
+        "task-07-verify"
+      ],
+      "eval_method": "token_density_and_autopsy",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-PROM-DEV-07",
+      "task_family": "prompt_improvement",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Refactor vague SQL generation prompt into target-native Claude Code instructions - Scenario 7 (Development)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-05-critique",
+        "task-07-verify"
+      ],
+      "eval_method": "token_density_and_autopsy",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-PROM-DEV-08",
+      "task_family": "prompt_improvement",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Refactor vague SQL generation prompt into target-native Claude Code instructions - Scenario 8 (Development)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-05-critique",
+        "task-07-verify"
+      ],
+      "eval_method": "token_density_and_autopsy",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-PROM-DEV-09",
+      "task_family": "prompt_improvement",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Refactor vague SQL generation prompt into target-native Claude Code instructions - Scenario 9 (Development)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-05-critique",
+        "task-07-verify"
+      ],
+      "eval_method": "token_density_and_autopsy",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-PROM-DEV-10",
+      "task_family": "prompt_improvement",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Refactor vague SQL generation prompt into target-native Claude Code instructions - Scenario 10 (Development)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-05-critique",
+        "task-07-verify"
+      ],
+      "eval_method": "token_density_and_autopsy",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-PROM-HELD-11",
+      "task_family": "prompt_improvement",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Refactor vague SQL generation prompt into target-native Claude Code instructions - Scenario 11 (Held-out Test)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-05-critique",
+        "task-07-verify"
+      ],
+      "eval_method": "token_density_and_autopsy",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-PROM-HELD-12",
+      "task_family": "prompt_improvement",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Refactor vague SQL generation prompt into target-native Claude Code instructions - Scenario 12 (Held-out Test)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-05-critique",
+        "task-07-verify"
+      ],
+      "eval_method": "token_density_and_autopsy",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-PROM-HELD-13",
+      "task_family": "prompt_improvement",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Refactor vague SQL generation prompt into target-native Claude Code instructions - Scenario 13 (Held-out Test)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-05-critique",
+        "task-07-verify"
+      ],
+      "eval_method": "token_density_and_autopsy",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-PROM-HELD-14",
+      "task_family": "prompt_improvement",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Refactor vague SQL generation prompt into target-native Claude Code instructions - Scenario 14 (Held-out Test)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-05-critique",
+        "task-07-verify"
+      ],
+      "eval_method": "token_density_and_autopsy",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-PROM-HELD-15",
+      "task_family": "prompt_improvement",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Refactor vague SQL generation prompt into target-native Claude Code instructions - Scenario 15 (Held-out Test)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-05-critique",
+        "task-07-verify"
+      ],
+      "eval_method": "token_density_and_autopsy",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-PROM-HELD-16",
+      "task_family": "prompt_improvement",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Refactor vague SQL generation prompt into target-native Claude Code instructions - Scenario 16 (Held-out Test)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-05-critique",
+        "task-07-verify"
+      ],
+      "eval_method": "token_density_and_autopsy",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-PROM-HELD-17",
+      "task_family": "prompt_improvement",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Refactor vague SQL generation prompt into target-native Claude Code instructions - Scenario 17 (Held-out Test)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-05-critique",
+        "task-07-verify"
+      ],
+      "eval_method": "token_density_and_autopsy",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-PROM-HELD-18",
+      "task_family": "prompt_improvement",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Refactor vague SQL generation prompt into target-native Claude Code instructions - Scenario 18 (Held-out Test)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-05-critique",
+        "task-07-verify"
+      ],
+      "eval_method": "token_density_and_autopsy",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-PROM-HELD-19",
+      "task_family": "prompt_improvement",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Refactor vague SQL generation prompt into target-native Claude Code instructions - Scenario 19 (Held-out Test)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-05-critique",
+        "task-07-verify"
+      ],
+      "eval_method": "token_density_and_autopsy",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-PROM-HELD-20",
+      "task_family": "prompt_improvement",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Refactor vague SQL generation prompt into target-native Claude Code instructions - Scenario 20 (Held-out Test)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-05-critique",
+        "task-07-verify"
+      ],
+      "eval_method": "token_density_and_autopsy",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-PROD-DEV-01",
+      "task_family": "product_development",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Author comprehensive Product Requirements Document for distributed audit ledger - Scenario 1 (Development)",
+      "expected_tools": [
+        "filesystem_write",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "prd_completeness_matrix",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-PROD-DEV-02",
+      "task_family": "product_development",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Author comprehensive Product Requirements Document for distributed audit ledger - Scenario 2 (Development)",
+      "expected_tools": [
+        "filesystem_write",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "prd_completeness_matrix",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-PROD-DEV-03",
+      "task_family": "product_development",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Author comprehensive Product Requirements Document for distributed audit ledger - Scenario 3 (Development)",
+      "expected_tools": [
+        "filesystem_write",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "prd_completeness_matrix",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-PROD-DEV-04",
+      "task_family": "product_development",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Author comprehensive Product Requirements Document for distributed audit ledger - Scenario 4 (Development)",
+      "expected_tools": [
+        "filesystem_write",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "prd_completeness_matrix",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-PROD-DEV-05",
+      "task_family": "product_development",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Author comprehensive Product Requirements Document for distributed audit ledger - Scenario 5 (Development)",
+      "expected_tools": [
+        "filesystem_write",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "prd_completeness_matrix",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-PROD-DEV-06",
+      "task_family": "product_development",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Author comprehensive Product Requirements Document for distributed audit ledger - Scenario 6 (Development)",
+      "expected_tools": [
+        "filesystem_write",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "prd_completeness_matrix",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-PROD-DEV-07",
+      "task_family": "product_development",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Author comprehensive Product Requirements Document for distributed audit ledger - Scenario 7 (Development)",
+      "expected_tools": [
+        "filesystem_write",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "prd_completeness_matrix",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-PROD-DEV-08",
+      "task_family": "product_development",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Author comprehensive Product Requirements Document for distributed audit ledger - Scenario 8 (Development)",
+      "expected_tools": [
+        "filesystem_write",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "prd_completeness_matrix",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-PROD-DEV-09",
+      "task_family": "product_development",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Author comprehensive Product Requirements Document for distributed audit ledger - Scenario 9 (Development)",
+      "expected_tools": [
+        "filesystem_write",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "prd_completeness_matrix",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-PROD-DEV-10",
+      "task_family": "product_development",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Author comprehensive Product Requirements Document for distributed audit ledger - Scenario 10 (Development)",
+      "expected_tools": [
+        "filesystem_write",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "prd_completeness_matrix",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-PROD-HELD-11",
+      "task_family": "product_development",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Author comprehensive Product Requirements Document for distributed audit ledger - Scenario 11 (Held-out Test)",
+      "expected_tools": [
+        "filesystem_write",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "prd_completeness_matrix",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-PROD-HELD-12",
+      "task_family": "product_development",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Author comprehensive Product Requirements Document for distributed audit ledger - Scenario 12 (Held-out Test)",
+      "expected_tools": [
+        "filesystem_write",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "prd_completeness_matrix",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-PROD-HELD-13",
+      "task_family": "product_development",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Author comprehensive Product Requirements Document for distributed audit ledger - Scenario 13 (Held-out Test)",
+      "expected_tools": [
+        "filesystem_write",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "prd_completeness_matrix",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-PROD-HELD-14",
+      "task_family": "product_development",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Author comprehensive Product Requirements Document for distributed audit ledger - Scenario 14 (Held-out Test)",
+      "expected_tools": [
+        "filesystem_write",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "prd_completeness_matrix",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-PROD-HELD-15",
+      "task_family": "product_development",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Author comprehensive Product Requirements Document for distributed audit ledger - Scenario 15 (Held-out Test)",
+      "expected_tools": [
+        "filesystem_write",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "prd_completeness_matrix",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-PROD-HELD-16",
+      "task_family": "product_development",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Author comprehensive Product Requirements Document for distributed audit ledger - Scenario 16 (Held-out Test)",
+      "expected_tools": [
+        "filesystem_write",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "prd_completeness_matrix",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-PROD-HELD-17",
+      "task_family": "product_development",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Author comprehensive Product Requirements Document for distributed audit ledger - Scenario 17 (Held-out Test)",
+      "expected_tools": [
+        "filesystem_write",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "prd_completeness_matrix",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-PROD-HELD-18",
+      "task_family": "product_development",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Author comprehensive Product Requirements Document for distributed audit ledger - Scenario 18 (Held-out Test)",
+      "expected_tools": [
+        "filesystem_write",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "prd_completeness_matrix",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-PROD-HELD-19",
+      "task_family": "product_development",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Author comprehensive Product Requirements Document for distributed audit ledger - Scenario 19 (Held-out Test)",
+      "expected_tools": [
+        "filesystem_write",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "prd_completeness_matrix",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-PROD-HELD-20",
+      "task_family": "product_development",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Author comprehensive Product Requirements Document for distributed audit ledger - Scenario 20 (Held-out Test)",
+      "expected_tools": [
+        "filesystem_write",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "prd_completeness_matrix",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-WRIT-DEV-01",
+      "task_family": "writing_content",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Compose technical whitepaper explaining cryptographic fencing tokens in distributed jobs - Scenario 1 (Development)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "stylistic_and_length_rubric",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-WRIT-DEV-02",
+      "task_family": "writing_content",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Compose technical whitepaper explaining cryptographic fencing tokens in distributed jobs - Scenario 2 (Development)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "stylistic_and_length_rubric",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-WRIT-DEV-03",
+      "task_family": "writing_content",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Compose technical whitepaper explaining cryptographic fencing tokens in distributed jobs - Scenario 3 (Development)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "stylistic_and_length_rubric",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-WRIT-DEV-04",
+      "task_family": "writing_content",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Compose technical whitepaper explaining cryptographic fencing tokens in distributed jobs - Scenario 4 (Development)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "stylistic_and_length_rubric",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-WRIT-DEV-05",
+      "task_family": "writing_content",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Compose technical whitepaper explaining cryptographic fencing tokens in distributed jobs - Scenario 5 (Development)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "stylistic_and_length_rubric",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-WRIT-DEV-06",
+      "task_family": "writing_content",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Compose technical whitepaper explaining cryptographic fencing tokens in distributed jobs - Scenario 6 (Development)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "stylistic_and_length_rubric",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-WRIT-DEV-07",
+      "task_family": "writing_content",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Compose technical whitepaper explaining cryptographic fencing tokens in distributed jobs - Scenario 7 (Development)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "stylistic_and_length_rubric",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-WRIT-DEV-08",
+      "task_family": "writing_content",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Compose technical whitepaper explaining cryptographic fencing tokens in distributed jobs - Scenario 8 (Development)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "stylistic_and_length_rubric",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-WRIT-DEV-09",
+      "task_family": "writing_content",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Compose technical whitepaper explaining cryptographic fencing tokens in distributed jobs - Scenario 9 (Development)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "stylistic_and_length_rubric",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-WRIT-DEV-10",
+      "task_family": "writing_content",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Compose technical whitepaper explaining cryptographic fencing tokens in distributed jobs - Scenario 10 (Development)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "stylistic_and_length_rubric",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-WRIT-HELD-11",
+      "task_family": "writing_content",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Compose technical whitepaper explaining cryptographic fencing tokens in distributed jobs - Scenario 11 (Held-out Test)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "stylistic_and_length_rubric",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-WRIT-HELD-12",
+      "task_family": "writing_content",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Compose technical whitepaper explaining cryptographic fencing tokens in distributed jobs - Scenario 12 (Held-out Test)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "stylistic_and_length_rubric",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-WRIT-HELD-13",
+      "task_family": "writing_content",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Compose technical whitepaper explaining cryptographic fencing tokens in distributed jobs - Scenario 13 (Held-out Test)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "stylistic_and_length_rubric",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-WRIT-HELD-14",
+      "task_family": "writing_content",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Compose technical whitepaper explaining cryptographic fencing tokens in distributed jobs - Scenario 14 (Held-out Test)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "stylistic_and_length_rubric",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-WRIT-HELD-15",
+      "task_family": "writing_content",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Compose technical whitepaper explaining cryptographic fencing tokens in distributed jobs - Scenario 15 (Held-out Test)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "stylistic_and_length_rubric",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-WRIT-HELD-16",
+      "task_family": "writing_content",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Compose technical whitepaper explaining cryptographic fencing tokens in distributed jobs - Scenario 16 (Held-out Test)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "stylistic_and_length_rubric",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-WRIT-HELD-17",
+      "task_family": "writing_content",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Compose technical whitepaper explaining cryptographic fencing tokens in distributed jobs - Scenario 17 (Held-out Test)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "stylistic_and_length_rubric",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-WRIT-HELD-18",
+      "task_family": "writing_content",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Compose technical whitepaper explaining cryptographic fencing tokens in distributed jobs - Scenario 18 (Held-out Test)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "stylistic_and_length_rubric",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-WRIT-HELD-19",
+      "task_family": "writing_content",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Compose technical whitepaper explaining cryptographic fencing tokens in distributed jobs - Scenario 19 (Held-out Test)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "stylistic_and_length_rubric",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-WRIT-HELD-20",
+      "task_family": "writing_content",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Compose technical whitepaper explaining cryptographic fencing tokens in distributed jobs - Scenario 20 (Held-out Test)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "stylistic_and_length_rubric",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-DATA-DEV-01",
+      "task_family": "data_analysis",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Perform exploratory anomaly detection and percentile analysis on cluster latency logs - Scenario 1 (Development)",
+      "expected_tools": [
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "statistical_summary_assertions",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-DATA-DEV-02",
+      "task_family": "data_analysis",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Perform exploratory anomaly detection and percentile analysis on cluster latency logs - Scenario 2 (Development)",
+      "expected_tools": [
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "statistical_summary_assertions",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-DATA-DEV-03",
+      "task_family": "data_analysis",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Perform exploratory anomaly detection and percentile analysis on cluster latency logs - Scenario 3 (Development)",
+      "expected_tools": [
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "statistical_summary_assertions",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-DATA-DEV-04",
+      "task_family": "data_analysis",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Perform exploratory anomaly detection and percentile analysis on cluster latency logs - Scenario 4 (Development)",
+      "expected_tools": [
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "statistical_summary_assertions",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-DATA-DEV-05",
+      "task_family": "data_analysis",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Perform exploratory anomaly detection and percentile analysis on cluster latency logs - Scenario 5 (Development)",
+      "expected_tools": [
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "statistical_summary_assertions",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-DATA-DEV-06",
+      "task_family": "data_analysis",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Perform exploratory anomaly detection and percentile analysis on cluster latency logs - Scenario 6 (Development)",
+      "expected_tools": [
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "statistical_summary_assertions",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-DATA-DEV-07",
+      "task_family": "data_analysis",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Perform exploratory anomaly detection and percentile analysis on cluster latency logs - Scenario 7 (Development)",
+      "expected_tools": [
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "statistical_summary_assertions",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-DATA-DEV-08",
+      "task_family": "data_analysis",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Perform exploratory anomaly detection and percentile analysis on cluster latency logs - Scenario 8 (Development)",
+      "expected_tools": [
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "statistical_summary_assertions",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-DATA-DEV-09",
+      "task_family": "data_analysis",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Perform exploratory anomaly detection and percentile analysis on cluster latency logs - Scenario 9 (Development)",
+      "expected_tools": [
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "statistical_summary_assertions",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-DATA-DEV-10",
+      "task_family": "data_analysis",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Perform exploratory anomaly detection and percentile analysis on cluster latency logs - Scenario 10 (Development)",
+      "expected_tools": [
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "statistical_summary_assertions",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-DATA-HELD-11",
+      "task_family": "data_analysis",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Perform exploratory anomaly detection and percentile analysis on cluster latency logs - Scenario 11 (Held-out Test)",
+      "expected_tools": [
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "statistical_summary_assertions",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-DATA-HELD-12",
+      "task_family": "data_analysis",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Perform exploratory anomaly detection and percentile analysis on cluster latency logs - Scenario 12 (Held-out Test)",
+      "expected_tools": [
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "statistical_summary_assertions",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-DATA-HELD-13",
+      "task_family": "data_analysis",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Perform exploratory anomaly detection and percentile analysis on cluster latency logs - Scenario 13 (Held-out Test)",
+      "expected_tools": [
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "statistical_summary_assertions",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-DATA-HELD-14",
+      "task_family": "data_analysis",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Perform exploratory anomaly detection and percentile analysis on cluster latency logs - Scenario 14 (Held-out Test)",
+      "expected_tools": [
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "statistical_summary_assertions",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-DATA-HELD-15",
+      "task_family": "data_analysis",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Perform exploratory anomaly detection and percentile analysis on cluster latency logs - Scenario 15 (Held-out Test)",
+      "expected_tools": [
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "statistical_summary_assertions",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-DATA-HELD-16",
+      "task_family": "data_analysis",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Perform exploratory anomaly detection and percentile analysis on cluster latency logs - Scenario 16 (Held-out Test)",
+      "expected_tools": [
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "statistical_summary_assertions",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-DATA-HELD-17",
+      "task_family": "data_analysis",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Perform exploratory anomaly detection and percentile analysis on cluster latency logs - Scenario 17 (Held-out Test)",
+      "expected_tools": [
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "statistical_summary_assertions",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-DATA-HELD-18",
+      "task_family": "data_analysis",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Perform exploratory anomaly detection and percentile analysis on cluster latency logs - Scenario 18 (Held-out Test)",
+      "expected_tools": [
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "statistical_summary_assertions",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-DATA-HELD-19",
+      "task_family": "data_analysis",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Perform exploratory anomaly detection and percentile analysis on cluster latency logs - Scenario 19 (Held-out Test)",
+      "expected_tools": [
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "statistical_summary_assertions",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-DATA-HELD-20",
+      "task_family": "data_analysis",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Perform exploratory anomaly detection and percentile analysis on cluster latency logs - Scenario 20 (Held-out Test)",
+      "expected_tools": [
+        "data_transform",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "statistical_summary_assertions",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-TECH-DEV-01",
+      "task_family": "technical_documentation",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Generate OpenAPI 3.1 compatible reference documentation for WorkflowJob REST API - Scenario 1 (Development)",
+      "expected_tools": [
+        "filesystem_read",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "api_schema_fidelity_check",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-TECH-DEV-02",
+      "task_family": "technical_documentation",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Generate OpenAPI 3.1 compatible reference documentation for WorkflowJob REST API - Scenario 2 (Development)",
+      "expected_tools": [
+        "filesystem_read",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "api_schema_fidelity_check",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-TECH-DEV-03",
+      "task_family": "technical_documentation",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Generate OpenAPI 3.1 compatible reference documentation for WorkflowJob REST API - Scenario 3 (Development)",
+      "expected_tools": [
+        "filesystem_read",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "api_schema_fidelity_check",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-TECH-DEV-04",
+      "task_family": "technical_documentation",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Generate OpenAPI 3.1 compatible reference documentation for WorkflowJob REST API - Scenario 4 (Development)",
+      "expected_tools": [
+        "filesystem_read",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "api_schema_fidelity_check",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-TECH-DEV-05",
+      "task_family": "technical_documentation",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Generate OpenAPI 3.1 compatible reference documentation for WorkflowJob REST API - Scenario 5 (Development)",
+      "expected_tools": [
+        "filesystem_read",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "api_schema_fidelity_check",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-TECH-DEV-06",
+      "task_family": "technical_documentation",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Generate OpenAPI 3.1 compatible reference documentation for WorkflowJob REST API - Scenario 6 (Development)",
+      "expected_tools": [
+        "filesystem_read",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "api_schema_fidelity_check",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-TECH-DEV-07",
+      "task_family": "technical_documentation",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Generate OpenAPI 3.1 compatible reference documentation for WorkflowJob REST API - Scenario 7 (Development)",
+      "expected_tools": [
+        "filesystem_read",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "api_schema_fidelity_check",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-TECH-DEV-08",
+      "task_family": "technical_documentation",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Generate OpenAPI 3.1 compatible reference documentation for WorkflowJob REST API - Scenario 8 (Development)",
+      "expected_tools": [
+        "filesystem_read",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "api_schema_fidelity_check",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-TECH-DEV-09",
+      "task_family": "technical_documentation",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Generate OpenAPI 3.1 compatible reference documentation for WorkflowJob REST API - Scenario 9 (Development)",
+      "expected_tools": [
+        "filesystem_read",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "api_schema_fidelity_check",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-TECH-DEV-10",
+      "task_family": "technical_documentation",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Generate OpenAPI 3.1 compatible reference documentation for WorkflowJob REST API - Scenario 10 (Development)",
+      "expected_tools": [
+        "filesystem_read",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "api_schema_fidelity_check",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-TECH-HELD-11",
+      "task_family": "technical_documentation",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Generate OpenAPI 3.1 compatible reference documentation for WorkflowJob REST API - Scenario 11 (Held-out Test)",
+      "expected_tools": [
+        "filesystem_read",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "api_schema_fidelity_check",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-TECH-HELD-12",
+      "task_family": "technical_documentation",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Generate OpenAPI 3.1 compatible reference documentation for WorkflowJob REST API - Scenario 12 (Held-out Test)",
+      "expected_tools": [
+        "filesystem_read",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "api_schema_fidelity_check",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-TECH-HELD-13",
+      "task_family": "technical_documentation",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Generate OpenAPI 3.1 compatible reference documentation for WorkflowJob REST API - Scenario 13 (Held-out Test)",
+      "expected_tools": [
+        "filesystem_read",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "api_schema_fidelity_check",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-TECH-HELD-14",
+      "task_family": "technical_documentation",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Generate OpenAPI 3.1 compatible reference documentation for WorkflowJob REST API - Scenario 14 (Held-out Test)",
+      "expected_tools": [
+        "filesystem_read",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "api_schema_fidelity_check",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-TECH-HELD-15",
+      "task_family": "technical_documentation",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Generate OpenAPI 3.1 compatible reference documentation for WorkflowJob REST API - Scenario 15 (Held-out Test)",
+      "expected_tools": [
+        "filesystem_read",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "api_schema_fidelity_check",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-TECH-HELD-16",
+      "task_family": "technical_documentation",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Generate OpenAPI 3.1 compatible reference documentation for WorkflowJob REST API - Scenario 16 (Held-out Test)",
+      "expected_tools": [
+        "filesystem_read",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "api_schema_fidelity_check",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-TECH-HELD-17",
+      "task_family": "technical_documentation",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Generate OpenAPI 3.1 compatible reference documentation for WorkflowJob REST API - Scenario 17 (Held-out Test)",
+      "expected_tools": [
+        "filesystem_read",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "api_schema_fidelity_check",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-TECH-HELD-18",
+      "task_family": "technical_documentation",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Generate OpenAPI 3.1 compatible reference documentation for WorkflowJob REST API - Scenario 18 (Held-out Test)",
+      "expected_tools": [
+        "filesystem_read",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "api_schema_fidelity_check",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-TECH-HELD-19",
+      "task_family": "technical_documentation",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Generate OpenAPI 3.1 compatible reference documentation for WorkflowJob REST API - Scenario 19 (Held-out Test)",
+      "expected_tools": [
+        "filesystem_read",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "api_schema_fidelity_check",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-TECH-HELD-20",
+      "task_family": "technical_documentation",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Generate OpenAPI 3.1 compatible reference documentation for WorkflowJob REST API - Scenario 20 (Held-out Test)",
+      "expected_tools": [
+        "filesystem_read",
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "api_schema_fidelity_check",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-EDUC-DEV-01",
+      "task_family": "education_learning",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Develop modular 6-part curriculum on distributed systems concurrency and consensus - Scenario 1 (Development)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "pedagogical_progression_check",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-EDUC-DEV-02",
+      "task_family": "education_learning",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Develop modular 6-part curriculum on distributed systems concurrency and consensus - Scenario 2 (Development)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "pedagogical_progression_check",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-EDUC-DEV-03",
+      "task_family": "education_learning",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Develop modular 6-part curriculum on distributed systems concurrency and consensus - Scenario 3 (Development)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "pedagogical_progression_check",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-EDUC-DEV-04",
+      "task_family": "education_learning",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Develop modular 6-part curriculum on distributed systems concurrency and consensus - Scenario 4 (Development)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "pedagogical_progression_check",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-EDUC-DEV-05",
+      "task_family": "education_learning",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Develop modular 6-part curriculum on distributed systems concurrency and consensus - Scenario 5 (Development)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "pedagogical_progression_check",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-EDUC-DEV-06",
+      "task_family": "education_learning",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Develop modular 6-part curriculum on distributed systems concurrency and consensus - Scenario 6 (Development)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "pedagogical_progression_check",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-EDUC-DEV-07",
+      "task_family": "education_learning",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Develop modular 6-part curriculum on distributed systems concurrency and consensus - Scenario 7 (Development)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "pedagogical_progression_check",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-EDUC-DEV-08",
+      "task_family": "education_learning",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Develop modular 6-part curriculum on distributed systems concurrency and consensus - Scenario 8 (Development)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "pedagogical_progression_check",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-EDUC-DEV-09",
+      "task_family": "education_learning",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Develop modular 6-part curriculum on distributed systems concurrency and consensus - Scenario 9 (Development)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "pedagogical_progression_check",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-EDUC-DEV-10",
+      "task_family": "education_learning",
+      "split": "dev",
+      "is_held_out": false,
+      "goal": "Develop modular 6-part curriculum on distributed systems concurrency and consensus - Scenario 10 (Development)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "pedagogical_progression_check",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-EDUC-HELD-11",
+      "task_family": "education_learning",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Develop modular 6-part curriculum on distributed systems concurrency and consensus - Scenario 11 (Held-out Test)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "pedagogical_progression_check",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-EDUC-HELD-12",
+      "task_family": "education_learning",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Develop modular 6-part curriculum on distributed systems concurrency and consensus - Scenario 12 (Held-out Test)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "pedagogical_progression_check",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-EDUC-HELD-13",
+      "task_family": "education_learning",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Develop modular 6-part curriculum on distributed systems concurrency and consensus - Scenario 13 (Held-out Test)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "pedagogical_progression_check",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-EDUC-HELD-14",
+      "task_family": "education_learning",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Develop modular 6-part curriculum on distributed systems concurrency and consensus - Scenario 14 (Held-out Test)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "pedagogical_progression_check",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-EDUC-HELD-15",
+      "task_family": "education_learning",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Develop modular 6-part curriculum on distributed systems concurrency and consensus - Scenario 15 (Held-out Test)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "pedagogical_progression_check",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-EDUC-HELD-16",
+      "task_family": "education_learning",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Develop modular 6-part curriculum on distributed systems concurrency and consensus - Scenario 16 (Held-out Test)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "pedagogical_progression_check",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-EDUC-HELD-17",
+      "task_family": "education_learning",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Develop modular 6-part curriculum on distributed systems concurrency and consensus - Scenario 17 (Held-out Test)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "pedagogical_progression_check",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-EDUC-HELD-18",
+      "task_family": "education_learning",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Develop modular 6-part curriculum on distributed systems concurrency and consensus - Scenario 18 (Held-out Test)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "pedagogical_progression_check",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-EDUC-HELD-19",
+      "task_family": "education_learning",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Develop modular 6-part curriculum on distributed systems concurrency and consensus - Scenario 19 (Held-out Test)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "pedagogical_progression_check",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    },
+    {
+      "scenario_id": "TF-EDUC-HELD-20",
+      "task_family": "education_learning",
+      "split": "held_out",
+      "is_held_out": true,
+      "goal": "Develop modular 6-part curriculum on distributed systems concurrency and consensus - Scenario 20 (Held-out Test)",
+      "expected_tools": [
+        "validator_exec"
+      ],
+      "expected_dag_subtasks": [
+        "task-01-intent",
+        "task-03-specification",
+        "task-04-generate",
+        "task-07-verify"
+      ],
+      "eval_method": "pedagogical_progression_check",
+      "constraints": [
+        "Strictly no frontend UI",
+        "Zero-price hosted gateway exclusively"
+      ]
+    }
+  ]
+}

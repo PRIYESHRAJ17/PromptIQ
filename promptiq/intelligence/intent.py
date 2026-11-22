@@ -105,7 +105,12 @@ class IntentReasoningEngine:
         # 4. Complexity Analysis
         word_count = len(text.split())
         constraint_count = len(constraints or [])
-        if word_count > 150 or constraint_count >= 5 or "distributed" in lower_text or "multi-tenant" in lower_text:
+        if (
+            word_count > 150
+            or constraint_count >= 5
+            or "distributed" in lower_text
+            or "multi-tenant" in lower_text
+        ):
             task_complexity = "high"
         elif word_count > 60 or constraint_count >= 2:
             task_complexity = "medium"
@@ -190,13 +195,23 @@ class IntentReasoningEngine:
         # 6. Ambiguities & Conflicting Instructions
         ambiguities = []
         conflicts = []
-        if "realtime" in lower_text and not any(w in lower_text for w in ["sse", "websocket", "polling"]):
-            ambiguities.append("Real-time communication requested without specifying transport (SSE vs WebSocket)")
+        if "realtime" in lower_text and not any(
+            w in lower_text for w in ["sse", "websocket", "polling"]
+        ):
+            ambiguities.append(
+                "Real-time communication requested without specifying transport (SSE vs WebSocket)"
+            )
 
         # Contradiction checks
-        no_frontend = any("no frontend" in p.lower() or "backend only" in p.lower() for p in prohibitions)
-        if no_frontend and any(w in lower_text for w in ["react", "next.js", "html", "css", "tailwind"]):
-            conflicts.append("Strict no-frontend prohibition conflicts with mention of web UI technologies")
+        no_frontend = any(
+            "no frontend" in p.lower() or "backend only" in p.lower() for p in prohibitions
+        )
+        if no_frontend and any(
+            w in lower_text for w in ["react", "next.js", "html", "css", "tailwind"]
+        ):
+            conflicts.append(
+                "Strict no-frontend prohibition conflicts with mention of web UI technologies"
+            )
 
         # 7. Success Conditions
         success_conditions = [

@@ -47,7 +47,9 @@ async def test_autopsy_development_set_metrics():
                 fn += 1
             # If item expected to block, verify verdict reflects severity
             if should_block:
-                assert resp.verdict in ("blocked", "needs_revision"), f"Item {item['id']} failed to block release: {resp.verdict}"
+                assert resp.verdict in ("blocked", "needs_revision"), (
+                    f"Item {item['id']} failed to block release: {resp.verdict}"
+                )
         else:
             # Clean prompt
             if not blocks:
@@ -83,7 +85,9 @@ async def test_autopsy_held_out_set_generalization():
             # Defective prompt must be caught
             assert len(resp.findings) > 0, f"Held-out defect {item['id']} was missed!"
             if item["should_block_release"]:
-                assert resp.verdict in ("blocked", "needs_revision"), f"Held-out critical {item['id']} did not block!"
+                assert resp.verdict in ("blocked", "needs_revision"), (
+                    f"Held-out critical {item['id']} did not block!"
+                )
         else:
             # Clean prompt must not be blocked
             assert resp.verdict != "blocked", f"Held-out clean prompt {item['id']} falsely blocked!"

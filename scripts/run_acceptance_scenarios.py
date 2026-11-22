@@ -33,6 +33,7 @@ TRACE_V3_OUTPUT_PATH = Path("docs/ACCEPTANCE_SCENARIOS_TRACE_V3.json")
 TRACE_V4_OUTPUT_PATH = Path("docs/ACCEPTANCE_SCENARIOS_TRACE_V4.json")
 TRACE_V5_OUTPUT_PATH = Path("docs/ACCEPTANCE_SCENARIOS_TRACE_V5.json")
 TRACE_V6_OUTPUT_PATH = Path("docs/ACCEPTANCE_SCENARIOS_TRACE_V6.json")
+TRACE_V7_OUTPUT_PATH = Path("docs/ACCEPTANCE_SCENARIOS_TRACE_V7.json")
 
 
 async def main():
@@ -52,7 +53,15 @@ async def main():
         summary_dict = summary.model_dump(mode="json")
 
         TRACE_OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
-        for p in (TRACE_OUTPUT_PATH, TRACE_V2_OUTPUT_PATH, TRACE_V3_OUTPUT_PATH, TRACE_V4_OUTPUT_PATH, TRACE_V5_OUTPUT_PATH, TRACE_V6_OUTPUT_PATH):
+        for p in (
+            TRACE_OUTPUT_PATH,
+            TRACE_V2_OUTPUT_PATH,
+            TRACE_V3_OUTPUT_PATH,
+            TRACE_V4_OUTPUT_PATH,
+            TRACE_V5_OUTPUT_PATH,
+            TRACE_V6_OUTPUT_PATH,
+            TRACE_V7_OUTPUT_PATH,
+        ):
             with open(p, "w", encoding="utf-8") as f:
                 json.dump(summary_dict, f, indent=2)
 
@@ -61,13 +70,17 @@ async def main():
         print("=" * 80)
         validator = AcceptanceTraceValidator(summary_dict)
         val_report = validator.validate_all()
-        print(f"Independent Structural & Invariant Suites: {'PASS' if val_report.is_valid else 'FAIL'} ({val_report.passed_checks}/{val_report.total_checks_evaluated} checks passed)")
+        print(
+            f"Independent Structural & Invariant Suites: {'PASS' if val_report.is_valid else 'FAIL'} ({val_report.passed_checks}/{val_report.total_checks_evaluated} checks passed)"
+        )
         if val_report.errors:
             for err in val_report.errors:
                 print(f"  [FAIL] {err.check_name}: {err.message}")
 
         auth_report = await validator.validate_authoritative_persistence(db=db)
-        print(f"Authoritative 5-Layer Persistence Validation: {'PASS' if auth_report.is_valid else 'FAIL'}")
+        print(
+            f"Authoritative 5-Layer Persistence Validation: {'PASS' if auth_report.is_valid else 'FAIL'}"
+        )
         for _l_key, l_res in auth_report.layers.items():
             print(f"  - [{l_res.layer}] {l_res.name}: {l_res.status} (Errors: {len(l_res.errors)})")
             for e in l_res.errors:
@@ -89,7 +102,7 @@ async def main():
         )
 
     print(
-        f"\nAudit traces successfully persisted to:\n - {TRACE_OUTPUT_PATH}\n - {TRACE_V2_OUTPUT_PATH}\n - {TRACE_V3_OUTPUT_PATH}\n - {TRACE_V4_OUTPUT_PATH}\n - {TRACE_V5_OUTPUT_PATH}\n - {TRACE_V6_OUTPUT_PATH}"
+        f"\nAudit traces successfully persisted to:\n - {TRACE_OUTPUT_PATH}\n - {TRACE_V2_OUTPUT_PATH}\n - {TRACE_V3_OUTPUT_PATH}\n - {TRACE_V4_OUTPUT_PATH}\n - {TRACE_V5_OUTPUT_PATH}\n - {TRACE_V6_OUTPUT_PATH}\n - {TRACE_V7_OUTPUT_PATH}"
     )
 
 

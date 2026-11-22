@@ -45,7 +45,9 @@ class CriticFindingSchema(BaseModel):
     suggested_correction: str | None = None
     expected_improvement: str | None = None
     confidence_basis: str | None = "deterministic_pattern_match"
-    resolution_status: str = "open"  # open, accepted, rejected_with_reason, resolved, reopened, superseded
+    resolution_status: str = (
+        "open"  # open, accepted, rejected_with_reason, resolved, reopened, superseded
+    )
     disposition: str = "pending"
     is_resolved: bool = False
     blocks_release: bool = False
@@ -82,7 +84,9 @@ class AutopsyRevisionVerifyResponse(BaseModel):
 class AutopsyRequest(BaseModel):
     prompt_text: str | None = Field(default=None, description="Pasted prompt text to diagnose")
     package_id: str | None = Field(default=None, description="Compiled package ID to critique")
-    task_type: str | None = Field(default=None, description="Task family classification for context-aware critique")
+    task_type: str | None = Field(
+        default=None, description="Task family classification for context-aware critique"
+    )
     target_environment: str = Field(
         default="google-antigravity", description="Target host environment"
     )

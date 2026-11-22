@@ -278,7 +278,74 @@ class AdaptiveDiscoveryEngine:
             return []
 
         answered_keys = set(session.answers.keys())
-        candidate_questions = get_task_questions(session.task_type, answered_keys)
+        # 1. Stop Condition: User explicitly refused further questions
+        all_answers_text = " ".join(str(v).lower() for v in session.answers.values())
+        if (
+            session.answers.get("refuse_questions")
+            or "no more questions" in all_answers_text
+            or "proceed with assumptions" in all_answers_text
+        ):
+            session.is_completed = True
+            return []
+
+        # 2. Dynamic Answer-Conditioned Branching Questions
+        adaptive_branch_questions: list[DiscoveryQuestion] = []
+        arch_val = str(session.answers.get("architecture", "")).lower()
+        if "microservice" in arch_val and "service_communication" not in answered_keys:
+            adaptive_branch_questions.append(
+                DiscoveryQuestion(
+                    id="service_communication",
+                    text="Which inter-service communication protocol should be implemented?",
+                    type="choice",
+                    options=[
+                        "gRPC / Protobuf",
+                        "Async Event Bus (NATS/Kafka)",
+                        "REST with Idempotency Keys",
+                    ],
+                    stage="technical",
+                    category="technical",
+                    provenance="adaptive_branch",
+                    decision_value=0.92,
+                )
+            )
+        elif "monolith" in arch_val and "modular_structure" not in answered_keys:
+            adaptive_branch_questions.append(
+                DiscoveryQuestion(
+                    id="modular_structure",
+                    text="Which modular structure should be enforced across domains?",
+                    type="choice",
+                    options=[
+                        "Hexagonal / Ports-and-Adapters",
+                        "Domain-Driven Design (DDD)",
+                        "Layered MVC",
+                    ],
+                    stage="technical",
+                    category="technical",
+                    provenance="adaptive_branch",
+                    decision_value=0.88,
+                )
+            )
+
+        target_env = str(session.answers.get("target_environment", "")).lower()
+        if (
+            "agent" in target_env or "mcp" in target_env
+        ) and "tool_permissions" not in answered_keys:
+            adaptive_branch_questions.append(
+                DiscoveryQuestion(
+                    id="tool_permissions",
+                    text="What is the maximum tool execution permission tier granted to external clients?",
+                    type="choice",
+                    options=["read_only", "reversible_modification", "destructive_with_approval"],
+                    stage="security",
+                    category="security",
+                    provenance="adaptive_branch",
+                    decision_value=0.95,
+                )
+            )
+
+        candidate_questions = adaptive_branch_questions + get_task_questions(
+            session.task_type, answered_keys
+        )
 
         # Run decision-value ranking and information sufficiency evaluation
         assessment = InformationSufficiencyEvaluator.evaluate_sufficiency(
@@ -288,6 +355,15 @@ class AdaptiveDiscoveryEngine:
             answers=session.answers or {},
             candidate_questions=candidate_questions,
         )
+
+        # 3. Stop Condition: Information is already sufficient for this profile (after answers or in quick mode)
+        if (
+            assessment.is_sufficient
+            and not adaptive_branch_questions
+            and (session.answers or session.depth == "quick")
+        ):
+            session.is_completed = True
+            return []
 
         if session.depth == "quick":
             # Quick mode: ask at most 1 highest decision-value question

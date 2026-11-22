@@ -18,9 +18,7 @@ class ProjectService:
     """Manages project lifecycle, multi-tenant isolation, and initial constitution setup."""
 
     @staticmethod
-    async def get_user_default_workspace(
-        db: AsyncSession, user_id: str
-    ) -> WorkspaceMembership:
+    async def get_user_default_workspace(db: AsyncSession, user_id: str) -> WorkspaceMembership:
         """Resolves the default workspace membership for a user."""
         stmt = select(WorkspaceMembership).where(
             WorkspaceMembership.user_id == user_id,

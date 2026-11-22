@@ -45,6 +45,7 @@ venv.bak/
 *.sqlite
 
 # Testing & Coverage
+.cache/
 .pytest_cache/
 .coverage
 htmlcov/

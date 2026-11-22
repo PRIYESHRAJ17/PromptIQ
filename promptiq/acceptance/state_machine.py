@@ -212,7 +212,7 @@ class AcceptanceStateMachine:
         for f in self.autopsy_findings:
             if f.get("id") == finding_id:
                 f["disposition"] = status
-                f["is_resolved"] = (status == "resolved")
+                f["is_resolved"] = status == "resolved"
                 f["resolution_id"] = res.resolution_id
                 f["revised_artifact_hash"] = revised_artifact_hash
                 f["resolved_at"] = res.verified_at.isoformat()
@@ -246,10 +246,10 @@ class AcceptanceStateMachine:
 
     def derive_unresolved_findings_and_warnings(self) -> list[dict[str, Any]]:
         """Derives current unresolved findings and maintains bidirectional consistency with warnings."""
-        resolved_ids = {
-            r.finding_id for r in self.resolution_events if r.status == "resolved"
-        }
-        source_findings = self.autopsy_findings if self.autopsy_findings else self.unresolved_findings
+        resolved_ids = {r.finding_id for r in self.resolution_events if r.status == "resolved"}
+        source_findings = (
+            self.autopsy_findings if self.autopsy_findings else self.unresolved_findings
+        )
         unresolved: list[dict[str, Any]] = []
         for f in source_findings:
             fid = f.get("id")
@@ -320,7 +320,9 @@ class AcceptanceStateMachine:
         for c in self.acceptance_criteria:
             if c.id == criterion_id:
                 if not evidence or not evidence.strip():
-                    raise ValueError(f"Criterion '{criterion_id}' requires non-empty evidence string")
+                    raise ValueError(
+                        f"Criterion '{criterion_id}' requires non-empty evidence string"
+                    )
 
                 ref = evidence_reference
                 if not ref:
@@ -642,13 +644,17 @@ class AcceptanceStateMachine:
         """Enforces that mock evaluations or synthetic routes are never classified as LIVE_PROVIDER."""
         for ev in self.evaluation_records:
             m_id = ev.get("model_id", "")
-            route = str(ev.get("provider_route") or ev.get("provenance", {}).get("route", "")).lower()
+            route = str(
+                ev.get("provider_route") or ev.get("provenance", {}).get("route", "")
+            ).lower()
             m_mode = str(ev.get("execution_mode", "")).upper()
             prov_mode = str(ev.get("provenance", {}).get("mode", "")).upper()
 
             is_mock = m_id in ("promptiq-mock-v1", "mock") or route in ("mock", "synthetic")
 
-            if is_mock and (m_mode in ("LIVE", "LIVE_PROVIDER") or prov_mode in ("LIVE", "LIVE_PROVIDER")):
+            if is_mock and (
+                m_mode in ("LIVE", "LIVE_PROVIDER") or prov_mode in ("LIVE", "LIVE_PROVIDER")
+            ):
                 raise GateValidationError(
                     f"Contradictory execution mode in evaluation record: model '{m_id}' on route '{route}' "
                     "cannot be classified as LIVE_PROVIDER."

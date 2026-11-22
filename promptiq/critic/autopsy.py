@@ -89,11 +89,17 @@ class PromptAutopsyEngine:
             "exclude",
             "redact",
             "cannot",
+            "without",
+            "no ",
+            "zero ",
+            "reject",
         ]
-        for line in full_text.splitlines():
-            line_lower = line.lower()
-            if passage_lower in line_lower:
-                if any(m in line_lower for m in prohibitive_markers):
+        # Check within sentence or clause boundary
+        sentences = re.split(r"[.!?;\n]+", full_text)
+        for s in sentences:
+            s_lower = s.lower()
+            if passage_lower in s_lower:
+                if any(m in s_lower for m in prohibitive_markers):
                     return True
         return False
 
@@ -192,7 +198,11 @@ class PromptAutopsyEngine:
             )
 
         # Check for unsafe permissions
-        unsafe_matches = [m for m in cls.UNSAFE_PERMISSIONS.findall(text) if not cls._is_prohibitive_context(m, text)]
+        unsafe_matches = [
+            m
+            for m in cls.UNSAFE_PERMISSIONS.findall(text)
+            if not cls._is_prohibitive_context(m, text)
+        ]
         if unsafe_matches:
             findings.append(
                 CriticFindingSchema(
@@ -207,7 +217,9 @@ class PromptAutopsyEngine:
             )
 
         # Check for tool misuse
-        misuse_matches = [m for m in cls.TOOL_MISUSE.findall(text) if not cls._is_prohibitive_context(m, text)]
+        misuse_matches = [
+            m for m in cls.TOOL_MISUSE.findall(text) if not cls._is_prohibitive_context(m, text)
+        ]
         if misuse_matches:
             findings.append(
                 CriticFindingSchema(
@@ -320,7 +332,10 @@ class PromptAutopsyEngine:
             or "reveal secret" in text_lower
             or "output api key" in text_lower
             or (
-                any(verb in text_lower for verb in ["print", "log", "dump", "store", "save", "write"])
+                any(
+                    verb in text_lower
+                    for verb in ["print", "log", "dump", "store", "save", "write"]
+                )
                 and any(
                     token in text_lower
                     for token in [
@@ -484,7 +499,15 @@ class PromptAutopsyEngine:
                 ("no frontend" in text_lower or "backend only" in text_lower)
                 and any(
                     w in text_lower
-                    for w in ["react", "render a navbar", "<div>", "html interface", "frontend ui"]
+                    for w in [
+                        "react",
+                        "render a navbar",
+                        "navbar",
+                        "<div>",
+                        "html interface",
+                        "import react",
+                        "build frontend",
+                    ]
                 )
             )
             or (
@@ -509,6 +532,94 @@ class PromptAutopsyEngine:
                     evidence_passage=evidence,
                     consequence="Model cannot satisfy mutually exclusive constraints simultaneously.",
                     recommendation="Resolve contradictory instructions into a single coherent policy.",
+                    blocks_release=True,
+                )
+            )
+
+        # Check for zero-price invariant violation
+        paid_tokens = [
+            "paid openai",
+            "user provided api key",
+            "user provided api keys",
+            "byok",
+            "paid gpt",
+            "paid endpoints",
+        ]
+        unnegated_paid = [
+            w for w in paid_tokens if w in text_lower and not cls._is_prohibitive_context(w, text)
+        ]
+        if unnegated_paid:
+            findings.append(
+                CriticFindingSchema(
+                    category="security",
+                    severity="critical",
+                    finding="Invariant violation: Prompt mandates paid commercial API endpoints or user-provided BYOK keys.",
+                    evidence_passage="paid API / BYOK",
+                    consequence="Violates PromptIQ's non-negotiable zero-price hosted gateway invariant.",
+                    recommendation="Route requests through centrally managed zero-price hosted model gateway.",
+                    blocks_release=True,
+                )
+            )
+
+        # Check for local inference invariant violation
+        local_tokens = [
+            "local ollama",
+            "ollama model",
+            "ollama models",
+            "llama.cpp",
+            "local gpu",
+            "local gpus",
+        ]
+        unnegated_local = [
+            w for w in local_tokens if w in text_lower and not cls._is_prohibitive_context(w, text)
+        ]
+        if unnegated_local:
+            findings.append(
+                CriticFindingSchema(
+                    category="target_incompatibility",
+                    severity="high",
+                    finding="Invariant violation: Prompt requires local Ollama or GPU model installation.",
+                    evidence_passage="local Ollama / GPU",
+                    consequence="Violates PromptIQ's centrally hosted intelligence service invariant.",
+                    recommendation="Remove local model installation requirements and utilize hosted inference routes.",
+                    blocks_release=True,
+                )
+            )
+
+        # Check for extreme ambiguity
+        if any(
+            w in text_lower
+            for w in ["somehow better", "fast and nice", "make it good", "as good as possible"]
+        ):
+            findings.append(
+                CriticFindingSchema(
+                    category="ambiguity",
+                    severity="high",
+                    finding="Extreme ambiguity: Prompt specifies subjective goals without measurable criteria.",
+                    evidence_passage="somehow better / nice",
+                    consequence="Model produces subjective or non-deterministic outputs that cannot be evaluated.",
+                    recommendation="Replace subjective descriptors with concrete metrics, bounds, and acceptance criteria.",
+                    blocks_release=True,
+                )
+            )
+
+        # Check for missing output schema
+        if any(
+            w in text_lower
+            for w in [
+                "without providing any json schema",
+                "without any schema",
+                "structured format but without",
+            ]
+        ):
+            findings.append(
+                CriticFindingSchema(
+                    category="output_contract",
+                    severity="high",
+                    finding="Output contract defect: Structured data demanded without schema or field definitions.",
+                    evidence_passage="structured format without schema",
+                    consequence="Model output cannot be deterministically validated or parsed by downstream services.",
+                    recommendation="Provide an explicit JSON/Pydantic schema definition.",
                     blocks_release=True,
                 )
             )
@@ -542,7 +653,10 @@ class PromptAutopsyEngine:
             )
 
         # Check for over-specification
-        if "prescribe exact cpu register allocation" in text_lower or "pin exact assembly registers" in text_lower:
+        if (
+            "prescribe exact cpu register allocation" in text_lower
+            or "pin exact assembly registers" in text_lower
+        ):
             findings.append(
                 CriticFindingSchema(
                     category="over_specification",
@@ -618,7 +732,9 @@ class PromptAutopsyEngine:
             if not f.suggested_correction:
                 f.suggested_correction = f.recommendation
             if not f.expected_improvement:
-                f.expected_improvement = "Eliminates ambiguity, prevents runtime failure, and ensures target compliance."
+                f.expected_improvement = (
+                    "Eliminates ambiguity, prevents runtime failure, and ensures target compliance."
+                )
             if not f.confidence_basis:
                 f.confidence_basis = "deterministic_pattern_and_boundary_match"
 

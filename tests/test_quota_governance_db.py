@@ -66,7 +66,12 @@ async def test_quota_ledger_and_idempotency(db_session: AsyncSession):
     # Setup user and workspace
     user_id = str(uuid.uuid4())
     ws_id = str(uuid.uuid4())
-    user = User(id=user_id, email=f"quota_{user_id[:8]}@promptiq.dev", hashed_password="pw", full_name="Quota User")
+    user = User(
+        id=user_id,
+        email=f"quota_{user_id[:8]}@promptiq.dev",
+        hashed_password="pw",
+        full_name="Quota User",
+    )
     db_session.add(user)
     await db_session.flush()
 
@@ -148,4 +153,3 @@ async def test_quota_ledger_and_idempotency(db_session: AsyncSession):
 
     await db_session.refresh(stale_rec)
     assert stale_rec.status == "expired"
-

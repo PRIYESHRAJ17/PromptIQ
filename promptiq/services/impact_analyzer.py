@@ -30,10 +30,14 @@ class ConstitutionChangeImpactAnalyzer:
             deps = r.get("depends_on", []) or []
             for dep in deps:
                 if dep not in req_ids:
-                    errors.append(f"Requirement '{r_id}' depends on non-existent requirement '{dep}'.")
+                    errors.append(
+                        f"Requirement '{r_id}' depends on non-existent requirement '{dep}'."
+                    )
 
         # 2. Cycle detection (Tarjan or DFS)
-        adj: dict[str, list[str]] = {r.get("id"): r.get("depends_on", []) or [] for r in requirements if r.get("id")}
+        adj: dict[str, list[str]] = {
+            r.get("id"): r.get("depends_on", []) or [] for r in requirements if r.get("id")
+        }
         visited: dict[str, int] = {}  # 0 = unvisited, 1 = visiting, 2 = visited
 
         def dfs(node: str, path: list[str]) -> bool:
@@ -80,8 +84,12 @@ class ConstitutionChangeImpactAnalyzer:
             reautopsy = True
             reeval = True
             invalidated.append("primary_goals")
-            summary.append(f"Goals modified: {len(new_goals - old_goals)} added, {len(old_goals - new_goals)} removed")
-            remediation.append("Recompile target prompt packages and execute new test lab evaluation suite")
+            summary.append(
+                f"Goals modified: {len(new_goals - old_goals)} added, {len(old_goals - new_goals)} removed"
+            )
+            remediation.append(
+                "Recompile target prompt packages and execute new test lab evaluation suite"
+            )
 
         # 2. Scope changes (Out of scope / non-goals)
         old_scope = old_constitution.get("scope", {}) or {}
@@ -96,7 +104,9 @@ class ConstitutionChangeImpactAnalyzer:
             if added_exclusions:
                 breaking = True
                 summary.append(f"New prohibitions added to scope: {', '.join(added_exclusions)}")
-                remediation.append("Re-run Prompt Autopsy to verify compliance with new prohibitions")
+                remediation.append(
+                    "Re-run Prompt Autopsy to verify compliance with new prohibitions"
+                )
 
         # 3. Technical Direction changes
         old_tech = old_constitution.get("technical_direction", {}) or {}
@@ -108,8 +118,16 @@ class ConstitutionChangeImpactAnalyzer:
             remediation.append("Regenerate PPS target compilation for new technical configuration")
 
         # 4. Requirement changes
-        old_reqs = {r.get("id"): r.get("text") for r in old_constitution.get("requirements", []) if r.get("id")}
-        new_reqs = {r.get("id"): r.get("text") for r in new_constitution.get("requirements", []) if r.get("id")}
+        old_reqs = {
+            r.get("id"): r.get("text")
+            for r in old_constitution.get("requirements", [])
+            if r.get("id")
+        }
+        new_reqs = {
+            r.get("id"): r.get("text")
+            for r in new_constitution.get("requirements", [])
+            if r.get("id")
+        }
         if old_reqs != new_reqs:
             recompile = True
             reeval = True
@@ -118,7 +136,9 @@ class ConstitutionChangeImpactAnalyzer:
             removed_reqs = set(old_reqs.keys()) - set(new_reqs.keys())
             if removed_reqs or added_reqs:
                 summary.append(f"Requirements delta: +{len(added_reqs)}, -{len(removed_reqs)}")
-                remediation.append("Update PPS specification requirements and regenerate target prompts")
+                remediation.append(
+                    "Update PPS specification requirements and regenerate target prompts"
+                )
 
         return ChangeImpactReport(
             has_breaking_changes=breaking,
