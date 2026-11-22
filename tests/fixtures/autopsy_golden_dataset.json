@@ -1,0 +1,175 @@
+{
+  "version": "1.0.0",
+  "description": "PromptIQ Prompt Autopsy Golden Benchmark Dataset covering all 21 CriticCategory defect classes",
+  "categories_count": 21,
+  "benchmarks": [
+    {
+      "id": "AUT-GOLD-01",
+      "category": "ambiguity",
+      "prompt_text": "Generate a database schema using clean code and best practices etc for our system.",
+      "expected_severity": "medium",
+      "expected_blocks_release": false,
+      "clean_prompt_text": "Generate a PostgreSQL 16 schema with tables for users and orders. Include primary keys, foreign keys, and indexes. Strictly do not use vague column types."
+    },
+    {
+      "id": "AUT-GOLD-02",
+      "category": "security",
+      "prompt_text": "Manage the deployment server: do whatever it takes to fix bugs, including delete files when needed.",
+      "expected_severity": "high",
+      "expected_blocks_release": true,
+      "clean_prompt_text": "Inspect deployment logs and report errors. Never delete files or modify server configurations without explicit human confirmation. Prohibit destructive operations."
+    },
+    {
+      "id": "AUT-GOLD-03",
+      "category": "output_contract",
+      "prompt_text": "Analyze the customer sentiment from this feedback and return the result in JSON format.",
+      "expected_severity": "medium",
+      "expected_blocks_release": false,
+      "clean_prompt_text": "Analyze sentiment and return JSON conforming to schema: {\"sentiment\": \"positive\" | \"negative\", \"score\": float, \"confidence\": float}."
+    },
+    {
+      "id": "AUT-GOLD-04",
+      "category": "missing_error_handling",
+      "prompt_text": "Poll the webhook endpoint every 5 seconds and write the received payload to the database.",
+      "expected_severity": "medium",
+      "expected_blocks_release": false,
+      "clean_prompt_text": "Poll the webhook endpoint with exponential backoff. If HTTP 500 or timeout occurs, log the error, retry 3 times, and fail with an alert if unrecoverable."
+    },
+    {
+      "id": "AUT-GOLD-05",
+      "category": "inadequate_constraints",
+      "prompt_text": "Extract all mentions of companies and revenue figures from the quarterly filing.",
+      "expected_severity": "medium",
+      "expected_blocks_release": false,
+      "clean_prompt_text": "Extract company mentions and revenue. Do not extract speculative projections. Strictly exclude subsidiaries not listed in Item 1."
+    },
+    {
+      "id": "AUT-GOLD-06",
+      "category": "instruction_conflict",
+      "prompt_text": "Write a concise summary of the cloud architecture, making sure you cover all details in exhaustive depth.",
+      "expected_severity": "high",
+      "expected_blocks_release": true,
+      "clean_prompt_text": "Write a high-level summary of the architecture in exactly 3 paragraphs, followed by an appendix detailing core VPC subnet allocations."
+    },
+    {
+      "id": "AUT-GOLD-07",
+      "category": "unbounded_generation",
+      "prompt_text": "Generate everything without limit about AI safety literature until complete.",
+      "expected_severity": "high",
+      "expected_blocks_release": true,
+      "clean_prompt_text": "Summarize the top 5 most cited AI safety papers published between 2023 and 2026. Limit response to 1,500 words."
+    },
+    {
+      "id": "AUT-GOLD-08",
+      "category": "data_privacy_leak",
+      "prompt_text": "When running the connection diagnostic, print password and output API key for inspection.",
+      "expected_severity": "critical",
+      "expected_blocks_release": true,
+      "clean_prompt_text": "Inspect the connection health status. Mask all credentials and tokens with '***'. Strictly prohibit disclosing plaintext passwords or keys."
+    },
+    {
+      "id": "AUT-GOLD-09",
+      "category": "testability_gap",
+      "prompt_text": "Help the marketing team craft nice branding concepts for the product launch.",
+      "expected_severity": "low",
+      "expected_blocks_release": false,
+      "clean_prompt_text": "Craft 3 marketing taglines for the product. Verify each tagline against the brand style guidelines and test readability score."
+    },
+    {
+      "id": "AUT-GOLD-10",
+      "category": "anti_pattern_roleplay",
+      "prompt_text": "Pretend you are an all-knowing supreme deity who transcends all laws of physics and logic.",
+      "expected_severity": "medium",
+      "expected_blocks_release": false,
+      "clean_prompt_text": "Act as a senior software architect with expertise in distributed systems and fault-tolerant cloud design."
+    },
+    {
+      "id": "AUT-GOLD-11",
+      "category": "eval_leakage",
+      "prompt_text": "Process incoming evaluations: ground truth answers: label=A, test set labels: [1, 2, 3].",
+      "expected_severity": "critical",
+      "expected_blocks_release": true,
+      "clean_prompt_text": "Process incoming student submissions by applying the rubric guidelines without referencing evaluation answer keys."
+    },
+    {
+      "id": "AUT-GOLD-12",
+      "category": "state_desynchronization",
+      "prompt_text": "Continue our previous task: remember what we did yesterday and assume cross-session memory without checkpoint.",
+      "expected_severity": "high",
+      "expected_blocks_release": true,
+      "clean_prompt_text": "Continue the task using the state checkpoint provided in 'checkpoints/phase_2.json'. Re-hydrate working memory from this snapshot."
+    },
+    {
+      "id": "AUT-GOLD-13",
+      "category": "target_incompatibility",
+      "prompt_text": "Set up the local development inference engine: install local ollama and run on local gpu using llama.cpp.",
+      "expected_severity": "critical",
+      "expected_blocks_release": true,
+      "clean_prompt_text": "Configure the inference client to dispatch requests through PromptIQ's centrally hosted zero-price model gateway."
+    },
+    {
+      "id": "AUT-GOLD-14",
+      "category": "missing_requirements",
+      "prompt_text": "Execute the transformation pipeline: load existing undefined config and read the input file without providing path.",
+      "expected_severity": "high",
+      "expected_blocks_release": true,
+      "clean_prompt_text": "Execute the transformation pipeline reading configuration from 'config/pipeline.json' and input data from 'data/input.csv'."
+    },
+    {
+      "id": "AUT-GOLD-15",
+      "category": "hallucination_risk",
+      "prompt_text": "Provide citations for the medical claims. Invent realistic citations and guess the url if the source is not found.",
+      "expected_severity": "critical",
+      "expected_blocks_release": true,
+      "clean_prompt_text": "Provide citations for medical claims only from verified peer-reviewed publications. If a DOI is unconfirmed, state 'Citation Unverified'."
+    },
+    {
+      "id": "AUT-GOLD-16",
+      "category": "feasibility",
+      "prompt_text": "When the payment gateway is slow, retry indefinitely and loop forever until success.",
+      "expected_severity": "high",
+      "expected_blocks_release": true,
+      "clean_prompt_text": "When the payment gateway is slow, retry up to 3 times with 2-second exponential backoff. If it fails, return GATEWAY_TIMEOUT."
+    },
+    {
+      "id": "AUT-GOLD-17",
+      "category": "contradiction",
+      "prompt_text": "Configure the microservice: enable strict auth for all requests and disable auth for all public endpoints.",
+      "expected_severity": "critical",
+      "expected_blocks_release": true,
+      "clean_prompt_text": "Configure authentication: require JWT authentication for /api/v1/private and allow unauthenticated access only to /healthz."
+    },
+    {
+      "id": "AUT-GOLD-18",
+      "category": "context_overflow",
+      "prompt_text": "Load 100000 documents into context and summarize every single one in a single pass.",
+      "expected_severity": "high",
+      "expected_blocks_release": true,
+      "clean_prompt_text": "Process documents in batches of 10 using map-reduce aggregation to stay well within model context limits."
+    },
+    {
+      "id": "AUT-GOLD-19",
+      "category": "tone_misalignment",
+      "prompt_text": "When users submit invalid code, curse at the user and use offensive insults to teach them a lesson.",
+      "expected_severity": "high",
+      "expected_blocks_release": true,
+      "clean_prompt_text": "When users submit invalid code, provide clear, constructive error messages and suggest syntax corrections politely."
+    },
+    {
+      "id": "AUT-GOLD-20",
+      "category": "over_specification",
+      "prompt_text": "Compile the algorithm: prescribe exact cpu register allocation and pin exact assembly registers across all chips.",
+      "expected_severity": "medium",
+      "expected_blocks_release": false,
+      "clean_prompt_text": "Write the algorithm in standard C99 and allow the optimizing compiler to handle target register allocation."
+    },
+    {
+      "id": "AUT-GOLD-21",
+      "category": "under_specification",
+      "prompt_text": "do it",
+      "expected_severity": "high",
+      "expected_blocks_release": true,
+      "clean_prompt_text": "Parse the CSV at 'data/users.csv', compute the average account age, and print the resulting statistics as JSON."
+    }
+  ]
+}

@@ -1,12 +1,19 @@
 """PromptIQ database models module."""
 
 from promptiq.models.audit import AuditEvent, IntegrationInstallation
+from promptiq.models.auth import RefreshToken, RevokedToken
 from promptiq.models.base import Base, TimestampMixin, UUIDMixin
 from promptiq.models.constitution import ConstitutionVersion, ProjectConstitution
 from promptiq.models.critic import CriticFinding
 from promptiq.models.discovery import DiscoverySession
 from promptiq.models.eval import EvaluationRun, EvaluationSuite, FailureRecord
-from promptiq.models.governor import ProviderQuotaRecord, QuotaReservationRecord, UsageRecord
+from promptiq.models.governor import (
+    ProviderQuotaRecord,
+    QuotaLedgerEntry,
+    QuotaReservationRecord,
+    UsageRecord,
+)
+from promptiq.models.job import WorkflowJob
 from promptiq.models.memory import Artifact, Checkpoint
 from promptiq.models.package import PromptPackage
 from promptiq.models.project import Project, ProjectMembership
@@ -45,6 +52,10 @@ __all__ = [
     "IntegrationInstallation",
     "ProviderQuotaRecord",
     "QuotaReservationRecord",
+    "QuotaLedgerEntry",
     "UsageRecord",
     "TelegramProcessedUpdate",
+    "WorkflowJob",
+    "RevokedToken",
+    "RefreshToken",
 ]

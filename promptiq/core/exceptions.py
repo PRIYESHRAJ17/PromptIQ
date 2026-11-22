@@ -169,3 +169,54 @@ class SecurityError(PromptIQException):
             details=details,
             status_code=403,
         )
+
+
+class ValidationError(PromptIQException):
+    """Raised when input parameters, payloads, or contracts fail validation."""
+
+    def __init__(
+        self,
+        message: str = "Request validation failed",
+        details: dict[str, Any] | None = None,
+    ):
+        super().__init__(
+            message=message,
+            error_code="VALIDATION_ERROR",
+            details=details,
+            status_code=422,
+        )
+
+
+class WorkflowError(PromptIQException):
+    """Raised when a background workflow or orchestration job encounters a fatal error."""
+
+    def __init__(
+        self,
+        message: str = "Workflow execution failed",
+        details: dict[str, Any] | None = None,
+    ):
+        super().__init__(
+            message=message,
+            error_code="WORKFLOW_ERROR",
+            details=details,
+            status_code=500,
+        )
+
+
+class ProviderError(PromptIQException):
+    """Raised when an upstream AI model provider fails or returns unparseable outputs."""
+
+    def __init__(
+        self,
+        provider: str,
+        message: str = "Upstream provider error",
+        details: dict[str, Any] | None = None,
+    ):
+        merged = details or {}
+        merged["provider"] = provider
+        super().__init__(
+            message=message,
+            error_code="PROVIDER_ERROR",
+            details=merged,
+            status_code=502,
+        )

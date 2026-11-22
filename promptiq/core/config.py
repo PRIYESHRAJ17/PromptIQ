@@ -23,6 +23,19 @@ class Settings(BaseSettings):
     PROMPTIQ_API_PORT: int = 8000
     PROMPTIQ_SECRET_KEY: str = "promptiq_dev_secret_key_change_in_production_min_32_chars"
     PROMPTIQ_ACCESS_TOKEN_EXPIRE_MINUTES: int = 1440  # 24 hours
+    PROMPTIQ_REFRESH_TOKEN_EXPIRE_DAYS: int = 7  # 7 days
+
+    # CORS Settings (Explicit origins for Lovable frontend and local dev; wildcard disallow with credentials)
+    PROMPTIQ_CORS_ORIGINS: str = (
+        "http://localhost:3000,http://127.0.0.1:3000,http://localhost:5173,http://127.0.0.1:5173,http://localhost:8000"
+    )
+
+    @property
+    def cors_origins_list(self) -> list[str]:
+        """Returns parsed list of allowed CORS origins without wildcards."""
+        if not self.PROMPTIQ_CORS_ORIGINS:
+            return ["http://localhost:3000", "http://127.0.0.1:3000"]
+        return [o.strip() for o in self.PROMPTIQ_CORS_ORIGINS.split(",") if o.strip()]
 
     # Database
     # Default is SQLite for zero-config out-of-the-box local testing/dev

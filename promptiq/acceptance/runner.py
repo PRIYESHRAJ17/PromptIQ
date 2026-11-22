@@ -5,6 +5,7 @@ Guarantees that false-positive success states are impossible and validates
 cryptographic artifact binding, revision verification, and evidence grounding.
 """
 
+import hashlib
 import logging
 import uuid
 from datetime import UTC, datetime
@@ -20,6 +21,7 @@ from promptiq.discovery.adaptive import AdaptiveDiscoveryEngine
 from promptiq.eval.test_lab import PromptTestLab
 from promptiq.memory.checkpoint import CheckpointManager
 from promptiq.memory.context_compiler import ContextCompiler
+from promptiq.models.memory import Artifact
 from promptiq.models.package import PromptPackage
 from promptiq.models.user import User, Workspace, WorkspaceMembership
 from promptiq.research.engine import research_engine
@@ -90,6 +92,7 @@ async def run_scenario_1_software(
         category="software_project",
         input_summary={"target": "google-antigravity", "goal": "Distributed Async Event Router"},
         execution_mode=ExecutionMode.DETERMINISTIC,
+        workspace_id=ws.id,
     )
 
     # Register Acceptance Criteria
@@ -519,6 +522,7 @@ async def run_scenario_2_research(
             "mode": "deep",
         },
         execution_mode=ExecutionMode.DETERMINISTIC,
+        workspace_id=ws.id,
     )
 
     sm.add_criterion("SC2-AC-1", "Research question defined and decomposed into subquestions")
@@ -719,6 +723,7 @@ async def run_scenario_3_agent(db: AsyncSession, user: User, ws: Workspace) -> S
         category="agent_creation",
         input_summary={"target": "claude-code", "role": "Autonomous Code Review Auditor"},
         execution_mode=ExecutionMode.DETERMINISTIC,
+        workspace_id=ws.id,
     )
 
     sm.add_criterion(
@@ -1013,6 +1018,7 @@ async def run_scenario_4_business(
         category="business_strategy",
         input_summary={"target": "raw-prompt", "objective": "Open-Source GTM Developer Flywheel"},
         execution_mode=ExecutionMode.DETERMINISTIC,
+        workspace_id=ws.id,
     )
 
     sm.add_criterion(
@@ -1202,6 +1208,21 @@ async def run_scenario_4_business(
             "- Output Envelope: Deliver actionable 90-day GTM milestone roadmap with measurable KPIs.\n"
         )
         revised_id = f"revised-{pkg.id[:8]}"
+        revised_pkg = PromptPackage(
+            id=revised_id,
+            project_id=proj.id,
+            spec_id=pkg.spec_id,
+            target_environment="raw-prompt",
+            output_type="prompt_only",
+            files={"prompt.md": refined_prompt},
+            manifest=pkg.manifest,
+            warnings=[],
+            is_validated=True,
+            validation_result={"status": "revised"},
+        )
+        db.add(revised_pkg)
+        await db.flush()
+
         binding_revised = sm.register_artifact(
             revised_id,
             "strategy_prompt",
@@ -1321,6 +1342,7 @@ async def run_scenario_5_prompt_improvement(
             "resolve_testability": resolve_testability,
         },
         execution_mode=ExecutionMode.DETERMINISTIC,
+        workspace_id=ws.id,
     )
 
     sm.add_criterion("SC5-AC-1", "Weak prompt received and ambiguity/agency flaws diagnosed")
@@ -1339,8 +1361,31 @@ async def run_scenario_5_prompt_improvement(
         "You are an assistant. Write some code for a cache or whatever. Clean code and best practices etc. "
         "Do whatever it takes to make it fast. Bypass errors if needed. Output JSON."
     )
+    proj = await ProjectService.create_project(
+        db,
+        user_id=user.id,
+        project_in=ProjectCreate(
+            name="Cache Prompt Optimization Task",
+            description="Diagnostic and iterative refinement of flawed cache prompt",
+            workspace_id=ws.id,
+        ),
+    )
+    initial_flawed_id = f"flawed-cache-prompt-{uuid.uuid4().hex[:6]}"
+    art_flawed = Artifact(
+        id=initial_flawed_id,
+        project_id=proj.id,
+        name="flawed_cache_prompt.md",
+        artifact_type="doc",
+        media_type="text/markdown",
+        size_bytes=len(flawed_prompt.encode("utf-8")),
+        storage_path=f"artifacts/{proj.id}/flawed_cache_prompt.md",
+        content_hash=hashlib.sha256(flawed_prompt.encode("utf-8")).hexdigest(),
+    )
+    db.add(art_flawed)
+    await db.flush()
+
     initial_flawed_hash = sm.register_artifact(
-        "flawed-cache-prompt", "raw_prompt", flawed_prompt, version=1, persisted=True, retrievable=True
+        initial_flawed_id, "raw_prompt", flawed_prompt, version=1, persisted=True, retrievable=True
     ).content_hash
 
     # 1. Initial Autopsy of Flawed Prompt
@@ -1349,7 +1394,7 @@ async def run_scenario_5_prompt_improvement(
     sm.autopsy_findings = [f.model_dump() for f in resp_initial.findings]
     sm.record_autopsy_run(
         "initial",
-        "flawed-cache-prompt",
+        initial_flawed_id,
         initial_flawed_hash,
         resp_initial.verdict,
         sm.autopsy_findings,
@@ -1424,11 +1469,24 @@ async def run_scenario_5_prompt_improvement(
     )
 
     art_id = f"prompt-refined-{uuid.uuid4().hex[:6]}"
+    art_refined = Artifact(
+        id=art_id,
+        project_id=proj.id,
+        name="refined_cache_prompt.md",
+        artifact_type="doc",
+        media_type="text/markdown",
+        size_bytes=len(refined_prompt.encode("utf-8")),
+        storage_path=f"artifacts/{proj.id}/refined_cache_prompt.md",
+        content_hash=hashlib.sha256(refined_prompt.encode("utf-8")).hexdigest(),
+    )
+    db.add(art_refined)
+    await db.flush()
+
     binding = sm.register_artifact(
         art_id, "refined_prompt", refined_prompt, version=2, persisted=True, retrievable=True
     )
     sm.record_revision_event(
-        "flawed-cache-prompt",
+        initial_flawed_id,
         initial_flawed_hash,
         art_id,
         binding.content_hash,
@@ -1461,7 +1519,7 @@ async def run_scenario_5_prompt_improvement(
             status=r.status,
             resolution_evidence=r.evidence or r.reason,
             verification_reason=r.reason,
-            original_artifact_id="flawed-cache-prompt",
+            original_artifact_id=initial_flawed_id,
             revised_artifact_id=art_id,
             verification_method="deterministic_static_analysis",
         )
@@ -1560,6 +1618,7 @@ async def run_scenario_6_product(
         category="product_development",
         input_summary={"target": "cursor", "objective": "Enterprise SaaS PRD & Tenant Lifecycle"},
         execution_mode=ExecutionMode.DETERMINISTIC,
+        workspace_id=ws.id,
     )
 
     sm.add_criterion("SC6-AC-1", "User personas, target market, and problem space defined")
@@ -1701,6 +1760,7 @@ async def run_scenario_7_writing(
         category="writing_content",
         input_summary={"target": "raw-prompt", "objective": "Zero-Cost AI Orchestration Whitepaper"},
         execution_mode=ExecutionMode.DETERMINISTIC,
+        workspace_id=ws.id,
     )
 
     sm.add_criterion("SC7-AC-1", "Core thesis, communication objective, and target audience defined")
@@ -1818,6 +1878,7 @@ async def run_scenario_8_data(
         category="data_analysis",
         input_summary={"target": "openai-codex", "objective": "Quota Saturation & Provider Latency Pipeline"},
         execution_mode=ExecutionMode.DETERMINISTIC,
+        workspace_id=ws.id,
     )
 
     sm.add_criterion("SC8-AC-1", "Data sources, schema formats, and input assumptions verified")
@@ -1937,6 +1998,7 @@ async def run_scenario_9_documentation(
         category="technical_documentation",
         input_summary={"target": "gemini-cli", "objective": "ADR: Durable Quota Lease Protocol"},
         execution_mode=ExecutionMode.DETERMINISTIC,
+        workspace_id=ws.id,
     )
 
     sm.add_criterion("SC9-AC-1", "ADR standard format, documented systems, and scope defined")
@@ -2055,6 +2117,7 @@ async def run_scenario_10_education(
         category="education_learning",
         input_summary={"target": "claude-code", "objective": "MCP Tool Calling & Server Development Workshop"},
         execution_mode=ExecutionMode.DETERMINISTIC,
+        workspace_id=ws.id,
     )
 
     sm.add_criterion("SC10-AC-1", "Learner profile, prerequisites, and background defined")

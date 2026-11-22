@@ -37,6 +37,11 @@ from promptiq.schemas.eval import (
     EvaluationSuiteCreate,
 )
 from promptiq.schemas.governor import QuotaStatusResponse
+from promptiq.schemas.job import (
+    JobCancelRequest,
+    JobCreate,
+    JobResponse,
+)
 from promptiq.schemas.memory import (
     CheckpointCreate,
     CheckpointResponse,
@@ -124,4 +129,7 @@ __all__ = [
     "ContextPackRequest",
     "ContextPackResponse",
     "QuotaStatusResponse",
+    "JobCreate",
+    "JobResponse",
+    "JobCancelRequest",
 ]

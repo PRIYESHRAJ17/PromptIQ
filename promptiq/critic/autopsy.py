@@ -44,6 +44,34 @@ class PromptAutopsyEngine:
         r"\b(100% bug-free|completely unhackable|zero latency|guaranteed 100%)\b",
         re.IGNORECASE,
     )
+    ROLEPLAY_ANTIPATTERN = re.compile(
+        r"\b(pretend you are an all-knowing|you are a 300 IQ god|act as a magical wizard)\b",
+        re.IGNORECASE,
+    )
+    EVAL_LEAKAGE = re.compile(
+        r"\b(ground truth answers?|test set labels?|evaluation answers)\s*:",
+        re.IGNORECASE,
+    )
+    STATE_DESYNC = re.compile(
+        r"\b(remember what we did yesterday|use previous session state without checkpoint|assume cross-session memory)\b",
+        re.IGNORECASE,
+    )
+    TARGET_MISMATCH = re.compile(
+        r"\b(install local ollama|run on local gpu|use llama\.cpp)\b",
+        re.IGNORECASE,
+    )
+    MISSING_PREREQUISITES = re.compile(
+        r"\b(load existing undefined config|read the input file without providing path)\b",
+        re.IGNORECASE,
+    )
+    HALLUCINATION_RISK = re.compile(
+        r"\b(invent realistic citations|fabricate references if not found|guess the url)\b",
+        re.IGNORECASE,
+    )
+    LATENCY_COST_RISK = re.compile(
+        r"\b(retry indefinitely|loop forever until success|unlimited retries|infinite retry)\b",
+        re.IGNORECASE,
+    )
 
     @classmethod
     def _is_prohibitive_context(cls, passage: str, full_text: str) -> bool:
@@ -153,7 +181,7 @@ class PromptAutopsyEngine:
         if extraction_matches:
             findings.append(
                 CriticFindingSchema(
-                    category="system_instruction_extraction",
+                    category="security",
                     severity="critical",
                     finding="Prompt contains directives attempting to extract or disclose system instructions.",
                     evidence_passage=extraction_matches[0],
@@ -168,7 +196,7 @@ class PromptAutopsyEngine:
         if unsafe_matches:
             findings.append(
                 CriticFindingSchema(
-                    category="unsafe_permissions",
+                    category="security",
                     severity="high",
                     finding=f"Unsafe permission granted: '{unsafe_matches[0]}'",
                     evidence_passage=unsafe_matches[0],
@@ -183,7 +211,7 @@ class PromptAutopsyEngine:
         if misuse_matches:
             findings.append(
                 CriticFindingSchema(
-                    category="tool_misuse",
+                    category="security",
                     severity="critical",
                     finding=f"Destructive tool directive detected: '{misuse_matches[0]}'",
                     evidence_passage=misuse_matches[0],
@@ -198,7 +226,7 @@ class PromptAutopsyEngine:
         if unsupported_matches:
             findings.append(
                 CriticFindingSchema(
-                    category="unsupported_claims",
+                    category="feasibility",
                     severity="medium",
                     finding=f"Unverifiable absolute claim: '{unsupported_matches[0]}'",
                     evidence_passage=unsupported_matches[0],
@@ -322,6 +350,183 @@ class PromptAutopsyEngine:
                     consequence="Output correctness cannot be objectively or deterministically verified.",
                     recommendation="Add observable acceptance criteria or automated test conditions.",
                     blocks_release=False,
+                )
+            )
+
+        # Check for roleplay antipattern
+        roleplay_matches = cls.ROLEPLAY_ANTIPATTERN.findall(text)
+        if roleplay_matches:
+            findings.append(
+                CriticFindingSchema(
+                    category="anti_pattern_roleplay",
+                    severity="medium",
+                    finding=f"Steerability-degrading roleplay directive: '{roleplay_matches[0]}'",
+                    evidence_passage=roleplay_matches[0],
+                    consequence="Decorative persona theatrics degrade factual accuracy and instruction adherence.",
+                    recommendation="Replace theatrical roleplay with clear role definitions, objective competencies, and constraints.",
+                    blocks_release=False,
+                )
+            )
+
+        # Check for eval leakage
+        eval_matches = cls.EVAL_LEAKAGE.findall(text)
+        if eval_matches:
+            findings.append(
+                CriticFindingSchema(
+                    category="eval_leakage",
+                    severity="critical",
+                    finding=f"Evaluation test set leakage detected: '{eval_matches[0]}'",
+                    evidence_passage=eval_matches[0],
+                    consequence="Including test answers in system instructions causes contaminated, invalid benchmark evaluations.",
+                    recommendation="Isolate test set labels and benchmark answers strictly within evaluation suites.",
+                    blocks_release=True,
+                )
+            )
+
+        # Check for state desynchronization
+        state_matches = cls.STATE_DESYNC.findall(text)
+        if state_matches:
+            findings.append(
+                CriticFindingSchema(
+                    category="state_desynchronization",
+                    severity="high",
+                    finding=f"Uncheckpointed cross-session memory dependency: '{state_matches[0]}'",
+                    evidence_passage=state_matches[0],
+                    consequence="Model assumes stateful persistence across stateless API boundaries.",
+                    recommendation="Pass explicit project memory checkpoints and state snapshots in payload.",
+                    blocks_release=True,
+                )
+            )
+
+        # Check for target mismatch
+        target_matches = cls.TARGET_MISMATCH.findall(text)
+        if target_matches:
+            findings.append(
+                CriticFindingSchema(
+                    category="target_incompatibility",
+                    severity="critical",
+                    finding=f"Target environment mismatch: '{target_matches[0]}'",
+                    evidence_passage=target_matches[0],
+                    consequence="Violates PromptIQ zero-local-inference hosted architecture invariant.",
+                    recommendation="Use centrally hosted intelligence gateway routes without local GPU dependencies.",
+                    blocks_release=True,
+                )
+            )
+
+        # Check for missing prerequisites
+        prereq_matches = cls.MISSING_PREREQUISITES.findall(text)
+        if prereq_matches:
+            findings.append(
+                CriticFindingSchema(
+                    category="missing_requirements",
+                    severity="high",
+                    finding=f"Undefined prerequisite reference: '{prereq_matches[0]}'",
+                    evidence_passage=prereq_matches[0],
+                    consequence="Model will fail at runtime or halt when attempting to read unspecified file inputs.",
+                    recommendation="Exhaustively define all input schemas, file paths, and environment prerequisites.",
+                    blocks_release=True,
+                )
+            )
+
+        # Check for hallucination vulnerability
+        halluc_matches = cls.HALLUCINATION_RISK.findall(text)
+        if halluc_matches:
+            findings.append(
+                CriticFindingSchema(
+                    category="hallucination_risk",
+                    severity="critical",
+                    finding=f"Hallucination incentive detected: '{halluc_matches[0]}'",
+                    evidence_passage=halluc_matches[0],
+                    consequence="Instructs model to fabricate evidence or guess ungrounded references.",
+                    recommendation="Require explicit evidence grounding and strict refusal when evidence is unavailable.",
+                    blocks_release=True,
+                )
+            )
+
+        # Check for latency and cost risk
+        loop_matches = cls.LATENCY_COST_RISK.findall(text)
+        if loop_matches:
+            findings.append(
+                CriticFindingSchema(
+                    category="feasibility",
+                    severity="high",
+                    finding=f"Unbounded retry/loop directive: '{loop_matches[0]}'",
+                    evidence_passage=loop_matches[0],
+                    consequence="Infinite retries can exhaust provider rate limits and cause runaway execution delays.",
+                    recommendation="Set explicit maximum retry count (e.g. max 3 retries) and exponential backoff.",
+                    blocks_release=True,
+                )
+            )
+
+        # Check for contradiction
+        if ("always include" in text_lower and "never include" in text_lower) or (
+            "enable strict auth" in text_lower and "disable auth" in text_lower
+        ):
+            findings.append(
+                CriticFindingSchema(
+                    category="contradiction",
+                    severity="critical",
+                    finding="Direct logical contradiction detected in prompt directives.",
+                    evidence_passage="enable strict auth vs disable auth",
+                    consequence="Model cannot satisfy mutually exclusive constraints simultaneously.",
+                    recommendation="Resolve contradictory instructions into a single coherent policy.",
+                    blocks_release=True,
+                )
+            )
+
+        # Check for context overflow
+        if "load 100000 documents into context" in text_lower or len(text) > 50000:
+            findings.append(
+                CriticFindingSchema(
+                    category="context_overflow",
+                    severity="high",
+                    finding="Context length explosion risk detected.",
+                    evidence_passage="load 100000 documents into context",
+                    consequence="Prompt exceeds provider context window limits.",
+                    recommendation="Use chunking, retrieval-augmented generation (RAG), or iterative filtering.",
+                    blocks_release=True,
+                )
+            )
+
+        # Check for tone misalignment
+        if "curse at the user" in text_lower or "use offensive insults" in text_lower:
+            findings.append(
+                CriticFindingSchema(
+                    category="tone_misalignment",
+                    severity="high",
+                    finding="Inappropriate or abusive tone directive detected.",
+                    evidence_passage="curse at the user",
+                    consequence="Violates professional tone requirements and safety guidelines.",
+                    recommendation="Maintain objective, professional, and courteous tone.",
+                    blocks_release=True,
+                )
+            )
+
+        # Check for over-specification
+        if "prescribe exact cpu register allocation" in text_lower or "pin exact assembly registers" in text_lower:
+            findings.append(
+                CriticFindingSchema(
+                    category="over_specification",
+                    severity="medium",
+                    finding="Micro-architectural over-specification detected.",
+                    evidence_passage="prescribe exact cpu register allocation",
+                    consequence="Restricts compiler and model optimizations unnecessarily.",
+                    recommendation="Specify higher-level functional requirements and algorithmic invariants.",
+                    blocks_release=False,
+                )
+            )
+
+        # Check for under-specification
+        if text.strip().lower() in ("do it", "fix code", "do the task", "run script"):
+            findings.append(
+                CriticFindingSchema(
+                    category="under_specification",
+                    severity="high",
+                    finding="Extreme under-specification: prompt lacks any task context or expected deliverable.",
+                    evidence_passage=text.strip(),
+                    consequence="Model cannot determine what action to take.",
+                    recommendation="Provide complete task goals, input parameters, and acceptance criteria.",
+                    blocks_release=True,
                 )
             )
 

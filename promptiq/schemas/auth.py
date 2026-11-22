@@ -31,9 +31,24 @@ class UserResponse(UserBase):
 
 class Token(BaseModel):
     access_token: str
+    refresh_token: str | None = None
     token_type: str = "bearer"
     expires_in_minutes: int
     user: UserResponse
+
+
+class RefreshTokenRequest(BaseModel):
+    refresh_token: str = Field(..., description="Durable refresh token string")
+
+
+class PasswordChangeRequest(BaseModel):
+    current_password: str = Field(..., description="Current user password")
+    new_password: str = Field(..., min_length=8, description="New password (min 8 chars)")
+
+
+class LogoutResponse(BaseModel):
+    success: bool
+    message: str
 
 
 class TokenPayload(BaseModel):

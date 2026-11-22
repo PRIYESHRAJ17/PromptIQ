@@ -25,6 +25,9 @@ CriticCategory = Literal[
     "under_specification",
     "testability_gap",
     "data_privacy_leak",
+    "anti_pattern_roleplay",
+    "eval_leakage",
+    "state_desynchronization",
 ]
 AutopsyVerdict = Literal["ready", "ready_with_caveats", "needs_revision", "blocked", "unsuitable"]
 

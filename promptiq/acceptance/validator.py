@@ -5,13 +5,21 @@ database records, cryptographic hashes, step chronologies, finding lifecycles,
 and provenance rules. Completely decoupled from the trace generation pipeline.
 """
 
+import hashlib
 import json
 import re
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from promptiq.models.memory import Artifact
+from promptiq.models.package import PromptPackage
+from promptiq.models.project import Project
+from promptiq.models.research import EvidenceClaim, ResearchJob, SourceRecord
 
 
 class ValidationErrorDetail(BaseModel):
@@ -22,6 +30,32 @@ class ValidationErrorDetail(BaseModel):
     entity_id: str | None = None
     message: str
     severity: str = "critical"  # critical, high, medium, low
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class LayerResult(BaseModel):
+    """Result of an individual verification layer."""
+
+    layer: str  # "Layer A", "Layer B", "Layer C", "Layer D", "Layer E"
+    name: str
+    status: str  # "VERIFIED", "FAILED", "NOT_VERIFIED"
+    details: dict[str, Any] = Field(default_factory=dict)
+    errors: list[str] = Field(default_factory=list)
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class AuthoritativePersistenceReport(BaseModel):
+    """Result of multi-layered authoritative persistence verification."""
+
+    is_valid: bool
+    layers: dict[str, LayerResult]
+    total_artifacts_checked: int
+    verified_artifacts: int
+    failed_artifacts: int
+    unverified_artifacts: int
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -577,4 +611,270 @@ class AcceptanceTraceValidator:
             failed_checks=failed_checks,
             errors=self.errors,
             scenario_verdicts=scenario_verdicts,
+        )
+
+    async def validate_authoritative_persistence(
+        self, db: AsyncSession | None = None
+    ) -> AuthoritativePersistenceReport:
+        """Executes multi-layered authoritative persistence verification across all 5 layers."""
+        scenarios = self.trace_data.get("scenarios", []) if isinstance(self.trace_data, dict) else []
+
+        # Layer A: Trace Self-Consistency
+        layer_a_errors: list[str] = []
+        all_bindings: list[dict[str, Any]] = []
+        for s in scenarios:
+            sid = s.get("scenario_id", "UNKNOWN")
+            bindings = s.get("artifact_bindings", [])
+            all_bindings.extend(bindings)
+            bound_ids = {b.get("artifact_id") for b in bindings if b.get("artifact_id")}
+            bound_hashes = {b.get("content_hash") for b in bindings if b.get("content_hash")}
+
+            for b in bindings:
+                aid = b.get("artifact_id")
+                chash = b.get("content_hash")
+                bsize = b.get("byte_size", 0)
+                if not aid:
+                    layer_a_errors.append(f"[{sid}] Binding missing artifact_id")
+                if not chash or len(chash) != 64:
+                    layer_a_errors.append(f"[{sid}] Binding '{aid}' has invalid SHA-256 hash: {chash}")
+                if bsize <= 0:
+                    layer_a_errors.append(f"[{sid}] Binding '{aid}' has non-positive byte_size: {bsize}")
+
+            # Check criteria reference resolution
+            for c in s.get("acceptance_criteria", []):
+                ref = c.get("evidence_reference")
+                rtype = c.get("evidence_record_type")
+                if rtype == "artifact" and ref and ref not in bound_ids:
+                    layer_a_errors.append(f"[{sid}] Criterion '{c.get('id')}' references unbound artifact ID '{ref}'")
+
+            # Check resolution events resolution
+            for r in s.get("resolution_events", []):
+                rev_hash = r.get("revised_artifact_hash")
+                if rev_hash and rev_hash not in bound_hashes:
+                    layer_a_errors.append(f"[{sid}] Resolution event '{r.get('resolution_id')}' references unbound hash '{rev_hash}'")
+
+        layer_a = LayerResult(
+            layer="Layer A",
+            name="Trace Self-Consistency",
+            status="VERIFIED" if not layer_a_errors else "FAILED",
+            details={"artifacts_in_trace": len(all_bindings)},
+            errors=layer_a_errors,
+        )
+
+        # Layer B: Database Record Verification
+        layer_b_errors: list[str] = []
+        db_records: dict[str, Any] = {}
+        if db is None:
+            layer_b = LayerResult(
+                layer="Layer B",
+                name="Database Record Verification",
+                status="NOT_VERIFIED",
+                details={"reason": "No database session provided"},
+                errors=[],
+            )
+        else:
+            for s in scenarios:
+                sid = s.get("scenario_id", "UNKNOWN")
+                for b in s.get("artifact_bindings", []):
+                    aid = b.get("artifact_id")
+                    if not aid:
+                        continue
+                    # Query Artifact
+                    art_stmt = select(Artifact).where(Artifact.id == aid)
+                    art_res = await db.execute(art_stmt)
+                    art = art_res.scalar_one_or_none()
+                    if art:
+                        db_records[aid] = ("Artifact", art, art.project_id)
+                    else:
+                        pkg_stmt = select(PromptPackage).where(PromptPackage.id == aid)
+                        pkg_res = await db.execute(pkg_stmt)
+                        pkg = pkg_res.scalar_one_or_none()
+                        if pkg:
+                            db_records[aid] = ("PromptPackage", pkg, pkg.project_id)
+                        else:
+                            src_stmt = select(SourceRecord).where(SourceRecord.id == aid)
+                            src_res = await db.execute(src_stmt)
+                            src = src_res.scalar_one_or_none()
+                            if src:
+                                job_stmt = select(ResearchJob).where(ResearchJob.id == src.research_job_id)
+                                job_res = await db.execute(job_stmt)
+                                job = job_res.scalar_one_or_none()
+                                db_records[aid] = ("SourceRecord", src, job.project_id if job else None)
+                            else:
+                                claim_stmt = select(EvidenceClaim).where(EvidenceClaim.id == aid)
+                                claim_res = await db.execute(claim_stmt)
+                                claim = claim_res.scalar_one_or_none()
+                                if claim:
+                                    job_stmt = select(ResearchJob).where(ResearchJob.id == claim.research_job_id)
+                                    job_res = await db.execute(job_stmt)
+                                    job = job_res.scalar_one_or_none()
+                                    db_records[aid] = ("EvidenceClaim", claim, job.project_id if job else None)
+                                elif b.get("persisted", False):
+                                    layer_b_errors.append(f"[{sid}] Persisted artifact '{aid}' does not exist in database")
+
+            layer_b = LayerResult(
+                layer="Layer B",
+                name="Database Record Verification",
+                status="VERIFIED" if not layer_b_errors else "FAILED",
+                details={"records_found": len(db_records)},
+                errors=layer_b_errors,
+            )
+
+        # Layer C: Artifact Byte Integrity
+        layer_c_errors: list[str] = []
+        if db is None:
+            layer_c = LayerResult(
+                layer="Layer C",
+                name="Artifact Byte Integrity",
+                status="NOT_VERIFIED",
+                details={"reason": "No database session provided"},
+                errors=[],
+            )
+        else:
+            for s in scenarios:
+                sid = s.get("scenario_id", "UNKNOWN")
+                for b in s.get("artifact_bindings", []):
+                    aid = b.get("artifact_id")
+                    if aid not in db_records:
+                        continue
+                    rec_type, rec, _ = db_records[aid]
+                    expected_hash = b.get("content_hash")
+                    expected_size = b.get("byte_size")
+
+                    if rec_type == "Artifact":
+                        if rec.content_hash != expected_hash:
+                            layer_c_errors.append(
+                                f"[{sid}] Byte hash mismatch for Artifact '{aid}': expected {expected_hash}, DB has {rec.content_hash}"
+                            )
+                        if expected_size and rec.size_bytes != expected_size:
+                            layer_c_errors.append(
+                                f"[{sid}] Byte size mismatch for Artifact '{aid}': expected {expected_size}, DB has {rec.size_bytes}"
+                            )
+                    elif rec_type == "PromptPackage":
+                        # Check manifest, joined files text, or serialized JSON files
+                        raw_files = json.dumps(rec.files, sort_keys=True).encode("utf-8")
+                        calc_hash = hashlib.sha256(raw_files).hexdigest()
+                        raw_text = "\n\n".join(rec.files.values()).encode("utf-8") if rec.files else b""
+                        calc_text_hash = hashlib.sha256(raw_text).hexdigest() if raw_text else ""
+                        pkg_hash = rec.manifest.get("package_hash") or calc_hash
+                        valid_hashes = {h for h in (pkg_hash, calc_hash, calc_text_hash) if h}
+                        if expected_hash and expected_hash not in valid_hashes:
+                            layer_c_errors.append(
+                                f"[{sid}] Byte hash mismatch for PromptPackage '{aid}': expected {expected_hash}, calculated {calc_text_hash or calc_hash}"
+                            )
+                    elif rec_type == "SourceRecord":
+                        raw_title = (rec.title or rec.url).encode("utf-8")
+                        calc_hash = hashlib.sha256(raw_title).hexdigest()
+                        raw_url = rec.url.encode("utf-8")
+                        calc_url_hash = hashlib.sha256(raw_url).hexdigest()
+                        if expected_hash and expected_hash not in (calc_hash, calc_url_hash):
+                            layer_c_errors.append(
+                                f"[{sid}] Byte hash mismatch for SourceRecord '{aid}': expected {expected_hash}, calculated {calc_hash}"
+                            )
+                    elif rec_type == "EvidenceClaim":
+                        raw_claim = rec.claim_text.encode("utf-8")
+                        calc_hash = hashlib.sha256(raw_claim).hexdigest()
+                        if expected_hash and expected_hash != calc_hash:
+                            layer_c_errors.append(
+                                f"[{sid}] Byte hash mismatch for EvidenceClaim '{aid}': expected {expected_hash}, calculated {calc_hash}"
+                            )
+
+            layer_c = LayerResult(
+                layer="Layer C",
+                name="Artifact Byte Integrity",
+                status="VERIFIED" if not layer_c_errors else "FAILED",
+                details={"verified_count": len(db_records) - len(layer_c_errors)},
+                errors=layer_c_errors,
+            )
+
+        # Layer D: Tenant Ownership Verification
+        layer_d_errors: list[str] = []
+        if db is None:
+            layer_d = LayerResult(
+                layer="Layer D",
+                name="Tenant Ownership Verification",
+                status="NOT_VERIFIED",
+                details={"reason": "No database session provided"},
+                errors=[],
+            )
+        else:
+            for s in scenarios:
+                sid = s.get("scenario_id", "UNKNOWN")
+                meta = s.get("execution_metadata", {})
+                scenario_ws = meta.get("workspace_id")
+                for b in s.get("artifact_bindings", []):
+                    aid = b.get("artifact_id")
+                    if aid not in db_records:
+                        continue
+                    rec_type, rec, proj_id = db_records[aid]
+                    if not proj_id:
+                        continue
+                    # Query project
+                    proj_stmt = select(Project).where(Project.id == proj_id)
+                    p_res = await db.execute(proj_stmt)
+                    proj = p_res.scalar_one_or_none()
+                    if not proj:
+                        layer_d_errors.append(f"[{sid}] Project '{proj_id}' for artifact '{aid}' not found")
+                    elif scenario_ws and proj.workspace_id != scenario_ws:
+                        layer_d_errors.append(
+                            f"[{sid}] Cross-tenant violation: Artifact '{aid}' owned by workspace '{proj.workspace_id}', accessed in '{scenario_ws}'"
+                        )
+
+            layer_d = LayerResult(
+                layer="Layer D",
+                name="Tenant Ownership Verification",
+                status="VERIFIED" if not layer_d_errors else "FAILED",
+                details={"tenants_checked": len(scenarios)},
+                errors=layer_d_errors,
+            )
+
+        # Layer E: External Execution Provenance
+        layer_e_errors: list[str] = []
+        for s in scenarios:
+            sid = s.get("scenario_id", "UNKNOWN")
+            mode = s.get("execution_mode")
+            meta = s.get("execution_metadata", {})
+            prov_req_id = meta.get("provider_request_id")
+            model_id = meta.get("model_id")
+
+            if mode == "LIVE_PROVIDER":
+                if not prov_req_id or not prov_req_id.strip():
+                    layer_e_errors.append(f"[{sid}] LIVE_PROVIDER execution missing provider_request_id")
+                if not model_id or not model_id.strip():
+                    layer_e_errors.append(f"[{sid}] LIVE_PROVIDER execution missing model_id")
+            elif mode in ("MOCK", "SYNTHETIC"):
+                if prov_req_id and "live" in prov_req_id.lower():
+                    layer_e_errors.append(f"[{sid}] Mock execution falsely claims live provider_request_id '{prov_req_id}'")
+
+        layer_e = LayerResult(
+            layer="Layer E",
+            name="External Execution Provenance",
+            status="VERIFIED" if not layer_e_errors else "FAILED",
+            details={"scenarios_provenance_checked": len(scenarios)},
+            errors=layer_e_errors,
+        )
+
+        layers = {
+            "layer_a": layer_a,
+            "layer_b": layer_b,
+            "layer_c": layer_c,
+            "layer_d": layer_d,
+            "layer_e": layer_e,
+        }
+
+        has_failed = any(layer.status == "FAILED" for layer in layers.values())
+        is_valid = not has_failed
+
+        tot_checked = len(all_bindings)
+        ver_count = len(db_records) - len(layer_c_errors) if db else 0
+        unver_count = tot_checked if db is None else 0
+        failed_count = len(layer_a_errors) + len(layer_b_errors) + len(layer_c_errors) + len(layer_d_errors) + len(layer_e_errors)
+
+        return AuthoritativePersistenceReport(
+            is_valid=is_valid,
+            layers=layers,
+            total_artifacts_checked=tot_checked,
+            verified_artifacts=ver_count,
+            failed_artifacts=failed_count,
+            unverified_artifacts=unver_count,
         )

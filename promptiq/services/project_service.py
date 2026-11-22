@@ -18,6 +18,27 @@ class ProjectService:
     """Manages project lifecycle, multi-tenant isolation, and initial constitution setup."""
 
     @staticmethod
+    async def get_user_default_workspace(
+        db: AsyncSession, user_id: str
+    ) -> WorkspaceMembership:
+        """Resolves the default workspace membership for a user."""
+        stmt = select(WorkspaceMembership).where(
+            WorkspaceMembership.user_id == user_id,
+            WorkspaceMembership.role == "owner",
+        )
+        res = await db.execute(stmt)
+        default_ws = res.scalar_one_or_none()
+        if not default_ws:
+            stmt2 = select(WorkspaceMembership).where(
+                WorkspaceMembership.user_id == user_id,
+            )
+            res2 = await db.execute(stmt2)
+            default_ws = res2.scalar_one_or_none()
+        if not default_ws:
+            raise TenantIsolationError("No active workspace found for user")
+        return default_ws
+
+    @staticmethod
     async def verify_workspace_access(
         db: AsyncSession, user_id: str, workspace_id: str
     ) -> WorkspaceMembership:

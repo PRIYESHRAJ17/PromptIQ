@@ -14,6 +14,23 @@ from promptiq.models.user import User
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login", auto_error=False)
 
 
+def get_raw_token(
+    token: str | None = Depends(oauth2_scheme),
+    authorization: str | None = Header(default=None),
+) -> str:
+    """Extracts raw JWT bearer token from Authorization header or OAuth2 scheme."""
+    raw_token = token
+    if not raw_token and authorization and authorization.startswith("Bearer "):
+        raw_token = authorization.split(" ")[1]
+    if not raw_token:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Authentication credentials required",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    return raw_token
+
+
 async def get_current_user(
     token: str | None = Depends(oauth2_scheme),
     authorization: str | None = Header(default=None),
@@ -32,6 +49,12 @@ async def get_current_user(
         )
 
     try:
+        # Check database-backed revocation blocklist
+        from promptiq.services.auth_service import AuthService
+
+        if await AuthService.is_token_revoked(db, raw_token):
+            raise AuthenticationError("Session token has been revoked or logged out")
+
         payload = decode_access_token(raw_token)
         user_id = payload.get("sub")
         if not user_id:

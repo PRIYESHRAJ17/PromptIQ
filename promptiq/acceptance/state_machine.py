@@ -106,6 +106,7 @@ class AcceptanceStateMachine:
         input_summary: dict[str, Any],
         execution_mode: ExecutionMode = ExecutionMode.DETERMINISTIC,
         initial_state: ExecutionState = ExecutionState.STEP_EXECUTED,
+        workspace_id: str | None = None,
     ) -> None:
         self.scenario_id = scenario_id
         self.category = category
@@ -128,7 +129,7 @@ class AcceptanceStateMachine:
         self.warning_records: list[WarningRecord] = []
         self.warnings: list[str] = []
         self.blocking_reasons: list[str] = []
-        self.metadata: dict[str, Any] = {}
+        self.metadata: dict[str, Any] = {"workspace_id": workspace_id} if workspace_id else {}
 
     def record_autopsy_run(
         self,

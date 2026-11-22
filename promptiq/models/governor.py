@@ -52,4 +52,33 @@ class QuotaReservationRecord(Base, UUIDMixin, TimestampMixin):
         String(32), default="active", nullable=False
     )  # active, reconciled, released, expired
     user_id: Mapped[str | None] = mapped_column(String(36), nullable=True, index=True)
+    workspace_id: Mapped[str | None] = mapped_column(String(36), nullable=True, index=True)
+    idempotency_key: Mapped[str | None] = mapped_column(String(128), unique=True, nullable=True, index=True)
+    actual_tokens_consumed: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    provider_request_id: Mapped[str | None] = mapped_column(String(128), nullable=True, index=True)
     expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class QuotaLedgerEntry(Base, UUIDMixin, TimestampMixin):
+    """Database-backed distributed quota ledger entry for multi-instance deployments."""
+
+    __tablename__ = "quota_ledger_entries"
+
+    workspace_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("workspaces.id"), nullable=False, index=True
+    )
+    user_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("users.id"), nullable=False, index=True
+    )
+    provider: Mapped[str] = mapped_column(String(64), nullable=False, index=True)
+    model_id: Mapped[str] = mapped_column(String(64), nullable=False, index=True)
+    tokens: Mapped[int] = mapped_column(Integer, nullable=False)
+    usage_kind: Mapped[str] = mapped_column(
+        String(32), default="PROVIDER_REPORTED", nullable=False
+    )  # ESTIMATED, PROVIDER_REPORTED, UNKNOWN
+    status: Mapped[str] = mapped_column(
+        String(32), default="COMMITTED", nullable=False
+    )  # RESERVED, COMMITTED, RELEASED, EXPIRED
+    provider_request_id: Mapped[str | None] = mapped_column(String(128), nullable=True, index=True)
+    idempotency_key: Mapped[str | None] = mapped_column(String(128), unique=True, nullable=True, index=True)
+    recorded_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, index=True)

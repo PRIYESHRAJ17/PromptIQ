@@ -45,8 +45,27 @@ def create_access_token(data: dict[str, Any], expires_delta: timedelta | None = 
         if expires_delta
         else timedelta(minutes=settings.PROMPTIQ_ACCESS_TOKEN_EXPIRE_MINUTES)
     )
-    to_encode.update({"exp": expire, "iat": datetime.now(UTC)})
+    # Include unique jti for tracking and revocation
+    jti = secrets.token_hex(16)
+    to_encode.update({"exp": expire, "iat": datetime.now(UTC), "jti": jti, "type": "access"})
     return jwt.encode(to_encode, settings.PROMPTIQ_SECRET_KEY, algorithm=ALGORITHM)
+
+
+def create_refresh_token(expires_delta: timedelta | None = None) -> tuple[str, str, datetime]:
+    """Generates a cryptographically strong refresh token, returning (raw_token, token_hash, expires_at)."""
+    raw_token = secrets.token_urlsafe(48)
+    token_hash = hashlib.sha256(raw_token.encode("utf-8")).hexdigest()
+    expires_at = datetime.now(UTC) + (
+        expires_delta
+        if expires_delta
+        else timedelta(days=settings.PROMPTIQ_REFRESH_TOKEN_EXPIRE_DAYS)
+    )
+    return raw_token, token_hash, expires_at
+
+
+def hash_token(token: str) -> str:
+    """Computes SHA-256 hash of an access or refresh token for revocation and lookups."""
+    return hashlib.sha256(token.encode("utf-8")).hexdigest()
 
 
 def decode_access_token(token: str) -> dict[str, Any]:

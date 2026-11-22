@@ -575,20 +575,34 @@ class CapacityGovernor:
             self.save_durable_state()
         return token
 
-    async def reserve_capacity_db(
+    async def reserve_quota_db(
         self,
         db: Any,
         model_id: str,
         estimated_tokens: int,
         ttl_seconds: float = 60.0,
         user_id: str | None = None,
+        workspace_id: str | None = None,
+        idempotency_key: str | None = None,
+        provider: str | None = None,
     ) -> str:
-        """Atomically reserves capacity in database store with crash recovery semantics."""
+        """Atomically reserves capacity in database store with crash recovery and ledger tracking."""
         from datetime import timedelta
 
-        from promptiq.models.governor import QuotaReservationRecord
+        from sqlalchemy import select
 
-        # First check capacity locally
+        from promptiq.models.governor import QuotaLedgerEntry, QuotaReservationRecord
+
+        if idempotency_key:
+            stmt = select(QuotaReservationRecord).where(
+                QuotaReservationRecord.idempotency_key == idempotency_key
+            )
+            res = await db.execute(stmt)
+            existing = res.scalar_one_or_none()
+            if existing and existing.status == "active":
+                return existing.token
+
+        # Check local and provider limits
         self.check_model_quota(model_id, estimated_tokens=estimated_tokens)
 
         token = self.reserve_capacity(model_id, estimated_tokens, ttl_seconds=ttl_seconds)
@@ -601,25 +615,48 @@ class CapacityGovernor:
             tokens=estimated_tokens,
             status="active",
             user_id=user_id,
+            workspace_id=workspace_id,
+            idempotency_key=idempotency_key,
             expires_at=expires_at,
         )
         db.add(record)
+
+        if workspace_id and user_id:
+            resolved_provider = provider or (model_id.split("/")[0] if "/" in model_id else "groq")
+            ledger_entry = QuotaLedgerEntry(
+                workspace_id=workspace_id,
+                user_id=user_id,
+                provider=resolved_provider,
+                model_id=model_id,
+                tokens=estimated_tokens,
+                usage_kind="ESTIMATED",
+                status="RESERVED",
+                idempotency_key=idempotency_key,
+                recorded_at=now_dt,
+            )
+            db.add(ledger_entry)
+
         await db.flush()
         return token
 
-    async def reconcile_reservation_db(
+    # Alias for backwards compatibility
+    reserve_capacity_db = reserve_quota_db
+
+    async def commit_quota_db(
         self,
         db: Any,
         token: str,
         actual_tokens: int,
         http_status: int = 200,
         provider: str | None = None,
+        provider_request_id: str | None = None,
+        usage_kind: str = "PROVIDER_REPORTED",
         response_headers: dict[str, Any] | None = None,
     ) -> None:
-        """Reconciles reservation in DB and Governor state."""
+        """Commits reservation and writes permanent record to QuotaLedgerEntry."""
         from sqlalchemy import select
 
-        from promptiq.models.governor import QuotaReservationRecord
+        from promptiq.models.governor import QuotaLedgerEntry, QuotaReservationRecord
 
         self.reconcile_reservation(
             token=token,
@@ -635,13 +672,49 @@ class CapacityGovernor:
         if record:
             record.status = "reconciled" if http_status == 200 else "failed"
             record.tokens = actual_tokens if http_status == 200 else record.tokens
+            record.actual_tokens_consumed = actual_tokens
+            record.provider_request_id = provider_request_id
+
+            now_dt = datetime.now(UTC)
+            if record.workspace_id and record.user_id:
+                resolved_provider = provider or (record.model_id.split("/")[0] if "/" in record.model_id else "groq")
+                ledger_entry = None
+                if record.idempotency_key:
+                    stmt_l = select(QuotaLedgerEntry).where(QuotaLedgerEntry.idempotency_key == record.idempotency_key)
+                    res_l = await db.execute(stmt_l)
+                    ledger_entry = res_l.scalar_one_or_none()
+
+                if ledger_entry:
+                    ledger_entry.status = "COMMITTED" if http_status == 200 else "FAILED"
+                    ledger_entry.tokens = actual_tokens
+                    ledger_entry.usage_kind = usage_kind
+                    ledger_entry.provider_request_id = provider_request_id
+                    ledger_entry.recorded_at = now_dt
+                else:
+                    ledger_entry = QuotaLedgerEntry(
+                        workspace_id=record.workspace_id,
+                        user_id=record.user_id,
+                        provider=resolved_provider,
+                        model_id=record.model_id,
+                        tokens=actual_tokens,
+                        usage_kind=usage_kind,
+                        status="COMMITTED" if http_status == 200 else "FAILED",
+                        provider_request_id=provider_request_id,
+                        idempotency_key=record.idempotency_key,
+                        recorded_at=now_dt,
+                    )
+                    db.add(ledger_entry)
+
             await db.flush()
 
-    async def release_reservation_db(self, db: Any, token: str) -> bool:
-        """Releases DB and local reservation."""
+    # Alias for backwards compatibility
+    reconcile_reservation_db = commit_quota_db
+
+    async def release_quota_db(self, db: Any, token: str) -> bool:
+        """Releases DB and local reservation and records RELEASED status in ledger."""
         from sqlalchemy import select
 
-        from promptiq.models.governor import QuotaReservationRecord
+        from promptiq.models.governor import QuotaLedgerEntry, QuotaReservationRecord
 
         released_local = self.release_reservation(token)
         stmt = select(QuotaReservationRecord).where(QuotaReservationRecord.token == token)
@@ -649,15 +722,46 @@ class CapacityGovernor:
         record = res.scalar_one_or_none()
         if record:
             record.status = "released"
+            now_dt = datetime.now(UTC)
+            if record.workspace_id and record.user_id:
+                ledger_entry = None
+                if record.idempotency_key:
+                    stmt_l = select(QuotaLedgerEntry).where(QuotaLedgerEntry.idempotency_key == record.idempotency_key)
+                    res_l = await db.execute(stmt_l)
+                    ledger_entry = res_l.scalar_one_or_none()
+
+                if ledger_entry:
+                    ledger_entry.status = "RELEASED"
+                    ledger_entry.tokens = 0
+                    ledger_entry.recorded_at = now_dt
+                else:
+                    resolved_provider = record.model_id.split("/")[0] if "/" in record.model_id else "groq"
+                    ledger_entry = QuotaLedgerEntry(
+                        workspace_id=record.workspace_id,
+                        user_id=record.user_id,
+                        provider=resolved_provider,
+                        model_id=record.model_id,
+                        tokens=0,
+                        usage_kind="ESTIMATED",
+                        status="RELEASED",
+                        idempotency_key=record.idempotency_key,
+                        recorded_at=now_dt,
+                    )
+                    db.add(ledger_entry)
             await db.flush()
             return True
         return released_local
 
-    async def prune_expired_reservations_db(self, db: Any) -> int:
-        """Prunes expired active reservations in the database."""
+    # Alias for backwards compatibility
+    release_reservation_db = release_quota_db
+
+    async def prune_stale_reservations_db(self, db: Any) -> int:
+        """Prunes expired active reservations in the database and updates ledger."""
         from sqlalchemy import update
 
         from promptiq.models.governor import QuotaReservationRecord
+
+        self.purge_expired_reservations()
 
         now_dt = datetime.now(UTC)
         stmt = (
@@ -671,6 +775,9 @@ class CapacityGovernor:
         res = await db.execute(stmt)
         await db.flush()
         return res.rowcount or 0
+
+    # Alias for backwards compatibility
+    prune_expired_reservations_db = prune_stale_reservations_db
 
     def release_reservation(self, token: str) -> bool:
         """Releases a reserved capacity token without recording usage."""

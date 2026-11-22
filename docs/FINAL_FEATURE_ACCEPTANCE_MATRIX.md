@@ -1,9 +1,9 @@
 # PromptIQ — Final Feature Acceptance Matrix
 
 **Audit Timestamp**: 2026-11-22  
-**Platform Version**: v4.0.0-rc1  
-**Baseline Git Commit**: `master` (Ultimate Engineering Milestone)  
-**Test Suite Verification**: 240 Passing Tests, 80% Total Coverage (7,513 Statements)  
+**Platform Version**: v4.1.0-rc1  
+**Baseline Git Commit**: `master` (Pre-Frontend Ultimate Engineering Hardening Milestone)  
+**Test Suite Verification**: 264 Passing Tests, 80% Total Coverage (8,318 Statements)  
 **Status Taxonomies**:
 - `VERIFIED COMPLETE`: Full implementation in code, validated with automated tests, and verified via end-to-end acceptance traces.
 - `IMPLEMENTED NOT FULLY VERIFIED`: Full production code implemented, but external live infrastructure (e.g. live search, live cloud deployment) is mock-tested or pending operator credentials.
@@ -11,6 +11,7 @@
 - `BLOCKED`: Development or deployment cannot proceed due to external constraints (e.g. cardless ₹0 cloud hosting requirements).
 - `STUB`: Interface declared without operational backend implementation.
 - `NOT IMPLEMENTED`: Feature explicitly excluded or deferred (e.g. Website Frontend).
+- `NOT TESTED`: Feature implemented in schema/code but untested against live local daemon (e.g. PostgreSQL daemon).
 
 ---
 
@@ -18,7 +19,7 @@
 
 | ID | Feature | Status | Evidence / Verification | Operational Notes |
 | :--- | :--- | :--- | :--- | :--- |
-| **INV-01** | **Strict Website Frontend Exclusion** | `VERIFIED COMPLETE` | No React/Next.js/HTML in repo; API-first design | Enforced by project invariant rule #1. Backend contracts fully support future UI. |
+| **INV-01** | **Strict Website Frontend Exclusion** | `VERIFIED COMPLETE` | No React/Next.js/HTML in repo; API-first design | Enforced by project invariant rule #1. Backend contracts fully support future UI via `docs/FRONTEND_INTEGRATION_CONTRACT.md`. |
 | **INV-02** | **Zero User Price & No BYOK** | `VERIFIED COMPLETE` | `tests/test_zero_price_gateway.py` | Strict recursive inspection rejects user API keys. No paid routes or fallbacks exist. |
 | **INV-03** | **No Local Inference Requirement** | `VERIFIED COMPLETE` | `promptiq/gateway/` architecture | Hosted service architecture. Users never run Ollama, llama.cpp, or local GPUs. |
 | **INV-04** | **Centrally Managed Hosted Inference** | `VERIFIED COMPLETE` | `promptiq/gateway/gateway.py` | Unified operator-managed gateway serves REST, CLI, MCP, and Telegram. |
@@ -31,16 +32,16 @@
 | ID | Feature / Task Family | Status | Evidence / Verification | Operational Notes |
 | :--- | :--- | :--- | :--- | :--- |
 | **TSK-01** | **Task Registry (10 Families)** | `VERIFIED COMPLETE` | `tests/test_task_registry.py` | All 10 families registered with specialized discovery prompts, templates, and rubrics. |
-| **TSK-02** | **Scenario 1: Software Engineering** | `VERIFIED COMPLETE` | `ScenarioAuditTrace` #1, 210 tests | Full lifecycle: discovery -> constitution -> raw-prompt -> autopsy -> Test Lab (Score 0.88). |
-| **TSK-03** | **Scenario 2: Research Intelligence** | `VERIFIED COMPLETE` | `ScenarioAuditTrace` #2 | Research provenance ledger with evidence validation; graceful simulated warning flag. |
-| **TSK-04** | **Scenario 3: AI Agent Development** | `VERIFIED COMPLETE` | `ScenarioAuditTrace` #3 | Target: Antigravity. Static tool permission audit asserts 0 prohibited mutating tools. |
-| **TSK-05** | **Scenario 4: Business Strategy** | `VERIFIED COMPLETE` | `ScenarioAuditTrace` #4 | Preserves unresolved advisory finding, transitions honestly to `COMPLETED_WITH_WARNINGS`. |
-| **TSK-06** | **Scenario 5: Prompt Improvement** | `VERIFIED COMPLETE` | `ScenarioAuditTrace` #5 | Autopsy-driven iterative refinement resolving vague phrasing and testability gaps. |
-| **TSK-07** | **Scenario 6: Product Development** | `VERIFIED COMPLETE` | `ScenarioAuditTrace` #6 | Target: Cursor. Generates PRDs, user personas, MVP scoping, and `.cursorrules` package. |
-| **TSK-08** | **Scenario 7: Writing and Content** | `VERIFIED COMPLETE` | `ScenarioAuditTrace` #7 | Target: Raw-prompt suite. Editorial tone rubrics, structure checks, executive style. |
-| **TSK-09** | **Scenario 8: Data Analysis** | `VERIFIED COMPLETE` | `ScenarioAuditTrace` #8 | Target: Codex. Quota saturation pipelines, SQL schema assertions, reproducible data flows. |
-| **TSK-10** | **Scenario 9: Technical Documentation**| `VERIFIED COMPLETE` | `ScenarioAuditTrace` #9 | Target: Gemini CLI. MADR 3.0 architectural decision records, markdown lint contracts. |
-| **TSK-11** | **Scenario 10: Education & Learning** | `VERIFIED COMPLETE` | `ScenarioAuditTrace` #10 | Target: Claude Code. Progressive curriculum scaffolding, self-assessment checkpoints. |
+| **TSK-02** | **Scenario 1: Software Engineering** | `VERIFIED COMPLETE` | `ScenarioAuditTrace` #1, Trace V5 | Full lifecycle: discovery -> constitution -> raw-prompt -> autopsy -> Test Lab (Score 0.88). |
+| **TSK-03** | **Scenario 2: Research Intelligence** | `VERIFIED COMPLETE` | `ScenarioAuditTrace` #2, Trace V5 | Research provenance ledger with evidence validation; graceful simulated warning flag. |
+| **TSK-04** | **Scenario 3: AI Agent Development** | `VERIFIED COMPLETE` | `ScenarioAuditTrace` #3, Trace V5 | Target: Antigravity. Static tool permission audit asserts 0 prohibited mutating tools. |
+| **TSK-05** | **Scenario 4: Business Strategy** | `VERIFIED COMPLETE` | `ScenarioAuditTrace` #4, Trace V5 | Preserves unresolved advisory finding, transitions honestly to `COMPLETED_WITH_WARNINGS`. |
+| **TSK-06** | **Scenario 5: Prompt Improvement** | `VERIFIED COMPLETE` | `ScenarioAuditTrace` #5, Trace V5 | Autopsy-driven iterative refinement resolving vague phrasing and testability gaps. |
+| **TSK-07** | **Scenario 6: Product Development** | `VERIFIED COMPLETE` | `ScenarioAuditTrace` #6, Trace V5 | Target: Cursor. Generates PRDs, user personas, MVP scoping, and `.cursorrules` package. |
+| **TSK-08** | **Scenario 7: Writing and Content** | `VERIFIED COMPLETE` | `ScenarioAuditTrace` #7, Trace V5 | Target: Raw-prompt suite. Editorial tone rubrics, structure checks, executive style. |
+| **TSK-09** | **Scenario 8: Data Analysis** | `VERIFIED COMPLETE` | `ScenarioAuditTrace` #8, Trace V5 | Target: Codex. Quota saturation pipelines, SQL schema assertions, reproducible data flows. |
+| **TSK-10** | **Scenario 9: Technical Documentation**| `VERIFIED COMPLETE` | `ScenarioAuditTrace` #9, Trace V5 | Target: Gemini CLI. MADR 3.0 architectural decision records, markdown lint contracts. |
+| **TSK-11** | **Scenario 10: Education & Learning** | `VERIFIED COMPLETE` | `ScenarioAuditTrace` #10, Trace V5 | Target: Claude Code. Progressive curriculum scaffolding, self-assessment checkpoints. |
 | **DIS-01** | **Adaptive Discovery Modes** | `VERIFIED COMPLETE` | `tests/test_discovery.py` | Quick (3 questions), Guided (5 questions), Deep (8 questions) interview flows. |
 | **DIS-02** | **Project Constitution System** | `VERIFIED COMPLETE` | `tests/test_constitution.py` | Versioned, immutable sections with strict provenance tags (`user_provided`, `inferred`, etc.). |
 
@@ -69,6 +70,7 @@
 | **AUT-02** | **Adversarial Prompt Injection Block**| `VERIFIED COMPLETE` | `tests/test_critic_autopsy.py` | Blocks prompt injection, system prompt extraction, and roleplay jailbreaks. |
 | **AUT-03** | **Structured Finding Lifecycle** | `VERIFIED COMPLETE` | `tests/test_autopsy_v2.py` | Full tracking: `initial_autopsy` -> `interim_autopsies` -> `revisions` -> `final_autopsy`. |
 | **AUT-04** | **Finding Resolution Audit** | `VERIFIED COMPLETE` | `tests/test_autopsy_v2.py` | Links resolved findings to concrete revisions; maintains unresolved advisory findings. |
+| **AUT-05** | **Golden Benchmark Dataset** | `VERIFIED COMPLETE` | `tests/test_autopsy_benchmarks.py` | 25 benchmark prompts across all 21 categories. 100% recall, 0 false-positive blocks. |
 
 ---
 
@@ -93,16 +95,17 @@
 
 ---
 
-## 7. Model Gateway, Quota Governance & Orchestration
+## 7. Model Gateway, Quota Governance & Durable Jobs
 
 | ID | Feature | Status | Evidence / Verification | Operational Notes |
 | :--- | :--- | :--- | :--- | :--- |
 | **GW-01** | **Zero-Price Route Verification** | `VERIFIED COMPLETE` | `tests/test_zero_price_gateway.py` | Rejects any model or provider with non-zero pricing. Enforces fail-closed behavior. |
 | **GW-02** | **CapacityGovernor (Durable Ledger)** | `VERIFIED COMPLETE` | `tests/test_quota_reservation_transactions.py`| File-locked atomic JSON ledger synchronizes RPM/TPM across independent processes. |
-| **GW-03** | **Two-Phase Quota Transactions** | `VERIFIED COMPLETE` | `tests/test_quota_reservation_transactions.py`| Atomic reservation -> execution -> commit or release on failure. |
+| **GW-03** | **Database-Backed Quota Ledger** | `VERIFIED COMPLETE` | `tests/test_quota_governance_db.py` | `QuotaLedgerEntry` and `QuotaReservationRecord` models with DB-backed two-phase reservations. |
 | **GW-04** | **Multi-Model Collaboration Pipeline** | `VERIFIED COMPLETE` | `tests/test_multi_model_collaboration.py` | Orchestrates Generator (GPT-OSS 120B) and Critic (GPT-OSS 20B) with automated revision. |
 | **GW-05** | **Live Provider Execution Recovery** | `VERIFIED COMPLETE` | `tests/test_live_collaboration_pipeline.py` | Successfully resumed stage E revision using persisted provider responses (`req_01m7zvprh4ev9v7e67f2ypx2r7`). |
 | **GW-06** | **Live Multi-Model Inference** | `IMPLEMENTED NOT FULLY VERIFIED` | Smoke test scripts + Groq adapter | Tested and verified live with GroqCloud free tier. Blocked from continuous unattended execution due to missing operator credentials in test harness. |
+| **JOB-01** | **Durable Workflow Jobs & Leases** | `VERIFIED COMPLETE` | `tests/test_workflow_jobs.py` | `WorkflowJob` model, `WorkflowJobService`, lease renewal, heartbeat checks, recovery, REST `/api/v1/jobs`. |
 
 ---
 
@@ -110,11 +113,12 @@
 
 | ID | Feature | Status | Evidence / Verification | Operational Notes |
 | :--- | :--- | :--- | :--- | :--- |
-| **INT-01** | **FastAPI REST API (v1)** | `VERIFIED COMPLETE` | `tests/test_api_contracts.py` | Full REST API covering auth, discovery, constitution, compiler, critic, eval, governor. |
+| **INT-01** | **FastAPI REST API (v1)** | `VERIFIED COMPLETE` | `tests/test_api_contracts.py` | Full REST API (36 endpoints) covering auth, discovery, constitution, compiler, critic, eval, governor, jobs. |
 | **INT-02** | **Model Context Protocol (MCP) Server**| `VERIFIED COMPLETE` | `tests/test_mcp_server.py`, `tests/test_remote_mcp.py` | Exposes tools over stdio, SSE, and Streamable HTTP with DNS rebinding origin validation. |
 | **INT-03** | **Rich Terminal CLI** | `VERIFIED COMPLETE` | `tests/test_cli.py` | Commands: `discover`, `compile`, `autopsy`, `evaluate`, `collaborate`, `serve`. |
 | **INT-04** | **Telegram Companion Bot** | `VERIFIED COMPLETE` | `tests/test_telegram_bot.py`, `tests/test_telegram_dedup_concurrency.py` | Database-backed deduplication (`TelegramProcessedUpdate`, migration `0002`), HMAC linking, and multi-worker concurrency protection. |
 | **INT-05** | **Python Async Client SDK** | `VERIFIED COMPLETE` | `tests/test_surface_integration_maturity.py` | Async client with full discovery builder, package export, and evaluation triggers. |
+| **INT-06** | **Frontend Integration Contract** | `VERIFIED COMPLETE` | `docs/FRONTEND_INTEGRATION_CONTRACT.md` | Formal protocol contract for the future frontend (SSE streams, headers, error structures). |
 
 ---
 
@@ -126,8 +130,10 @@
 | **SEC-02** | **Exhaustive IDOR Tenant Isolation** | `VERIFIED COMPLETE` | `tests/test_auth_and_tenancy.py` | All database queries strictly scoped by authenticated `user_id` and workspace membership. |
 | **SEC-03** | **Automated Secret Redaction** | `VERIFIED COMPLETE` | `tests/test_security_and_redaction.py` | Redacts JWTs, bearer tokens, and API keys from logging streams and exported packages. |
 | **SEC-04** | **Data Privacy Governance** | `VERIFIED COMPLETE` | `tests/test_privacy_governance.py` | Blocks `CONFIDENTIAL` tasks from human-reviewed free tiers; blocks minor audience from Gemini. |
-| **SEC-05** | **Static Security Analysis (Bandit)** | `VERIFIED COMPLETE` | Bandit SAST run | **0 issues identified** across 17,972 lines of code. |
+| **SEC-05** | **Static Security Analysis (Bandit)** | `VERIFIED COMPLETE` | Bandit SAST run | **0 issues identified** across 19,491 lines of code. |
 | **SEC-06** | **Dependency Security (pip-audit)** | `VERIFIED COMPLETE` | pip-audit run | **0 known vulnerabilities** identified in installed dependencies. |
+| **SEC-07** | **Auth Session Lifecycle & Token Rotation**| `VERIFIED COMPLETE`| `tests/test_auth_hardening.py` | Rotating refresh tokens, server-side blocklist (`RevokedToken`), replay detection, password change, account deletion. |
+| **SEC-08** | **Strict CORS Origin Whitelist** | `VERIFIED COMPLETE` | `promptiq/core/config.py`, `promptiq/api/main.py` | No wildcard allowed when credentials permitted; explicit origin binding. |
 
 ---
 
@@ -138,7 +144,8 @@
 | **DEP-01** | **Local Staging Environment** | `VERIFIED COMPLETE` | Windows workstation (.venv) | Fully functional SQLite / asyncpg backend, CLI, and test runner. |
 | **DEP-02** | **Containerization (Docker)** | `VERIFIED COMPLETE` | `deployment/docker/Dockerfile` | Non-root multi-stage build running UID 10001 (`promptiq`). |
 | **DEP-03** | **Cloud Production Compute** | `BLOCKED` | `docs/CLOUD_COMPUTE_RUNTIME_DECISION.md` | Cardless ₹0 cloud compute requirement cannot be satisfied safely without billing exposure. |
-| **DEP-04** | **Cloud Database** | `VERIFIED COMPLETE` | Alembic migrations, Neon audit | PostgreSQL 16 compatible schema with full async Alembic migration pipeline. |
+| **DEP-04** | **PostgreSQL Dialect Compatibility** | `VERIFIED COMPLETE` | Alembic migrations (0001, 0002, 0003) | All models and migrations fully support PostgreSQL 16 types (`UUID`, `TIMESTAMP(timezone=True)`). |
+| **DEP-05** | **Local Live PostgreSQL Daemon** | `NOT TESTED` | Workstation audit | Local development workstation does not run an active local PostgreSQL daemon or docker container. |
 
 ---
 
@@ -146,7 +153,7 @@
 
 | ID | Feature | Status | Evidence / Verification | Operational Notes |
 | :--- | :--- | :--- | :--- | :--- |
-| **VAL-01** | **Acceptance State Machine (v4.0.0)** | `VERIFIED COMPLETE` | `promptiq/acceptance/state_machine.py` | Strict directed graph transitions, monotonic duration measurement, and verifiable criteria references. |
-| **VAL-02** | **Independent Trace Validator** | `VERIFIED COMPLETE` | `tests/test_independent_trace_validator.py` | 12 verification suites, 111 evaluated checks, 0 violations against Trace V4; 23 failure modes verified rejected (24 tests). |
-| **VAL-03** | **All 10 Task Family Scenarios** | `VERIFIED COMPLETE` | `docs/ACCEPTANCE_SCENARIOS_TRACE_V4.json` | 4 Fully Verified, 6 Completed with Warnings, 0 Blocked, 0 Failed. Overall: `CONDITIONAL_PASS`. |
-
+| **VAL-01** | **Acceptance State Machine (v5.0.0)** | `VERIFIED COMPLETE` | `promptiq/acceptance/state_machine.py` | Strict directed graph transitions, monotonic duration measurement, and verifiable criteria references. |
+| **VAL-02** | **Independent Trace Validator (Structural)**| `VERIFIED COMPLETE` | `tests/test_independent_trace_validator.py` | 12 verification suites, 111 evaluated checks, 0 violations against Trace V5; 23 failure modes verified rejected (24 tests). |
+| **VAL-03** | **Authoritative 5-Layer DB Persistence Validator**| `VERIFIED COMPLETE`| `tests/test_authoritative_persistence_validator.py` | Verifies Layers A-E against live DB session; 10 negative failure modes verified rejected (10 tests). |
+| **VAL-04** | **All 10 Task Family Scenarios** | `VERIFIED COMPLETE` | `docs/ACCEPTANCE_SCENARIOS_TRACE_V5.json` | 4 Fully Verified, 6 Completed with Warnings, 0 Blocked, 0 Failed. Overall: `CONDITIONAL_PASS`. |

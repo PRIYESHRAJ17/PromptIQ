@@ -7,6 +7,7 @@ from promptiq.api.routes.critic import router as critic_router
 from promptiq.api.routes.discovery import router as discovery_router
 from promptiq.api.routes.eval import router as eval_router
 from promptiq.api.routes.governor import router as governor_router
+from promptiq.api.routes.jobs import router as jobs_router
 from promptiq.api.routes.memory import router as memory_router
 from promptiq.api.routes.projects import router as projects_router
 from promptiq.api.routes.registries import router as registries_router
@@ -26,6 +27,7 @@ __all__ = [
     "eval_router",
     "memory_router",
     "governor_router",
+    "jobs_router",
     "telegram_router",
     "mcp_router",
 ]

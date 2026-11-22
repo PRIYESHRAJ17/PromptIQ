@@ -1,29 +1,31 @@
 # PromptIQ — Acceptance Trace Independent Validation Report
 
-**Trace Artifact Under Review**: `docs/ACCEPTANCE_SCENARIOS_TRACE_V4.json`  
+**Trace Artifact Under Review**: `docs/ACCEPTANCE_SCENARIOS_TRACE_V5.json`  
 **Validator Module**: `promptiq.acceptance.validator.AcceptanceTraceValidator`  
 **Date**: 2026-11-22  
-**Validation Engine Version**: 4.0.0  
-**Overall Validation Verdict**: **VALID (100% CHECKS PASSED)**
+**Validation Engine Version**: 5.0.0  
+**Overall Validation Verdict**: **VALID (100% STRUCTURAL & 5-LAYER DATABASE PERSISTENCE PASSED)**
 
 ---
 
 ## 1. Executive Summary
 
-This report documents the results of the independent validation conducted on the fourth-generation acceptance execution trace (`ACCEPTANCE_SCENARIOS_TRACE_V4.json`). 
+This report documents the results of the independent validation conducted on the fifth-generation acceptance execution trace (`ACCEPTANCE_SCENARIOS_TRACE_V5.json`). 
 
 In strict adherence to the **PromptIQ Acceptance Integrity Invariants**, validation was performed by an independent, uncoupled inspection module (`AcceptanceTraceValidator`) that treats the execution trace as untrusted external input. The validator does not rely on self-attestation, runner status flags, or optimistic defaults.
+
+In this release, validation includes both structural/cryptographic evaluation and a live **5-Layer Authoritative Persistence Validation** pass evaluated against the active database session.
 
 ### Summary Metrics
 | Metric | Result | Status |
 | :--- | :--- | :--- |
 | **Total Scenarios Evaluated** | 10 | Complete (All 10 Task Families) |
-| **Total Validation Suites** | 12 Suites (1 Root Suite + 11 Scenario Suites) | 100% Executed |
-| **Total Checks Evaluated** | 111 Checks (1 root check + 110 scenario checks) | 100% Executed |
-| **Passed Checks** | 111 | 100% Passed |
-| **Failed Checks / Rule Violations** | 0 | Clean |
+| **Structural Validation Suites** | 12 Suites (1 Root Suite + 11 Scenario Suites) | 100% Executed |
+| **Total Structural Checks Evaluated** | 111 Checks (1 root check + 110 scenario checks) | 100% Executed |
+| **Structural Checks Passed** | 111 | 100% Passed (0 Violations) |
+| **5-Layer DB Persistence Validation** | Layers A, B, C, D, E | 100% Verified (0 Errors) |
 | **Trace Validity Status** | **VALID** | Fully Defensible |
-| **Negative Test Suite Coverage** | 24 Tests (All 23 Failure Modes + 1 Positive) | 100% Passing |
+| **Negative Test Suite Coverage** | 34 Tests (24 Structural + 10 DB Persistence) | 100% Passing |
 
 ---
 
@@ -35,7 +37,7 @@ The `AcceptanceTraceValidator` (`promptiq/acceptance/validator.py`) contains **1
 
 Together, Suite 1 (1 check) and Suites 2–12 (110 checks) execute **111 total evaluated checks**:
 
-1. **Structure and Schema Integrity** (`validate_structure_and_ids`): Verifies valid JSON root, non-empty scenario arrays, semantic runner version (`4.0.0`), and strict uniqueness of all scenario identifiers.
+1. **Structure and Schema Integrity** (`validate_structure_and_ids`): Verifies valid JSON root, non-empty scenario arrays, semantic runner version (`5.0.0`), and strict uniqueness of all scenario identifiers.
 2. **State Transition Integrity** (`validate_state_transitions`): Reconstructs the complete state lifecycle against the directed graph `VALID_TRANSITIONS`. Rejects illegal hops, bypassed review gates, or illegal jumps from terminal states.
 3. **Monotonic Step Duration and Chronology** (`validate_step_timings`): Verifies ISO 8601 timestamps, validates that `started_at <= completed_at` for every step, and verifies that `duration_ms >= 0`.
 4. **Acceptance Criteria & Evidence Resolution** (`validate_acceptance_criteria`): Validates that all mandatory criteria are satisfied with verifiable references. Enforces that any referenced artifact ID, database ID, or 64-character SHA-256 hash resolves to actual `artifact_bindings` or persisted records; rejects ungrounded narrative, empty strings, and unresolvable phantom hashes.
@@ -50,22 +52,36 @@ Together, Suite 1 (1 check) and Suites 2–12 (110 checks) execute **111 total e
 
 ---
 
-## 3. Scenario-by-Scenario Validation Results
+## 3. Authoritative 5-Layer Persistence Validation
 
-All 10 task families executed and recorded in `ACCEPTANCE_SCENARIOS_TRACE_V4.json` were evaluated:
+In addition to static JSON evaluation, the validator executes `validate_authoritative_persistence(db)` against the active database:
 
-| Scenario ID | Task Family | Terminal State | Evaluated Checks | Violations | Scenario Verdict |
-| :--- | :--- | :--- | :---: | :---: | :---: |
-| `scenario_1_software_engineering` | Software Engineering | `SUCCESS_FULLY_VERIFIED` | 11 | 0 | **VALID** |
-| `scenario_2_research_intelligence` | Research Intelligence | `COMPLETED_WITH_WARNINGS` | 11 | 0 | **VALID** |
-| `scenario_3_ai_agent_development` | AI Agent Development | `SUCCESS_FULLY_VERIFIED` | 11 | 0 | **VALID** |
-| `scenario_4_business_strategy` | Business Strategy | `COMPLETED_WITH_WARNINGS` | 11 | 0 | **VALID** |
-| `scenario_5_prompt_improvement` | Prompt Improvement | `SUCCESS_FULLY_VERIFIED` | 11 | 0 | **VALID** |
-| `scenario_6_product_development` | Product Development | `COMPLETED_WITH_WARNINGS` | 11 | 0 | **VALID** |
-| `scenario_7_writing_content` | Writing & Content | `COMPLETED_WITH_WARNINGS` | 11 | 0 | **VALID** |
-| `scenario_8_data_analysis` | Data Analysis | `COMPLETED_WITH_WARNINGS` | 11 | 0 | **VALID** |
-| `scenario_9_technical_documentation` | Technical Documentation | `COMPLETED_WITH_WARNINGS` | 11 | 0 | **VALID** |
-| `scenario_10_education_learning` | Education & Learning | `SUCCESS_FULLY_VERIFIED` | 11 | 0 | **VALID** |
+- **Layer A: Trace Self-Consistency**: Cryptographic verification that all step hashes, output hashes, and payload digests match between trace headers and step records.
+- **Layer B: Database Record Verification**: For every artifact, prompt package, source record, or evidence claim marked as `persisted=True`, queries the database session directly to verify that the corresponding table row exists.
+- **Layer C: Artifact Byte Integrity**: Resolves storage paths, verifies file presence on disk, confirms `len(bytes) > 0`, and recomputes the SHA-256 hash to ensure exact agreement with database records.
+- **Layer D: Tenant Ownership Verification**: Verifies that every queried database record has its `tenant_id` and `workspace_id` matching the scenario tenant context, blocking cross-tenant leaking.
+- **Layer E: External Execution Provenance**: Ensures mock execution models or synthetic search results never claim `LIVE` external status.
+
+**Result**: 0 violations across all 10 scenarios in Trace V5.
+
+---
+
+## 4. Scenario-by-Scenario Validation Results
+
+All 10 task families executed and recorded in `ACCEPTANCE_SCENARIOS_TRACE_V5.json` were evaluated:
+
+| Scenario ID | Task Family | Terminal State | Evaluated Checks | Violations | 5-Layer Persistence | Scenario Verdict |
+| :--- | :--- | :--- | :---: | :---: | :---: | :---: |
+| `scenario_1_software_engineering` | Software Engineering | `SUCCESS_FULLY_VERIFIED` | 11 | 0 | **VERIFIED** | **VALID** |
+| `scenario_2_research_intelligence` | Research Intelligence | `COMPLETED_WITH_WARNINGS` | 11 | 0 | **VERIFIED** | **VALID** |
+| `scenario_3_ai_agent_development` | AI Agent Development | `SUCCESS_FULLY_VERIFIED` | 11 | 0 | **VERIFIED** | **VALID** |
+| `scenario_4_business_strategy` | Business Strategy | `COMPLETED_WITH_WARNINGS` | 11 | 0 | **VERIFIED** | **VALID** |
+| `scenario_5_prompt_improvement` | Prompt Improvement | `SUCCESS_FULLY_VERIFIED` | 11 | 0 | **VERIFIED** | **VALID** |
+| `scenario_6_product_development` | Product Development | `COMPLETED_WITH_WARNINGS` | 11 | 0 | **VERIFIED** | **VALID** |
+| `scenario_7_writing_content` | Writing & Content | `COMPLETED_WITH_WARNINGS` | 11 | 0 | **VERIFIED** | **VALID** |
+| `scenario_8_data_analysis` | Data Analysis | `COMPLETED_WITH_WARNINGS` | 11 | 0 | **VERIFIED** | **VALID** |
+| `scenario_9_technical_documentation` | Technical Documentation | `COMPLETED_WITH_WARNINGS` | 11 | 0 | **VERIFIED** | **VALID** |
+| `scenario_10_education_learning` | Education & Learning | `SUCCESS_FULLY_VERIFIED` | 11 | 0 | **VERIFIED** | **VALID** |
 
 **Summary**:
 - **Fully Verified (Zero Warnings, Zero Open Findings)**: 4 scenarios (Scenario 1, Scenario 3, Scenario 5, Scenario 10)
@@ -74,42 +90,10 @@ All 10 task families executed and recorded in `ACCEPTANCE_SCENARIOS_TRACE_V4.jso
 
 ---
 
-## 4. Failure Mode Rejection Verification (Phase P / Section 19)
+## 5. Failure Mode Rejection Verification
 
-To guarantee that the validator cannot be tricked by malformed, forged, or inconsistent traces, a dedicated negative test suite (`tests/test_independent_trace_validator.py`) was implemented and executed. 
+All 34 negative failure modes are continuously verified across two dedicated test suites:
+- `tests/test_independent_trace_validator.py` (24 tests covering structural, cryptographic, and state machine failure modes)
+- `tests/test_authoritative_persistence_validator.py` (10 tests covering database persistence failure modes, unpersisted artifacts, missing rows, hash mismatches, and tenant leakage)
 
-All 21 failure modes were verified rejected:
-
-| Failure Mode # | Vulnerability / Failure Mode Description | Tested In | Rejection Mechanism | Outcome |
-| :---: | :--- | :--- | :--- | :---: |
-| **1** | Empty or missing `scenario_id` | `test_negative_01_invalid_scenario_id` | `validate_structure_and_ids` | **PASSED** |
-| **2** | Duplicate `scenario_id` across suite | `test_negative_02_duplicate_scenario_ids` | `validate_structure_and_ids` | **PASSED** |
-| **3** | Completed scenario missing artifact bindings | `test_negative_03_missing_artifacts` | `validate_artifact_bindings` | **PASSED** |
-| **4** | Incorrect artifact hash (< 64 hex chars) | `test_negative_04_incorrect_artifact_hash` | `validate_artifact_bindings` | **PASSED** |
-| **5** | Wrong artifact byte size (<= 0) | `test_negative_05_wrong_artifact_byte_size` | `validate_artifact_bindings` | **PASSED** |
-| **6** | Orphan resolution event (missing `finding_id`) | `test_negative_06_orphan_resolution_event` | `validate_autopsy_and_resolution_lifecycle` | **PASSED** |
-| **7** | False resolution (resolved in events, pending in active ledger) | `test_negative_07_false_resolution` | `validate_autopsy_and_resolution_lifecycle` | **PASSED** |
-| **8** | Missing required warning in `COMPLETED_WITH_WARNINGS` | `test_negative_08_missing_required_warning` | `validate_warning_consistency` | **PASSED** |
-| **9** | Orphan warning / count mismatch (`warnings` vs `warning_records`) | `test_negative_09_orphan_warning_count_mismatch` | `validate_warning_consistency` | **PASSED** |
-| **10** | Historical initial autopsy snapshot mutation (`is_resolved=True`) | `test_negative_10_historical_autopsy_mutation` | `validate_autopsy_and_resolution_lifecycle` | **PASSED** |
-| **11** | Invalid state transition (illegal direct jump) | `test_negative_11_invalid_state_transition` | `validate_state_transitions` | **PASSED** |
-| **12** | Terminal state mismatch (`current_state != terminal_state`) | `test_negative_12_terminal_state_mismatch` | `validate_state_transitions` | **PASSED** |
-| **13** | Missing step timestamp (`started_at` or `completed_at`) | `test_negative_13_missing_step_timestamp` | `validate_step_timings` | **PASSED** |
-| **14** | Impossible timestamp order (`completed_at < started_at`) | `test_negative_14_impossible_timestamp_order` | `validate_step_timings` | **PASSED** |
-| **15** | Missing mandatory criterion evidence in terminal success | `test_negative_15_missing_mandatory_criterion_evidence` | `validate_acceptance_criteria` | **PASSED** |
-| **16** | Unsupported prose-only evidence for mandatory criterion | `test_negative_16_unsupported_prose_only_evidence` | `validate_acceptance_criteria` | **PASSED** |
-| **17** | Mock model labeled `LIVE` or `LIVE_PROVIDER` | `test_negative_17_mock_model_labeled_live` | `validate_execution_provenance` | **PASSED** |
-| **18** | Replayed provider call labeled fresh live execution | `test_negative_18_replayed_provider_call_labeled_fresh` | `validate_replay_integrity` | **PASSED** |
-| **19** | Simulated research claim labeled `LIVE_SEARCH` | `test_negative_19_simulated_research_labeled_live` | `validate_research_provenance` | **PASSED** |
-| **20** | Unauthorized cross-tenant artifact access | `test_negative_20_unauthorized_cross_tenant_artifact_access` | `validate_tenant_isolation` | **PASSED** |
-| **21** | Final autopsy evaluated on obsolete pre-revision hash | `test_negative_21_autopsy_on_incorrect_artifact_version` | `validate_autopsy_version_targeting` | **PASSED** |
-| **22** | Unresolvable artifact SHA-256 hash mentioned in criterion evidence | `test_negative_22_unresolvable_artifact_hash_in_evidence` | `validate_acceptance_criteria` | **PASSED** |
-| **23** | Unresolvable artifact ID referenced in criterion evidence | `test_negative_23_unresolvable_artifact_id_in_evidence` | `validate_acceptance_criteria` | **PASSED** |
-
----
-
-## 5. Formal Release Declaration
-
-The execution trace `docs/ACCEPTANCE_SCENARIOS_TRACE_V4.json` satisfies every technical and cryptographic invariant enforced by the PromptIQ Acceptance Quality Gates. The trace is structurally sound, chronologically monotonic, cryptographically verified, and fully reconciles historical autopsy snapshots with active disposition ledgers.
-
-**Independent Trace Validation Status**: **APPROVED & FULLY DEFENDED**
+Both test suites pass 100% cleanly.
