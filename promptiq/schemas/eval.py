@@ -2,7 +2,7 @@
 
 from typing import Any, Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 EvaluationMethod = Literal[
     "deterministic",
@@ -52,13 +52,33 @@ class EvaluationRunResponse(BaseModel):
     results: list[dict[str, Any]]
     latency_ms: float | None = None
     cost_estimate: float = 0.0
-    execution_mode: str = "mock"
+    evaluation_method: str = "deterministic"
+    execution_mode: str = "MOCK"
     num_runs: int = 1
     mean_latency_ms: float | None = None
     latency_variance: float | None = None
     provenance: dict[str, Any] = Field(default_factory=dict)
 
     model_config = ConfigDict(from_attributes=True)
+
+    @model_validator(mode="after")
+    def validate_execution_provenance(self) -> "EvaluationRunResponse":
+        """Strictly enforces that mock models or mock routes can never be classified as live."""
+        mode_str = str(self.execution_mode).upper()
+        route_str = str(self.provenance.get("route", "")).lower()
+        prov_mode_str = str(self.provenance.get("mode", "")).upper()
+
+        is_mock_target = (
+            self.model_id in ("promptiq-mock-v1", "mock")
+            or route_str in ("mock", "synthetic")
+        )
+
+        if is_mock_target and (mode_str in ("LIVE", "LIVE_PROVIDER") or prov_mode_str in ("LIVE", "LIVE_PROVIDER")):
+            raise ValueError(
+                f"Contradictory execution mode: model '{self.model_id}' on route '{route_str}' "
+                "cannot be classified as LIVE_PROVIDER."
+            )
+        return self
 
 
 class ComparativeRunResponse(BaseModel):

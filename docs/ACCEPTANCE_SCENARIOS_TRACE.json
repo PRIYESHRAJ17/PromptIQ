@@ -1,9 +1,9 @@
 {
-  "runner_version": "2.1.0",
-  "execution_timestamp": "2026-11-21T23:38:16.490203Z",
-  "total_scenarios": 5,
-  "fully_verified_count": 3,
-  "completed_with_warnings_count": 2,
+  "runner_version": "3.0.0",
+  "execution_timestamp": "2026-11-22T00:16:44.283800Z",
+  "total_scenarios": 10,
+  "fully_verified_count": 4,
+  "completed_with_warnings_count": 6,
   "blocked_count": 0,
   "failed_count": 0,
   "overall_verdict": "CONDITIONAL_PASS",
@@ -22,10 +22,10 @@
         {
           "step_name": "create_project",
           "state": "STEP_EXECUTED",
-          "started_at": "2026-11-21T23:38:16.059900Z",
-          "completed_at": "2026-11-21T23:38:16.059902Z",
+          "started_at": "2026-11-22T00:16:43.604280Z",
+          "completed_at": "2026-11-22T00:16:43.604281Z",
           "details": {
-            "project_id": "2bea65ea-af5a-4856-9469-0d13cf9fcd30"
+            "project_id": "43aaf293-72b8-4d8b-9f6f-7983baedf0cf"
           },
           "validation_notes": [],
           "errors": []
@@ -33,10 +33,10 @@
         {
           "step_name": "discovery_intake_and_answers",
           "state": "STEP_EXECUTED",
-          "started_at": "2026-11-21T23:38:16.073276Z",
-          "completed_at": "2026-11-21T23:38:16.073277Z",
+          "started_at": "2026-11-22T00:16:43.616707Z",
+          "completed_at": "2026-11-22T00:16:43.616709Z",
           "details": {
-            "session_id": "8f8b8595-3c42-4bd6-a111-90d87d6c70ba",
+            "session_id": "3e357f65-fe18-4b36-89dd-663ae0ac6607",
             "missing_info": []
           },
           "validation_notes": [],
@@ -45,8 +45,8 @@
         {
           "step_name": "constitution_approval",
           "state": "STEP_EXECUTED",
-          "started_at": "2026-11-21T23:38:16.078505Z",
-          "completed_at": "2026-11-21T23:38:16.078506Z",
+          "started_at": "2026-11-22T00:16:43.622222Z",
+          "completed_at": "2026-11-22T00:16:43.622223Z",
           "details": {
             "version": 1,
             "matrix_count": 6
@@ -57,12 +57,12 @@
         {
           "step_name": "compile_package",
           "state": "STEP_EXECUTED",
-          "started_at": "2026-11-21T23:38:16.084546Z",
-          "completed_at": "2026-11-21T23:38:16.084547Z",
+          "started_at": "2026-11-22T00:16:43.627802Z",
+          "completed_at": "2026-11-22T00:16:43.627804Z",
           "details": {
-            "package_id": "a6350ffd-f940-4156-9b4e-d63cd572573c",
+            "package_id": "4f0a6740-c178-461c-8125-9763a8b8205a",
             "files_count": 7,
-            "content_hash": "fa64bfe182b90c23be991e0cf171f667372fe1d1d61e31746aba8c84c67dee57"
+            "content_hash": "b0aa7f61563742f2ce32860a5eb7b4e7dcdf62960d59f351b0eaa8f3f6998875"
           },
           "validation_notes": [],
           "errors": []
@@ -70,11 +70,12 @@
         {
           "step_name": "prompt_autopsy",
           "state": "STEP_EXECUTED",
-          "started_at": "2026-11-21T23:38:16.087833Z",
-          "completed_at": "2026-11-21T23:38:16.087834Z",
+          "started_at": "2026-11-22T00:16:43.630227Z",
+          "completed_at": "2026-11-22T00:16:43.630227Z",
           "details": {
             "verdict": "ready_with_caveats",
-            "findings_count": 1
+            "findings_count": 1,
+            "content_hash": "b0aa7f61563742f2ce32860a5eb7b4e7dcdf62960d59f351b0eaa8f3f6998875"
           },
           "validation_notes": [],
           "errors": []
@@ -82,11 +83,11 @@
         {
           "step_name": "package_revision",
           "state": "STEP_EXECUTED",
-          "started_at": "2026-11-21T23:38:16.087884Z",
-          "completed_at": "2026-11-21T23:38:16.087885Z",
+          "started_at": "2026-11-22T00:16:43.631044Z",
+          "completed_at": "2026-11-22T00:16:43.631045Z",
           "details": {
-            "revised_package_id": "revised-a6350ffd",
-            "revised_content_hash": "8e3d8ae7813720a0043a3f34b96b426744df23619d1961d8e9fbd94936dbddbd"
+            "revised_package_id": "b65d5b6f-f8bf-45b7-9160-d2824dbcb8b5",
+            "revised_content_hash": "267c8f213f1d080ec94e18d310cee55de44c051c3d299b03cf42e7579155305c"
           },
           "validation_notes": [],
           "errors": []
@@ -94,8 +95,8 @@
         {
           "step_name": "revision_verification",
           "state": "STEP_EXECUTED",
-          "started_at": "2026-11-21T23:38:16.088097Z",
-          "completed_at": "2026-11-21T23:38:16.088098Z",
+          "started_at": "2026-11-22T00:16:43.631296Z",
+          "completed_at": "2026-11-22T00:16:43.631296Z",
           "details": {
             "all_resolved": true,
             "blocks_release": false,
@@ -108,11 +109,12 @@
         {
           "step_name": "final_autopsy",
           "state": "STEP_EXECUTED",
-          "started_at": "2026-11-21T23:38:16.088469Z",
-          "completed_at": "2026-11-21T23:38:16.088469Z",
+          "started_at": "2026-11-22T00:16:43.631692Z",
+          "completed_at": "2026-11-22T00:16:43.631693Z",
           "details": {
             "verdict": "ready",
-            "findings_count": 0
+            "findings_count": 0,
+            "content_hash": "267c8f213f1d080ec94e18d310cee55de44c051c3d299b03cf42e7579155305c"
           },
           "validation_notes": [],
           "errors": []
@@ -120,11 +122,13 @@
         {
           "step_name": "eval_lab_run",
           "state": "STEP_EXECUTED",
-          "started_at": "2026-11-21T23:38:16.095399Z",
-          "completed_at": "2026-11-21T23:38:16.095401Z",
+          "started_at": "2026-11-22T00:16:43.638194Z",
+          "completed_at": "2026-11-22T00:16:43.638196Z",
           "details": {
-            "run_id": "ccacaec7-bf55-482c-a29a-cd27f5facd57",
-            "pass_rate": 100.0
+            "run_id": "4ad5b8c1-24cd-412c-90c6-5029e370968d",
+            "pass_rate": 100.0,
+            "execution_mode": "MOCK",
+            "evaluation_method": "deterministic"
           },
           "validation_notes": [],
           "errors": []
@@ -132,10 +136,10 @@
         {
           "step_name": "context_pack",
           "state": "STEP_EXECUTED",
-          "started_at": "2026-11-21T23:38:16.101731Z",
-          "completed_at": "2026-11-21T23:38:16.101734Z",
+          "started_at": "2026-11-22T00:16:43.644231Z",
+          "completed_at": "2026-11-22T00:16:43.644233Z",
           "details": {
-            "checkpoint_id": "55fdd4f9-f447-4cb4-8764-719cb1d401e0",
+            "checkpoint_id": "6a7e881f-786a-4e2a-bc8e-5f1b8b8f4f00",
             "estimated_tokens": 373
           },
           "validation_notes": [],
@@ -144,50 +148,50 @@
       ],
       "transitions": [
         {
-          "transition_id": "TRANS-5bb5f47a",
+          "transition_id": "TRANS-e39150e6",
           "from_state": "STEP_EXECUTED",
           "to_state": "STEP_VALIDATED",
-          "timestamp": "2026-11-21T23:38:16.059963Z",
+          "timestamp": "2026-11-22T00:16:43.604338Z",
           "reason": "Project created successfully",
           "step_context": "create_project"
         },
         {
-          "transition_id": "TRANS-189582ae",
+          "transition_id": "TRANS-b5ad5fb2",
           "from_state": "STEP_VALIDATED",
           "to_state": "NEEDS_REVISION",
-          "timestamp": "2026-11-21T23:38:16.087861Z",
+          "timestamp": "2026-11-22T00:16:43.630248Z",
           "reason": "Autopsy verdict is 'ready_with_caveats' with 1 findings",
           "step_context": "prompt_autopsy"
         },
         {
-          "transition_id": "TRANS-1987ef0c",
+          "transition_id": "TRANS-ab29c7dc",
           "from_state": "NEEDS_REVISION",
           "to_state": "REVISION_IN_PROGRESS",
-          "timestamp": "2026-11-21T23:38:16.087868Z",
+          "timestamp": "2026-11-22T00:16:43.630254Z",
           "reason": "Executing package revision to address autopsy findings",
           "step_context": "revision_start"
         },
         {
-          "transition_id": "TRANS-0deb9dba",
+          "transition_id": "TRANS-493cb4d2",
           "from_state": "REVISION_IN_PROGRESS",
           "to_state": "REVISION_VERIFIED",
-          "timestamp": "2026-11-21T23:38:16.088111Z",
+          "timestamp": "2026-11-22T00:16:43.631307Z",
           "reason": "All blocking autopsy findings resolved",
           "step_context": "revision_verify"
         },
         {
-          "transition_id": "TRANS-10e73c9e",
+          "transition_id": "TRANS-4e02ca68",
           "from_state": "REVISION_VERIFIED",
           "to_state": "STEP_VALIDATED",
-          "timestamp": "2026-11-21T23:38:16.101783Z",
+          "timestamp": "2026-11-22T00:16:43.644272Z",
           "reason": "All intermediate stages completed and validated",
           "step_context": "final_stage_validate"
         },
         {
-          "transition_id": "TRANS-e95e2238",
+          "transition_id": "TRANS-820e2e31",
           "from_state": "STEP_VALIDATED",
           "to_state": "SUCCESS_FULLY_VERIFIED",
-          "timestamp": "2026-11-21T23:38:16.101799Z",
+          "timestamp": "2026-11-22T00:16:43.644288Z",
           "reason": "All 13 acceptance criteria fully verified with 0 blockers",
           "step_context": null
         }
@@ -198,8 +202,8 @@
           "description": "Project created with isolated workspace and constitution v1",
           "is_mandatory": true,
           "satisfied": true,
-          "evidence": "Project 2bea65ea-af5a-4856-9469-0d13cf9fcd30 created in workspace c35b2457-10bf-43fe-b2c4-55c0bb90c6b0",
-          "evaluated_at": "2026-11-21T23:38:16.059942Z"
+          "evidence": "Project 43aaf293-72b8-4d8b-9f6f-7983baedf0cf created in workspace eb0357b5-95d0-48a2-9750-3fc3f34713bf",
+          "evaluated_at": "2026-11-22T00:16:43.604318Z"
         },
         {
           "id": "SC1-AC-2",
@@ -207,7 +211,7 @@
           "is_mandatory": true,
           "satisfied": true,
           "evidence": "All guided discovery questions answered with 0 missing high-impact fields",
-          "evaluated_at": "2026-11-21T23:38:16.073286Z"
+          "evaluated_at": "2026-11-22T00:16:43.616717Z"
         },
         {
           "id": "SC1-AC-3",
@@ -215,7 +219,7 @@
           "is_mandatory": true,
           "satisfied": true,
           "evidence": "Approved constitution v1 with 6 traceable requirements",
-          "evaluated_at": "2026-11-21T23:38:16.078516Z"
+          "evaluated_at": "2026-11-22T00:16:43.622234Z"
         },
         {
           "id": "SC1-AC-4",
@@ -223,15 +227,15 @@
           "is_mandatory": true,
           "satisfied": true,
           "evidence": "Recommended: google-antigravity",
-          "evaluated_at": "2026-11-21T23:38:16.078551Z"
+          "evaluated_at": "2026-11-22T00:16:43.622260Z"
         },
         {
           "id": "SC1-AC-5",
           "description": "Native package compiled containing all 7 required files",
           "is_mandatory": true,
           "satisfied": true,
-          "evidence": "Compiled package a6350ffd-f940-4156-9b4e-d63cd572573c with 7 files",
-          "evaluated_at": "2026-11-21T23:38:16.084556Z"
+          "evidence": "Compiled package 4f0a6740-c178-461c-8125-9763a8b8205a with 7 files",
+          "evaluated_at": "2026-11-22T00:16:43.627812Z"
         },
         {
           "id": "SC1-AC-6",
@@ -239,7 +243,7 @@
           "is_mandatory": true,
           "satisfied": true,
           "evidence": "Initial autopsy: verdict 'ready_with_caveats', 1 findings",
-          "evaluated_at": "2026-11-21T23:38:16.087843Z"
+          "evaluated_at": "2026-11-22T00:16:43.630234Z"
         },
         {
           "id": "SC1-AC-7",
@@ -247,7 +251,7 @@
           "is_mandatory": true,
           "satisfied": true,
           "evidence": "Package revised with explicit negative boundaries and error contracts",
-          "evaluated_at": "2026-11-21T23:38:16.087895Z"
+          "evaluated_at": "2026-11-22T00:16:43.631050Z"
         },
         {
           "id": "SC1-AC-8",
@@ -255,7 +259,7 @@
           "is_mandatory": true,
           "satisfied": true,
           "evidence": "Verified revision: 1 resolved, 0 blockers",
-          "evaluated_at": "2026-11-21T23:38:16.088103Z"
+          "evaluated_at": "2026-11-22T00:16:43.631300Z"
         },
         {
           "id": "SC1-AC-9",
@@ -263,7 +267,7 @@
           "is_mandatory": true,
           "satisfied": true,
           "evidence": "Final autopsy confirmed verdict 'ready'",
-          "evaluated_at": "2026-11-21T23:38:16.088473Z"
+          "evaluated_at": "2026-11-22T00:16:43.631696Z"
         },
         {
           "id": "SC1-AC-10",
@@ -271,7 +275,7 @@
           "is_mandatory": true,
           "satisfied": true,
           "evidence": "Test lab pass rate: 100.0%",
-          "evaluated_at": "2026-11-21T23:38:16.095420Z"
+          "evaluated_at": "2026-11-22T00:16:43.638211Z"
         },
         {
           "id": "SC1-AC-11",
@@ -279,7 +283,7 @@
           "is_mandatory": true,
           "satisfied": true,
           "evidence": "All package artifacts verified persisted in database with SHA-256 bindings",
-          "evaluated_at": "2026-11-21T23:38:16.095422Z"
+          "evaluated_at": "2026-11-22T00:16:43.638213Z"
         },
         {
           "id": "SC1-AC-12",
@@ -287,7 +291,7 @@
           "is_mandatory": true,
           "satisfied": true,
           "evidence": "Context pack generated: 373 tokens",
-          "evaluated_at": "2026-11-21T23:38:16.101746Z"
+          "evaluated_at": "2026-11-22T00:16:43.644242Z"
         },
         {
           "id": "SC1-AC-13",
@@ -295,32 +299,102 @@
           "is_mandatory": true,
           "satisfied": true,
           "evidence": "Verified strictly zero frontend HTML/React components in compiled package",
-          "evaluated_at": "2026-11-21T23:38:16.101763Z"
+          "evaluated_at": "2026-11-22T00:16:43.644257Z"
         }
       ],
       "artifact_bindings": [
         {
-          "artifact_id": "a6350ffd-f940-4156-9b4e-d63cd572573c",
+          "artifact_id": "4f0a6740-c178-461c-8125-9763a8b8205a",
           "artifact_type": "prompt_package",
-          "content_hash": "fa64bfe182b90c23be991e0cf171f667372fe1d1d61e31746aba8c84c67dee57",
+          "content_hash": "b0aa7f61563742f2ce32860a5eb7b4e7dcdf62960d59f351b0eaa8f3f6998875",
           "version": 1,
           "persisted": true,
           "retrievable": true,
           "byte_size": 2844
         },
         {
-          "artifact_id": "revised-a6350ffd",
+          "artifact_id": "b65d5b6f-f8bf-45b7-9160-d2824dbcb8b5",
           "artifact_type": "prompt_package",
-          "content_hash": "8e3d8ae7813720a0043a3f34b96b426744df23619d1961d8e9fbd94936dbddbd",
+          "content_hash": "267c8f213f1d080ec94e18d310cee55de44c051c3d299b03cf42e7579155305c",
           "version": 2,
           "persisted": true,
           "retrievable": true,
           "byte_size": 3235
         }
       ],
+      "initial_autopsy": {
+        "run_id": "AUT-306e35d7",
+        "phase": "initial",
+        "artifact_id": "4f0a6740-c178-461c-8125-9763a8b8205a",
+        "artifact_hash": "b0aa7f61563742f2ce32860a5eb7b4e7dcdf62960d59f351b0eaa8f3f6998875",
+        "verdict": "ready_with_caveats",
+        "findings_count": 1,
+        "findings": [
+          {
+            "id": "FINDING-527dc08e",
+            "category": "missing_error_handling",
+            "severity": "medium",
+            "finding": "No explicit error handling or stop condition specified.",
+            "evidence_passage": null,
+            "consequence": "Model may enter recursive loops or guess answers when blocked.",
+            "recommendation": "Specify clear stop conditions and error reporting contracts.",
+            "disposition": "pending",
+            "is_resolved": false,
+            "blocks_release": false,
+            "verification_method": "deterministic_check"
+          }
+        ],
+        "quality_scores": {
+          "static_quality": 100.0,
+          "requirement_coverage": 80.0,
+          "target_compatibility": 90.0,
+          "security_robustness": 95.0
+        },
+        "inspected_at": "2026-11-22T00:16:43.630220Z"
+      },
+      "revision_events": [
+        {
+          "revision_id": "REV-0859517f",
+          "previous_artifact_id": "4f0a6740-c178-461c-8125-9763a8b8205a",
+          "previous_artifact_hash": "b0aa7f61563742f2ce32860a5eb7b4e7dcdf62960d59f351b0eaa8f3f6998875",
+          "revised_artifact_id": "b65d5b6f-f8bf-45b7-9160-d2824dbcb8b5",
+          "revised_artifact_hash": "267c8f213f1d080ec94e18d310cee55de44c051c3d299b03cf42e7579155305c",
+          "timestamp": "2026-11-22T00:16:43.631038Z",
+          "changes_summary": "Package revised with explicit negative boundaries, typed errors, and deterministic assertions"
+        }
+      ],
+      "resolution_events": [
+        {
+          "resolution_id": "RES-30bc0269",
+          "finding_id": "FINDING-527dc08e",
+          "original_category": "missing_error_handling",
+          "original_severity": "medium",
+          "revised_artifact_hash": "267c8f213f1d080ec94e18d310cee55de44c051c3d299b03cf42e7579155305c",
+          "status": "resolved",
+          "resolution_evidence": "Error handling present",
+          "verification_reason": "Explicit error handling, failure modes, or stop conditions added.",
+          "verified_at": "2026-11-22T00:16:43.631284Z"
+        }
+      ],
+      "final_autopsy": {
+        "run_id": "AUT-05a7a2ce",
+        "phase": "final",
+        "artifact_id": "b65d5b6f-f8bf-45b7-9160-d2824dbcb8b5",
+        "artifact_hash": "267c8f213f1d080ec94e18d310cee55de44c051c3d299b03cf42e7579155305c",
+        "verdict": "ready",
+        "findings_count": 0,
+        "findings": [],
+        "quality_scores": {
+          "static_quality": 100.0,
+          "requirement_coverage": 90.0,
+          "target_compatibility": 90.0,
+          "security_robustness": 95.0
+        },
+        "inspected_at": "2026-11-22T00:16:43.631689Z"
+      },
       "autopsy_findings": [
         {
-          "id": "FINDING-0b00e13d",
+          "id": "FINDING-527dc08e",
           "category": "missing_error_handling",
           "severity": "medium",
           "finding": "No explicit error handling or stop condition specified.",
@@ -336,9 +410,9 @@
       "unresolved_findings": [],
       "evaluation_records": [
         {
-          "id": "ccacaec7-bf55-482c-a29a-cd27f5facd57",
-          "suite_id": "0d4c1975-6338-4475-9622-966a1a200404",
-          "package_id": "a6350ffd-f940-4156-9b4e-d63cd572573c",
+          "id": "4ad5b8c1-24cd-412c-90c6-5029e370968d",
+          "suite_id": "ff27b5da-1227-4285-810a-da411bd5ab51",
+          "package_id": "b65d5b6f-f8bf-45b7-9160-d2824dbcb8b5",
           "model_id": "promptiq-mock-v1",
           "pass_rate": 100.0,
           "total_cases": 2,
@@ -357,21 +431,23 @@
               "latency_ms": 0.0
             }
           ],
-          "latency_ms": 0.18,
+          "latency_ms": 0.17,
           "cost_estimate": 0.0,
-          "execution_mode": "live",
+          "evaluation_method": "deterministic",
+          "execution_mode": "MOCK",
           "num_runs": 2,
-          "mean_latency_ms": 0.18,
+          "mean_latency_ms": 0.17,
           "latency_variance": 0.0,
           "provenance": {
-            "suite_id": "0d4c1975-6338-4475-9622-966a1a200404",
-            "package_id": "a6350ffd-f940-4156-9b4e-d63cd572573c",
+            "suite_id": "ff27b5da-1227-4285-810a-da411bd5ab51",
+            "package_id": "b65d5b6f-f8bf-45b7-9160-d2824dbcb8b5",
             "model_id": "promptiq-mock-v1",
-            "mode": "live",
+            "mode": "MOCK",
             "route": "mock"
           }
         }
       ],
+      "warning_records": [],
       "warnings": [],
       "blocking_reasons": [],
       "execution_metadata": {}
@@ -390,10 +466,10 @@
         {
           "step_name": "create_project",
           "state": "STEP_EXECUTED",
-          "started_at": "2026-11-21T23:38:16.104642Z",
-          "completed_at": "2026-11-21T23:38:16.104644Z",
+          "started_at": "2026-11-22T00:16:43.647051Z",
+          "completed_at": "2026-11-22T00:16:43.647052Z",
           "details": {
-            "project_id": "62b1ac14-f8af-4f8a-a247-1551cf697fef"
+            "project_id": "328a5be6-2450-41b8-956a-795954b109da"
           },
           "validation_notes": [],
           "errors": []
@@ -401,10 +477,10 @@
         {
           "step_name": "execute_research",
           "state": "STEP_EXECUTED",
-          "started_at": "2026-11-21T23:38:16.438704Z",
-          "completed_at": "2026-11-21T23:38:16.438706Z",
+          "started_at": "2026-11-22T00:16:44.053668Z",
+          "completed_at": "2026-11-22T00:16:44.053670Z",
           "details": {
-            "job_id": "0bd8c696-3018-4b27-92b7-7153e5915655",
+            "job_id": "39fc1fc5-aef7-4f8d-b541-1ad4705f6df7",
             "sources_count": 2,
             "claims_count": 2
           },
@@ -414,8 +490,8 @@
         {
           "step_name": "constitution_evidence_sync",
           "state": "STEP_EXECUTED",
-          "started_at": "2026-11-21T23:38:16.445262Z",
-          "completed_at": "2026-11-21T23:38:16.445264Z",
+          "started_at": "2026-11-22T00:16:44.059216Z",
+          "completed_at": "2026-11-22T00:16:44.059218Z",
           "details": {
             "version": 2,
             "reqs_count": 2
@@ -426,10 +502,10 @@
         {
           "step_name": "research_checkpoint",
           "state": "STEP_EXECUTED",
-          "started_at": "2026-11-21T23:38:16.447404Z",
-          "completed_at": "2026-11-21T23:38:16.447405Z",
+          "started_at": "2026-11-22T00:16:44.061329Z",
+          "completed_at": "2026-11-22T00:16:44.061331Z",
           "details": {
-            "checkpoint_id": "4fc4ebb9-10be-4204-a7ea-6de45e4d24eb"
+            "checkpoint_id": "572c48d8-dc35-48b7-99ae-573feabec152"
           },
           "validation_notes": [],
           "errors": []
@@ -437,26 +513,26 @@
       ],
       "transitions": [
         {
-          "transition_id": "TRANS-8fa2f2f1",
+          "transition_id": "TRANS-8edb2f9c",
           "from_state": "STEP_EXECUTED",
           "to_state": "STEP_VALIDATED",
-          "timestamp": "2026-11-21T23:38:16.104663Z",
+          "timestamp": "2026-11-22T00:16:43.647070Z",
           "reason": "Project created for research",
           "step_context": "create_project"
         },
         {
-          "transition_id": "TRANS-96e271f7",
+          "transition_id": "TRANS-87e9ca28",
           "from_state": "STEP_VALIDATED",
           "to_state": "STEP_VALIDATED",
-          "timestamp": "2026-11-21T23:38:16.447437Z",
+          "timestamp": "2026-11-22T00:16:44.061358Z",
           "reason": "Research intelligence pipeline executed and validated",
           "step_context": "research_complete"
         },
         {
-          "transition_id": "TRANS-0a908953",
+          "transition_id": "TRANS-31a0ecbe",
           "from_state": "STEP_VALIDATED",
           "to_state": "COMPLETED_WITH_WARNINGS",
-          "timestamp": "2026-11-21T23:38:16.447449Z",
+          "timestamp": "2026-11-22T00:16:44.061368Z",
           "reason": "Completed with warnings: Simulated sources used in offline environment",
           "step_context": null
         }
@@ -468,7 +544,7 @@
           "is_mandatory": true,
           "satisfied": true,
           "evidence": "Query decomposed into 3 subquestions",
-          "evaluated_at": "2026-11-21T23:38:16.438721Z"
+          "evaluated_at": "2026-11-22T00:16:44.053679Z"
         },
         {
           "id": "SC2-AC-2",
@@ -476,7 +552,7 @@
           "is_mandatory": true,
           "satisfied": true,
           "evidence": "Search executed: 2 unique sources retrieved after deduplication",
-          "evaluated_at": "2026-11-21T23:38:16.438724Z"
+          "evaluated_at": "2026-11-22T00:16:44.053681Z"
         },
         {
           "id": "SC2-AC-3",
@@ -484,7 +560,7 @@
           "is_mandatory": true,
           "satisfied": true,
           "evidence": "Classified 2 sources. Simulated fallback: True",
-          "evaluated_at": "2026-11-21T23:38:16.438746Z"
+          "evaluated_at": "2026-11-22T00:16:44.053704Z"
         },
         {
           "id": "SC2-AC-4",
@@ -492,7 +568,7 @@
           "is_mandatory": true,
           "satisfied": true,
           "evidence": "Extracted 2 claims with persistent IDs and SHA-256 fingerprints",
-          "evaluated_at": "2026-11-21T23:38:16.438755Z"
+          "evaluated_at": "2026-11-22T00:16:44.053714Z"
         },
         {
           "id": "SC2-AC-5",
@@ -500,7 +576,7 @@
           "is_mandatory": true,
           "satisfied": true,
           "evidence": "Contradiction check completed: 0 conflicting signals preserved in Evidence Ledger",
-          "evaluated_at": "2026-11-21T23:38:16.438760Z"
+          "evaluated_at": "2026-11-22T00:16:44.053717Z"
         },
         {
           "id": "SC2-AC-6",
@@ -508,7 +584,7 @@
           "is_mandatory": true,
           "satisfied": true,
           "evidence": "All claims verified grounded with non-empty supporting source excerpts",
-          "evaluated_at": "2026-11-21T23:38:16.438763Z"
+          "evaluated_at": "2026-11-22T00:16:44.053720Z"
         },
         {
           "id": "SC2-AC-7",
@@ -516,20 +592,20 @@
           "is_mandatory": true,
           "satisfied": true,
           "evidence": "Constitution v2 updated with 2 research-backed requirements",
-          "evaluated_at": "2026-11-21T23:38:16.445277Z"
+          "evaluated_at": "2026-11-22T00:16:44.059231Z"
         },
         {
           "id": "SC2-AC-8",
           "description": "Evidence Ledger persisted with audit trail and milestone checkpoint",
           "is_mandatory": true,
           "satisfied": true,
-          "evidence": "Milestone checkpoint 4fc4ebb9-10be-4204-a7ea-6de45e4d24eb created for research deliverable",
-          "evaluated_at": "2026-11-21T23:38:16.447419Z"
+          "evidence": "Milestone checkpoint 572c48d8-dc35-48b7-99ae-573feabec152 created for research deliverable",
+          "evaluated_at": "2026-11-22T00:16:44.061344Z"
         }
       ],
       "artifact_bindings": [
         {
-          "artifact_id": "ffeabcab-9e11-4e75-9a9e-a3d67f5a9352",
+          "artifact_id": "3c0e7a7c-22b3-4890-bdc0-39a0a0590989",
           "artifact_type": "research_source",
           "content_hash": "290d1bef18df9592d91ce04d5665d3dc570cde4d5e8fa515a5c7e3395b326a47",
           "version": 1,
@@ -538,7 +614,7 @@
           "byte_size": 41
         },
         {
-          "artifact_id": "92465970-48bd-47f6-a39a-806395ff7e00",
+          "artifact_id": "b11d7807-5f1f-44fa-bb89-91db4a3b4ffc",
           "artifact_type": "research_source",
           "content_hash": "b34aa28120ac192b2628696e6e92f0f5d376813736dbf8d41cb68d7e386e8470",
           "version": 1,
@@ -547,7 +623,7 @@
           "byte_size": 42
         },
         {
-          "artifact_id": "4fc254dd-161b-43e6-a295-41b84925affe",
+          "artifact_id": "a7d79fa4-360e-42aa-a91a-9d1a5e53ad92",
           "artifact_type": "evidence_claim",
           "content_hash": "04b529767b8abbb91f2fbe98500e71a620e45a7692547b98ad8745cd82fcd3c9",
           "version": 1,
@@ -556,7 +632,7 @@
           "byte_size": 237
         },
         {
-          "artifact_id": "14e493d0-536c-4ca0-a006-e093c11471ca",
+          "artifact_id": "5a57a7bf-acbe-4cf0-84fc-1d4d83bddc11",
           "artifact_type": "evidence_claim",
           "content_hash": "85a6bf67843be71c914654d3343815398cb01226e7a40d7d71f07b5e33900ec8",
           "version": 1,
@@ -565,9 +641,14 @@
           "byte_size": 236
         }
       ],
+      "initial_autopsy": null,
+      "revision_events": [],
+      "resolution_events": [],
+      "final_autopsy": null,
       "autopsy_findings": [],
       "unresolved_findings": [],
       "evaluation_records": [],
+      "warning_records": [],
       "warnings": [
         "Research sources retrieved via simulated knowledge base (offline environment; live network endpoint not reached)."
       ],
@@ -588,10 +669,10 @@
         {
           "step_name": "create_project",
           "state": "STEP_EXECUTED",
-          "started_at": "2026-11-21T23:38:16.450115Z",
-          "completed_at": "2026-11-21T23:38:16.450116Z",
+          "started_at": "2026-11-22T00:16:44.064352Z",
+          "completed_at": "2026-11-22T00:16:44.064353Z",
           "details": {
-            "project_id": "ff548f0e-c015-437c-9d52-aa867de15b09"
+            "project_id": "810cd40b-f12f-4fdf-8cf0-0ff6b99844e7"
           },
           "validation_notes": [],
           "errors": []
@@ -599,10 +680,10 @@
         {
           "step_name": "agent_discovery",
           "state": "STEP_EXECUTED",
-          "started_at": "2026-11-21T23:38:16.457347Z",
-          "completed_at": "2026-11-21T23:38:16.457348Z",
+          "started_at": "2026-11-22T00:16:44.072196Z",
+          "completed_at": "2026-11-22T00:16:44.072197Z",
           "details": {
-            "session_id": "842ca109-2380-456b-8ff1-c23157eee493"
+            "session_id": "9e56b653-d5dd-409a-b667-d7a20fe2b7c1"
           },
           "validation_notes": [],
           "errors": []
@@ -610,10 +691,10 @@
         {
           "step_name": "agent_package_compilation",
           "state": "STEP_EXECUTED",
-          "started_at": "2026-11-21T23:38:16.464540Z",
-          "completed_at": "2026-11-21T23:38:16.464542Z",
+          "started_at": "2026-11-22T00:16:44.079774Z",
+          "completed_at": "2026-11-22T00:16:44.079776Z",
           "details": {
-            "package_id": "f0f33ac9-2233-4f44-a2e5-fdf3e15c20b9",
+            "package_id": "b61cb8c7-cf69-4242-bf51-c8fb1b516e33",
             "files": [
               "CLAUDE.md",
               ".claude/settings.json",
@@ -628,8 +709,8 @@
         {
           "step_name": "agent_autopsy",
           "state": "STEP_EXECUTED",
-          "started_at": "2026-11-21T23:38:16.466263Z",
-          "completed_at": "2026-11-21T23:38:16.466264Z",
+          "started_at": "2026-11-22T00:16:44.082675Z",
+          "completed_at": "2026-11-22T00:16:44.082676Z",
           "details": {
             "verdict": "ready",
             "findings_count": 0
@@ -640,26 +721,26 @@
       ],
       "transitions": [
         {
-          "transition_id": "TRANS-f828c531",
+          "transition_id": "TRANS-4a35a4fe",
           "from_state": "STEP_EXECUTED",
           "to_state": "STEP_VALIDATED",
-          "timestamp": "2026-11-21T23:38:16.450130Z",
+          "timestamp": "2026-11-22T00:16:44.064372Z",
           "reason": "Project created for agent creation",
           "step_context": "create_project"
         },
         {
-          "transition_id": "TRANS-60fc8a4f",
+          "transition_id": "TRANS-5e20b656",
           "from_state": "STEP_VALIDATED",
           "to_state": "STEP_VALIDATED",
-          "timestamp": "2026-11-21T23:38:16.466296Z",
+          "timestamp": "2026-11-22T00:16:44.082706Z",
           "reason": "Agent development scenario completed and validated",
           "step_context": "agent_complete"
         },
         {
-          "transition_id": "TRANS-3de9a42c",
+          "transition_id": "TRANS-804ae41f",
           "from_state": "STEP_VALIDATED",
           "to_state": "SUCCESS_FULLY_VERIFIED",
-          "timestamp": "2026-11-21T23:38:16.466311Z",
+          "timestamp": "2026-11-22T00:16:44.082717Z",
           "reason": "Agent development package fully verified with 0 blockers",
           "step_context": null
         }
@@ -671,7 +752,7 @@
           "is_mandatory": true,
           "satisfied": true,
           "evidence": "Agent role and negative boundary directives established in discovery",
-          "evaluated_at": "2026-11-21T23:38:16.457355Z"
+          "evaluated_at": "2026-11-22T00:16:44.072205Z"
         },
         {
           "id": "SC3-AC-2",
@@ -679,7 +760,7 @@
           "is_mandatory": true,
           "satisfied": true,
           "evidence": "Tool permissions constrained: read-only access with prohibited mutations",
-          "evaluated_at": "2026-11-21T23:38:16.457357Z"
+          "evaluated_at": "2026-11-22T00:16:44.072206Z"
         },
         {
           "id": "SC3-AC-3",
@@ -687,7 +768,7 @@
           "is_mandatory": true,
           "satisfied": true,
           "evidence": "Human escalation stop condition defined for critical vulnerabilities",
-          "evaluated_at": "2026-11-21T23:38:16.457358Z"
+          "evaluated_at": "2026-11-22T00:16:44.072208Z"
         },
         {
           "id": "SC3-AC-4",
@@ -695,7 +776,7 @@
           "is_mandatory": true,
           "satisfied": true,
           "evidence": "Compiled Claude Code package with files: ['CLAUDE.md', '.claude/settings.json', '.claude/rules/architecture.md', 'README.md']",
-          "evaluated_at": "2026-11-21T23:38:16.464552Z"
+          "evaluated_at": "2026-11-22T00:16:44.079786Z"
         },
         {
           "id": "SC3-AC-5",
@@ -703,7 +784,7 @@
           "is_mandatory": true,
           "satisfied": true,
           "evidence": "Diagnosed agent package: verdict 'ready', 0 findings",
-          "evaluated_at": "2026-11-21T23:38:16.466270Z"
+          "evaluated_at": "2026-11-22T00:16:44.082683Z"
         },
         {
           "id": "SC3-AC-6",
@@ -711,7 +792,7 @@
           "is_mandatory": true,
           "satisfied": true,
           "evidence": "Initial compiled package verified clean with zero excessive agency findings; revision not required.",
-          "evaluated_at": "2026-11-21T23:38:16.466273Z"
+          "evaluated_at": "2026-11-22T00:16:44.082686Z"
         },
         {
           "id": "SC3-AC-7",
@@ -719,7 +800,7 @@
           "is_mandatory": true,
           "satisfied": true,
           "evidence": "Confirmed zero prohibited tool permissions (write, delete, shell) present in compiled package.",
-          "evaluated_at": "2026-11-21T23:38:16.466275Z"
+          "evaluated_at": "2026-11-22T00:16:44.082687Z"
         },
         {
           "id": "SC3-AC-8",
@@ -727,7 +808,7 @@
           "is_mandatory": true,
           "satisfied": true,
           "evidence": "Autopsy verified initial package ready: verdict 'ready'",
-          "evaluated_at": "2026-11-21T23:38:16.466276Z"
+          "evaluated_at": "2026-11-22T00:16:44.082690Z"
         },
         {
           "id": "SC3-AC-9",
@@ -735,12 +816,12 @@
           "is_mandatory": true,
           "satisfied": true,
           "evidence": "All agent instructions bound with SHA-256 and persisted in DB",
-          "evaluated_at": "2026-11-21T23:38:16.466277Z"
+          "evaluated_at": "2026-11-22T00:16:44.082692Z"
         }
       ],
       "artifact_bindings": [
         {
-          "artifact_id": "f0f33ac9-2233-4f44-a2e5-fdf3e15c20b9",
+          "artifact_id": "b61cb8c7-cf69-4242-bf51-c8fb1b516e33",
           "artifact_type": "agent_package",
           "content_hash": "d1c6dd37aafce9af76aba330fc885786091163eae9ab764e9c915da611416174",
           "version": 1,
@@ -749,9 +830,14 @@
           "byte_size": 1075
         }
       ],
+      "initial_autopsy": null,
+      "revision_events": [],
+      "resolution_events": [],
+      "final_autopsy": null,
       "autopsy_findings": [],
       "unresolved_findings": [],
       "evaluation_records": [],
+      "warning_records": [],
       "warnings": [],
       "blocking_reasons": [],
       "execution_metadata": {}
@@ -770,10 +856,10 @@
         {
           "step_name": "create_project",
           "state": "STEP_EXECUTED",
-          "started_at": "2026-11-21T23:38:16.469118Z",
-          "completed_at": "2026-11-21T23:38:16.469119Z",
+          "started_at": "2026-11-22T00:16:44.085909Z",
+          "completed_at": "2026-11-22T00:16:44.085911Z",
           "details": {
-            "project_id": "ce024d7c-746a-4328-98ca-1487480efef8"
+            "project_id": "4fbc0a9b-8d49-4be8-88fb-d9568bd0df52"
           },
           "validation_notes": [],
           "errors": []
@@ -781,10 +867,10 @@
         {
           "step_name": "business_discovery",
           "state": "STEP_EXECUTED",
-          "started_at": "2026-11-21T23:38:16.476380Z",
-          "completed_at": "2026-11-21T23:38:16.476381Z",
+          "started_at": "2026-11-22T00:16:44.099888Z",
+          "completed_at": "2026-11-22T00:16:44.099891Z",
           "details": {
-            "session_id": "17109695-289f-4c74-8618-3dcd470f3afc"
+            "session_id": "afaa97ab-708c-4544-be90-d81e0520e007"
           },
           "validation_notes": [],
           "errors": []
@@ -792,10 +878,10 @@
         {
           "step_name": "compile_strategy_prompt",
           "state": "STEP_EXECUTED",
-          "started_at": "2026-11-21T23:38:16.489243Z",
-          "completed_at": "2026-11-21T23:38:16.489244Z",
+          "started_at": "2026-11-22T00:16:44.119292Z",
+          "completed_at": "2026-11-22T00:16:44.119299Z",
           "details": {
-            "package_id": "084b8217-b412-470f-8723-aa01e8d7c9b5",
+            "package_id": "f5cdbc40-1378-4d68-b054-114a1ec0f41f",
             "content_hash": "c77a7f83c983076d7325f4531a86a74be6c1cf1cf80a1008155b0da7028d3a16"
           },
           "validation_notes": [],
@@ -804,11 +890,12 @@
         {
           "step_name": "business_autopsy",
           "state": "STEP_EXECUTED",
-          "started_at": "2026-11-21T23:38:16.489461Z",
-          "completed_at": "2026-11-21T23:38:16.489462Z",
+          "started_at": "2026-11-22T00:16:44.119878Z",
+          "completed_at": "2026-11-22T00:16:44.119879Z",
           "details": {
             "verdict": "ready_with_caveats",
-            "findings_count": 1
+            "findings_count": 1,
+            "content_hash": "c77a7f83c983076d7325f4531a86a74be6c1cf1cf80a1008155b0da7028d3a16"
           },
           "validation_notes": [],
           "errors": []
@@ -816,8 +903,8 @@
         {
           "step_name": "strategy_revision_verified",
           "state": "STEP_EXECUTED",
-          "started_at": "2026-11-21T23:38:16.489609Z",
-          "completed_at": "2026-11-21T23:38:16.489609Z",
+          "started_at": "2026-11-22T00:16:44.120165Z",
+          "completed_at": "2026-11-22T00:16:44.120165Z",
           "details": {
             "all_resolved": false,
             "blocks_release": false
@@ -828,50 +915,50 @@
       ],
       "transitions": [
         {
-          "transition_id": "TRANS-cbadc6ac",
+          "transition_id": "TRANS-647c6f3a",
           "from_state": "STEP_EXECUTED",
           "to_state": "STEP_VALIDATED",
-          "timestamp": "2026-11-21T23:38:16.469137Z",
+          "timestamp": "2026-11-22T00:16:44.085929Z",
           "reason": "Project created for business strategy",
           "step_context": "create_project"
         },
         {
-          "transition_id": "TRANS-87fefc7d",
+          "transition_id": "TRANS-2b5e65db",
           "from_state": "STEP_VALIDATED",
           "to_state": "NEEDS_REVISION",
-          "timestamp": "2026-11-21T23:38:16.489484Z",
+          "timestamp": "2026-11-22T00:16:44.119908Z",
           "reason": "Strategy prompt requires refinement to add risk contracts",
           "step_context": "business_autopsy"
         },
         {
-          "transition_id": "TRANS-f519acf6",
+          "transition_id": "TRANS-cfa93f97",
           "from_state": "NEEDS_REVISION",
           "to_state": "REVISION_IN_PROGRESS",
-          "timestamp": "2026-11-21T23:38:16.489490Z",
+          "timestamp": "2026-11-22T00:16:44.119917Z",
           "reason": "Refining strategy prompt with bounded risk contracts",
           "step_context": "business_revision"
         },
         {
-          "transition_id": "TRANS-a32f44f0",
+          "transition_id": "TRANS-441b11e8",
           "from_state": "REVISION_IN_PROGRESS",
           "to_state": "REVISION_VERIFIED",
-          "timestamp": "2026-11-21T23:38:16.489623Z",
+          "timestamp": "2026-11-22T00:16:44.120183Z",
           "reason": "Strategy prompt revision verified",
           "step_context": "business_revision_verify"
         },
         {
-          "transition_id": "TRANS-c7bca977",
+          "transition_id": "TRANS-d28e586d",
           "from_state": "REVISION_VERIFIED",
           "to_state": "STEP_VALIDATED",
-          "timestamp": "2026-11-21T23:38:16.489629Z",
+          "timestamp": "2026-11-22T00:16:44.120626Z",
           "reason": "Business strategy pipeline validated",
           "step_context": "business_complete"
         },
         {
-          "transition_id": "TRANS-916511c9",
+          "transition_id": "TRANS-bc4065b1",
           "from_state": "STEP_VALIDATED",
           "to_state": "COMPLETED_WITH_WARNINGS",
-          "timestamp": "2026-11-21T23:38:16.489635Z",
+          "timestamp": "2026-11-22T00:16:44.120640Z",
           "reason": "Completed with non-blocking advisory findings",
           "step_context": null
         }
@@ -883,7 +970,7 @@
           "is_mandatory": true,
           "satisfied": true,
           "evidence": "Target customer: Independent software engineers; Model: 100% free open-source",
-          "evaluated_at": "2026-11-21T23:38:16.476387Z"
+          "evaluated_at": "2026-11-22T00:16:44.099899Z"
         },
         {
           "id": "SC4-AC-2",
@@ -891,7 +978,7 @@
           "is_mandatory": true,
           "satisfied": true,
           "evidence": "Key assumptions: Developers prefer hosted zero-price models without local GPU requirements",
-          "evaluated_at": "2026-11-21T23:38:16.476389Z"
+          "evaluated_at": "2026-11-22T00:16:44.099900Z"
         },
         {
           "id": "SC4-AC-3",
@@ -899,7 +986,7 @@
           "is_mandatory": true,
           "satisfied": true,
           "evidence": "Strict provenance tags applied: user_provided and inferred correctly separated",
-          "evaluated_at": "2026-11-21T23:38:16.482458Z"
+          "evaluated_at": "2026-11-22T00:16:44.107290Z"
         },
         {
           "id": "SC4-AC-4",
@@ -907,7 +994,7 @@
           "is_mandatory": true,
           "satisfied": true,
           "evidence": "Measurable KPIs (GitHub stars, active CLI installs) and decision criteria established",
-          "evaluated_at": "2026-11-21T23:38:16.482461Z"
+          "evaluated_at": "2026-11-22T00:16:44.107294Z"
         },
         {
           "id": "SC4-AC-5",
@@ -915,7 +1002,7 @@
           "is_mandatory": true,
           "satisfied": true,
           "evidence": "Compiled raw strategy prompt (796 chars)",
-          "evaluated_at": "2026-11-21T23:38:16.489253Z"
+          "evaluated_at": "2026-11-22T00:16:44.119330Z"
         },
         {
           "id": "SC4-AC-6",
@@ -923,7 +1010,7 @@
           "is_mandatory": true,
           "satisfied": true,
           "evidence": "Prompt autopsy completed with verdict 'ready_with_caveats'",
-          "evaluated_at": "2026-11-21T23:38:16.489470Z"
+          "evaluated_at": "2026-11-22T00:16:44.119888Z"
         },
         {
           "id": "SC4-AC-7",
@@ -931,7 +1018,7 @@
           "is_mandatory": true,
           "satisfied": true,
           "evidence": "Strategy prompt verified: risk mitigation rules, bounded outputs, and zero fabricated data",
-          "evaluated_at": "2026-11-21T23:38:16.489617Z"
+          "evaluated_at": "2026-11-22T00:16:44.120174Z"
         },
         {
           "id": "SC4-AC-8",
@@ -939,12 +1026,12 @@
           "is_mandatory": true,
           "satisfied": true,
           "evidence": "Final deliverable persisted with SHA-256 hash 1c0ea2c33274",
-          "evaluated_at": "2026-11-21T23:38:16.489625Z"
+          "evaluated_at": "2026-11-22T00:16:44.120614Z"
         }
       ],
       "artifact_bindings": [
         {
-          "artifact_id": "084b8217-b412-470f-8723-aa01e8d7c9b5",
+          "artifact_id": "f5cdbc40-1378-4d68-b054-114a1ec0f41f",
           "artifact_type": "strategy_prompt",
           "content_hash": "c77a7f83c983076d7325f4531a86a74be6c1cf1cf80a1008155b0da7028d3a16",
           "version": 1,
@@ -953,7 +1040,7 @@
           "byte_size": 796
         },
         {
-          "artifact_id": "revised-084b8217",
+          "artifact_id": "revised-f5cdbc40",
           "artifact_type": "strategy_prompt",
           "content_hash": "1c0ea2c332746efd84eb1e3993a70c5a815122b463db36ae2021658f9e5f369a",
           "version": 2,
@@ -962,9 +1049,93 @@
           "byte_size": 1178
         }
       ],
+      "initial_autopsy": {
+        "run_id": "AUT-c308ccf9",
+        "phase": "initial",
+        "artifact_id": "f5cdbc40-1378-4d68-b054-114a1ec0f41f",
+        "artifact_hash": "c77a7f83c983076d7325f4531a86a74be6c1cf1cf80a1008155b0da7028d3a16",
+        "verdict": "ready_with_caveats",
+        "findings_count": 1,
+        "findings": [
+          {
+            "id": "FINDING-84ddeb09",
+            "category": "missing_error_handling",
+            "severity": "medium",
+            "finding": "No explicit error handling or stop condition specified.",
+            "evidence_passage": null,
+            "consequence": "Model may enter recursive loops or guess answers when blocked.",
+            "recommendation": "Specify clear stop conditions and error reporting contracts.",
+            "disposition": "pending",
+            "is_resolved": false,
+            "blocks_release": false,
+            "verification_method": "deterministic_check"
+          }
+        ],
+        "quality_scores": {
+          "static_quality": 100.0,
+          "requirement_coverage": 80.0,
+          "target_compatibility": 90.0,
+          "security_robustness": 95.0
+        },
+        "inspected_at": "2026-11-22T00:16:44.119865Z"
+      },
+      "revision_events": [
+        {
+          "revision_id": "REV-054d3da5",
+          "previous_artifact_id": "f5cdbc40-1378-4d68-b054-114a1ec0f41f",
+          "previous_artifact_hash": "c77a7f83c983076d7325f4531a86a74be6c1cf1cf80a1008155b0da7028d3a16",
+          "revised_artifact_id": "revised-f5cdbc40",
+          "revised_artifact_hash": "1c0ea2c332746efd84eb1e3993a70c5a815122b463db36ae2021658f9e5f369a",
+          "timestamp": "2026-11-22T00:16:44.119951Z",
+          "changes_summary": "Refined strategy prompt with bounded risk contracts and GTM KPI envelope"
+        }
+      ],
+      "resolution_events": [
+        {
+          "resolution_id": "RES-22eefe30",
+          "finding_id": "FINDING-84ddeb09",
+          "original_category": "missing_error_handling",
+          "original_severity": "medium",
+          "revised_artifact_hash": "1c0ea2c332746efd84eb1e3993a70c5a815122b463db36ae2021658f9e5f369a",
+          "status": "unresolved",
+          "resolution_evidence": "Still missing explicit error handling or stop conditions.",
+          "verification_reason": "Still missing explicit error handling or stop conditions.",
+          "verified_at": "2026-11-22T00:16:44.120131Z"
+        }
+      ],
+      "final_autopsy": {
+        "run_id": "AUT-d69c4686",
+        "phase": "final",
+        "artifact_id": "revised-f5cdbc40",
+        "artifact_hash": "1c0ea2c332746efd84eb1e3993a70c5a815122b463db36ae2021658f9e5f369a",
+        "verdict": "ready_with_caveats",
+        "findings_count": 1,
+        "findings": [
+          {
+            "id": "FINDING-dd9ded5a",
+            "category": "missing_error_handling",
+            "severity": "medium",
+            "finding": "No explicit error handling or stop condition specified.",
+            "evidence_passage": null,
+            "consequence": "Model may enter recursive loops or guess answers when blocked.",
+            "recommendation": "Specify clear stop conditions and error reporting contracts.",
+            "disposition": "pending",
+            "is_resolved": false,
+            "blocks_release": false,
+            "verification_method": "deterministic_check"
+          }
+        ],
+        "quality_scores": {
+          "static_quality": 100.0,
+          "requirement_coverage": 80.0,
+          "target_compatibility": 90.0,
+          "security_robustness": 95.0
+        },
+        "inspected_at": "2026-11-22T00:16:44.120574Z"
+      },
       "autopsy_findings": [
         {
-          "id": "FINDING-2432353f",
+          "id": "FINDING-84ddeb09",
           "category": "missing_error_handling",
           "severity": "medium",
           "finding": "No explicit error handling or stop condition specified.",
@@ -979,7 +1150,20 @@
       ],
       "unresolved_findings": [
         {
-          "id": "FINDING-2432353f",
+          "id": "FINDING-84ddeb09",
+          "category": "missing_error_handling",
+          "severity": "medium",
+          "finding": "No explicit error handling or stop condition specified.",
+          "evidence_passage": null,
+          "consequence": "Model may enter recursive loops or guess answers when blocked.",
+          "recommendation": "Specify clear stop conditions and error reporting contracts.",
+          "disposition": "pending",
+          "is_resolved": false,
+          "blocks_release": false,
+          "verification_method": "deterministic_check"
+        },
+        {
+          "id": "FINDING-dd9ded5a",
           "category": "missing_error_handling",
           "severity": "medium",
           "finding": "No explicit error handling or stop condition specified.",
@@ -993,7 +1177,32 @@
         }
       ],
       "evaluation_records": [],
-      "warnings": [],
+      "warning_records": [
+        {
+          "warning_id": "WARN-cdd8baff",
+          "finding_id": "FINDING-84ddeb09",
+          "severity": "medium",
+          "category": "missing_error_handling",
+          "finding_text": "No explicit error handling or stop condition specified.",
+          "consequence": "Model may enter recursive loops or guess answers when blocked.",
+          "recommendation": "Specify clear stop conditions and error reporting contracts.",
+          "created_at": "2026-11-22T00:16:44.120594Z"
+        },
+        {
+          "warning_id": "WARN-fe6945ac",
+          "finding_id": "FINDING-dd9ded5a",
+          "severity": "medium",
+          "category": "missing_error_handling",
+          "finding_text": "No explicit error handling or stop condition specified.",
+          "consequence": "Model may enter recursive loops or guess answers when blocked.",
+          "recommendation": "Specify clear stop conditions and error reporting contracts.",
+          "created_at": "2026-11-22T00:16:44.120605Z"
+        }
+      ],
+      "warnings": [
+        "[FINDING-84ddeb09] (medium) missing_error_handling: No explicit error handling or stop condition specified. - Consequence: Model may enter recursive loops or guess answers when blocked. - Recommendation: Specify clear stop conditions and error reporting contracts.",
+        "[FINDING-dd9ded5a] (medium) missing_error_handling: No explicit error handling or stop condition specified. - Consequence: Model may enter recursive loops or guess answers when blocked. - Recommendation: Specify clear stop conditions and error reporting contracts."
+      ],
       "blocking_reasons": [],
       "execution_metadata": {}
     },
@@ -1011,11 +1220,12 @@
         {
           "step_name": "initial_autopsy_flawed_prompt",
           "state": "STEP_EXECUTED",
-          "started_at": "2026-11-21T23:38:16.489797Z",
-          "completed_at": "2026-11-21T23:38:16.489798Z",
+          "started_at": "2026-11-22T00:16:44.120994Z",
+          "completed_at": "2026-11-22T00:16:44.120994Z",
           "details": {
             "verdict": "needs_revision",
-            "findings_count": 5
+            "findings_count": 5,
+            "content_hash": "2432f738e6418f9126e9074c1a8d0f4bb4b601ddff5546fd0ca0b61918d41afa"
           },
           "validation_notes": [],
           "errors": []
@@ -1023,10 +1233,10 @@
         {
           "step_name": "refinement_generated",
           "state": "STEP_EXECUTED",
-          "started_at": "2026-11-21T23:38:16.489829Z",
-          "completed_at": "2026-11-21T23:38:16.489829Z",
+          "started_at": "2026-11-22T00:16:44.121060Z",
+          "completed_at": "2026-11-22T00:16:44.121061Z",
           "details": {
-            "artifact_id": "prompt-refined-815e8f",
+            "artifact_id": "prompt-refined-ad9dd6",
             "content_hash": "e4833ab20791d75b5e4bf644108a7239b3cf10274ac93735a05c869212fd1c50"
           },
           "validation_notes": [],
@@ -1035,8 +1245,8 @@
         {
           "step_name": "revision_verification",
           "state": "STEP_EXECUTED",
-          "started_at": "2026-11-21T23:38:16.489999Z",
-          "completed_at": "2026-11-21T23:38:16.490000Z",
+          "started_at": "2026-11-22T00:16:44.121321Z",
+          "completed_at": "2026-11-22T00:16:44.121322Z",
           "details": {
             "all_resolved": true,
             "blocks_release": false,
@@ -1050,11 +1260,12 @@
         {
           "step_name": "final_autopsy_refined_prompt",
           "state": "STEP_EXECUTED",
-          "started_at": "2026-11-21T23:38:16.490169Z",
-          "completed_at": "2026-11-21T23:38:16.490170Z",
+          "started_at": "2026-11-22T00:16:44.121541Z",
+          "completed_at": "2026-11-22T00:16:44.121541Z",
           "details": {
             "verdict": "ready",
-            "findings_count": 0
+            "findings_count": 0,
+            "content_hash": "e4833ab20791d75b5e4bf644108a7239b3cf10274ac93735a05c869212fd1c50"
           },
           "validation_notes": [],
           "errors": []
@@ -1062,42 +1273,42 @@
       ],
       "transitions": [
         {
-          "transition_id": "TRANS-dd9ff750",
+          "transition_id": "TRANS-97ab833d",
           "from_state": "STEP_EXECUTED",
           "to_state": "NEEDS_REVISION",
-          "timestamp": "2026-11-21T23:38:16.489815Z",
+          "timestamp": "2026-11-22T00:16:44.121026Z",
           "reason": "Initial prompt has blocking security and specification gaps",
           "step_context": "initial_autopsy"
         },
         {
-          "transition_id": "TRANS-eed64ddd",
+          "transition_id": "TRANS-c306f7e7",
           "from_state": "NEEDS_REVISION",
           "to_state": "REVISION_IN_PROGRESS",
-          "timestamp": "2026-11-21T23:38:16.489819Z",
+          "timestamp": "2026-11-22T00:16:44.121033Z",
           "reason": "Generating refined prompt with concrete contracts",
           "step_context": "refinement_start"
         },
         {
-          "transition_id": "TRANS-46412a94",
+          "transition_id": "TRANS-6867395c",
           "from_state": "REVISION_IN_PROGRESS",
           "to_state": "REVISION_VERIFIED",
-          "timestamp": "2026-11-21T23:38:16.490010Z",
+          "timestamp": "2026-11-22T00:16:44.121331Z",
           "reason": "Revision verified: zero blocking issues remain",
           "step_context": "verify_revision"
         },
         {
-          "transition_id": "TRANS-9fa6fb09",
+          "transition_id": "TRANS-f6bcae28",
           "from_state": "REVISION_VERIFIED",
           "to_state": "STEP_VALIDATED",
-          "timestamp": "2026-11-21T23:38:16.490178Z",
+          "timestamp": "2026-11-22T00:16:44.121553Z",
           "reason": "Prompt improvement lifecycle steps validated",
           "step_context": "refinement_validate"
         },
         {
-          "transition_id": "TRANS-dac23614",
+          "transition_id": "TRANS-3f378dfe",
           "from_state": "STEP_VALIDATED",
           "to_state": "SUCCESS_FULLY_VERIFIED",
-          "timestamp": "2026-11-21T23:38:16.490184Z",
+          "timestamp": "2026-11-22T00:16:44.121566Z",
           "reason": "Prompt improvement fully verified with 0 unresolved findings",
           "step_context": null
         }
@@ -1109,7 +1320,7 @@
           "is_mandatory": true,
           "satisfied": true,
           "evidence": "Flawed prompt analyzed: 5 findings across ambiguity, security, output_contract",
-          "evaluated_at": "2026-11-21T23:38:16.489801Z"
+          "evaluated_at": "2026-11-22T00:16:44.121001Z"
         },
         {
           "id": "SC5-AC-2",
@@ -1117,7 +1328,7 @@
           "is_mandatory": true,
           "satisfied": true,
           "evidence": "Initial verdict 'needs_revision' with blocking findings: True",
-          "evaluated_at": "2026-11-21T23:38:16.489804Z"
+          "evaluated_at": "2026-11-22T00:16:44.121008Z"
         },
         {
           "id": "SC5-AC-3",
@@ -1125,7 +1336,7 @@
           "is_mandatory": true,
           "satisfied": true,
           "evidence": "Refined prompt generated with concrete LRU contracts and boundary constraints",
-          "evaluated_at": "2026-11-21T23:38:16.489832Z"
+          "evaluated_at": "2026-11-22T00:16:44.121065Z"
         },
         {
           "id": "SC5-AC-4",
@@ -1133,7 +1344,7 @@
           "is_mandatory": true,
           "satisfied": true,
           "evidence": "Revision verification: 5 resolved, 0 unresolved",
-          "evaluated_at": "2026-11-21T23:38:16.490005Z"
+          "evaluated_at": "2026-11-22T00:16:44.121326Z"
         },
         {
           "id": "SC5-AC-5",
@@ -1141,12 +1352,21 @@
           "is_mandatory": true,
           "satisfied": true,
           "evidence": "Terminal decision: resolve_testability=True, open_findings=0",
-          "evaluated_at": "2026-11-21T23:38:16.490173Z"
+          "evaluated_at": "2026-11-22T00:16:44.121547Z"
         }
       ],
       "artifact_bindings": [
         {
-          "artifact_id": "prompt-refined-815e8f",
+          "artifact_id": "flawed-cache-prompt",
+          "artifact_type": "raw_prompt",
+          "content_hash": "2432f738e6418f9126e9074c1a8d0f4bb4b601ddff5546fd0ca0b61918d41afa",
+          "version": 1,
+          "persisted": true,
+          "retrievable": true,
+          "byte_size": 173
+        },
+        {
+          "artifact_id": "prompt-refined-ad9dd6",
           "artifact_type": "refined_prompt",
           "content_hash": "e4833ab20791d75b5e4bf644108a7239b3cf10274ac93735a05c869212fd1c50",
           "version": 2,
@@ -1155,12 +1375,178 @@
           "byte_size": 1059
         }
       ],
+      "initial_autopsy": {
+        "run_id": "AUT-79300cb8",
+        "phase": "initial",
+        "artifact_id": "flawed-cache-prompt",
+        "artifact_hash": "2432f738e6418f9126e9074c1a8d0f4bb4b601ddff5546fd0ca0b61918d41afa",
+        "verdict": "needs_revision",
+        "findings_count": 5,
+        "findings": [
+          {
+            "id": "FINDING-3537e102",
+            "category": "ambiguity",
+            "severity": "medium",
+            "finding": "Prompt contains vague language: Clean code, best practices, etc",
+            "evidence_passage": "Clean code",
+            "consequence": "Model will hallucinate or adopt arbitrary assumptions.",
+            "recommendation": "Replace vague references with concrete, exhaustive specifications.",
+            "disposition": "pending",
+            "is_resolved": false,
+            "blocks_release": false,
+            "verification_method": "deterministic_check"
+          },
+          {
+            "id": "FINDING-346ab951",
+            "category": "security",
+            "severity": "high",
+            "finding": "Excessive agency detected: 'Do whatever it takes'",
+            "evidence_passage": "Do whatever it takes",
+            "consequence": "Target agent may perform destructive, unapproved system operations.",
+            "recommendation": "Add explicit boundary constraints requiring human sign-off for file/command mutations.",
+            "disposition": "pending",
+            "is_resolved": false,
+            "blocks_release": true,
+            "verification_method": "deterministic_check"
+          },
+          {
+            "id": "FINDING-1389e053",
+            "category": "output_contract",
+            "severity": "medium",
+            "finding": "Prompt requests JSON output but lacks an explicit schema.",
+            "evidence_passage": "JSON",
+            "consequence": "Model may return markdown-wrapped or malformed JSON keys.",
+            "recommendation": "Provide an explicit JSON schema or key-value template.",
+            "disposition": "pending",
+            "is_resolved": false,
+            "blocks_release": false,
+            "verification_method": "deterministic_check"
+          },
+          {
+            "id": "FINDING-4e05dd5e",
+            "category": "inadequate_constraints",
+            "severity": "medium",
+            "finding": "Prompt lacks negative boundary constraints or explicit prohibitions.",
+            "evidence_passage": null,
+            "consequence": "Model may take unconstrained actions or hallucinate out-of-scope behaviors.",
+            "recommendation": "Add explicit negative boundaries defining what the model must NOT do.",
+            "disposition": "pending",
+            "is_resolved": false,
+            "blocks_release": false,
+            "verification_method": "deterministic_check"
+          },
+          {
+            "id": "FINDING-4ae70425",
+            "category": "testability_gap",
+            "severity": "low",
+            "finding": "Prompt contains no test validation criteria or verification method.",
+            "evidence_passage": null,
+            "consequence": "Output correctness cannot be objectively or deterministically verified.",
+            "recommendation": "Add observable acceptance criteria or automated test conditions.",
+            "disposition": "pending",
+            "is_resolved": false,
+            "blocks_release": false,
+            "verification_method": "deterministic_check"
+          }
+        ],
+        "quality_scores": {
+          "static_quality": 70.0,
+          "requirement_coverage": 80.0,
+          "target_compatibility": 90.0,
+          "security_robustness": 70.0
+        },
+        "inspected_at": "2026-11-22T00:16:44.120987Z"
+      },
+      "revision_events": [
+        {
+          "revision_id": "REV-338e217a",
+          "previous_artifact_id": "flawed-cache-prompt",
+          "previous_artifact_hash": "2432f738e6418f9126e9074c1a8d0f4bb4b601ddff5546fd0ca0b61918d41afa",
+          "revised_artifact_id": "prompt-refined-ad9dd6",
+          "revised_artifact_hash": "e4833ab20791d75b5e4bf644108a7239b3cf10274ac93735a05c869212fd1c50",
+          "timestamp": "2026-11-22T00:16:44.121055Z",
+          "changes_summary": "Refined flawed prompt with thread-safe LRU specification, error handling, and output contract"
+        }
+      ],
+      "resolution_events": [
+        {
+          "resolution_id": "RES-03f20851",
+          "finding_id": "FINDING-3537e102",
+          "original_category": "ambiguity",
+          "original_severity": "medium",
+          "revised_artifact_hash": "e4833ab20791d75b5e4bf644108a7239b3cf10274ac93735a05c869212fd1c50",
+          "status": "resolved",
+          "resolution_evidence": "Concrete specifications provided",
+          "verification_reason": "Identified vague passage 'Clean code' was eliminated and replaced with concrete specifications.",
+          "verified_at": "2026-11-22T00:16:44.121292Z"
+        },
+        {
+          "resolution_id": "RES-42380320",
+          "finding_id": "FINDING-346ab951",
+          "original_category": "security",
+          "original_severity": "high",
+          "revised_artifact_hash": "e4833ab20791d75b5e4bf644108a7239b3cf10274ac93735a05c869212fd1c50",
+          "status": "resolved",
+          "resolution_evidence": "Safety boundaries established",
+          "verification_reason": "Security risk resolved: hazardous passages eliminated/prohibited and safety boundaries established.",
+          "verified_at": "2026-11-22T00:16:44.121301Z"
+        },
+        {
+          "resolution_id": "RES-0a8d97c0",
+          "finding_id": "FINDING-1389e053",
+          "original_category": "output_contract",
+          "original_severity": "medium",
+          "revised_artifact_hash": "e4833ab20791d75b5e4bf644108a7239b3cf10274ac93735a05c869212fd1c50",
+          "status": "resolved",
+          "resolution_evidence": "Schema and envelope defined",
+          "verification_reason": "Output contract clearly specified with formal JSON schema and bracketed structure.",
+          "verified_at": "2026-11-22T00:16:44.121306Z"
+        },
+        {
+          "resolution_id": "RES-1bcdfca9",
+          "finding_id": "FINDING-4e05dd5e",
+          "original_category": "inadequate_constraints",
+          "original_severity": "medium",
+          "revised_artifact_hash": "e4833ab20791d75b5e4bf644108a7239b3cf10274ac93735a05c869212fd1c50",
+          "status": "resolved",
+          "resolution_evidence": "Negative constraints present",
+          "verification_reason": "Explicit negative boundary constraints added.",
+          "verified_at": "2026-11-22T00:16:44.121310Z"
+        },
+        {
+          "resolution_id": "RES-c1d48131",
+          "finding_id": "FINDING-4ae70425",
+          "original_category": "testability_gap",
+          "original_severity": "low",
+          "revised_artifact_hash": "e4833ab20791d75b5e4bf644108a7239b3cf10274ac93735a05c869212fd1c50",
+          "status": "resolved",
+          "resolution_evidence": "Verification assertions present",
+          "verification_reason": "Concrete test validation criteria and assertion conditions added.",
+          "verified_at": "2026-11-22T00:16:44.121313Z"
+        }
+      ],
+      "final_autopsy": {
+        "run_id": "AUT-3f42c2b4",
+        "phase": "final",
+        "artifact_id": "prompt-refined-ad9dd6",
+        "artifact_hash": "e4833ab20791d75b5e4bf644108a7239b3cf10274ac93735a05c869212fd1c50",
+        "verdict": "ready",
+        "findings_count": 0,
+        "findings": [],
+        "quality_scores": {
+          "static_quality": 100.0,
+          "requirement_coverage": 90.0,
+          "target_compatibility": 90.0,
+          "security_robustness": 95.0
+        },
+        "inspected_at": "2026-11-22T00:16:44.121535Z"
+      },
       "autopsy_findings": [
         {
-          "id": "FINDING-2659bcd9",
+          "id": "FINDING-3537e102",
           "category": "ambiguity",
           "severity": "medium",
-          "finding": "Prompt contains vague language: best practices, etc, Clean code",
+          "finding": "Prompt contains vague language: Clean code, best practices, etc",
           "evidence_passage": "Clean code",
           "consequence": "Model will hallucinate or adopt arbitrary assumptions.",
           "recommendation": "Replace vague references with concrete, exhaustive specifications.",
@@ -1170,7 +1556,7 @@
           "verification_method": "deterministic_check"
         },
         {
-          "id": "FINDING-9153973e",
+          "id": "FINDING-346ab951",
           "category": "security",
           "severity": "high",
           "finding": "Excessive agency detected: 'Do whatever it takes'",
@@ -1183,7 +1569,7 @@
           "verification_method": "deterministic_check"
         },
         {
-          "id": "FINDING-46d38836",
+          "id": "FINDING-1389e053",
           "category": "output_contract",
           "severity": "medium",
           "finding": "Prompt requests JSON output but lacks an explicit schema.",
@@ -1196,7 +1582,7 @@
           "verification_method": "deterministic_check"
         },
         {
-          "id": "FINDING-9c0cbe30",
+          "id": "FINDING-4e05dd5e",
           "category": "inadequate_constraints",
           "severity": "medium",
           "finding": "Prompt lacks negative boundary constraints or explicit prohibitions.",
@@ -1209,7 +1595,7 @@
           "verification_method": "deterministic_check"
         },
         {
-          "id": "FINDING-bde34d70",
+          "id": "FINDING-4ae70425",
           "category": "testability_gap",
           "severity": "low",
           "finding": "Prompt contains no test validation criteria or verification method.",
@@ -1224,6 +1610,1647 @@
       ],
       "unresolved_findings": [],
       "evaluation_records": [],
+      "warning_records": [],
+      "warnings": [],
+      "blocking_reasons": [],
+      "execution_metadata": {}
+    },
+    {
+      "scenario_id": "scenario_6_product_development",
+      "category": "product_development",
+      "input_summary": {
+        "target": "cursor",
+        "objective": "Enterprise SaaS PRD & Tenant Lifecycle"
+      },
+      "execution_mode": "DETERMINISTIC",
+      "current_state": "COMPLETED_WITH_WARNINGS",
+      "terminal_state": "COMPLETED_WITH_WARNINGS",
+      "steps": [
+        {
+          "step_name": "create_project",
+          "state": "STEP_EXECUTED",
+          "started_at": "2026-11-22T00:16:44.126109Z",
+          "completed_at": "2026-11-22T00:16:44.126112Z",
+          "details": {
+            "project_id": "8d4ca9de-1191-4e7b-ae03-fb90df0cd1c3"
+          },
+          "validation_notes": [],
+          "errors": []
+        },
+        {
+          "step_name": "product_discovery",
+          "state": "STEP_EXECUTED",
+          "started_at": "2026-11-22T00:16:44.138172Z",
+          "completed_at": "2026-11-22T00:16:44.138174Z",
+          "details": {
+            "session_id": "e348f74a-794a-4239-a1f0-8a266c9abf3b"
+          },
+          "validation_notes": [],
+          "errors": []
+        },
+        {
+          "step_name": "compile_cursor_package",
+          "state": "STEP_EXECUTED",
+          "started_at": "2026-11-22T00:16:44.155696Z",
+          "completed_at": "2026-11-22T00:16:44.155698Z",
+          "details": {
+            "package_id": "049b2fef-e67f-4659-9863-1a8594dfa3e4",
+            "hash": "aa4b23d47986933fdc4784281bf2f91e0dc53cf6e24b68c2a195eb864b7bc975"
+          },
+          "validation_notes": [],
+          "errors": []
+        },
+        {
+          "step_name": "autopsy_prd",
+          "state": "STEP_EXECUTED",
+          "started_at": "2026-11-22T00:16:44.158553Z",
+          "completed_at": "2026-11-22T00:16:44.158553Z",
+          "details": {
+            "verdict": "ready_with_caveats",
+            "findings_count": 2
+          },
+          "validation_notes": [],
+          "errors": []
+        },
+        {
+          "step_name": "checkpoint_prd",
+          "state": "STEP_EXECUTED",
+          "started_at": "2026-11-22T00:16:44.160950Z",
+          "completed_at": "2026-11-22T00:16:44.160954Z",
+          "details": {
+            "checkpoint_id": "cbcfadc0-13e9-43b8-84f9-d1835a95f9dd"
+          },
+          "validation_notes": [],
+          "errors": []
+        }
+      ],
+      "transitions": [
+        {
+          "transition_id": "TRANS-2ebb61bf",
+          "from_state": "STEP_EXECUTED",
+          "to_state": "STEP_VALIDATED",
+          "timestamp": "2026-11-22T00:16:44.126158Z",
+          "reason": "Project created for PRD",
+          "step_context": "create_project"
+        },
+        {
+          "transition_id": "TRANS-6ebddaa0",
+          "from_state": "STEP_VALIDATED",
+          "to_state": "STEP_VALIDATED",
+          "timestamp": "2026-11-22T00:16:44.161003Z",
+          "reason": "PRD scenario completed and validated",
+          "step_context": "prd_complete"
+        },
+        {
+          "transition_id": "TRANS-41fd9a33",
+          "from_state": "STEP_VALIDATED",
+          "to_state": "COMPLETED_WITH_WARNINGS",
+          "timestamp": "2026-11-22T00:16:44.161071Z",
+          "reason": "Completed with non-blocking PRD advisories",
+          "step_context": null
+        }
+      ],
+      "acceptance_criteria": [
+        {
+          "id": "SC6-AC-1",
+          "description": "User personas, target market, and problem space defined",
+          "is_mandatory": true,
+          "satisfied": true,
+          "evidence": "Personas: Enterprise Leads, Compliance Officers, Workspace Admins",
+          "evaluated_at": "2026-11-22T00:16:44.138180Z"
+        },
+        {
+          "id": "SC6-AC-2",
+          "description": "Core user journey from tenant onboarding to metered billing mapped",
+          "is_mandatory": true,
+          "satisfied": true,
+          "evidence": "Journey: Self-serve signup to monthly invoice reconciliation",
+          "evaluated_at": "2026-11-22T00:16:44.138181Z"
+        },
+        {
+          "id": "SC6-AC-3",
+          "description": "Feature prioritization establishes P0 MVP vs P1/P2 backlog",
+          "is_mandatory": true,
+          "satisfied": true,
+          "evidence": "P0 MVP vs P1 feature boundaries confirmed",
+          "evaluated_at": "2026-11-22T00:16:44.138183Z"
+        },
+        {
+          "id": "SC6-AC-4",
+          "description": "Release readiness criteria specified with latency and zero security regressions",
+          "is_mandatory": true,
+          "satisfied": true,
+          "evidence": "Release criteria: Deterministic invoice calculations, 0 leaks",
+          "evaluated_at": "2026-11-22T00:16:44.138184Z"
+        },
+        {
+          "id": "SC6-AC-5",
+          "description": "Project Constitution approved with full requirement traceability",
+          "is_mandatory": true,
+          "satisfied": true,
+          "evidence": "Constitution v1 approved with 100% requirement traceability",
+          "evaluated_at": "2026-11-22T00:16:44.150155Z"
+        },
+        {
+          "id": "SC6-AC-6",
+          "description": "Cursor native instruction package compiled (.cursorrules, .cursor/rules/*.mdc)",
+          "is_mandatory": true,
+          "satisfied": true,
+          "evidence": "Compiled Cursor package with 4 files (.cursorrules + mdc)",
+          "evaluated_at": "2026-11-22T00:16:44.155708Z"
+        },
+        {
+          "id": "SC6-AC-7",
+          "description": "Prompt Autopsy diagnoses PRD instructions",
+          "is_mandatory": true,
+          "satisfied": true,
+          "evidence": "Autopsy completed with verdict 'ready_with_caveats'",
+          "evaluated_at": "2026-11-22T00:16:44.158561Z"
+        },
+        {
+          "id": "SC6-AC-8",
+          "description": "Final deliverable persisted with SHA-256 fingerprint in DB",
+          "is_mandatory": true,
+          "satisfied": true,
+          "evidence": "Persisted deliverable 049b2fef-e67f-4659-9863-1a8594dfa3e4 verified with SHA-256 hash aa4b23d47986",
+          "evaluated_at": "2026-11-22T00:16:44.158574Z"
+        }
+      ],
+      "artifact_bindings": [
+        {
+          "artifact_id": "049b2fef-e67f-4659-9863-1a8594dfa3e4",
+          "artifact_type": "cursor_prd_package",
+          "content_hash": "aa4b23d47986933fdc4784281bf2f91e0dc53cf6e24b68c2a195eb864b7bc975",
+          "version": 1,
+          "persisted": true,
+          "retrievable": true,
+          "byte_size": 1244
+        }
+      ],
+      "initial_autopsy": {
+        "run_id": "AUT-658b4541",
+        "phase": "initial",
+        "artifact_id": "049b2fef-e67f-4659-9863-1a8594dfa3e4",
+        "artifact_hash": "aa4b23d47986933fdc4784281bf2f91e0dc53cf6e24b68c2a195eb864b7bc975",
+        "verdict": "ready_with_caveats",
+        "findings_count": 2,
+        "findings": [
+          {
+            "id": "FINDING-54bddbdc",
+            "category": "missing_error_handling",
+            "severity": "medium",
+            "finding": "No explicit error handling or stop condition specified.",
+            "evidence_passage": null,
+            "consequence": "Model may enter recursive loops or guess answers when blocked.",
+            "recommendation": "Specify clear stop conditions and error reporting contracts.",
+            "disposition": "pending",
+            "is_resolved": false,
+            "blocks_release": false,
+            "verification_method": "deterministic_check"
+          },
+          {
+            "id": "FINDING-c54229cb",
+            "category": "inadequate_constraints",
+            "severity": "medium",
+            "finding": "Prompt lacks negative boundary constraints or explicit prohibitions.",
+            "evidence_passage": null,
+            "consequence": "Model may take unconstrained actions or hallucinate out-of-scope behaviors.",
+            "recommendation": "Add explicit negative boundaries defining what the model must NOT do.",
+            "disposition": "pending",
+            "is_resolved": false,
+            "blocks_release": false,
+            "verification_method": "deterministic_check"
+          }
+        ],
+        "quality_scores": {
+          "static_quality": 100.0,
+          "requirement_coverage": 80.0,
+          "target_compatibility": 90.0,
+          "security_robustness": 95.0
+        },
+        "inspected_at": "2026-11-22T00:16:44.158546Z"
+      },
+      "revision_events": [],
+      "resolution_events": [],
+      "final_autopsy": {
+        "run_id": "AUT-78ed6b86",
+        "phase": "final",
+        "artifact_id": "049b2fef-e67f-4659-9863-1a8594dfa3e4",
+        "artifact_hash": "aa4b23d47986933fdc4784281bf2f91e0dc53cf6e24b68c2a195eb864b7bc975",
+        "verdict": "ready_with_caveats",
+        "findings_count": 2,
+        "findings": [
+          {
+            "id": "FINDING-54bddbdc",
+            "category": "missing_error_handling",
+            "severity": "medium",
+            "finding": "No explicit error handling or stop condition specified.",
+            "evidence_passage": null,
+            "consequence": "Model may enter recursive loops or guess answers when blocked.",
+            "recommendation": "Specify clear stop conditions and error reporting contracts.",
+            "disposition": "pending",
+            "is_resolved": false,
+            "blocks_release": false,
+            "verification_method": "deterministic_check"
+          },
+          {
+            "id": "FINDING-c54229cb",
+            "category": "inadequate_constraints",
+            "severity": "medium",
+            "finding": "Prompt lacks negative boundary constraints or explicit prohibitions.",
+            "evidence_passage": null,
+            "consequence": "Model may take unconstrained actions or hallucinate out-of-scope behaviors.",
+            "recommendation": "Add explicit negative boundaries defining what the model must NOT do.",
+            "disposition": "pending",
+            "is_resolved": false,
+            "blocks_release": false,
+            "verification_method": "deterministic_check"
+          }
+        ],
+        "quality_scores": {
+          "static_quality": 100.0,
+          "requirement_coverage": 80.0,
+          "target_compatibility": 90.0,
+          "security_robustness": 95.0
+        },
+        "inspected_at": "2026-11-22T00:16:44.158571Z"
+      },
+      "autopsy_findings": [
+        {
+          "id": "FINDING-54bddbdc",
+          "category": "missing_error_handling",
+          "severity": "medium",
+          "finding": "No explicit error handling or stop condition specified.",
+          "evidence_passage": null,
+          "consequence": "Model may enter recursive loops or guess answers when blocked.",
+          "recommendation": "Specify clear stop conditions and error reporting contracts.",
+          "disposition": "pending",
+          "is_resolved": false,
+          "blocks_release": false,
+          "verification_method": "deterministic_check"
+        },
+        {
+          "id": "FINDING-c54229cb",
+          "category": "inadequate_constraints",
+          "severity": "medium",
+          "finding": "Prompt lacks negative boundary constraints or explicit prohibitions.",
+          "evidence_passage": null,
+          "consequence": "Model may take unconstrained actions or hallucinate out-of-scope behaviors.",
+          "recommendation": "Add explicit negative boundaries defining what the model must NOT do.",
+          "disposition": "pending",
+          "is_resolved": false,
+          "blocks_release": false,
+          "verification_method": "deterministic_check"
+        }
+      ],
+      "unresolved_findings": [
+        {
+          "id": "FINDING-54bddbdc",
+          "category": "missing_error_handling",
+          "severity": "medium",
+          "finding": "No explicit error handling or stop condition specified.",
+          "evidence_passage": null,
+          "consequence": "Model may enter recursive loops or guess answers when blocked.",
+          "recommendation": "Specify clear stop conditions and error reporting contracts.",
+          "disposition": "pending",
+          "is_resolved": false,
+          "blocks_release": false,
+          "verification_method": "deterministic_check"
+        },
+        {
+          "id": "FINDING-c54229cb",
+          "category": "inadequate_constraints",
+          "severity": "medium",
+          "finding": "Prompt lacks negative boundary constraints or explicit prohibitions.",
+          "evidence_passage": null,
+          "consequence": "Model may take unconstrained actions or hallucinate out-of-scope behaviors.",
+          "recommendation": "Add explicit negative boundaries defining what the model must NOT do.",
+          "disposition": "pending",
+          "is_resolved": false,
+          "blocks_release": false,
+          "verification_method": "deterministic_check"
+        }
+      ],
+      "evaluation_records": [],
+      "warning_records": [
+        {
+          "warning_id": "WARN-e503d4e9",
+          "finding_id": "FINDING-54bddbdc",
+          "severity": "medium",
+          "category": "missing_error_handling",
+          "finding_text": "No explicit error handling or stop condition specified.",
+          "consequence": "Model may enter recursive loops or guess answers when blocked.",
+          "recommendation": "Specify clear stop conditions and error reporting contracts.",
+          "created_at": "2026-11-22T00:16:44.161048Z"
+        },
+        {
+          "warning_id": "WARN-e59a5730",
+          "finding_id": "FINDING-c54229cb",
+          "severity": "medium",
+          "category": "inadequate_constraints",
+          "finding_text": "Prompt lacks negative boundary constraints or explicit prohibitions.",
+          "consequence": "Model may take unconstrained actions or hallucinate out-of-scope behaviors.",
+          "recommendation": "Add explicit negative boundaries defining what the model must NOT do.",
+          "created_at": "2026-11-22T00:16:44.161058Z"
+        }
+      ],
+      "warnings": [
+        "[FINDING-54bddbdc] (medium) missing_error_handling: No explicit error handling or stop condition specified. - Consequence: Model may enter recursive loops or guess answers when blocked. - Recommendation: Specify clear stop conditions and error reporting contracts.",
+        "[FINDING-c54229cb] (medium) inadequate_constraints: Prompt lacks negative boundary constraints or explicit prohibitions. - Consequence: Model may take unconstrained actions or hallucinate out-of-scope behaviors. - Recommendation: Add explicit negative boundaries defining what the model must NOT do."
+      ],
+      "blocking_reasons": [],
+      "execution_metadata": {}
+    },
+    {
+      "scenario_id": "scenario_7_writing_content",
+      "category": "writing_content",
+      "input_summary": {
+        "target": "raw-prompt",
+        "objective": "Zero-Cost AI Orchestration Whitepaper"
+      },
+      "execution_mode": "DETERMINISTIC",
+      "current_state": "COMPLETED_WITH_WARNINGS",
+      "terminal_state": "COMPLETED_WITH_WARNINGS",
+      "steps": [
+        {
+          "step_name": "create_project",
+          "state": "STEP_EXECUTED",
+          "started_at": "2026-11-22T00:16:44.165890Z",
+          "completed_at": "2026-11-22T00:16:44.165892Z",
+          "details": {
+            "project_id": "a7483968-56b3-4578-afa2-9e5416db21d0"
+          },
+          "validation_notes": [],
+          "errors": []
+        },
+        {
+          "step_name": "writing_discovery",
+          "state": "STEP_EXECUTED",
+          "started_at": "2026-11-22T00:16:44.178795Z",
+          "completed_at": "2026-11-22T00:16:44.178797Z",
+          "details": {
+            "session_id": "fa3eced3-9134-4ad0-8293-329708afc2fb"
+          },
+          "validation_notes": [],
+          "errors": []
+        },
+        {
+          "step_name": "compile_writing_suite",
+          "state": "STEP_EXECUTED",
+          "started_at": "2026-11-22T00:16:44.194752Z",
+          "completed_at": "2026-11-22T00:16:44.194754Z",
+          "details": {
+            "package_id": "cac2e24f-281f-49c6-b762-d06c20f40542",
+            "hash": "a55b47fd24d1c0529ed9a681edb02a3723215351147728473776cef5b0e17c72"
+          },
+          "validation_notes": [],
+          "errors": []
+        },
+        {
+          "step_name": "autopsy_writing",
+          "state": "STEP_EXECUTED",
+          "started_at": "2026-11-22T00:16:44.195033Z",
+          "completed_at": "2026-11-22T00:16:44.195033Z",
+          "details": {
+            "verdict": "ready_with_caveats",
+            "findings_count": 3
+          },
+          "validation_notes": [],
+          "errors": []
+        }
+      ],
+      "transitions": [
+        {
+          "transition_id": "TRANS-dea5c665",
+          "from_state": "STEP_EXECUTED",
+          "to_state": "STEP_VALIDATED",
+          "timestamp": "2026-11-22T00:16:44.165912Z",
+          "reason": "Project created for writing",
+          "step_context": "create_project"
+        },
+        {
+          "transition_id": "TRANS-c1e81a79",
+          "from_state": "STEP_VALIDATED",
+          "to_state": "STEP_VALIDATED",
+          "timestamp": "2026-11-22T00:16:44.195060Z",
+          "reason": "Writing scenario completed and validated",
+          "step_context": "writing_complete"
+        },
+        {
+          "transition_id": "TRANS-a0dd2a7c",
+          "from_state": "STEP_VALIDATED",
+          "to_state": "COMPLETED_WITH_WARNINGS",
+          "timestamp": "2026-11-22T00:16:44.195088Z",
+          "reason": "Completed with non-blocking editorial advisories",
+          "step_context": null
+        }
+      ],
+      "acceptance_criteria": [
+        {
+          "id": "SC7-AC-1",
+          "description": "Core thesis, communication objective, and target audience defined",
+          "is_mandatory": true,
+          "satisfied": true,
+          "evidence": "Thesis: Zero-cost orchestration via multi-model queuing; Audience: Principal AI Architects",
+          "evaluated_at": "2026-11-22T00:16:44.178806Z"
+        },
+        {
+          "id": "SC7-AC-2",
+          "description": "Authoritative & technical tone and multi-section structure established",
+          "is_mandatory": true,
+          "satisfied": true,
+          "evidence": "Tone: Authoritative & Technical; Format: Comprehensive Guide with Subsections",
+          "evaluated_at": "2026-11-22T00:16:44.178807Z"
+        },
+        {
+          "id": "SC7-AC-3",
+          "description": "Constitution updated with user-confirmed constraints and scope exclusions",
+          "is_mandatory": true,
+          "satisfied": true,
+          "evidence": "Constitution approved with editorial boundaries and scope exclusions",
+          "evaluated_at": "2026-11-22T00:16:44.189098Z"
+        },
+        {
+          "id": "SC7-AC-4",
+          "description": "Raw prompt suite compiled (system_prompt.md, user_task.md, constraints.md)",
+          "is_mandatory": true,
+          "satisfied": true,
+          "evidence": "Compiled raw prompt suite containing ['system_prompt.md', 'user_task.md', 'constraints.md']",
+          "evaluated_at": "2026-11-22T00:16:44.194764Z"
+        },
+        {
+          "id": "SC7-AC-5",
+          "description": "Autopsy verifies absence of ungrounded hype, buzzwords, or conversational fluff",
+          "is_mandatory": true,
+          "satisfied": true,
+          "evidence": "Autopsy verified zero fluff: verdict 'ready_with_caveats'",
+          "evaluated_at": "2026-11-22T00:16:44.195038Z"
+        },
+        {
+          "id": "SC7-AC-6",
+          "description": "Artifacts cryptographically bound with SHA-256 and persisted in DB",
+          "is_mandatory": true,
+          "satisfied": true,
+          "evidence": "Artifacts persisted and bound with SHA-256 hash a55b47fd24d1",
+          "evaluated_at": "2026-11-22T00:16:44.195053Z"
+        }
+      ],
+      "artifact_bindings": [
+        {
+          "artifact_id": "cac2e24f-281f-49c6-b762-d06c20f40542",
+          "artifact_type": "whitepaper_prompt_suite",
+          "content_hash": "a55b47fd24d1c0529ed9a681edb02a3723215351147728473776cef5b0e17c72",
+          "version": 1,
+          "persisted": true,
+          "retrievable": true,
+          "byte_size": 616
+        }
+      ],
+      "initial_autopsy": {
+        "run_id": "AUT-80a28af4",
+        "phase": "initial",
+        "artifact_id": "cac2e24f-281f-49c6-b762-d06c20f40542",
+        "artifact_hash": "a55b47fd24d1c0529ed9a681edb02a3723215351147728473776cef5b0e17c72",
+        "verdict": "ready_with_caveats",
+        "findings_count": 3,
+        "findings": [
+          {
+            "id": "FINDING-a875f595",
+            "category": "missing_error_handling",
+            "severity": "medium",
+            "finding": "No explicit error handling or stop condition specified.",
+            "evidence_passage": null,
+            "consequence": "Model may enter recursive loops or guess answers when blocked.",
+            "recommendation": "Specify clear stop conditions and error reporting contracts.",
+            "disposition": "pending",
+            "is_resolved": false,
+            "blocks_release": false,
+            "verification_method": "deterministic_check"
+          },
+          {
+            "id": "FINDING-9e637b19",
+            "category": "inadequate_constraints",
+            "severity": "medium",
+            "finding": "Prompt lacks negative boundary constraints or explicit prohibitions.",
+            "evidence_passage": null,
+            "consequence": "Model may take unconstrained actions or hallucinate out-of-scope behaviors.",
+            "recommendation": "Add explicit negative boundaries defining what the model must NOT do.",
+            "disposition": "pending",
+            "is_resolved": false,
+            "blocks_release": false,
+            "verification_method": "deterministic_check"
+          },
+          {
+            "id": "FINDING-e98d5c6b",
+            "category": "testability_gap",
+            "severity": "low",
+            "finding": "Prompt contains no test validation criteria or verification method.",
+            "evidence_passage": null,
+            "consequence": "Output correctness cannot be objectively or deterministically verified.",
+            "recommendation": "Add observable acceptance criteria or automated test conditions.",
+            "disposition": "pending",
+            "is_resolved": false,
+            "blocks_release": false,
+            "verification_method": "deterministic_check"
+          }
+        ],
+        "quality_scores": {
+          "static_quality": 100.0,
+          "requirement_coverage": 80.0,
+          "target_compatibility": 90.0,
+          "security_robustness": 95.0
+        },
+        "inspected_at": "2026-11-22T00:16:44.195028Z"
+      },
+      "revision_events": [],
+      "resolution_events": [],
+      "final_autopsy": {
+        "run_id": "AUT-903f9767",
+        "phase": "final",
+        "artifact_id": "cac2e24f-281f-49c6-b762-d06c20f40542",
+        "artifact_hash": "a55b47fd24d1c0529ed9a681edb02a3723215351147728473776cef5b0e17c72",
+        "verdict": "ready_with_caveats",
+        "findings_count": 3,
+        "findings": [
+          {
+            "id": "FINDING-a875f595",
+            "category": "missing_error_handling",
+            "severity": "medium",
+            "finding": "No explicit error handling or stop condition specified.",
+            "evidence_passage": null,
+            "consequence": "Model may enter recursive loops or guess answers when blocked.",
+            "recommendation": "Specify clear stop conditions and error reporting contracts.",
+            "disposition": "pending",
+            "is_resolved": false,
+            "blocks_release": false,
+            "verification_method": "deterministic_check"
+          },
+          {
+            "id": "FINDING-9e637b19",
+            "category": "inadequate_constraints",
+            "severity": "medium",
+            "finding": "Prompt lacks negative boundary constraints or explicit prohibitions.",
+            "evidence_passage": null,
+            "consequence": "Model may take unconstrained actions or hallucinate out-of-scope behaviors.",
+            "recommendation": "Add explicit negative boundaries defining what the model must NOT do.",
+            "disposition": "pending",
+            "is_resolved": false,
+            "blocks_release": false,
+            "verification_method": "deterministic_check"
+          },
+          {
+            "id": "FINDING-e98d5c6b",
+            "category": "testability_gap",
+            "severity": "low",
+            "finding": "Prompt contains no test validation criteria or verification method.",
+            "evidence_passage": null,
+            "consequence": "Output correctness cannot be objectively or deterministically verified.",
+            "recommendation": "Add observable acceptance criteria or automated test conditions.",
+            "disposition": "pending",
+            "is_resolved": false,
+            "blocks_release": false,
+            "verification_method": "deterministic_check"
+          }
+        ],
+        "quality_scores": {
+          "static_quality": 100.0,
+          "requirement_coverage": 80.0,
+          "target_compatibility": 90.0,
+          "security_robustness": 95.0
+        },
+        "inspected_at": "2026-11-22T00:16:44.195050Z"
+      },
+      "autopsy_findings": [
+        {
+          "id": "FINDING-a875f595",
+          "category": "missing_error_handling",
+          "severity": "medium",
+          "finding": "No explicit error handling or stop condition specified.",
+          "evidence_passage": null,
+          "consequence": "Model may enter recursive loops or guess answers when blocked.",
+          "recommendation": "Specify clear stop conditions and error reporting contracts.",
+          "disposition": "pending",
+          "is_resolved": false,
+          "blocks_release": false,
+          "verification_method": "deterministic_check"
+        },
+        {
+          "id": "FINDING-9e637b19",
+          "category": "inadequate_constraints",
+          "severity": "medium",
+          "finding": "Prompt lacks negative boundary constraints or explicit prohibitions.",
+          "evidence_passage": null,
+          "consequence": "Model may take unconstrained actions or hallucinate out-of-scope behaviors.",
+          "recommendation": "Add explicit negative boundaries defining what the model must NOT do.",
+          "disposition": "pending",
+          "is_resolved": false,
+          "blocks_release": false,
+          "verification_method": "deterministic_check"
+        },
+        {
+          "id": "FINDING-e98d5c6b",
+          "category": "testability_gap",
+          "severity": "low",
+          "finding": "Prompt contains no test validation criteria or verification method.",
+          "evidence_passage": null,
+          "consequence": "Output correctness cannot be objectively or deterministically verified.",
+          "recommendation": "Add observable acceptance criteria or automated test conditions.",
+          "disposition": "pending",
+          "is_resolved": false,
+          "blocks_release": false,
+          "verification_method": "deterministic_check"
+        }
+      ],
+      "unresolved_findings": [
+        {
+          "id": "FINDING-a875f595",
+          "category": "missing_error_handling",
+          "severity": "medium",
+          "finding": "No explicit error handling or stop condition specified.",
+          "evidence_passage": null,
+          "consequence": "Model may enter recursive loops or guess answers when blocked.",
+          "recommendation": "Specify clear stop conditions and error reporting contracts.",
+          "disposition": "pending",
+          "is_resolved": false,
+          "blocks_release": false,
+          "verification_method": "deterministic_check"
+        },
+        {
+          "id": "FINDING-9e637b19",
+          "category": "inadequate_constraints",
+          "severity": "medium",
+          "finding": "Prompt lacks negative boundary constraints or explicit prohibitions.",
+          "evidence_passage": null,
+          "consequence": "Model may take unconstrained actions or hallucinate out-of-scope behaviors.",
+          "recommendation": "Add explicit negative boundaries defining what the model must NOT do.",
+          "disposition": "pending",
+          "is_resolved": false,
+          "blocks_release": false,
+          "verification_method": "deterministic_check"
+        },
+        {
+          "id": "FINDING-e98d5c6b",
+          "category": "testability_gap",
+          "severity": "low",
+          "finding": "Prompt contains no test validation criteria or verification method.",
+          "evidence_passage": null,
+          "consequence": "Output correctness cannot be objectively or deterministically verified.",
+          "recommendation": "Add observable acceptance criteria or automated test conditions.",
+          "disposition": "pending",
+          "is_resolved": false,
+          "blocks_release": false,
+          "verification_method": "deterministic_check"
+        }
+      ],
+      "evaluation_records": [],
+      "warning_records": [
+        {
+          "warning_id": "WARN-cbc7195d",
+          "finding_id": "FINDING-a875f595",
+          "severity": "medium",
+          "category": "missing_error_handling",
+          "finding_text": "No explicit error handling or stop condition specified.",
+          "consequence": "Model may enter recursive loops or guess answers when blocked.",
+          "recommendation": "Specify clear stop conditions and error reporting contracts.",
+          "created_at": "2026-11-22T00:16:44.195075Z"
+        },
+        {
+          "warning_id": "WARN-d82f55dc",
+          "finding_id": "FINDING-9e637b19",
+          "severity": "medium",
+          "category": "inadequate_constraints",
+          "finding_text": "Prompt lacks negative boundary constraints or explicit prohibitions.",
+          "consequence": "Model may take unconstrained actions or hallucinate out-of-scope behaviors.",
+          "recommendation": "Add explicit negative boundaries defining what the model must NOT do.",
+          "created_at": "2026-11-22T00:16:44.195079Z"
+        },
+        {
+          "warning_id": "WARN-73f8bbe7",
+          "finding_id": "FINDING-e98d5c6b",
+          "severity": "low",
+          "category": "testability_gap",
+          "finding_text": "Prompt contains no test validation criteria or verification method.",
+          "consequence": "Output correctness cannot be objectively or deterministically verified.",
+          "recommendation": "Add observable acceptance criteria or automated test conditions.",
+          "created_at": "2026-11-22T00:16:44.195083Z"
+        }
+      ],
+      "warnings": [
+        "[FINDING-a875f595] (medium) missing_error_handling: No explicit error handling or stop condition specified. - Consequence: Model may enter recursive loops or guess answers when blocked. - Recommendation: Specify clear stop conditions and error reporting contracts.",
+        "[FINDING-9e637b19] (medium) inadequate_constraints: Prompt lacks negative boundary constraints or explicit prohibitions. - Consequence: Model may take unconstrained actions or hallucinate out-of-scope behaviors. - Recommendation: Add explicit negative boundaries defining what the model must NOT do.",
+        "[FINDING-e98d5c6b] (low) testability_gap: Prompt contains no test validation criteria or verification method. - Consequence: Output correctness cannot be objectively or deterministically verified. - Recommendation: Add observable acceptance criteria or automated test conditions."
+      ],
+      "blocking_reasons": [],
+      "execution_metadata": {}
+    },
+    {
+      "scenario_id": "scenario_8_data_analysis",
+      "category": "data_analysis",
+      "input_summary": {
+        "target": "openai-codex",
+        "objective": "Quota Saturation & Provider Latency Pipeline"
+      },
+      "execution_mode": "DETERMINISTIC",
+      "current_state": "COMPLETED_WITH_WARNINGS",
+      "terminal_state": "COMPLETED_WITH_WARNINGS",
+      "steps": [
+        {
+          "step_name": "create_project",
+          "state": "STEP_EXECUTED",
+          "started_at": "2026-11-22T00:16:44.199548Z",
+          "completed_at": "2026-11-22T00:16:44.199550Z",
+          "details": {
+            "project_id": "4897d393-8546-4088-b313-f2769b19abf4"
+          },
+          "validation_notes": [],
+          "errors": []
+        },
+        {
+          "step_name": "data_discovery",
+          "state": "STEP_EXECUTED",
+          "started_at": "2026-11-22T00:16:44.209373Z",
+          "completed_at": "2026-11-22T00:16:44.209376Z",
+          "details": {
+            "session_id": "97174ac0-fae4-4087-b7f8-eef8e704c3e2"
+          },
+          "validation_notes": [],
+          "errors": []
+        },
+        {
+          "step_name": "compile_codex_package",
+          "state": "STEP_EXECUTED",
+          "started_at": "2026-11-22T00:16:44.225010Z",
+          "completed_at": "2026-11-22T00:16:44.225014Z",
+          "details": {
+            "package_id": "564fadd0-607a-4d6c-95cf-40f9da01ff3f",
+            "hash": "a2128b1f5b685fb3569924ed6a8b80cb5f4e848544b8537a5021c385eee0cdfd"
+          },
+          "validation_notes": [],
+          "errors": []
+        },
+        {
+          "step_name": "autopsy_data",
+          "state": "STEP_EXECUTED",
+          "started_at": "2026-11-22T00:16:44.227487Z",
+          "completed_at": "2026-11-22T00:16:44.227487Z",
+          "details": {
+            "verdict": "ready_with_caveats",
+            "findings_count": 2
+          },
+          "validation_notes": [],
+          "errors": []
+        }
+      ],
+      "transitions": [
+        {
+          "transition_id": "TRANS-03d475e0",
+          "from_state": "STEP_EXECUTED",
+          "to_state": "STEP_VALIDATED",
+          "timestamp": "2026-11-22T00:16:44.199574Z",
+          "reason": "Project created for data analysis",
+          "step_context": "create_project"
+        },
+        {
+          "transition_id": "TRANS-1507be09",
+          "from_state": "STEP_VALIDATED",
+          "to_state": "STEP_VALIDATED",
+          "timestamp": "2026-11-22T00:16:44.227521Z",
+          "reason": "Data analysis scenario completed and validated",
+          "step_context": "data_complete"
+        },
+        {
+          "transition_id": "TRANS-0b39a295",
+          "from_state": "STEP_VALIDATED",
+          "to_state": "COMPLETED_WITH_WARNINGS",
+          "timestamp": "2026-11-22T00:16:44.227543Z",
+          "reason": "Completed with non-blocking analytics advisories",
+          "step_context": null
+        }
+      ],
+      "acceptance_criteria": [
+        {
+          "id": "SC8-AC-1",
+          "description": "Data sources, schema formats, and input assumptions verified",
+          "is_mandatory": true,
+          "satisfied": true,
+          "evidence": "Data sources: SQLite WAL inference runs and JSON ledger verified",
+          "evaluated_at": "2026-11-22T00:16:44.209385Z"
+        },
+        {
+          "id": "SC8-AC-2",
+          "description": "Analytical hypotheses and performance metrics formulated",
+          "is_mandatory": true,
+          "satisfied": true,
+          "evidence": "Hypotheses: TPM saturation per minute and latency percentiles (p50/p95/p99)",
+          "evaluated_at": "2026-11-22T00:16:44.209387Z"
+        },
+        {
+          "id": "SC8-AC-3",
+          "description": "Output data contract defined (Markdown report + validated SQL queries)",
+          "is_mandatory": true,
+          "satisfied": true,
+          "evidence": "Output contract: SQL queries + explanations conforming to SQLite dialect",
+          "evaluated_at": "2026-11-22T00:16:44.209388Z"
+        },
+        {
+          "id": "SC8-AC-4",
+          "description": "Constitution approved with strict data schema constraints",
+          "is_mandatory": true,
+          "satisfied": true,
+          "evidence": "Constitution approved with data quality and statistical boundaries",
+          "evaluated_at": "2026-11-22T00:16:44.219066Z"
+        },
+        {
+          "id": "SC8-AC-5",
+          "description": "OpenAI Codex package compiled (CODEX.md and agent instructions)",
+          "is_mandatory": true,
+          "satisfied": true,
+          "evidence": "Compiled OpenAI Codex package containing 5 files",
+          "evaluated_at": "2026-11-22T00:16:44.225023Z"
+        },
+        {
+          "id": "SC8-AC-6",
+          "description": "Autopsy validates statistical boundaries and error contracts",
+          "is_mandatory": true,
+          "satisfied": true,
+          "evidence": "Autopsy completed with verdict 'ready_with_caveats'",
+          "evaluated_at": "2026-11-22T00:16:44.227498Z"
+        },
+        {
+          "id": "SC8-AC-7",
+          "description": "Final package persisted with SHA-256 digest in DB",
+          "is_mandatory": true,
+          "satisfied": true,
+          "evidence": "Final deliverable persisted with SHA-256 hash a2128b1f5b68",
+          "evaluated_at": "2026-11-22T00:16:44.227513Z"
+        }
+      ],
+      "artifact_bindings": [
+        {
+          "artifact_id": "564fadd0-607a-4d6c-95cf-40f9da01ff3f",
+          "artifact_type": "codex_data_pipeline",
+          "content_hash": "a2128b1f5b685fb3569924ed6a8b80cb5f4e848544b8537a5021c385eee0cdfd",
+          "version": 1,
+          "persisted": true,
+          "retrievable": true,
+          "byte_size": 2199
+        }
+      ],
+      "initial_autopsy": {
+        "run_id": "AUT-3109993c",
+        "phase": "initial",
+        "artifact_id": "564fadd0-607a-4d6c-95cf-40f9da01ff3f",
+        "artifact_hash": "a2128b1f5b685fb3569924ed6a8b80cb5f4e848544b8537a5021c385eee0cdfd",
+        "verdict": "ready_with_caveats",
+        "findings_count": 2,
+        "findings": [
+          {
+            "id": "FINDING-d8174b9d",
+            "category": "ambiguity",
+            "severity": "medium",
+            "finding": "Prompt contains vague language: clean code",
+            "evidence_passage": "clean code",
+            "consequence": "Model will hallucinate or adopt arbitrary assumptions.",
+            "recommendation": "Replace vague references with concrete, exhaustive specifications.",
+            "disposition": "pending",
+            "is_resolved": false,
+            "blocks_release": false,
+            "verification_method": "deterministic_check"
+          },
+          {
+            "id": "FINDING-f89d5e22",
+            "category": "missing_error_handling",
+            "severity": "medium",
+            "finding": "No explicit error handling or stop condition specified.",
+            "evidence_passage": null,
+            "consequence": "Model may enter recursive loops or guess answers when blocked.",
+            "recommendation": "Specify clear stop conditions and error reporting contracts.",
+            "disposition": "pending",
+            "is_resolved": false,
+            "blocks_release": false,
+            "verification_method": "deterministic_check"
+          }
+        ],
+        "quality_scores": {
+          "static_quality": 90.0,
+          "requirement_coverage": 80.0,
+          "target_compatibility": 90.0,
+          "security_robustness": 95.0
+        },
+        "inspected_at": "2026-11-22T00:16:44.227480Z"
+      },
+      "revision_events": [],
+      "resolution_events": [],
+      "final_autopsy": {
+        "run_id": "AUT-238776ed",
+        "phase": "final",
+        "artifact_id": "564fadd0-607a-4d6c-95cf-40f9da01ff3f",
+        "artifact_hash": "a2128b1f5b685fb3569924ed6a8b80cb5f4e848544b8537a5021c385eee0cdfd",
+        "verdict": "ready_with_caveats",
+        "findings_count": 2,
+        "findings": [
+          {
+            "id": "FINDING-d8174b9d",
+            "category": "ambiguity",
+            "severity": "medium",
+            "finding": "Prompt contains vague language: clean code",
+            "evidence_passage": "clean code",
+            "consequence": "Model will hallucinate or adopt arbitrary assumptions.",
+            "recommendation": "Replace vague references with concrete, exhaustive specifications.",
+            "disposition": "pending",
+            "is_resolved": false,
+            "blocks_release": false,
+            "verification_method": "deterministic_check"
+          },
+          {
+            "id": "FINDING-f89d5e22",
+            "category": "missing_error_handling",
+            "severity": "medium",
+            "finding": "No explicit error handling or stop condition specified.",
+            "evidence_passage": null,
+            "consequence": "Model may enter recursive loops or guess answers when blocked.",
+            "recommendation": "Specify clear stop conditions and error reporting contracts.",
+            "disposition": "pending",
+            "is_resolved": false,
+            "blocks_release": false,
+            "verification_method": "deterministic_check"
+          }
+        ],
+        "quality_scores": {
+          "static_quality": 90.0,
+          "requirement_coverage": 80.0,
+          "target_compatibility": 90.0,
+          "security_robustness": 95.0
+        },
+        "inspected_at": "2026-11-22T00:16:44.227510Z"
+      },
+      "autopsy_findings": [
+        {
+          "id": "FINDING-d8174b9d",
+          "category": "ambiguity",
+          "severity": "medium",
+          "finding": "Prompt contains vague language: clean code",
+          "evidence_passage": "clean code",
+          "consequence": "Model will hallucinate or adopt arbitrary assumptions.",
+          "recommendation": "Replace vague references with concrete, exhaustive specifications.",
+          "disposition": "pending",
+          "is_resolved": false,
+          "blocks_release": false,
+          "verification_method": "deterministic_check"
+        },
+        {
+          "id": "FINDING-f89d5e22",
+          "category": "missing_error_handling",
+          "severity": "medium",
+          "finding": "No explicit error handling or stop condition specified.",
+          "evidence_passage": null,
+          "consequence": "Model may enter recursive loops or guess answers when blocked.",
+          "recommendation": "Specify clear stop conditions and error reporting contracts.",
+          "disposition": "pending",
+          "is_resolved": false,
+          "blocks_release": false,
+          "verification_method": "deterministic_check"
+        }
+      ],
+      "unresolved_findings": [
+        {
+          "id": "FINDING-d8174b9d",
+          "category": "ambiguity",
+          "severity": "medium",
+          "finding": "Prompt contains vague language: clean code",
+          "evidence_passage": "clean code",
+          "consequence": "Model will hallucinate or adopt arbitrary assumptions.",
+          "recommendation": "Replace vague references with concrete, exhaustive specifications.",
+          "disposition": "pending",
+          "is_resolved": false,
+          "blocks_release": false,
+          "verification_method": "deterministic_check"
+        },
+        {
+          "id": "FINDING-f89d5e22",
+          "category": "missing_error_handling",
+          "severity": "medium",
+          "finding": "No explicit error handling or stop condition specified.",
+          "evidence_passage": null,
+          "consequence": "Model may enter recursive loops or guess answers when blocked.",
+          "recommendation": "Specify clear stop conditions and error reporting contracts.",
+          "disposition": "pending",
+          "is_resolved": false,
+          "blocks_release": false,
+          "verification_method": "deterministic_check"
+        }
+      ],
+      "evaluation_records": [],
+      "warning_records": [
+        {
+          "warning_id": "WARN-810e6f21",
+          "finding_id": "FINDING-d8174b9d",
+          "severity": "medium",
+          "category": "ambiguity",
+          "finding_text": "Prompt contains vague language: clean code",
+          "consequence": "Model will hallucinate or adopt arbitrary assumptions.",
+          "recommendation": "Replace vague references with concrete, exhaustive specifications.",
+          "created_at": "2026-11-22T00:16:44.227533Z"
+        },
+        {
+          "warning_id": "WARN-06c9e04f",
+          "finding_id": "FINDING-f89d5e22",
+          "severity": "medium",
+          "category": "missing_error_handling",
+          "finding_text": "No explicit error handling or stop condition specified.",
+          "consequence": "Model may enter recursive loops or guess answers when blocked.",
+          "recommendation": "Specify clear stop conditions and error reporting contracts.",
+          "created_at": "2026-11-22T00:16:44.227539Z"
+        }
+      ],
+      "warnings": [
+        "[FINDING-d8174b9d] (medium) ambiguity: Prompt contains vague language: clean code - Consequence: Model will hallucinate or adopt arbitrary assumptions. - Recommendation: Replace vague references with concrete, exhaustive specifications.",
+        "[FINDING-f89d5e22] (medium) missing_error_handling: No explicit error handling or stop condition specified. - Consequence: Model may enter recursive loops or guess answers when blocked. - Recommendation: Specify clear stop conditions and error reporting contracts."
+      ],
+      "blocking_reasons": [],
+      "execution_metadata": {}
+    },
+    {
+      "scenario_id": "scenario_9_technical_documentation",
+      "category": "technical_documentation",
+      "input_summary": {
+        "target": "gemini-cli",
+        "objective": "ADR: Durable Quota Lease Protocol"
+      },
+      "execution_mode": "DETERMINISTIC",
+      "current_state": "COMPLETED_WITH_WARNINGS",
+      "terminal_state": "COMPLETED_WITH_WARNINGS",
+      "steps": [
+        {
+          "step_name": "create_project",
+          "state": "STEP_EXECUTED",
+          "started_at": "2026-11-22T00:16:44.230661Z",
+          "completed_at": "2026-11-22T00:16:44.230662Z",
+          "details": {
+            "project_id": "127ce217-9dde-48be-8e97-1f13b218a898"
+          },
+          "validation_notes": [],
+          "errors": []
+        },
+        {
+          "step_name": "doc_discovery",
+          "state": "STEP_EXECUTED",
+          "started_at": "2026-11-22T00:16:44.239364Z",
+          "completed_at": "2026-11-22T00:16:44.239365Z",
+          "details": {
+            "session_id": "36ed96eb-7bd6-4d07-97a4-07a95c45f664"
+          },
+          "validation_notes": [],
+          "errors": []
+        },
+        {
+          "step_name": "compile_gemini_package",
+          "state": "STEP_EXECUTED",
+          "started_at": "2026-11-22T00:16:44.253685Z",
+          "completed_at": "2026-11-22T00:16:44.253687Z",
+          "details": {
+            "package_id": "ed6fb497-3e6c-4a8a-b3aa-07368c64e7b5",
+            "hash": "ecf3818f3015047f07b9c1a2e11a82a5c254e9d5c174dc44bd955ed24f75fec9"
+          },
+          "validation_notes": [],
+          "errors": []
+        },
+        {
+          "step_name": "autopsy_docs",
+          "state": "STEP_EXECUTED",
+          "started_at": "2026-11-22T00:16:44.255803Z",
+          "completed_at": "2026-11-22T00:16:44.255804Z",
+          "details": {
+            "verdict": "ready_with_caveats",
+            "findings_count": 3
+          },
+          "validation_notes": [],
+          "errors": []
+        }
+      ],
+      "transitions": [
+        {
+          "transition_id": "TRANS-0f340123",
+          "from_state": "STEP_EXECUTED",
+          "to_state": "STEP_VALIDATED",
+          "timestamp": "2026-11-22T00:16:44.230682Z",
+          "reason": "Project created for technical docs",
+          "step_context": "create_project"
+        },
+        {
+          "transition_id": "TRANS-4af68010",
+          "from_state": "STEP_VALIDATED",
+          "to_state": "STEP_VALIDATED",
+          "timestamp": "2026-11-22T00:16:44.255836Z",
+          "reason": "Documentation scenario completed and validated",
+          "step_context": "docs_complete"
+        },
+        {
+          "transition_id": "TRANS-490b8d82",
+          "from_state": "STEP_VALIDATED",
+          "to_state": "COMPLETED_WITH_WARNINGS",
+          "timestamp": "2026-11-22T00:16:44.255863Z",
+          "reason": "Completed with non-blocking doc advisories",
+          "step_context": null
+        }
+      ],
+      "acceptance_criteria": [
+        {
+          "id": "SC9-AC-1",
+          "description": "ADR standard format, documented systems, and scope defined",
+          "is_mandatory": true,
+          "satisfied": true,
+          "evidence": "Standard: MADR 3.0; Scope: CapacityGovernor multiprocess lease protocol",
+          "evaluated_at": "2026-11-22T00:16:44.239372Z"
+        },
+        {
+          "id": "SC9-AC-2",
+          "description": "Technical accuracy, referenced versions (Python 3.13, SQLite WAL), and schema verified",
+          "is_mandatory": true,
+          "satisfied": true,
+          "evidence": "Referenced versions: Python 3.13, SQLAlchemy async, SQLite 3.45+ WAL",
+          "evaluated_at": "2026-11-22T00:16:44.239374Z"
+        },
+        {
+          "id": "SC9-AC-3",
+          "description": "Runnable CLI commands and API payload examples included",
+          "is_mandatory": true,
+          "satisfied": true,
+          "evidence": "Runnable examples: Python async reservation snippets and curl CLI requests",
+          "evaluated_at": "2026-11-22T00:16:44.239375Z"
+        },
+        {
+          "id": "SC9-AC-4",
+          "description": "Constitution approved with technical specifications",
+          "is_mandatory": true,
+          "satisfied": true,
+          "evidence": "Constitution approved with documentation standards and code validation rules",
+          "evaluated_at": "2026-11-22T00:16:44.248764Z"
+        },
+        {
+          "id": "SC9-AC-5",
+          "description": "Gemini CLI extension package compiled (gemini-extension.json, context/instructions.md)",
+          "is_mandatory": true,
+          "satisfied": true,
+          "evidence": "Compiled Gemini CLI package containing ['gemini-extension.json', 'context/instructions.md', 'commands/run.sh', 'README.md']",
+          "evaluated_at": "2026-11-22T00:16:44.253699Z"
+        },
+        {
+          "id": "SC9-AC-6",
+          "description": "Autopsy confirms zero outdated API references or ambiguous directives",
+          "is_mandatory": true,
+          "satisfied": true,
+          "evidence": "Autopsy verified clean documentation: verdict 'ready_with_caveats'",
+          "evaluated_at": "2026-11-22T00:16:44.255811Z"
+        },
+        {
+          "id": "SC9-AC-7",
+          "description": "Final documentation persisted with SHA-256 fingerprint in DB",
+          "is_mandatory": true,
+          "satisfied": true,
+          "evidence": "Final documentation package persisted with SHA-256 hash ecf3818f3015",
+          "evaluated_at": "2026-11-22T00:16:44.255830Z"
+        }
+      ],
+      "artifact_bindings": [
+        {
+          "artifact_id": "ed6fb497-3e6c-4a8a-b3aa-07368c64e7b5",
+          "artifact_type": "gemini_adr_package",
+          "content_hash": "ecf3818f3015047f07b9c1a2e11a82a5c254e9d5c174dc44bd955ed24f75fec9",
+          "version": 1,
+          "persisted": true,
+          "retrievable": true,
+          "byte_size": 793
+        }
+      ],
+      "initial_autopsy": {
+        "run_id": "AUT-d2a38afc",
+        "phase": "initial",
+        "artifact_id": "ed6fb497-3e6c-4a8a-b3aa-07368c64e7b5",
+        "artifact_hash": "ecf3818f3015047f07b9c1a2e11a82a5c254e9d5c174dc44bd955ed24f75fec9",
+        "verdict": "ready_with_caveats",
+        "findings_count": 3,
+        "findings": [
+          {
+            "id": "FINDING-5acb75f7",
+            "category": "missing_error_handling",
+            "severity": "medium",
+            "finding": "No explicit error handling or stop condition specified.",
+            "evidence_passage": null,
+            "consequence": "Model may enter recursive loops or guess answers when blocked.",
+            "recommendation": "Specify clear stop conditions and error reporting contracts.",
+            "disposition": "pending",
+            "is_resolved": false,
+            "blocks_release": false,
+            "verification_method": "deterministic_check"
+          },
+          {
+            "id": "FINDING-cc92ad22",
+            "category": "inadequate_constraints",
+            "severity": "medium",
+            "finding": "Prompt lacks negative boundary constraints or explicit prohibitions.",
+            "evidence_passage": null,
+            "consequence": "Model may take unconstrained actions or hallucinate out-of-scope behaviors.",
+            "recommendation": "Add explicit negative boundaries defining what the model must NOT do.",
+            "disposition": "pending",
+            "is_resolved": false,
+            "blocks_release": false,
+            "verification_method": "deterministic_check"
+          },
+          {
+            "id": "FINDING-8ebc1502",
+            "category": "testability_gap",
+            "severity": "low",
+            "finding": "Prompt contains no test validation criteria or verification method.",
+            "evidence_passage": null,
+            "consequence": "Output correctness cannot be objectively or deterministically verified.",
+            "recommendation": "Add observable acceptance criteria or automated test conditions.",
+            "disposition": "pending",
+            "is_resolved": false,
+            "blocks_release": false,
+            "verification_method": "deterministic_check"
+          }
+        ],
+        "quality_scores": {
+          "static_quality": 100.0,
+          "requirement_coverage": 80.0,
+          "target_compatibility": 90.0,
+          "security_robustness": 95.0
+        },
+        "inspected_at": "2026-11-22T00:16:44.255796Z"
+      },
+      "revision_events": [],
+      "resolution_events": [],
+      "final_autopsy": {
+        "run_id": "AUT-9706444c",
+        "phase": "final",
+        "artifact_id": "ed6fb497-3e6c-4a8a-b3aa-07368c64e7b5",
+        "artifact_hash": "ecf3818f3015047f07b9c1a2e11a82a5c254e9d5c174dc44bd955ed24f75fec9",
+        "verdict": "ready_with_caveats",
+        "findings_count": 3,
+        "findings": [
+          {
+            "id": "FINDING-5acb75f7",
+            "category": "missing_error_handling",
+            "severity": "medium",
+            "finding": "No explicit error handling or stop condition specified.",
+            "evidence_passage": null,
+            "consequence": "Model may enter recursive loops or guess answers when blocked.",
+            "recommendation": "Specify clear stop conditions and error reporting contracts.",
+            "disposition": "pending",
+            "is_resolved": false,
+            "blocks_release": false,
+            "verification_method": "deterministic_check"
+          },
+          {
+            "id": "FINDING-cc92ad22",
+            "category": "inadequate_constraints",
+            "severity": "medium",
+            "finding": "Prompt lacks negative boundary constraints or explicit prohibitions.",
+            "evidence_passage": null,
+            "consequence": "Model may take unconstrained actions or hallucinate out-of-scope behaviors.",
+            "recommendation": "Add explicit negative boundaries defining what the model must NOT do.",
+            "disposition": "pending",
+            "is_resolved": false,
+            "blocks_release": false,
+            "verification_method": "deterministic_check"
+          },
+          {
+            "id": "FINDING-8ebc1502",
+            "category": "testability_gap",
+            "severity": "low",
+            "finding": "Prompt contains no test validation criteria or verification method.",
+            "evidence_passage": null,
+            "consequence": "Output correctness cannot be objectively or deterministically verified.",
+            "recommendation": "Add observable acceptance criteria or automated test conditions.",
+            "disposition": "pending",
+            "is_resolved": false,
+            "blocks_release": false,
+            "verification_method": "deterministic_check"
+          }
+        ],
+        "quality_scores": {
+          "static_quality": 100.0,
+          "requirement_coverage": 80.0,
+          "target_compatibility": 90.0,
+          "security_robustness": 95.0
+        },
+        "inspected_at": "2026-11-22T00:16:44.255827Z"
+      },
+      "autopsy_findings": [
+        {
+          "id": "FINDING-5acb75f7",
+          "category": "missing_error_handling",
+          "severity": "medium",
+          "finding": "No explicit error handling or stop condition specified.",
+          "evidence_passage": null,
+          "consequence": "Model may enter recursive loops or guess answers when blocked.",
+          "recommendation": "Specify clear stop conditions and error reporting contracts.",
+          "disposition": "pending",
+          "is_resolved": false,
+          "blocks_release": false,
+          "verification_method": "deterministic_check"
+        },
+        {
+          "id": "FINDING-cc92ad22",
+          "category": "inadequate_constraints",
+          "severity": "medium",
+          "finding": "Prompt lacks negative boundary constraints or explicit prohibitions.",
+          "evidence_passage": null,
+          "consequence": "Model may take unconstrained actions or hallucinate out-of-scope behaviors.",
+          "recommendation": "Add explicit negative boundaries defining what the model must NOT do.",
+          "disposition": "pending",
+          "is_resolved": false,
+          "blocks_release": false,
+          "verification_method": "deterministic_check"
+        },
+        {
+          "id": "FINDING-8ebc1502",
+          "category": "testability_gap",
+          "severity": "low",
+          "finding": "Prompt contains no test validation criteria or verification method.",
+          "evidence_passage": null,
+          "consequence": "Output correctness cannot be objectively or deterministically verified.",
+          "recommendation": "Add observable acceptance criteria or automated test conditions.",
+          "disposition": "pending",
+          "is_resolved": false,
+          "blocks_release": false,
+          "verification_method": "deterministic_check"
+        }
+      ],
+      "unresolved_findings": [
+        {
+          "id": "FINDING-5acb75f7",
+          "category": "missing_error_handling",
+          "severity": "medium",
+          "finding": "No explicit error handling or stop condition specified.",
+          "evidence_passage": null,
+          "consequence": "Model may enter recursive loops or guess answers when blocked.",
+          "recommendation": "Specify clear stop conditions and error reporting contracts.",
+          "disposition": "pending",
+          "is_resolved": false,
+          "blocks_release": false,
+          "verification_method": "deterministic_check"
+        },
+        {
+          "id": "FINDING-cc92ad22",
+          "category": "inadequate_constraints",
+          "severity": "medium",
+          "finding": "Prompt lacks negative boundary constraints or explicit prohibitions.",
+          "evidence_passage": null,
+          "consequence": "Model may take unconstrained actions or hallucinate out-of-scope behaviors.",
+          "recommendation": "Add explicit negative boundaries defining what the model must NOT do.",
+          "disposition": "pending",
+          "is_resolved": false,
+          "blocks_release": false,
+          "verification_method": "deterministic_check"
+        },
+        {
+          "id": "FINDING-8ebc1502",
+          "category": "testability_gap",
+          "severity": "low",
+          "finding": "Prompt contains no test validation criteria or verification method.",
+          "evidence_passage": null,
+          "consequence": "Output correctness cannot be objectively or deterministically verified.",
+          "recommendation": "Add observable acceptance criteria or automated test conditions.",
+          "disposition": "pending",
+          "is_resolved": false,
+          "blocks_release": false,
+          "verification_method": "deterministic_check"
+        }
+      ],
+      "evaluation_records": [],
+      "warning_records": [
+        {
+          "warning_id": "WARN-7e2ef4a7",
+          "finding_id": "FINDING-5acb75f7",
+          "severity": "medium",
+          "category": "missing_error_handling",
+          "finding_text": "No explicit error handling or stop condition specified.",
+          "consequence": "Model may enter recursive loops or guess answers when blocked.",
+          "recommendation": "Specify clear stop conditions and error reporting contracts.",
+          "created_at": "2026-11-22T00:16:44.255850Z"
+        },
+        {
+          "warning_id": "WARN-7ff61a78",
+          "finding_id": "FINDING-cc92ad22",
+          "severity": "medium",
+          "category": "inadequate_constraints",
+          "finding_text": "Prompt lacks negative boundary constraints or explicit prohibitions.",
+          "consequence": "Model may take unconstrained actions or hallucinate out-of-scope behaviors.",
+          "recommendation": "Add explicit negative boundaries defining what the model must NOT do.",
+          "created_at": "2026-11-22T00:16:44.255855Z"
+        },
+        {
+          "warning_id": "WARN-eccc4a17",
+          "finding_id": "FINDING-8ebc1502",
+          "severity": "low",
+          "category": "testability_gap",
+          "finding_text": "Prompt contains no test validation criteria or verification method.",
+          "consequence": "Output correctness cannot be objectively or deterministically verified.",
+          "recommendation": "Add observable acceptance criteria or automated test conditions.",
+          "created_at": "2026-11-22T00:16:44.255859Z"
+        }
+      ],
+      "warnings": [
+        "[FINDING-5acb75f7] (medium) missing_error_handling: No explicit error handling or stop condition specified. - Consequence: Model may enter recursive loops or guess answers when blocked. - Recommendation: Specify clear stop conditions and error reporting contracts.",
+        "[FINDING-cc92ad22] (medium) inadequate_constraints: Prompt lacks negative boundary constraints or explicit prohibitions. - Consequence: Model may take unconstrained actions or hallucinate out-of-scope behaviors. - Recommendation: Add explicit negative boundaries defining what the model must NOT do.",
+        "[FINDING-8ebc1502] (low) testability_gap: Prompt contains no test validation criteria or verification method. - Consequence: Output correctness cannot be objectively or deterministically verified. - Recommendation: Add observable acceptance criteria or automated test conditions."
+      ],
+      "blocking_reasons": [],
+      "execution_metadata": {}
+    },
+    {
+      "scenario_id": "scenario_10_education_learning",
+      "category": "education_learning",
+      "input_summary": {
+        "target": "claude-code",
+        "objective": "MCP Tool Calling & Server Development Workshop"
+      },
+      "execution_mode": "DETERMINISTIC",
+      "current_state": "SUCCESS_FULLY_VERIFIED",
+      "terminal_state": "SUCCESS_FULLY_VERIFIED",
+      "steps": [
+        {
+          "step_name": "create_project",
+          "state": "STEP_EXECUTED",
+          "started_at": "2026-11-22T00:16:44.259675Z",
+          "completed_at": "2026-11-22T00:16:44.259677Z",
+          "details": {
+            "project_id": "6537c180-4355-4d36-a310-355cebb860ce"
+          },
+          "validation_notes": [],
+          "errors": []
+        },
+        {
+          "step_name": "education_discovery",
+          "state": "STEP_EXECUTED",
+          "started_at": "2026-11-22T00:16:44.269456Z",
+          "completed_at": "2026-11-22T00:16:44.269458Z",
+          "details": {
+            "session_id": "63e9fcdc-ca37-4694-a2ae-66ce344649f4"
+          },
+          "validation_notes": [],
+          "errors": []
+        },
+        {
+          "step_name": "compile_claude_package",
+          "state": "STEP_EXECUTED",
+          "started_at": "2026-11-22T00:16:44.281946Z",
+          "completed_at": "2026-11-22T00:16:44.281948Z",
+          "details": {
+            "package_id": "c8f9db47-a000-4cf6-b9b1-89f36a179a8e",
+            "hash": "d2377e552f6d0c005165f2ef989db5c1efc0e49f1e79ef1f57cb373bc4589dc9"
+          },
+          "validation_notes": [],
+          "errors": []
+        },
+        {
+          "step_name": "autopsy_education",
+          "state": "STEP_EXECUTED",
+          "started_at": "2026-11-22T00:16:44.283703Z",
+          "completed_at": "2026-11-22T00:16:44.283704Z",
+          "details": {
+            "verdict": "ready",
+            "findings_count": 0
+          },
+          "validation_notes": [],
+          "errors": []
+        }
+      ],
+      "transitions": [
+        {
+          "transition_id": "TRANS-ed32b9cd",
+          "from_state": "STEP_EXECUTED",
+          "to_state": "STEP_VALIDATED",
+          "timestamp": "2026-11-22T00:16:44.259701Z",
+          "reason": "Project created for education",
+          "step_context": "create_project"
+        },
+        {
+          "transition_id": "TRANS-e9cb8917",
+          "from_state": "STEP_VALIDATED",
+          "to_state": "STEP_VALIDATED",
+          "timestamp": "2026-11-22T00:16:44.283730Z",
+          "reason": "Education scenario completed and validated",
+          "step_context": "edu_complete"
+        },
+        {
+          "transition_id": "TRANS-b767e4c0",
+          "from_state": "STEP_VALIDATED",
+          "to_state": "SUCCESS_FULLY_VERIFIED",
+          "timestamp": "2026-11-22T00:16:44.283740Z",
+          "reason": "Education curriculum fully verified with 0 blockers",
+          "step_context": null
+        }
+      ],
+      "acceptance_criteria": [
+        {
+          "id": "SC10-AC-1",
+          "description": "Learner profile, prerequisites, and background defined",
+          "is_mandatory": true,
+          "satisfied": true,
+          "evidence": "Learner profile: Mid-level backend engineers with asyncio experience",
+          "evaluated_at": "2026-11-22T00:16:44.269465Z"
+        },
+        {
+          "id": "SC10-AC-2",
+          "description": "Measurable learning outcomes and hands-on pedagogical methodology established",
+          "is_mandatory": true,
+          "satisfied": true,
+          "evidence": "Outcomes: Implement MCP tools, JSON-RPC handling, and graceful error recovery",
+          "evaluated_at": "2026-11-22T00:16:44.269467Z"
+        },
+        {
+          "id": "SC10-AC-3",
+          "description": "Progressive coding exercises and test-driven comprehension checks formulated",
+          "is_mandatory": true,
+          "satisfied": true,
+          "evidence": "Progressive challenges verified via pytest test assertions",
+          "evaluated_at": "2026-11-22T00:16:44.269468Z"
+        },
+        {
+          "id": "SC10-AC-4",
+          "description": "Constitution approved with educational milestones",
+          "is_mandatory": true,
+          "satisfied": true,
+          "evidence": "Constitution approved with curriculum standards and assessment contracts",
+          "evaluated_at": "2026-11-22T00:16:44.277312Z"
+        },
+        {
+          "id": "SC10-AC-5",
+          "description": "Claude Code instructions compiled (CLAUDE.md, .claude/rules/*.md)",
+          "is_mandatory": true,
+          "satisfied": true,
+          "evidence": "Compiled Claude Code education bundle containing 4 files",
+          "evaluated_at": "2026-11-22T00:16:44.281956Z"
+        },
+        {
+          "id": "SC10-AC-6",
+          "description": "Autopsy verifies clear exercise progression and explicit failure handling",
+          "is_mandatory": true,
+          "satisfied": true,
+          "evidence": "Autopsy verified curriculum: verdict 'ready'",
+          "evaluated_at": "2026-11-22T00:16:44.283712Z"
+        },
+        {
+          "id": "SC10-AC-7",
+          "description": "Deliverable bound with SHA-256 and persisted in DB",
+          "is_mandatory": true,
+          "satisfied": true,
+          "evidence": "Final curriculum deliverable persisted with SHA-256 hash d2377e552f6d",
+          "evaluated_at": "2026-11-22T00:16:44.283722Z"
+        }
+      ],
+      "artifact_bindings": [
+        {
+          "artifact_id": "c8f9db47-a000-4cf6-b9b1-89f36a179a8e",
+          "artifact_type": "claude_education_package",
+          "content_hash": "d2377e552f6d0c005165f2ef989db5c1efc0e49f1e79ef1f57cb373bc4589dc9",
+          "version": 1,
+          "persisted": true,
+          "retrievable": true,
+          "byte_size": 998
+        }
+      ],
+      "initial_autopsy": {
+        "run_id": "AUT-d2af8fa0",
+        "phase": "initial",
+        "artifact_id": "c8f9db47-a000-4cf6-b9b1-89f36a179a8e",
+        "artifact_hash": "d2377e552f6d0c005165f2ef989db5c1efc0e49f1e79ef1f57cb373bc4589dc9",
+        "verdict": "ready",
+        "findings_count": 0,
+        "findings": [],
+        "quality_scores": {
+          "static_quality": 100.0,
+          "requirement_coverage": 90.0,
+          "target_compatibility": 90.0,
+          "security_robustness": 95.0
+        },
+        "inspected_at": "2026-11-22T00:16:44.283696Z"
+      },
+      "revision_events": [],
+      "resolution_events": [],
+      "final_autopsy": {
+        "run_id": "AUT-87f5d4bb",
+        "phase": "final",
+        "artifact_id": "c8f9db47-a000-4cf6-b9b1-89f36a179a8e",
+        "artifact_hash": "d2377e552f6d0c005165f2ef989db5c1efc0e49f1e79ef1f57cb373bc4589dc9",
+        "verdict": "ready",
+        "findings_count": 0,
+        "findings": [],
+        "quality_scores": {
+          "static_quality": 100.0,
+          "requirement_coverage": 90.0,
+          "target_compatibility": 90.0,
+          "security_robustness": 95.0
+        },
+        "inspected_at": "2026-11-22T00:16:44.283719Z"
+      },
+      "autopsy_findings": [],
+      "unresolved_findings": [],
+      "evaluation_records": [],
+      "warning_records": [],
       "warnings": [],
       "blocking_reasons": [],
       "execution_metadata": {}

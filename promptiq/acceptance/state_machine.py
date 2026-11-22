@@ -11,11 +11,15 @@ from typing import Any
 from promptiq.schemas.acceptance import (
     AcceptanceCriterion,
     ArtifactBinding,
+    AutopsyInspectionRecord,
     ExecutionMode,
     ExecutionState,
+    FindingResolutionEvent,
+    RevisionEventRecord,
     ScenarioAuditTrace,
     StateTransitionRecord,
     StepRecord,
+    WarningRecord,
 )
 
 
@@ -111,12 +115,128 @@ class AcceptanceStateMachine:
         self.transitions: list[StateTransitionRecord] = []
         self.acceptance_criteria: list[AcceptanceCriterion] = []
         self.artifact_bindings: dict[str, ArtifactBinding] = {}
+        self.initial_autopsy: AutopsyInspectionRecord | None = None
+        self.revision_events: list[RevisionEventRecord] = []
+        self.resolution_events: list[FindingResolutionEvent] = []
+        self.final_autopsy: AutopsyInspectionRecord | None = None
         self.autopsy_findings: list[dict[str, Any]] = []
         self.unresolved_findings: list[dict[str, Any]] = []
         self.evaluation_records: list[dict[str, Any]] = []
+        self.warning_records: list[WarningRecord] = []
         self.warnings: list[str] = []
         self.blocking_reasons: list[str] = []
         self.metadata: dict[str, Any] = {}
+
+    def record_autopsy_run(
+        self,
+        phase: str,
+        artifact_id: str,
+        artifact_hash: str,
+        verdict: str,
+        findings: list[dict[str, Any]],
+        quality_scores: dict[str, float] | None = None,
+    ) -> AutopsyInspectionRecord:
+        """Records an immutable Autopsy diagnosis event."""
+        rec = AutopsyInspectionRecord(
+            phase=phase,
+            artifact_id=artifact_id,
+            artifact_hash=artifact_hash,
+            verdict=verdict,
+            findings_count=len(findings),
+            findings=findings,
+            quality_scores=quality_scores or {},
+        )
+        if phase == "initial":
+            self.initial_autopsy = rec
+            self.autopsy_findings = list(findings)
+            self.unresolved_findings = list(findings)
+        elif phase == "final":
+            self.final_autopsy = rec
+        return rec
+
+    def record_revision_event(
+        self,
+        previous_artifact_id: str,
+        previous_artifact_hash: str,
+        revised_artifact_id: str,
+        revised_artifact_hash: str,
+        changes_summary: str = "",
+    ) -> RevisionEventRecord:
+        """Records an immutable artifact revision event."""
+        rev = RevisionEventRecord(
+            previous_artifact_id=previous_artifact_id,
+            previous_artifact_hash=previous_artifact_hash,
+            revised_artifact_id=revised_artifact_id,
+            revised_artifact_hash=revised_artifact_hash,
+            changes_summary=changes_summary,
+        )
+        self.revision_events.append(rev)
+        return rev
+
+    def record_finding_resolution(
+        self,
+        finding_id: str,
+        original_category: str,
+        original_severity: str,
+        revised_artifact_hash: str,
+        status: str,
+        resolution_evidence: str,
+        verification_reason: str,
+    ) -> FindingResolutionEvent:
+        """Records a finding resolution event bound to the revised artifact hash."""
+        res = FindingResolutionEvent(
+            finding_id=finding_id,
+            original_category=original_category,
+            original_severity=original_severity,
+            revised_artifact_hash=revised_artifact_hash,
+            status=status,
+            resolution_evidence=resolution_evidence,
+            verification_reason=verification_reason,
+        )
+        self.resolution_events.append(res)
+        return res
+
+    def derive_unresolved_findings_and_warnings(self) -> list[dict[str, Any]]:
+        """Derives current unresolved findings and populates warning records from findings."""
+        resolved_ids = {
+            r.finding_id for r in self.resolution_events if r.status == "resolved"
+        }
+        source_findings = self.autopsy_findings if self.autopsy_findings else self.unresolved_findings
+        unresolved: list[dict[str, Any]] = []
+        for f in source_findings:
+            fid = f.get("id")
+            if fid and fid not in resolved_ids:
+                unresolved.append(f)
+
+        # Also include any new findings from final autopsy
+        if self.final_autopsy:
+            existing_fids = {f.get("id") for f in unresolved}
+            for ff in self.final_autopsy.findings:
+                if ff.get("id") not in existing_fids:
+                    unresolved.append(ff)
+
+        self.unresolved_findings = unresolved
+
+        # Populate structured warning records and text warnings
+        self.warning_records = []
+        for uf in unresolved:
+            warn = WarningRecord(
+                finding_id=uf.get("id", "UNKNOWN"),
+                severity=uf.get("severity", "medium"),
+                category=uf.get("category", "general"),
+                finding_text=uf.get("finding", ""),
+                consequence=uf.get("consequence", ""),
+                recommendation=uf.get("recommendation", ""),
+            )
+            self.warning_records.append(warn)
+            warn_str = (
+                f"[{warn.finding_id}] ({warn.severity}) {warn.category}: {warn.finding_text} - "
+                f"Consequence: {warn.consequence} - Recommendation: {warn.recommendation}"
+            )
+            if warn_str not in self.warnings:
+                self.warnings.append(warn_str)
+
+        return self.unresolved_findings
 
     def add_criterion(self, criterion_id: str, description: str, is_mandatory: bool = True) -> None:
         """Registers a required acceptance condition."""
@@ -301,9 +421,12 @@ class AcceptanceStateMachine:
                 "Transition to COMPLETED_WITH_WARNINGS instead."
             )
 
+        # Condition F: Evaluation records must not contain contradictory mock-as-live provenance
+        self._validate_evaluation_provenance()
+
     def _validate_warnings_gates(self) -> None:
         """Gate validations for COMPLETED_WITH_WARNINGS."""
-        # Condition: Cannot complete with warnings if a CRITICAL or HIGH blocking issue remains
+        # Condition A: Cannot complete with warnings if a CRITICAL or HIGH blocking issue remains
         blocking = [
             f
             for f in self.unresolved_findings
@@ -315,8 +438,48 @@ class AcceptanceStateMachine:
                 "Scenario must transition to NEEDS_REVISION, BLOCKED, or FAILED."
             )
 
+        # Condition B: Must have warning records if unresolved findings exist
+        if self.unresolved_findings and not self.warnings:
+            self.derive_unresolved_findings_and_warnings()
+            if not self.warnings:
+                raise GateValidationError(
+                    "Cannot transition to COMPLETED_WITH_WARNINGS: unresolved findings exist but warnings list is empty."
+                )
+
+        # Condition C: Evaluation records must not contain contradictory mock-as-live provenance
+        self._validate_evaluation_provenance()
+
+    def _validate_evaluation_provenance(self) -> None:
+        """Enforces that mock evaluations or synthetic routes are never classified as LIVE_PROVIDER."""
+        for ev in self.evaluation_records:
+            m_id = ev.get("model_id", "")
+            route = str(ev.get("provider_route") or ev.get("provenance", {}).get("route", "")).lower()
+            m_mode = str(ev.get("execution_mode", "")).upper()
+            prov_mode = str(ev.get("provenance", {}).get("mode", "")).upper()
+
+            is_mock = m_id in ("promptiq-mock-v1", "mock") or route in ("mock", "synthetic")
+
+            if is_mock and (m_mode in ("LIVE", "LIVE_PROVIDER") or prov_mode in ("LIVE", "LIVE_PROVIDER")):
+                raise GateValidationError(
+                    f"Contradictory execution mode in evaluation record: model '{m_id}' on route '{route}' "
+                    "cannot be classified as LIVE_PROVIDER."
+                )
+
+            if m_mode == "LIVE_PROVIDER":
+                has_req_id = bool(ev.get("provider_request_id")) or any(
+                    bool(r.get("provider_request_id")) for r in ev.get("results", [])
+                )
+                if not has_req_id:
+                    raise GateValidationError(
+                        "Evaluation record claims LIVE_PROVIDER execution mode without verifiable provider request ID."
+                    )
+
     def to_audit_trace(self) -> ScenarioAuditTrace:
         """Exports the complete audit trace."""
+        # Ensure warning records are synchronized
+        if self.unresolved_findings and not self.warning_records:
+            self.derive_unresolved_findings_and_warnings()
+
         return ScenarioAuditTrace(
             scenario_id=self.scenario_id,
             category=self.category,
@@ -328,9 +491,14 @@ class AcceptanceStateMachine:
             transitions=self.transitions,
             acceptance_criteria=self.acceptance_criteria,
             artifact_bindings=list(self.artifact_bindings.values()),
+            initial_autopsy=self.initial_autopsy,
+            revision_events=self.revision_events,
+            resolution_events=self.resolution_events,
+            final_autopsy=self.final_autopsy,
             autopsy_findings=self.autopsy_findings,
             unresolved_findings=self.unresolved_findings,
             evaluation_records=self.evaluation_records,
+            warning_records=self.warning_records,
             warnings=self.warnings,
             blocking_reasons=self.blocking_reasons,
             execution_metadata=self.metadata,

@@ -11,6 +11,16 @@ class RawPromptTargetAdapter(BaseTargetAdapter):
     """Compiles PPS into a clean, copy-ready prompt markdown file or prompt suite."""
 
     target_name: str = "raw-prompt"
+    capabilities: dict[str, Any] = {
+        "context_window": None,  # Output format only; no fixed host or model execution environment
+        "supports_mcp": False,
+        "supports_subagents": False,
+        "supports_artifacts": False,
+        "supports_rules_hierarchy": False,
+        "supports_tool_calling": False,
+        "max_output_tokens": None,
+        "multimodal": False,
+    }
 
     def compile(
         self, pps: PromptSpecSchema, output_type: OutputType

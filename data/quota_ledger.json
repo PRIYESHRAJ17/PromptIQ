@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-11-21T23:42:52.070345+00:00",
+  "updated_at": "2026-11-22T00:15:35.298710+00:00",
   "model_requests_minute": {
     "openai/gpt-oss-120b": [],
     "promptiq-mock-v1": [],

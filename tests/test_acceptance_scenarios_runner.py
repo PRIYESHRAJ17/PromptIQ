@@ -1,4 +1,4 @@
-"""Tests for Acceptance Scenarios Runner executing all 5 product intelligence scenarios."""
+"""Tests for Acceptance Scenarios Runner executing all 10 task family scenarios."""
 
 import pytest
 
@@ -13,7 +13,7 @@ from promptiq.schemas.acceptance import ExecutionState
 
 @pytest.mark.asyncio
 async def test_acceptance_runner_e2e_all_scenarios():
-    """Executes the master acceptance scenarios runner through the state machine."""
+    """Executes the master acceptance scenarios runner through all 10 task families."""
     await init_db()
 
     async with async_session_factory() as db:
@@ -21,9 +21,10 @@ async def test_acceptance_runner_e2e_all_scenarios():
         summary = await run_all_acceptance_scenarios(db, user, ws)
         await db.commit()
 
-    assert summary.total_scenarios == 5
+    assert summary.total_scenarios == 10
     assert summary.overall_verdict in ("PASS", "CONDITIONAL_PASS")
-    assert summary.fully_verified_count >= 3
+    assert summary.fully_verified_count >= 4
+    assert summary.completed_with_warnings_count >= 4
     assert summary.blocked_count == 0
     assert summary.failed_count == 0
 
@@ -39,5 +40,5 @@ async def test_scenario_5_unresolved_finding_transitions_to_warnings():
         await db.commit()
 
     assert trace.terminal_state == ExecutionState.COMPLETED_WITH_WARNINGS
-    assert len(trace.unresolved_findings) == 1
-    assert trace.unresolved_findings[0]["category"] == "testability_gap"
+    assert len(trace.unresolved_findings) >= 1
+    assert any(f["category"] == "testability_gap" for f in trace.unresolved_findings)

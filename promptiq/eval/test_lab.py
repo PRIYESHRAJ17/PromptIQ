@@ -184,6 +184,14 @@ class PromptTestLab:
         db.add(run)
         await db.flush()
 
+        # Determine honest execution mode based on model identifier and provider route
+        if run.model_id in ("promptiq-mock-v1", "mock") or run.provider_route in ("mock", "synthetic"):
+            exec_mode = "MOCK"
+        elif any(c.get("provider_request_id") for c in case_results):
+            exec_mode = "LIVE_PROVIDER"
+        else:
+            exec_mode = "MOCK" if settings.is_test else "DETERMINISTIC"
+
         return EvaluationRunResponse(
             id=run.id,
             suite_id=run.suite_id,
@@ -195,7 +203,8 @@ class PromptTestLab:
             results=run.results,
             latency_ms=run.latency_ms,
             cost_estimate=0.0,
-            execution_mode="mock" if settings.is_test else "live",
+            evaluation_method="deterministic",
+            execution_mode=exec_mode,
             num_runs=run_req.num_runs,
             mean_latency_ms=total_latency_ms,
             latency_variance=0.0,
@@ -203,7 +212,7 @@ class PromptTestLab:
                 "suite_id": suite.id,
                 "package_id": pkg.id,
                 "model_id": run.model_id,
-                "mode": "mock" if settings.is_test else "live",
+                "mode": exec_mode,
                 "route": run.provider_route,
             },
         )

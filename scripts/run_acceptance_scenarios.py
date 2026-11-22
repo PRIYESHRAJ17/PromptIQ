@@ -1,4 +1,4 @@
-"""Comprehensive runner executing all 5 PromptIQ product intelligence scenarios with strict Quality Gates.
+"""Comprehensive runner executing all 10 PromptIQ product intelligence scenarios with strict Quality Gates.
 
 Validates:
 1. Software Engineering (software_project)
@@ -6,6 +6,11 @@ Validates:
 3. AI Agent Development (agent_creation)
 4. Business Strategy (business_strategy)
 5. General Prompt Improvement (prompt_improvement)
+6. Product Development & PRD (product_development)
+7. Writing & Long-Form Content (writing_content)
+8. Data Analytics & Pipeline Engineering (data_analysis)
+9. Technical Documentation (technical_documentation)
+10. Education & Curriculum Design (education_learning)
 
 Enforces cryptographic artifact binding, state machine transition validation,
 revision verification, and honest evidence-backed terminal states.
@@ -23,11 +28,12 @@ from promptiq.core.database import async_session_factory, init_db
 
 TRACE_OUTPUT_PATH = Path("docs/ACCEPTANCE_SCENARIOS_TRACE.json")
 TRACE_V2_OUTPUT_PATH = Path("docs/ACCEPTANCE_SCENARIOS_TRACE_V2.json")
+TRACE_V3_OUTPUT_PATH = Path("docs/ACCEPTANCE_SCENARIOS_TRACE_V3.json")
 
 
 async def main():
     print("=" * 80)
-    print("PROMPTIQ MASTER ACCEPTANCE RUNNER — QUALITY GATES & STATE MACHINE ENFORCEMENT")
+    print("PROMPTIQ MASTER ACCEPTANCE RUNNER — 10 TASK FAMILIES & QUALITY GATES")
     print("=" * 80)
     await init_db()
 
@@ -35,7 +41,7 @@ async def main():
         user, ws = await setup_test_workspace_and_user(db)
         print(f"Provisioned operator: {user.email} (Workspace: {ws.id})")
 
-        print("\nExecuting all 5 acceptance scenarios under strict quality gates...")
+        print("\nExecuting all 10 acceptance scenarios under strict quality gates...")
         summary = await run_all_acceptance_scenarios(db, user, ws)
         await db.commit()
 
@@ -63,8 +69,11 @@ async def main():
     with open(TRACE_V2_OUTPUT_PATH, "w", encoding="utf-8") as f:
         json.dump(summary_dict, f, indent=2)
 
+    with open(TRACE_V3_OUTPUT_PATH, "w", encoding="utf-8") as f:
+        json.dump(summary_dict, f, indent=2)
+
     print(
-        f"\nAudit traces successfully persisted to:\n - {TRACE_OUTPUT_PATH}\n - {TRACE_V2_OUTPUT_PATH}"
+        f"\nAudit traces successfully persisted to:\n - {TRACE_OUTPUT_PATH}\n - {TRACE_V2_OUTPUT_PATH}\n - {TRACE_V3_OUTPUT_PATH}"
     )
 
 

@@ -124,6 +124,67 @@ class ArtifactBinding(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+class AutopsyInspectionRecord(BaseModel):
+    """Immutable audit record of a Prompt Autopsy diagnosis phase."""
+
+    run_id: str = Field(default_factory=lambda: f"AUT-{uuid.uuid4().hex[:8]}")
+    phase: str = "initial"  # initial, interim, final
+    artifact_id: str
+    artifact_hash: str
+    verdict: str
+    findings_count: int = 0
+    findings: list[dict[str, Any]] = Field(default_factory=list)
+    quality_scores: dict[str, float] = Field(default_factory=dict)
+    inspected_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class RevisionEventRecord(BaseModel):
+    """Immutable audit record of an artifact revision event."""
+
+    revision_id: str = Field(default_factory=lambda: f"REV-{uuid.uuid4().hex[:8]}")
+    previous_artifact_id: str
+    previous_artifact_hash: str
+    revised_artifact_id: str
+    revised_artifact_hash: str
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    changes_summary: str = ""
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class FindingResolutionEvent(BaseModel):
+    """Formal resolution event binding an original finding to the exact revised artifact hash."""
+
+    resolution_id: str = Field(default_factory=lambda: f"RES-{uuid.uuid4().hex[:8]}")
+    finding_id: str
+    original_category: str
+    original_severity: str
+    revised_artifact_hash: str
+    status: str = "resolved"  # resolved, partially_resolved, rejected_with_reason, unresolved
+    resolution_evidence: str
+    verification_reason: str
+    verified_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class WarningRecord(BaseModel):
+    """Structured warning derived from an unresolved non-blocking advisory finding."""
+
+    warning_id: str = Field(default_factory=lambda: f"WARN-{uuid.uuid4().hex[:8]}")
+    finding_id: str
+    severity: str
+    category: str
+    finding_text: str
+    consequence: str
+    recommendation: str
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+
+    model_config = ConfigDict(from_attributes=True)
+
+
 class ScenarioAuditTrace(BaseModel):
     """Complete, versioned audit trace for an acceptance scenario."""
 
@@ -137,9 +198,14 @@ class ScenarioAuditTrace(BaseModel):
     transitions: list[StateTransitionRecord] = Field(default_factory=list)
     acceptance_criteria: list[AcceptanceCriterion] = Field(default_factory=list)
     artifact_bindings: list[ArtifactBinding] = Field(default_factory=list)
+    initial_autopsy: AutopsyInspectionRecord | None = None
+    revision_events: list[RevisionEventRecord] = Field(default_factory=list)
+    resolution_events: list[FindingResolutionEvent] = Field(default_factory=list)
+    final_autopsy: AutopsyInspectionRecord | None = None
     autopsy_findings: list[dict[str, Any]] = Field(default_factory=list)
     unresolved_findings: list[dict[str, Any]] = Field(default_factory=list)
     evaluation_records: list[dict[str, Any]] = Field(default_factory=list)
+    warning_records: list[WarningRecord] = Field(default_factory=list)
     warnings: list[str] = Field(default_factory=list)
     blocking_reasons: list[str] = Field(default_factory=list)
     execution_metadata: dict[str, Any] = Field(default_factory=dict)
@@ -150,7 +216,7 @@ class ScenarioAuditTrace(BaseModel):
 class AcceptanceSuiteSummary(BaseModel):
     """Machine-verifiable summary across all executed scenarios."""
 
-    runner_version: str = "2.1.0"
+    runner_version: str = "3.0.0"
     execution_timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
     total_scenarios: int = 0
     fully_verified_count: int = 0
