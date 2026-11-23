@@ -35,9 +35,10 @@ from promptiq.services.auth_service import AuthService
 from promptiq.services.constitution_service import ConstitutionService
 from promptiq.services.project_service import ProjectService
 
-_COMMON_TOOLS = [
+# Standard RFC-compliant MCP Tools matching ^[a-zA-Z0-9_-]{1,64}$ (strictly NO dots)
+_TOOL_DEFINITIONS = [
     {
-        "name": "forge.create_project",
+        "name": "create_project",
         "description": "Create a new PromptIQ project with an initial Project Constitution.",
         "inputSchema": {
             "type": "object",
@@ -52,7 +53,7 @@ _COMMON_TOOLS = [
         },
     },
     {
-        "name": "forge.run_discovery",
+        "name": "run_discovery",
         "description": "Start or continue adaptive discovery for a project.",
         "inputSchema": {
             "type": "object",
@@ -65,7 +66,7 @@ _COMMON_TOOLS = [
         },
     },
     {
-        "name": "forge.get_project_constitution",
+        "name": "get_project_constitution",
         "description": "Retrieve the canonical Project Constitution source of truth.",
         "inputSchema": {
             "type": "object",
@@ -76,7 +77,7 @@ _COMMON_TOOLS = [
         },
     },
     {
-        "name": "forge.compile_prompt",
+        "name": "compile_prompt",
         "description": "Compile the approved Constitution into target-native instructions (Antigravity, Claude Code, Cursor, Codex).",
         "inputSchema": {
             "type": "object",
@@ -93,7 +94,7 @@ _COMMON_TOOLS = [
         },
     },
     {
-        "name": "forge.review_prompt",
+        "name": "review_prompt",
         "description": "Execute adversarial prompt autopsy and diagnostic critique.",
         "inputSchema": {
             "type": "object",
@@ -105,7 +106,7 @@ _COMMON_TOOLS = [
         },
     },
     {
-        "name": "forge.research",
+        "name": "research",
         "description": "Investigate technical documentation and record claims in the Evidence Ledger.",
         "inputSchema": {
             "type": "object",
@@ -122,7 +123,7 @@ _COMMON_TOOLS = [
         },
     },
     {
-        "name": "forge.record_checkpoint",
+        "name": "record_checkpoint",
         "description": "Record a verified project milestone checkpoint for cross-agent continuity.",
         "inputSchema": {
             "type": "object",
@@ -135,7 +136,7 @@ _COMMON_TOOLS = [
         },
     },
     {
-        "name": "forge.get_context_pack",
+        "name": "get_context_pack",
         "description": "Compile and pack project context for an external agent within a token budget.",
         "inputSchema": {
             "type": "object",
@@ -147,7 +148,7 @@ _COMMON_TOOLS = [
         },
     },
     {
-        "name": "forge.execute_agent_task",
+        "name": "execute_agent_task",
         "description": "Execute an objective through the PromptIQ autonomous observe-decide-act agent loop with tool permissions.",
         "inputSchema": {
             "type": "object",
@@ -160,7 +161,7 @@ _COMMON_TOOLS = [
         },
     },
     {
-        "name": "promptiq_get_quota_status",
+        "name": "get_quota_status",
         "description": "Check PromptIQ workspace zero-price quota and anti-BYOK enforcement status.",
         "inputSchema": {
             "type": "object",
@@ -169,20 +170,12 @@ _COMMON_TOOLS = [
     },
 ]
 
-# Ensure every tool defines BOTH 'inputSchema' and 'parameters' so any MCP client parses it properly
+# Ensure every tool defines BOTH 'inputSchema' and 'parameters' with strictly valid naming
 TOOLS = []
-for t in _COMMON_TOOLS:
+for t in _TOOL_DEFINITIONS:
     tool_copy = dict(t)
     tool_copy["parameters"] = tool_copy["inputSchema"]
     TOOLS.append(tool_copy)
-
-    # Register promptiq_ alias for forge.* tools
-    if t["name"].startswith("forge."):
-        alias_name = t["name"].replace("forge.", "promptiq_")
-        alias_tool = dict(t)
-        alias_tool["name"] = alias_name
-        alias_tool["parameters"] = alias_tool["inputSchema"]
-        TOOLS.append(alias_tool)
 
 
 async def get_or_create_mcp_user(db: AsyncSession) -> User:
@@ -262,8 +255,8 @@ async def _dispatch_tool(
     norm_name = (
         tool_name.lower()
         .replace("-", "_")
-        .removeprefix("forge.")
-        .removeprefix("promptiq.")
+        .replace(".", "_")
+        .removeprefix("forge_")
         .removeprefix("promptiq_")
     )
 
@@ -301,7 +294,7 @@ async def _dispatch_tool(
         res = await AdaptiveDiscoveryEngine.start_session(db, project_id, user_id, intake)
         return res.model_dump()
 
-    elif norm_name in ("get_project_constitution", "get_constitution"):
+    elif norm_name in ("get_project_constitution", "get_constitution", "constitution"):
         project_id = await _resolve_project_id(db, user_id, arguments.get("project_id"))
         constitution = await ConstitutionService.get_current_constitution(db, project_id, user_id)
         return {
@@ -384,7 +377,7 @@ async def _dispatch_tool(
         res = await ContextCompiler.compile_context(db, project_id, user_id, req)
         return res.model_dump()
 
-    elif norm_name in ("execute_agent_task", "execute_workflow"):
+    elif norm_name in ("execute_agent_task", "execute_task", "execute_workflow"):
         from promptiq.orchestrator.agent_loop import AutonomousAgentLoop
 
         objective = (
