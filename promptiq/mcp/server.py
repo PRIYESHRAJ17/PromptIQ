@@ -281,6 +281,12 @@ async def handle_tool_call(
 
 async def run_stdio_mcp_server():
     """Runs standard stdio MCP JSON-RPC protocol loop with full initialize handshake support."""
+    # Ensure all logging goes to stderr in MCP mode to preserve stdout for JSON-RPC
+    import logging
+    for h in logging.getLogger("promptiq").handlers:
+        if isinstance(h, logging.StreamHandler):
+            h.stream = sys.stderr
+
     await init_db()
 
     # Create/resolve default MCP user

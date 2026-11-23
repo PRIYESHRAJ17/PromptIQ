@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "promptiq": {
+      "command": "python",
+      "args": [
+        "-m",
+        "promptiq.mcp.server"
+      ],
+      "env": {
+        "PROMPTIQ_ZERO_PRICE_ENFORCEMENT": "true"
+      }
+    }
+  }
+}

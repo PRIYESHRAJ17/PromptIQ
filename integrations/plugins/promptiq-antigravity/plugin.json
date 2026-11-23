@@ -1,0 +1,11 @@
+{
+  "name": "promptiq",
+  "displayName": "PromptIQ Intelligence & Orchestration",
+  "description": "Unified prompt intelligence, task-family compilation, Project Constitution memory, and adversarial autopsy review for Antigravity agents.",
+  "version": "1.0.0",
+  "suggestedPrompts": [
+    "Run a 21-category forensic autopsy on my prompt",
+    "Compile project requirements into an Antigravity prompt package",
+    "Inspect the Project Constitution and active requirements"
+  ]
+}
