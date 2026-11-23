@@ -1,12 +1,19 @@
 {
   "name": "promptiq-codex-plugin",
-  "version": "1.0.0",
-  "description": "PromptIQ Codex & GPT developer tooling plugin",
-  "main": "index.js",
+  "version": "1.2.0",
+  "description": "PromptIQ Codex & MCP developer tooling plugin",
+  "main": "bin/promptiq-codex.js",
   "bin": {
-    "promptiq-codex": "./bin/promptiq-codex.js"
+    "promptiq-codex": "./bin/promptiq-codex.js",
+    "promptiq-mcp": "./bin/promptiq-mcp.js"
   },
-  "keywords": ["promptiq", "codex", "mcp"],
+  "keywords": [
+    "promptiq",
+    "codex",
+    "mcp",
+    "autopsy",
+    "constitution"
+  ],
   "author": "PromptIQ Core Systems",
   "license": "Apache-2.0"
 }

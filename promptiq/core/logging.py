@@ -2,6 +2,7 @@
 
 import json
 import logging
+import os
 import re
 import sys
 from typing import Any
@@ -126,7 +127,8 @@ def setup_logging() -> logging.Logger:
 
     # Avoid duplicate handlers if already configured
     if not root_logger.handlers:
-        handler = logging.StreamHandler(sys.stdout)
+        target_stream = sys.stderr if os.environ.get("PROMPTIQ_MCP_MODE") == "true" else sys.stdout
+        handler = logging.StreamHandler(target_stream)
         handler.setFormatter(RedactingJsonFormatter())
         root_logger.addHandler(handler)
 

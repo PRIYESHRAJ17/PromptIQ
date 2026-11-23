@@ -1,15 +1,21 @@
 """Application configuration and environment settings for PromptIQ."""
 
+import os
+from pathlib import Path
 from typing import Literal
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+_REPO_ROOT = Path(__file__).resolve().parent.parent.parent
+_DEFAULT_DB_PATH = _REPO_ROOT / "promptiq.db"
+_DEFAULT_DB_URL = f"sqlite+aiosqlite:///{_DEFAULT_DB_PATH.as_posix()}"
 
 
 class Settings(BaseSettings):
     """Central configuration class loading from environment variables or .env file."""
 
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=str(_REPO_ROOT / ".env"),
         env_file_encoding="utf-8",
         extra="ignore",
     )
@@ -36,9 +42,9 @@ class Settings(BaseSettings):
         return [o.strip() for o in self.PROMPTIQ_CORS_ORIGINS.split(",") if o.strip()]
 
     # Database
-    # Default is SQLite for zero-config out-of-the-box local testing/dev
+    # Default is SQLite pointing to the canonical promptiq.db in repository root
     # Set to PostgreSQL (postgresql+asyncpg://...) for production
-    DATABASE_URL: str = "sqlite+aiosqlite:///./promptiq.db"
+    DATABASE_URL: str = _DEFAULT_DB_URL
 
     # Storage
     STORAGE_LOCAL_DIR: str = "./storage"

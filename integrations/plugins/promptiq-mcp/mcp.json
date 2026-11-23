@@ -1,9 +1,14 @@
 {
   "$schema": "https://modelcontextprotocol.io/schema.json",
   "name": "promptiq-mcp",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "description": "Universal RFC-compliant Model Context Protocol server exposing PromptIQ intelligence tools.",
-  "transport": ["stdio", "sse"],
-  "command": "python",
-  "args": ["-m", "promptiq.mcp.server"]
+  "transport": [
+    "stdio",
+    "sse"
+  ],
+  "command": "promptiq-mcp",
+  "env": {
+    "PROMPTIQ_ZERO_PRICE_ENFORCEMENT": "true"
+  }
 }
