@@ -17,6 +17,7 @@ import {
 } from 'lucide-react'
 import { TASK_FAMILIES, TARGET_ENVIRONMENTS } from '@/lib/constants'
 import { Badge } from '@/components/ui/Badge'
+import api from '@/lib/api'
 import type { TaskFamilyId } from '@/types'
 
 interface NewWorkflowProps {
@@ -45,15 +46,28 @@ export function NewWorkflow({ onWorkflowCreated }: NewWorkflowProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleLaunch = async () => {
-    const finalObjective = objective.trim() || 'Implement distributed idempotency key middleware for FastAPI with zero paid API keys'
+    const finalObjective =
+      objective.trim() ||
+      'Build a secure food donation and surplus food redistribution web application. Define its main modules, user roles, technical architecture, implementation plan, acceptance criteria and first development task.'
     setObjective(finalObjective)
     setIsSubmitting(true)
 
-    // Simulate creation or call API
-    setTimeout(() => {
+    try {
+      await api.ensureAuthenticated()
+      const job = await api.createJob({
+        operation_type: 'agent_workflow',
+        objective: finalObjective,
+        task_type: selectedFamily,
+        depth: depth,
+        target: selectedTarget,
+      })
+      onWorkflowCreated(job.id)
+    } catch (err) {
+      console.error('Failed to submit workflow to backend:', err)
+      alert(`Workflow submission failed: ${err instanceof Error ? err.message : String(err)}`)
+    } finally {
       setIsSubmitting(false)
-      onWorkflowCreated('WF-8922')
-    }, 600)
+    }
   }
 
   return (

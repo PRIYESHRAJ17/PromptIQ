@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Play, CheckCircle2, XCircle, Clock, ShieldAlert, Sparkles, Filter, ChevronRight } from 'lucide-react';
 import Badge from '../components/ui/Badge';
+import { api } from '../lib/api';
 
 interface TestCase {
   id: string;
@@ -15,7 +16,7 @@ interface TestCase {
   details: string;
 }
 
-const MOCK_TEST_CASES: TestCase[] = [
+const INITIAL_TEST_CASES: TestCase[] = [
   {
     id: 'tc-001',
     name: 'Zero-Price Route Enforcement',
@@ -30,15 +31,15 @@ const MOCK_TEST_CASES: TestCase[] = [
   },
   {
     id: 'tc-002',
-    name: 'Schema Adherence: Anthropic Tool Calls',
+    name: 'Schema Adherence: Anthropic & Universal Tool Calls',
     suite: 'Compiler Validation',
     taskFamily: 'AI Agent Architecture',
-    assertions: 8,
-    passed: 8,
+    assertions: 10,
+    passed: 10,
     status: 'passed',
     durationMs: 78,
     score: 1.0,
-    details: 'Ensures strict JSON Schema compliance in compiled tools for Claude Code and Claude 3.5 Sonnet.',
+    details: 'Ensures strict JSON Schema compliance across all PromptIQ MCP tools.',
   },
   {
     id: 'tc-003',
@@ -62,7 +63,7 @@ const MOCK_TEST_CASES: TestCase[] = [
     status: 'passed',
     durationMs: 512,
     score: 0.96,
-    details: 'Runs 5 parallel passes through LLM judge comparing semantic parity and AST structural equality.',
+    details: 'Runs parallel passes through normalizer comparing semantic parity and structural equality.',
   },
   {
     id: 'tc-005',
@@ -91,16 +92,30 @@ const MOCK_TEST_CASES: TestCase[] = [
 ];
 
 export default function TestLab() {
-  const [testCases, setTestCases] = useState<TestCase[]>(MOCK_TEST_CASES);
+  const [testCases, setTestCases] = useState<TestCase[]>(INITIAL_TEST_CASES);
   const [isRunning, setIsRunning] = useState(false);
   const [selectedSuite, setSelectedSuite] = useState('all');
-  const [activeTest, setActiveTest] = useState<TestCase | null>(MOCK_TEST_CASES[0]);
+  const [activeTest, setActiveTest] = useState<TestCase | null>(INITIAL_TEST_CASES[0]);
+  const [lastRunDuration, setLastRunDuration] = useState<number>(315);
+  const [lastExecutedAt, setLastExecutedAt] = useState<string | null>(null);
 
-  const handleRunAll = () => {
+  const handleRunAll = async () => {
     setIsRunning(true);
-    setTimeout(() => {
+    try {
+      const res = await api.runBenchmarks();
+      if (res && res.test_cases) {
+        setTestCases(res.test_cases as TestCase[]);
+        setLastRunDuration(res.total_duration_ms);
+        setLastExecutedAt(res.executed_at);
+        if (res.test_cases.length > 0) {
+          setActiveTest(res.test_cases[0] as TestCase);
+        }
+      }
+    } catch (err) {
+      console.error('Benchmark execution error:', err);
+    } finally {
       setIsRunning(false);
-    }, 1200);
+    }
   };
 
   const filteredTests = testCases.filter((tc) => {
@@ -163,13 +178,19 @@ export default function TestLab() {
         </div>
         <div className="p-4 rounded-xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900/50">
           <div className="text-xs text-stone-500 font-medium">Total Assertions</div>
-          <div className="mt-1 text-2xl font-semibold text-stone-900 dark:text-stone-100">82</div>
-          <div className="mt-1 text-xs text-stone-500">Zero false positives</div>
+          <div className="mt-1 text-2xl font-semibold text-stone-900 dark:text-stone-100">
+            {testCases.reduce((acc, tc) => acc + tc.assertions, 0)}
+          </div>
+          <div className="mt-1 text-xs text-stone-500">
+            {testCases.reduce((acc, tc) => acc + tc.passed, 0)} passing assertions
+          </div>
         </div>
         <div className="p-4 rounded-xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900/50">
           <div className="text-xs text-stone-500 font-medium">Execution Latency</div>
-          <div className="mt-1 text-2xl font-semibold text-stone-900 dark:text-stone-100">952 ms</div>
-          <div className="mt-1 text-xs text-stone-500">Full suite execution time</div>
+          <div className="mt-1 text-2xl font-semibold text-stone-900 dark:text-stone-100">{lastRunDuration} ms</div>
+          <div className="mt-1 text-xs text-stone-500">
+            {lastExecutedAt ? `Last run: ${new Date(lastExecutedAt).toLocaleTimeString()}` : 'Live benchmark execution'}
+          </div>
         </div>
       </div>
 

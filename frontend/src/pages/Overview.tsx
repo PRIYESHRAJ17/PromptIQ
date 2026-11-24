@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   Sparkles,
   ArrowRight,
@@ -12,66 +12,16 @@ import {
   ChevronRight,
   ShieldCheck,
   Zap,
+  Loader2,
 } from 'lucide-react'
 import Badge from '@/components/ui/Badge'
 import StatCard from '@/components/ui/StatCard'
+import api from '@/lib/api'
+import type { WorkflowJob, Project } from '@/types'
 
 interface OverviewProps {
   onNavigate: (route: string) => void
 }
-
-const RECENT_WORKFLOWS = [
-  {
-    id: 'wf-9821',
-    title: 'Distributed Stream Ingestion Engine',
-    taskFamily: 'software_engineering',
-    target: 'Google Antigravity',
-    status: 'COMPLETED',
-    stage: 'Verification & Packaging',
-    duration: '42s',
-    updated: '5 mins ago',
-  },
-  {
-    id: 'wf-9820',
-    title: 'Adversarial Prompt Security Audit',
-    taskFamily: 'prompt_improvement',
-    target: 'Claude Code',
-    status: 'COMPLETED',
-    stage: 'Forensic Autopsy',
-    duration: '18s',
-    updated: '24 mins ago',
-  },
-  {
-    id: 'wf-9819',
-    title: 'PostgreSQL 16 Replication Validator',
-    taskFamily: 'data_analysis',
-    target: 'Cursor IDE',
-    status: 'RUNNING',
-    stage: 'Subtask Execution (3/5)',
-    duration: '1m 12s',
-    updated: 'Just now',
-  },
-  {
-    id: 'wf-9818',
-    title: 'MCP Server RFC Specification Suite',
-    taskFamily: 'ai_agent_development',
-    target: 'Universal MCP',
-    status: 'COMPLETED',
-    stage: 'Package Verified',
-    duration: '35s',
-    updated: '1 hour ago',
-  },
-  {
-    id: 'wf-9817',
-    title: 'Autonomous Multi-Agent Task Orchestrator',
-    taskFamily: 'software_engineering',
-    target: 'Google Gemini CLI',
-    status: 'COMPLETED',
-    stage: 'Evaluation Matrix',
-    duration: '54s',
-    updated: '2 hours ago',
-  },
-]
 
 const QUICK_ACTIONS = [
   {
@@ -131,6 +81,33 @@ const QUICK_ACTIONS = [
 ]
 
 export function Overview({ onNavigate }: OverviewProps) {
+  const [jobs, setJobs] = useState<WorkflowJob[]>([])
+  const [projects, setProjects] = useState<Project[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        setLoading(true)
+        await api.ensureAuthenticated()
+        const [loadedJobs, loadedProjects] = await Promise.all([
+          api.getJobs().catch(() => []),
+          api.getProjects().catch(() => []),
+        ])
+        setJobs(loadedJobs)
+        setProjects(loadedProjects)
+      } catch (err) {
+        console.error('Failed to load overview data:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+    loadData()
+  }, [])
+
+  const completedJobs = jobs.filter((j) => (j.status as string) === 'COMPLETED' || (j.status as string) === 'COMPLETED_WITH_WARNINGS')
+  const passRate = jobs.length > 0 ? `${Math.round((completedJobs.length / jobs.length) * 100)}%` : '—'
+
   return (
     <div className="space-y-6 max-w-6xl">
       {/* Welcome Hero Banner */}
@@ -172,17 +149,17 @@ export function Overview({ onNavigate }: OverviewProps) {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <StatCard
           title="Verified Workflows"
-          value="148"
-          change="+18.4%"
-          trend="up"
-          description="Across 10 task families"
+          value={loading ? '...' : `${completedJobs.length} / ${jobs.length}`}
+          change={jobs.length > 0 ? `${completedJobs.length} completed` : 'No runs yet'}
+          trend="neutral"
+          description="Durable execution jobs"
         />
         <StatCard
-          title="Autopsy Pass Rate"
-          value="98.4%"
-          change="+3.2%"
+          title="Active Projects"
+          value={loading ? '...' : `${projects.length}`}
+          change="Persisted in SQLite"
           trend="up"
-          description="21 categories scanned"
+          description="With versioned constitutions"
         />
         <StatCard
           title="Active Invariants"
@@ -200,7 +177,7 @@ export function Overview({ onNavigate }: OverviewProps) {
         />
       </div>
 
-      {/* Quick Action Launchpad (Replaced heavy non-interactive graphs) */}
+      {/* Quick Action Launchpad */}
       <div>
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-sm font-bold uppercase tracking-wider text-[#6A6E78]">
@@ -237,7 +214,7 @@ export function Overview({ onNavigate }: OverviewProps) {
         </div>
       </div>
 
-      {/* Recent Workflow Executions Table (All rows clickable to workbench) */}
+      {/* Recent Workflow Executions Table */}
       <div className="rounded-xl border border-[#E8E2D8] dark:border-[#2C313E] bg-white dark:bg-[#1A1D24] shadow-xs overflow-hidden">
         <div className="p-4 sm:p-5 border-b border-[#E8E2D8] dark:border-[#2C313E] flex items-center justify-between">
           <div>
@@ -245,7 +222,7 @@ export function Overview({ onNavigate }: OverviewProps) {
               Recent Workflow Executions
             </h3>
             <p className="text-xs text-[#6A6E78] dark:text-[#9EA3B0] mt-0.5">
-              Click any execution to open the Workflow Workbench
+              Live durable jobs persisted in PromptIQ database
             </p>
           </div>
           <button
@@ -258,52 +235,65 @@ export function Overview({ onNavigate }: OverviewProps) {
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
-            <thead>
-              <tr className="border-b border-[#E8E2D8] dark:border-[#2C313E] bg-[#FAF7F0] dark:bg-[#1E222A] text-[#6A6E78] uppercase tracking-wider text-[10px]">
-                <th className="py-3 px-5 font-semibold">Workflow ID</th>
-                <th className="py-3 px-5 font-semibold">Goal & Objective</th>
-                <th className="py-3 px-5 font-semibold">Target Environment</th>
-                <th className="py-3 px-5 font-semibold">Current Stage</th>
-                <th className="py-3 px-5 font-semibold">Status</th>
-                <th className="py-3 px-5 font-semibold text-right">Action</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[#E8E2D8] dark:divide-[#2C313E]">
-              {RECENT_WORKFLOWS.map((wf) => (
-                <tr
-                  key={wf.id}
-                  onClick={() => onNavigate('workbench')}
-                  className="hover:bg-[#FAF7F0] dark:hover:bg-[#20242E] cursor-pointer transition-colors"
-                >
-                  <td className="py-3.5 px-5 font-mono text-[#6A6E78] font-medium">
-                    {wf.id}
-                  </td>
-                  <td className="py-3.5 px-5 font-semibold text-[#1E2229] dark:text-[#F2EFE9]">
-                    {wf.title}
-                  </td>
-                  <td className="py-3.5 px-5">
-                    <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300">
-                      {wf.target}
-                    </span>
-                  </td>
-                  <td className="py-3.5 px-5 text-[#6A6E78] dark:text-[#9EA3B0]">
-                    {wf.stage}
-                  </td>
-                  <td className="py-3.5 px-5">
-                    <Badge variant={wf.status === 'COMPLETED' ? 'success' : 'terracotta'}>
-                      {wf.status}
-                    </Badge>
-                  </td>
-                  <td className="py-3.5 px-5 text-right">
-                    <span className="text-[#C85A32] font-semibold text-[11px] group-hover:underline">
-                      Inspect &rarr;
-                    </span>
-                  </td>
+          {loading ? (
+            <div className="p-8 text-center text-xs text-[#6A6E78]">
+              <Loader2 className="w-5 h-5 animate-spin mx-auto mb-2 text-[#C85A32]" />
+              Loading workflow executions...
+            </div>
+          ) : jobs.length === 0 ? (
+            <div className="p-8 text-center text-xs text-[#6A6E78]">
+              <PlayCircle className="w-8 h-8 text-[#6A6E78] mx-auto mb-2 opacity-40" />
+              <p className="font-semibold text-sm text-[#1E2229] dark:text-[#F2EFE9]">No workflows executed yet</p>
+              <p className="mt-1">Launch your first autonomous workflow using the button above.</p>
+            </div>
+          ) : (
+            <table className="w-full text-left text-xs">
+              <thead>
+                <tr className="border-b border-[#E8E2D8] dark:border-[#2C313E] bg-[#FAF7F0] dark:bg-[#1E222A] text-[#6A6E78] uppercase tracking-wider text-[10px]">
+                  <th className="py-3 px-5 font-semibold">Workflow ID</th>
+                  <th className="py-3 px-5 font-semibold">Goal & Objective</th>
+                  <th className="py-3 px-5 font-semibold">Operation</th>
+                  <th className="py-3 px-5 font-semibold">Current Stage</th>
+                  <th className="py-3 px-5 font-semibold">Status</th>
+                  <th className="py-3 px-5 font-semibold text-right">Action</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-[#E8E2D8] dark:divide-[#2C313E]">
+                {jobs.slice(0, 10).map((wf) => (
+                  <tr
+                    key={wf.id}
+                    onClick={() => onNavigate('workbench')}
+                    className="hover:bg-[#FAF7F0] dark:hover:bg-[#20242E] cursor-pointer transition-colors"
+                  >
+                    <td className="py-3.5 px-5 font-mono text-[#6A6E78] font-medium text-[11px]">
+                      {wf.id.slice(0, 8)}...
+                    </td>
+                    <td className="py-3.5 px-5 font-semibold text-[#1E2229] dark:text-[#F2EFE9] max-w-xs truncate">
+                      {String(wf.checkpoint_data?.objective || wf.operation_type)}
+                    </td>
+                    <td className="py-3.5 px-5">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300">
+                        {wf.operation_type}
+                      </span>
+                    </td>
+                    <td className="py-3.5 px-5 text-[#6A6E78] dark:text-[#9EA3B0]">
+                      {wf.current_stage || 'initialization'}
+                    </td>
+                    <td className="py-3.5 px-5">
+                      <Badge variant={wf.status === 'COMPLETED' ? 'success' : wf.status === 'RUNNING' ? 'terracotta' : 'outline'}>
+                        {wf.status}
+                      </Badge>
+                    </td>
+                    <td className="py-3.5 px-5 text-right">
+                      <span className="text-[#C85A32] font-semibold text-[11px] group-hover:underline">
+                        Inspect &rarr;
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
     </div>

@@ -1,9 +1,11 @@
 """Workflow and background job API routes."""
 
-from fastapi import APIRouter, Depends, Query, status
+from fastapi import APIRouter, BackgroundTasks, Depends, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from promptiq.api.deps import get_current_user, get_db
+from promptiq.core.database import async_session_factory
+from promptiq.core.logging import logger
 from promptiq.models.user import User
 from promptiq.schemas.job import JobCancelRequest, JobCreate, JobResponse
 from promptiq.services.job_service import WorkflowJobService
@@ -12,13 +14,26 @@ from promptiq.services.project_service import ProjectService
 router = APIRouter(prefix="/jobs", tags=["Workflow Jobs"])
 
 
+async def _execute_job_in_background(job_id: str):
+    """Executes a workflow job in background async task session."""
+    try:
+        async with async_session_factory() as session:
+            await WorkflowJobService.execute_agent_workflow_job(
+                session, job_id=job_id, worker_id="api-worker-1"
+            )
+            await session.commit()
+    except Exception as exc:
+        logger.exception("Background execution failed for job %s: %s", job_id, exc)
+
+
 @router.post("", response_model=JobResponse, status_code=status.HTTP_201_CREATED)
 async def create_workflow_job(
     job_in: JobCreate,
+    background_tasks: BackgroundTasks,
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """Initiates a durable asynchronous workflow job."""
+    """Initiates a durable asynchronous workflow job and dispatches execution."""
     # Resolve user's active workspace
     workspace = await ProjectService.get_user_default_workspace(db, user.id)
 
@@ -32,6 +47,11 @@ async def create_workflow_job(
         initial_stage=job_in.initial_stage,
         checkpoint_data=job_in.checkpoint_data,
     )
+    await db.commit()
+
+    # Dispatch to background task execution
+    background_tasks.add_task(_execute_job_in_background, job.id)
+
     return JobResponse.model_validate(job)
 
 

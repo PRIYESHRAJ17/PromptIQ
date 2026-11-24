@@ -5,7 +5,7 @@ from promptiq.api.routes.compiler import router as compiler_router
 from promptiq.api.routes.constitution import router as constitution_router
 from promptiq.api.routes.critic import router as critic_router
 from promptiq.api.routes.discovery import router as discovery_router
-from promptiq.api.routes.eval import router as eval_router
+from promptiq.api.routes.eval import router as eval_router, system_eval_router
 from promptiq.api.routes.governor import router as governor_router
 from promptiq.api.routes.jobs import router as jobs_router
 from promptiq.api.routes.memory import router as memory_router
@@ -25,6 +25,7 @@ __all__ = [
     "research_router",
     "registries_router",
     "eval_router",
+    "system_eval_router",
     "memory_router",
     "governor_router",
     "jobs_router",

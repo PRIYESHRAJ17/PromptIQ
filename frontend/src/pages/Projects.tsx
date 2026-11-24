@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   FolderGit2,
   Plus,
@@ -12,14 +12,18 @@ import {
   Layers,
   Sparkles,
   X,
+  Loader2,
 } from 'lucide-react'
 import { Badge } from '@/components/ui/Badge'
 import { formatDate } from '@/lib/utils'
+import api from '@/lib/api'
+import type { Project, ProjectConstitution } from '@/types'
 
 export function Projects() {
-  const [selectedProjectId, setSelectedProjectId] = useState<string>('proj-001')
+  const [selectedProjectId, setSelectedProjectId] = useState<string>('')
   const [activeTab, setActiveTab] = useState<'constitution' | 'decisions' | 'requirements' | 'memory'>('constitution')
   const [searchQuery, setSearchQuery] = useState('')
+  const [loading, setLoading] = useState(true)
 
   // Modals
   const [showNewProjectModal, setShowNewProjectModal] = useState(false)
@@ -31,38 +35,44 @@ export function Projects() {
   const [newDecisionRationale, setNewDecisionRationale] = useState('')
   const [newDecisionSupersedes, setNewDecisionSupersedes] = useState('')
 
-  const [projects, setProjects] = useState([
-    {
-      id: 'proj-001',
-      name: 'Continuous Memory System',
-      description: 'Durable event-driven processing pipeline with cross-session decision tracking',
-      version: 2,
-      status: 'approved',
-      updated_at: '2026-11-22T13:20:00Z',
-      requirementsCount: 8,
-      decisionsCount: 4,
-    },
-    {
-      id: 'proj-002',
-      name: 'Core Platform v7',
-      description: 'PromptIQ core intelligence runtime, DAG task planner, and model gateway',
-      version: 4,
-      status: 'approved',
-      updated_at: '2026-11-22T12:45:00Z',
-      requirementsCount: 15,
-      decisionsCount: 6,
-    },
-    {
-      id: 'proj-003',
-      name: 'Universal Agent Integrations',
-      description: 'Platform native plugins for Antigravity, Claude Code, Cursor, Codex, Gemini',
-      version: 1,
-      status: 'approved',
-      updated_at: '2026-11-22T11:15:00Z',
-      requirementsCount: 6,
-      decisionsCount: 2,
-    },
-  ])
+  const [projects, setProjects] = useState<Project[]>([])
+  const [constitution, setConstitution] = useState<ProjectConstitution | null>(null)
+
+  useEffect(() => {
+    async function fetchProjects() {
+      try {
+        setLoading(true)
+        await api.ensureAuthenticated()
+        const data = await api.getProjects()
+        setProjects(data)
+        if (data.length > 0) {
+          setSelectedProjectId(data[0].id)
+        }
+      } catch (err) {
+        console.error('Failed to load projects from backend:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchProjects()
+  }, [])
+
+  useEffect(() => {
+    if (!selectedProjectId) {
+      setConstitution(null)
+      return
+    }
+    async function fetchConstitution() {
+      try {
+        const c = await api.getConstitution(selectedProjectId)
+        setConstitution(c)
+      } catch (err) {
+        console.warn('Constitution not available for selected project:', err)
+        setConstitution(null)
+      }
+    }
+    fetchConstitution()
+  }, [selectedProjectId])
 
   const [decisions, setDecisions] = useState([
     {
@@ -128,24 +138,21 @@ export function Projects() {
 
   const currentProject = projects.find((p) => p.id === selectedProjectId) || projects[0]
 
-  const handleCreateProject = (e: React.FormEvent) => {
+  const handleCreateProject = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!newProjectName.trim()) return
-    const newProj = {
-      id: `proj-00${projects.length + 1}`,
-      name: newProjectName.trim(),
-      description: newProjectDesc.trim() || 'New user initialized project workspace',
-      version: 1,
-      status: 'approved',
-      updated_at: new Date().toISOString(),
-      requirementsCount: 4,
-      decisionsCount: 1,
+    try {
+      await api.ensureAuthenticated()
+      const created = await api.createProject(newProjectName.trim(), newProjectDesc.trim())
+      setProjects([created, ...projects])
+      setSelectedProjectId(created.id)
+      setNewProjectName('')
+      setNewProjectDesc('')
+      setShowNewProjectModal(false)
+    } catch (err) {
+      console.error('Failed to create project in backend:', err)
+      alert(`Project creation failed: ${err instanceof Error ? err.message : String(err)}`)
     }
-    setProjects([newProj, ...projects])
-    setSelectedProjectId(newProj.id)
-    setNewProjectName('')
-    setNewProjectDesc('')
-    setShowNewProjectModal(false)
   }
 
   const handleCreateDecision = (e: React.FormEvent) => {
@@ -316,58 +323,83 @@ export function Projects() {
           </div>
 
           <div className="space-y-2">
-            {projects
-              .filter((p) => p.name.toLowerCase().includes(searchQuery.toLowerCase()))
-              .map((proj) => {
-                const isSelected = selectedProjectId === proj.id
-                return (
-                  <div
-                    key={proj.id}
-                    onClick={() => setSelectedProjectId(proj.id)}
-                    className={`p-4 rounded-xl border transition-all cursor-pointer ${
-                      isSelected
-                        ? 'bg-white dark:bg-[#1E222A] border-[#C85A32] shadow-xs dark:border-[#D96B43]'
-                        : 'bg-white/60 dark:bg-[#171920] border-[#E8E2D8] dark:border-[#2C313E] hover:border-[#D5CCC0]'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <h4 className="text-sm font-semibold text-[#1E2229] dark:text-[#F2EFE9]">{proj.name}</h4>
-                      <Badge variant="terracotta">v{proj.version}</Badge>
+            {loading ? (
+              <div className="p-8 text-center text-xs text-[#6A6E78]">
+                <Loader2 className="w-5 h-5 animate-spin mx-auto mb-2 text-[#C85A32]" />
+                Loading persisted projects...
+              </div>
+            ) : projects.length === 0 ? (
+              <div className="p-6 text-center rounded-xl border border-dashed border-[#E8E2D8] dark:border-[#2C313E] bg-white/40 dark:bg-[#171920]">
+                <FolderGit2 className="w-6 h-6 text-[#6A6E78] mx-auto mb-2 opacity-50" />
+                <p className="text-xs font-semibold text-[#1E2229] dark:text-[#F2EFE9]">No projects found</p>
+                <p className="text-[11px] text-[#6A6E78] dark:text-[#9EA3B0] mt-1">
+                  Create your first persistent project above to begin.
+                </p>
+              </div>
+            ) : (
+              projects
+                .filter((p) => p.name.toLowerCase().includes(searchQuery.toLowerCase()))
+                .map((proj) => {
+                  const isSelected = selectedProjectId === proj.id
+                  return (
+                    <div
+                      key={proj.id}
+                      onClick={() => setSelectedProjectId(proj.id)}
+                      className={`p-4 rounded-xl border transition-all cursor-pointer ${
+                        isSelected
+                          ? 'bg-white dark:bg-[#1E222A] border-[#C85A32] shadow-xs dark:border-[#D96B43]'
+                          : 'bg-white/60 dark:bg-[#171920] border-[#E8E2D8] dark:border-[#2C313E] hover:border-[#D5CCC0]'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <h4 className="text-sm font-semibold text-[#1E2229] dark:text-[#F2EFE9]">{proj.name}</h4>
+                        <Badge variant="terracotta">v{proj.current_constitution_version || 1}</Badge>
+                      </div>
+                      <p className="text-xs text-[#6A6E78] dark:text-[#9EA3B0] mt-1 line-clamp-2">
+                        {proj.description || 'No description provided'}
+                      </p>
+                      <div className="mt-3 pt-3 border-t border-[#F2EDE4] dark:border-[#262B36] flex items-center justify-between text-[11px] text-[#6A6E78] dark:text-[#9EA3B0]">
+                        <span className="font-mono text-[10px] text-[#8C92A4]">{proj.id.slice(0, 8)}...</span>
+                        <span>{formatDate(proj.created_at)}</span>
+                      </div>
                     </div>
-                    <p className="text-xs text-[#6A6E78] dark:text-[#9EA3B0] mt-1 line-clamp-2">
-                      {proj.description}
-                    </p>
-                    <div className="mt-3 pt-3 border-t border-[#F2EDE4] dark:border-[#262B36] flex items-center justify-between text-[11px] text-[#6A6E78] dark:text-[#9EA3B0]">
-                      <span>{proj.requirementsCount} requirements</span>
-                      <span>{proj.decisionsCount} decisions</span>
-                    </div>
-                  </div>
-                )
-              })}
+                  )
+                })
+            )}
           </div>
         </div>
 
         {/* Project Constitution & Memory Detail */}
         <div className="lg:col-span-2 bg-white dark:bg-[#1A1D23] border border-[#E8E2D8] dark:border-[#2C313E] rounded-xl overflow-hidden shadow-xs">
-          {/* Project Banner */}
-          <div className="p-6 border-b border-[#E8E2D8] dark:border-[#2C313E] bg-[#FAF7F0] dark:bg-[#1E222A]">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="flex items-center gap-2">
-                  <h3 className="text-lg font-bold text-[#1E2229] dark:text-[#F2EFE9]">
-                    {currentProject.name}
-                  </h3>
-                  <Badge variant="success">Approved Constitution</Badge>
-                </div>
-                <p className="text-xs text-[#6A6E78] dark:text-[#9EA3B0] mt-1">
-                  {currentProject.description}
-                </p>
-              </div>
-              <div className="text-right">
-                <div className="text-xs font-semibold text-[#C85A32]">Version {currentProject.version}.0</div>
-                <div className="text-[11px] text-[#6A6E78] mt-0.5">{formatDate(currentProject.updated_at)}</div>
-              </div>
+          {!currentProject ? (
+            <div className="p-12 text-center text-xs text-[#6A6E78]">
+              <FolderGit2 className="w-8 h-8 text-[#6A6E78] mx-auto mb-3 opacity-40" />
+              <p className="text-sm font-semibold text-[#1E2229] dark:text-[#F2EFE9]">No Project Selected</p>
+              <p className="mt-1 text-xs">Create or select a project from the left panel to inspect its Project Constitution.</p>
             </div>
+          ) : (
+            <>
+              {/* Project Banner */}
+              <div className="p-6 border-b border-[#E8E2D8] dark:border-[#2C313E] bg-[#FAF7F0] dark:bg-[#1E222A]">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-lg font-bold text-[#1E2229] dark:text-[#F2EFE9]">
+                        {currentProject.name}
+                      </h3>
+                      <Badge variant={constitution?.is_approved ? 'success' : 'warning'}>
+                        {constitution?.is_approved ? 'Approved Constitution' : 'Draft Constitution'}
+                      </Badge>
+                    </div>
+                    <p className="text-xs text-[#6A6E78] dark:text-[#9EA3B0] mt-1">
+                      {currentProject.description || 'No description provided'}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-xs font-semibold text-[#C85A32]">Version {currentProject.current_constitution_version || 1}.0</div>
+                    <div className="text-[11px] text-[#6A6E78] mt-0.5">{formatDate(currentProject.updated_at || currentProject.created_at)}</div>
+                  </div>
+                </div>
 
             {/* Sub-Tabs */}
             <div className="flex flex-wrap items-center justify-between gap-2 mt-6">
@@ -496,7 +528,7 @@ export function Projects() {
                 <div className="p-4 rounded-lg bg-[#FAF7F0] dark:bg-[#15181E] border border-[#E8E2D8] dark:border-[#2C313E] font-mono text-xs text-[#1E2229] dark:text-[#F2EFE9] overflow-x-auto">
                   <pre className="whitespace-pre-wrap leading-relaxed">
 {`# Project Constitution: ${currentProject.name}
-## Version: ${currentProject.version} (Approved)
+## Version: ${currentProject.current_constitution_version || 1}.0 (Approved)
 
 ### Active Decisions:
 ${decisions.map(d => `- ${d.id}: ${d.decision}${d.supersedes ? ` (Supersedes ${d.supersedes})` : ''}`).join('\n')}
@@ -508,6 +540,8 @@ ${requirements.map(r => `- [${r.priority}] ${r.id}: ${r.text} (${r.provenance})`
               </div>
             )}
           </div>
+            </>
+          )}
         </div>
       </div>
     </div>

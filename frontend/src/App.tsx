@@ -13,6 +13,12 @@ import Settings from './pages/Settings'
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState<string>('overview')
+  const [activeJobId, setActiveJobId] = useState<string | null>(null)
+
+  const handleWorkflowCreated = (jobId: string) => {
+    setActiveJobId(jobId)
+    setCurrentPage('workbench')
+  }
 
   const renderPage = () => {
     switch (currentPage) {
@@ -21,9 +27,9 @@ export default function App() {
       case 'projects':
         return <Projects />
       case 'new-workflow':
-        return <NewWorkflow onWorkflowCreated={() => setCurrentPage('workbench')} />
+        return <NewWorkflow onWorkflowCreated={handleWorkflowCreated} />
       case 'workbench':
-        return <WorkflowWorkbench />
+        return <WorkflowWorkbench jobId={activeJobId} />
       case 'autopsy':
         return <PromptAutopsy />
       case 'research':

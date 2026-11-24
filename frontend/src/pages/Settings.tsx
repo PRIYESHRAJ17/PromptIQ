@@ -1,13 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Shield, Key, Database, Server, RefreshCw, CheckCircle2, Lock, AlertCircle, Copy, Check } from 'lucide-react';
 import Badge from '../components/ui/Badge';
+import api from '../lib/api';
 
 export default function Settings() {
   const [copiedToken, setCopiedToken] = useState(false);
-  const [apiKey, setApiKey] = useState('piq_live_992a7e1f48b105c3d2e');
+  const [sessionToken, setSessionToken] = useState<string>('');
+
+  useEffect(() => {
+    async function initToken() {
+      await api.ensureAuthenticated();
+      setSessionToken(api.getToken() || '');
+    }
+    initToken();
+  }, []);
 
   const handleCopyToken = () => {
-    navigator.clipboard.writeText(apiKey);
+    if (!sessionToken) return;
+    navigator.clipboard.writeText(sessionToken);
     setCopiedToken(true);
     setTimeout(() => setCopiedToken(false), 2000);
   };
@@ -20,7 +30,7 @@ export default function Settings() {
           <h1 className="font-serif text-3xl font-semibold tracking-tight text-stone-900 dark:text-stone-100">
             Workspace Settings & System Governance
           </h1>
-          <Badge variant="terracotta">Production</Badge>
+          <Badge variant="sage">Development / Local Sandbox</Badge>
         </div>
         <p className="mt-1 text-sm text-stone-600 dark:text-stone-400">
           Governance controls, zero-price guarantees, API credentials, and runtime security policies.
@@ -131,7 +141,7 @@ export default function Settings() {
               <input
                 type="password"
                 readOnly
-                value={apiKey}
+                value={sessionToken || 'No active bearer session'}
                 className="w-full px-3 py-2 text-xs font-mono rounded-lg border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-950 text-stone-700 dark:text-stone-300"
               />
             </div>

@@ -99,6 +99,23 @@ class WorkflowJobService:
         return True
 
     @staticmethod
+    async def claim_job(
+        db: AsyncSession,
+        job_id: str,
+        worker_id: str,
+        lease_duration_seconds: int = 60,
+    ) -> tuple[WorkflowJob | None, int]:
+        """Claims a job for execution and returns (job, fencing_token)."""
+        ok = await WorkflowJobService.acquire_lease(db, job_id, worker_id, lease_duration_seconds)
+        if not ok:
+            return None, 0
+        stmt = select(WorkflowJob).where(WorkflowJob.id == job_id)
+        res = await db.execute(stmt)
+        job = res.scalar_one_or_none()
+        token = getattr(job, "fencing_token", 0) if job else 0
+        return job, token
+
+    @staticmethod
     async def update_progress(
         db: AsyncSession,
         job_id: str,
@@ -448,6 +465,36 @@ class WorkflowJobService:
                 task_name=f"Job-{job_id[:8]}",
                 task_type=task_type,
             )
+
+            # Serialize DAG subtasks and execution iterations for live workbench display
+            subtasks_data = [
+                {
+                    "id": t.id,
+                    "name": t.name,
+                    "status": t.status.value if hasattr(t.status, "value") else str(t.status),
+                    "execution_method": t.execution_method.value if hasattr(t.execution_method, "value") else str(t.execution_method),
+                    "dependencies": t.dependencies,
+                    "objective": t.objective,
+                    "verification_criteria": t.verification_criteria,
+                    "output": str(t.output) if t.output else None,
+                }
+                for t in summary.plan.subtasks
+            ]
+            iterations_data = [
+                {
+                    "iteration": it.iteration,
+                    "subtask_id": it.subtask_id,
+                    "proposed_action": it.proposed_action,
+                    "tool_name": it.tool_name,
+                    "permission_decision": it.permission_decision,
+                    "status": getattr(it, "completion_status", getattr(it, "status", "completed")),
+                    "observation": str(getattr(it, "tool_output", getattr(it, "observation", None))),
+                    "duration_ms": getattr(it, "duration_ms", 0),
+                    "tokens_used": getattr(it, "tokens_used", 0),
+                }
+                for it in summary.iterations
+            ]
+
             completed_job = await WorkflowJobService.complete_job(
                 db=db,
                 job_id=job_id,
@@ -455,12 +502,17 @@ class WorkflowJobService:
                     "status": summary.status,
                     "plan_id": summary.plan_id,
                     "total_iterations": summary.total_iterations,
+                    "total_duration_ms": summary.total_duration_ms,
+                    "total_tokens_used": summary.total_tokens_used,
                     "replan_count": summary.replan_count,
+                    "subtasks": subtasks_data,
+                    "iterations": iterations_data,
                     "deliverable": summary.deliverable,
                 },
                 has_warnings=summary.status != "completed",
                 fencing_token=fencing_token,
             )
+            await db.commit()
             return completed_job
         except Exception as exc:
             logger.exception("Agent workflow job %s failed: %s", job_id, exc)

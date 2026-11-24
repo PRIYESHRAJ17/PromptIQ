@@ -14,6 +14,7 @@ import {
   ChevronUp,
 } from 'lucide-react';
 import Badge from '../components/ui/Badge';
+import api from '../lib/api';
 
 interface Integration {
   id: string;
@@ -153,7 +154,7 @@ export default function AgentIntegrations() {
   const [expandedTestId, setExpandedTestId] = useState<string | null>('antigravity');
   const [testRunning, setTestRunning] = useState(false);
   const [testResult, setTestResult] = useState<{
-    status: 'success' | 'idle';
+    status: 'success' | 'idle' | 'error';
     protocol: string;
     toolsFound: number;
     latencyMs: number;
@@ -178,64 +179,42 @@ export default function AgentIntegrations() {
   const handleRunLiveTest = async () => {
     setTestRunning(true);
     try {
+      await api.ensureAuthenticated();
       const startTime = performance.now();
-      const res = await fetch('/health');
+      const res = await fetch('/api/v1/mcp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${api.getToken()}`,
+        },
+        body: JSON.stringify({
+          jsonrpc: '2.0',
+          id: 1,
+          method: 'tools/list',
+          params: {},
+        }),
+      });
       const data = await res.json();
       const latency = Math.round(performance.now() - startTime);
 
+      if (data.result && data.result.tools) {
+        setTestResult({
+          status: 'success',
+          protocol: 'MCP / JSON-RPC 2.0 (Streamable HTTP / stdio bridge)',
+          toolsFound: data.result.tools.length,
+          latencyMs: latency || 12,
+          sampleOutput: JSON.stringify(data, null, 2),
+        });
+      } else {
+        throw new Error(data.error?.message || 'Invalid MCP response');
+      }
+    } catch (err) {
       setTestResult({
-        status: 'success',
-        protocol: 'MCP / JSON-RPC 2.0 (FastAPI stdio/http bridge)',
-        toolsFound: 7,
-        latencyMs: latency || 18,
-        sampleOutput: JSON.stringify(
-          {
-            jsonrpc: '2.0',
-            result: {
-              tools: [
-                'promptiq_get_constitution',
-                'promptiq_propose_constitution_change',
-                'promptiq_compile_prompt',
-                'promptiq_run_autopsy',
-                'promptiq_search_evidence',
-                'promptiq_execute_workflow',
-                'promptiq_get_quota_status',
-              ],
-              zero_price_policy: data.zero_price_policy || 'enforced',
-              mcp_transport: 'stdio',
-              auth_status: 'cardless_free_tier',
-            },
-          },
-          null,
-          2
-        ),
-      });
-    } catch {
-      setTestResult({
-        status: 'success',
+        status: 'error',
         protocol: 'MCP / JSON-RPC 2.0',
-        toolsFound: 7,
-        latencyMs: 24,
-        sampleOutput: JSON.stringify(
-          {
-            jsonrpc: '2.0',
-            result: {
-              status: 'READY',
-              tools: [
-                'promptiq_get_constitution',
-                'promptiq_propose_constitution_change',
-                'promptiq_compile_prompt',
-                'promptiq_run_autopsy',
-                'promptiq_search_evidence',
-                'promptiq_execute_workflow',
-                'promptiq_get_quota_status',
-              ],
-              zero_price_policy: 'enforced',
-            },
-          },
-          null,
-          2
-        ),
+        toolsFound: 0,
+        latencyMs: 0,
+        sampleOutput: `Handshake failed: ${err instanceof Error ? err.message : String(err)}`,
       });
     } finally {
       setTestRunning(false);

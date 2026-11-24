@@ -1,0 +1,66 @@
+{
+  "artifacts": [
+    {
+      "id": "art-001",
+      "target_format": "antigravity",
+      "file_path": "integrations/plugins/promptiq-antigravity/skills/promptiq/SKILL.md",
+      "content_hash": "81fd9cad558be1a1db1dcb863836071bc4097caccab1f4021b5340c512bc0295",
+      "size_bytes": 2453,
+      "created_at": "2026-11-24T10:00:00Z",
+      "download_url": "/api/v1/artifacts/art-001/download"
+    },
+    {
+      "id": "art-002",
+      "target_format": "claude_code",
+      "file_path": "integrations/plugins/promptiq-claude-code/skills/promptiq/SKILL.md",
+      "content_hash": "1d89d422a4069ea05ef64089dbcd039f6211f42ceadea4758dc06b6de516bc86",
+      "size_bytes": 845,
+      "created_at": "2026-11-24T10:00:00Z",
+      "download_url": "/api/v1/artifacts/art-002/download"
+    },
+    {
+      "id": "art-003",
+      "target_format": "cursor",
+      "file_path": "integrations/plugins/promptiq-cursor/.cursorrules",
+      "content_hash": "a368e2b4b3b30fb0f6e38d139f4dc1405b57cef7d0efd3ccfc5c9b47f150113c",
+      "size_bytes": 732,
+      "created_at": "2026-11-24T10:00:00Z",
+      "download_url": "/api/v1/artifacts/art-003/download"
+    },
+    {
+      "id": "art-004",
+      "target_format": "openai_codex",
+      "file_path": "integrations/plugins/promptiq-codex/codex.json",
+      "content_hash": "5fd2b44edb934295bcdb8a0f9e20fa0ee383d7ab0a486f74f858ef2b3ac4597a",
+      "size_bytes": 324,
+      "created_at": "2026-11-24T10:00:00Z",
+      "download_url": "/api/v1/artifacts/art-004/download"
+    },
+    {
+      "id": "art-005",
+      "target_format": "gemini_cli",
+      "file_path": "integrations/plugins/promptiq-gemini-cli/GEMINI.md",
+      "content_hash": "c8cc2173f5358b10c6298988d1cc75225daba0dd67fe2268bdd9faa10c146a6e",
+      "size_bytes": 426,
+      "created_at": "2026-11-24T10:00:00Z",
+      "download_url": "/api/v1/artifacts/art-005/download"
+    },
+    {
+      "id": "art-006",
+      "target_format": "generic_mcp",
+      "file_path": "integrations/plugins/promptiq-mcp/mcp.json",
+      "content_hash": "1c40552de611357091c27b23a778fbefb82976078a65aa30eaba34aedfd4d4a1",
+      "size_bytes": 359,
+      "created_at": "2026-11-24T10:00:00Z",
+      "download_url": "/api/v1/artifacts/art-006/download"
+    }
+  ],
+  "contents": {
+    "art-001": "---\nname: promptiq\ndescription: Direct access to PromptIQ Prompt Intelligence, Project Constitution memory, task compilers, and adversarial autopsy review. Use when optimizing or diagnosing prompts, managing project constitutions, or compiling target instructions.\n---\n\n# PromptIQ Intelligence Skill for Google Antigravity\n\nUse this skill when you need to access persistent project memory, decompose complex user requests across 10 specialized task families, compile target-native prompt packages, or run adversarial Prompt Autopsy diagnostics.\n\n## Available Capabilities & MCP Tools\n\nPromptIQ exposes authoritative intelligence tools through the `promptiq` MCP server:\n\n1. `create_project(name, description)`: Create a new PromptIQ project with an initial Project Constitution.\n2. `run_discovery(project_id, goal, depth)`: Start or continue adaptive discovery for a project (`quick`, `guided`, or `deep`).\n3. `get_project_constitution(project_id)`: Retrieve the canonical Project Constitution source of truth, requirements, and decisions.\n4. `compile_prompt(project_id, target_environment, output_type)`: Compile the approved Constitution into target-native instructions (Antigravity, Claude Code, Cursor, Codex).\n5. `review_prompt(prompt_text, target_environment)`: Execute an adversarial 18-21 category forensic autopsy and diagnostic critique.\n6. `research(project_id, query, mode)`: Investigate technical documentation and record claims in the Evidence Ledger.\n7. `record_checkpoint(project_id, phase, summary)`: Record a verified project milestone checkpoint for cross-agent continuity.\n8. `get_context_pack(project_id, max_token_budget)`: Compile and pack project context for an external agent within a token budget.\n9. `execute_agent_task(objective, task_type, max_iterations)`: Execute an objective through the PromptIQ autonomous observe-decide-act agent loop.\n10. `get_quota_status()`: Verify PromptIQ zero-price guarantee, quotas, and active anti-BYOK enforcement.\n\n## Core Architectural Invariants\n\n1. **Canonical Truth**: Never maintain local unverified assumptions. All decisions must be recorded in the Project Constitution.\n2. **Zero Price Guarantee**: Never ask the user for LLM API keys or suggest paid fallback routes.\n3. **No Local Inference**: PromptIQ routes all intelligence through the hosted zero-price gateway.\n4. **Adversarial Honesty**: Always provide unsparing critique in Prompt Autopsies. Never output decorative praise.\n",
+    "art-002": "---\nname: promptiq-claude-code\ndescription: Deep prompt intelligence, forensic autopsy, and persistent Project Constitution memory for Claude Code.\nversion: 1.0.0\n---\n\n# PromptIQ for Claude Code\n\nConnects Claude Code subagents directly to the PromptIQ zero-price intelligence gateway.\n\n## Capabilities\n- Query canonical Project Constitution memory before answering architectural questions.\n- Execute Prompt Autopsy to identify vagueness, hidden hallucinations, and security flaws.\n- Compile and validate Anthropic-native tool calling schemas and prompt suites.\n\n## MCP Tools\nAll 7 standard PromptIQ MCP tools are exposed via stdio:\n- `promptiq_get_constitution`\n- `promptiq_propose_constitution_change`\n- `promptiq_compile_prompt`\n- `promptiq_run_autopsy`\n- `promptiq_search_evidence`\n- `promptiq_execute_workflow`\n- `promptiq_get_quota_status`\n",
+    "art-003": "# PromptIQ Rules for Cursor AI\n\nYou are connected to PromptIQ \u2014 the central intelligence and project memory engine.\n\n## Invariant Guidelines:\n1. Canonical Architecture: Before proposing architectural changes, check the active Project Constitution via PromptIQ MCP or .promptiq/constitution.json.\n2. Zero-Price Rule: Never prompt user for LLM API keys or implement paid inference fallback routes. PromptIQ is 100% free.\n3. No Local Inference: Centrally hosted architecture. Do not instruct user to run Ollama or local LLM instances.\n4. Adversarial Review: When reviewing or generating prompts, run promptiq_run_autopsy to catch defects and vulnerabilities.\n5. Deterministic Assertions: Ground code changes in verified test suites.\n",
+    "art-004": "{\n  \"system_instructions\": \"You are connected to PromptIQ. Always adhere to Project Constitution invariants. Never request user API keys or switch to paid inference routes.\",\n  \"promptiq_integration\": {\n    \"zero_price_policy\": \"strict_enforcement\",\n    \"compiler_target\": \"openai_codex\",\n    \"mcp_server\": \"promptiq\"\n  }\n}\n",
+    "art-005": "# PromptIQ Workspace Rules for Gemini CLI\n\nYou are integrated with PromptIQ.\n\n1. **Adhere to Project Constitution**: Read and respect canonical requirements and decisions.\n2. **Zero-Price Guarantee**: Reject all BYOK requests and paid API key fallbacks.\n3. **No Local Inference**: Always leverage hosted central model services.\n4. **Adversarial Autopsy**: Run prompt autopsy to uncover hidden traps before finalizing prompts.\n",
+    "art-006": "{\n  \"$schema\": \"https://modelcontextprotocol.io/schema.json\",\n  \"name\": \"promptiq-mcp\",\n  \"version\": \"1.2.0\",\n  \"description\": \"Universal RFC-compliant Model Context Protocol server exposing PromptIQ intelligence tools.\",\n  \"transport\": [\n    \"stdio\",\n    \"sse\"\n  ],\n  \"command\": \"promptiq-mcp\",\n  \"env\": {\n    \"PROMPTIQ_ZERO_PRICE_ENFORCEMENT\": \"true\"\n  }\n}\n"
+  }
+}

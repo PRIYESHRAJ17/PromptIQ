@@ -17,6 +17,7 @@ from promptiq.api.routes import (
     critic_router,
     discovery_router,
     eval_router,
+    system_eval_router,
     governor_router,
     jobs_router,
     mcp_router,
@@ -170,8 +171,10 @@ app.include_router(critic_router, prefix=api_v1_prefix)
 app.include_router(research_router, prefix=api_v1_prefix)
 app.include_router(registries_router, prefix=api_v1_prefix)
 app.include_router(eval_router, prefix=api_v1_prefix)
+app.include_router(system_eval_router, prefix=api_v1_prefix)
 app.include_router(memory_router, prefix=api_v1_prefix)
 app.include_router(jobs_router, prefix=api_v1_prefix)
 app.include_router(governor_router, prefix=api_v1_prefix)
 app.include_router(telegram_router, prefix=api_v1_prefix)
+# reload trigger 2
 app.include_router(mcp_router, prefix=api_v1_prefix)

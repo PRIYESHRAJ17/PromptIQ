@@ -30,7 +30,9 @@ services:
         condition: service_healthy
     environment:
       PROMPTIQ_ENV: production
-      PROMPTIQ_DATABASE_URL: postgresql://promptiq:${POSTGRES_PASSWORD:-promptiq_secure_prod_2026}@db:5432/promptiq
+      DATABASE_URL: postgresql+asyncpg://promptiq:${POSTGRES_PASSWORD:-promptiq_secure_prod_2026}@db:5432/promptiq
+      PROMPTIQ_DATABASE_URL: postgresql+asyncpg://promptiq:${POSTGRES_PASSWORD:-promptiq_secure_prod_2026}@db:5432/promptiq
+      PROMPTIQ_SECRET_KEY: ${PROMPTIQ_SECRET_KEY:-promptiq_prod_secret_key_change_in_production_min_32_chars_2026}
       PROMPTIQ_ZERO_PRICE_ENFORCEMENT: "true"
       PROMPTIQ_API_HOST: 0.0.0.0
       PROMPTIQ_API_PORT: 8000
