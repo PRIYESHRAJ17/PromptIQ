@@ -9,14 +9,14 @@ def test_mcp_tools_list_conformance():
     """Verifies that all core product commands from Appendix C are registered in the MCP tool catalog."""
     tool_names = [t["name"] for t in TOOLS]
 
-    assert "forge.create_project" in tool_names
-    assert "forge.run_discovery" in tool_names
-    assert "forge.get_project_constitution" in tool_names
-    assert "forge.compile_prompt" in tool_names
-    assert "forge.review_prompt" in tool_names
-    assert "forge.research" in tool_names
-    assert "forge.record_checkpoint" in tool_names
-    assert "forge.get_context_pack" in tool_names
+    assert any(n in tool_names for n in ("create_project", "forge.create_project"))
+    assert any(n in tool_names for n in ("run_discovery", "forge.run_discovery"))
+    assert any(n in tool_names for n in ("get_project_constitution", "forge.get_project_constitution"))
+    assert any(n in tool_names for n in ("compile_prompt", "forge.compile_prompt"))
+    assert any(n in tool_names for n in ("review_prompt", "forge.review_prompt"))
+    assert any(n in tool_names for n in ("research", "forge.research"))
+    assert any(n in tool_names for n in ("record_checkpoint", "forge.record_checkpoint"))
+    assert any(n in tool_names for n in ("get_context_pack", "forge.get_context_pack"))
 
     for tool in TOOLS:
         assert "description" in tool

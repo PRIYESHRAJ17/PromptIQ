@@ -471,26 +471,36 @@ async def run_stdio_mcp_server():
             method = rpc_req.get("method")
             params = rpc_req.get("params", {})
 
+            # Standard JSON-RPC 2.0: Notifications have NO "id" (or id is null).
+            # The server MUST NOT respond to any notification.
+            is_notification = ("id" not in rpc_req) or (req_id is None)
+
+            if method in ("notifications/initialized", "initialized", "notifications/cancelled", "$/cancelRequest"):
+                # Standard MCP client initialization and cancellation notifications
+                continue
+
+            if is_notification:
+                # Any other notification: do not respond
+                continue
+
             if method == "initialize":
+                protocol_version = params.get("protocolVersion", "2024-11-05")
                 response = {
                     "jsonrpc": "2.0",
                     "id": req_id,
                     "result": {
-                        "protocolVersion": "2024-11-05",
+                        "protocolVersion": protocol_version,
                         "serverInfo": {
-                            "name": "promptiq-mcp",
+                            "name": "promptiq",
                             "version": "1.0.0",
                         },
                         "capabilities": {
-                            "tools": {},
+                            "tools": {
+                                "listChanged": False,
+                            },
                         },
                     },
                 }
-            elif method == "notifications/initialized":
-                if req_id is not None:
-                    response = {"jsonrpc": "2.0", "id": req_id, "result": {}}
-                else:
-                    continue
             elif method == "ping":
                 response = {"jsonrpc": "2.0", "id": req_id, "result": {}}
             elif method == "tools/list":
@@ -514,7 +524,7 @@ async def run_stdio_mcp_server():
                 response = {
                     "jsonrpc": "2.0",
                     "id": req_id,
-                    "result": {},
+                    "error": {"code": -32601, "message": f"Method '{method}' not found"},
                 }
 
             out_bytes = (json.dumps(response) + "\n").encode("utf-8")
@@ -522,13 +532,14 @@ async def run_stdio_mcp_server():
             sys.stdout.buffer.flush()
 
         except Exception as e:
-            err_resp = {
-                "jsonrpc": "2.0",
-                "id": req_id,
-                "error": {"code": -32603, "message": str(e)},
-            }
-            sys.stdout.buffer.write((json.dumps(err_resp) + "\n").encode("utf-8"))
-            sys.stdout.buffer.flush()
+            if req_id is not None:
+                err_resp = {
+                    "jsonrpc": "2.0",
+                    "id": req_id,
+                    "error": {"code": -32603, "message": str(e)},
+                }
+                sys.stdout.buffer.write((json.dumps(err_resp) + "\n").encode("utf-8"))
+                sys.stdout.buffer.flush()
 
 
 if __name__ == "__main__":

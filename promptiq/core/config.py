@@ -1,6 +1,5 @@
 """Application configuration and environment settings for PromptIQ."""
 
-import os
 from pathlib import Path
 from typing import Literal
 

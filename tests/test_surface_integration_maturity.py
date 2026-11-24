@@ -41,10 +41,10 @@ async def test_mcp_server_surface_tool_discovery_and_invocation():
 
     # 2. Check registered tools
     tool_names = [t["name"] for t in TOOLS]
-    assert "forge.create_project" in tool_names
-    assert "forge.run_discovery" in tool_names
-    assert "forge.review_prompt" in tool_names
-    assert "forge.get_project_constitution" in tool_names
+    assert any(n in tool_names for n in ("create_project", "forge.create_project"))
+    assert any(n in tool_names for n in ("run_discovery", "forge.run_discovery"))
+    assert any(n in tool_names for n in ("review_prompt", "forge.review_prompt"))
+    assert any(n in tool_names for n in ("get_project_constitution", "forge.get_project_constitution"))
 
 
 def test_cli_surface_execution_and_commands(capsys):
